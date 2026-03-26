@@ -20,8 +20,9 @@ data object SummaryOrderStep : OrderStep {
 }
 
 @Composable
-internal fun summaryProducer(eventSink: (OrderStep.Event) -> Unit) =
-  SummaryOrderStep.SummaryState { eventSink(OrderStep.Restart) }
+internal fun summaryProducer(eventSink: (OrderStep.Event) -> Unit) = SummaryOrderStep.SummaryState {
+  eventSink(OrderStep.Restart)
+}
 
 @Composable
 internal fun SummaryUi(state: SummaryOrderStep.SummaryState, modifier: Modifier = Modifier) {

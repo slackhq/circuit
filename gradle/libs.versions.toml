@@ -1,17 +1,17 @@
 [versions]
 agp = "8.13.2"
-androidx-activity = "1.12.4"
+androidx-activity = "1.13.0"
 androidx-annotation = "1.9.1"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
 androidx-compose = "1.11.0-alpha06"  # Keep in sync with the androidx version used by jb-compose
 anvil = "0.5.3"
-atomicfu = "0.31.0"
+atomicfu = "0.32.1"
 benchmark = "1.4.1"
 coil = "3.4.0"
 compose-runtime = "1.11.0-alpha06" # Keep in sync with the androidx version used by jb-compose
 dagger = "2.59.2"
-datastore = "1.2.0"
+datastore = "1.2.1"
 detekt = "1.23.8"
 dokka = "2.1.0"
 eithernet = "2.0.0"
@@ -23,26 +23,26 @@ jb-lifecycle = "2.11.0-alpha01"
 jdk = "23"
 jvmTarget = "11"
 kct = "0.12.1"
-kotlin = "2.3.10"
+kotlin = "2.3.20"
 kotlinInject = "0.9.0"
 kotlinInject-anvil = "0.1.7"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
 ksp = "2.3.6"
-ktfmt = "0.61"
+ktfmt = "0.62"
 ktor = "3.4.1"
 leakcanary = "2.14"
 mavenPublish = "0.36.0"
 markdownRenderer = "0.39.2"
 molecule = "2.2.0"
 okhttp = "5.3.2"
-okio = "3.16.4"
+okio = "3.17.0"
 picnic = "0.7.0"
 robolectric = "4.16.1"
 roborazzi = "1.59.0"
 spotless = "8.0.0"
-sqldelight = "2.2.1"
+sqldelight = "2.3.2"
 telephoto = "0.18.0"
 testParameterInjector = "1.21"
 turbine = "1.2.1"
@@ -58,7 +58,7 @@ compose = { id = "org.jetbrains.compose", version.ref = "jb-compose" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-emulatorWtf = { id = "wtf.emulator.gradle", version = "1.5.0" }
+emulatorWtf = { id = "wtf.emulator.gradle", version = "1.5.1" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -69,8 +69,8 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.11.2" }
-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.1" }
+metro = { id = "dev.zacsweers.metro", version = "0.12.0" }
+nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.2" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
@@ -177,6 +177,7 @@ ktfmt = { module = "com.facebook:ktfmt", version.ref = "ktfmt" }
 ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-engine-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-engine-js = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor-client-engine-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
@@ -212,9 +213,11 @@ rxjava = "io.reactivex.rxjava3:rxjava:3.1.12"
 
 slf4jNop = "org.slf4j:slf4j-nop:2.0.17"
 
-sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions-jvm", version.ref = "sqldelight" }
+sqldelight-async = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqldelight" }
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
 sqldelight-driver-jdbc = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+sqldelight-driver-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
 sqldelight-primitiveAdapters = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 
 telephoto-flick = { module = "me.saket.telephoto:flick", version.ref = "telephoto" }

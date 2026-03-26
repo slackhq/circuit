@@ -165,32 +165,33 @@ internal constructor(
   }
 
   override fun snapshot(): NavStackList<Record>? {
+    return saveableSnapshot()
+  }
+
+  override fun saveState() {
+    val snapshot = saveableSnapshot() ?: return
+    stateStore[snapshot.root.screen] = snapshot
+  }
+
+  private fun saveableSnapshot(): SaveableNavStackList? {
     return if (entryList.isNotEmpty() && currentIndex >= 0 && currentIndex <= entryList.lastIndex) {
       SaveableNavStackList(entryList.toList(), currentIndex)
     } else null
   }
 
-  override fun saveState() {
-    if (entryList.isNotEmpty()) {
-      val rootScreen = entryList.last().screen
-      stateStore[rootScreen] = SaveableNavStackList(entryList.toList(), currentIndex)
-    }
+  override fun restoreState(screen: Screen): Boolean = Snapshot.withMutableSnapshot {
+    val stored = stateStore[screen]
+    if (stored != null && stored.entries.isNotEmpty()) {
+      entryList.clear()
+      // Add the stored state into the entry list
+      entryList.addAll(stored.entries)
+      // Restore the current index
+      currentIndex = stored.currentIndex
+      // Clear the stored state
+      stateStore.remove(screen)
+      true
+    } else false
   }
-
-  override fun restoreState(screen: Screen): Boolean =
-    Snapshot.withMutableSnapshot {
-      val stored = stateStore[screen]
-      if (stored != null && stored.entries.isNotEmpty()) {
-        entryList.clear()
-        // Add the stored state into the entry list
-        entryList.addAll(stored.entries)
-        // Restore the current index
-        currentIndex = stored.currentIndex
-        // Clear the stored state
-        stateStore.remove(screen)
-        true
-      } else false
-    }
 
   override fun peekState(): List<Screen> {
     return stateStore.keys.toList()
@@ -240,7 +241,7 @@ internal constructor(
     for (i in min until index) {
       if (records[i].key == key) return true
     }
-    val max = minOf(index + depth, records.size)
+    val max = minOf(index + depth + 1, records.size)
     for (i in index until max) {
       if (records[i].key == key) return true
     }
@@ -343,10 +344,12 @@ internal constructor(
                 else -> {
                   // Any list after that is from the state store (as snapshots)
                   item
-                    .mapNotNull { SaveableNavStackList.Saver.restore(it as List<Any>) }
+                    .filterIsInstance<List<Any>>()
+                    .mapNotNull { SaveableNavStackList.Saver.restore(it) }
+                    .filter { it.entries.isNotEmpty() }
                     .forEach { snapshot ->
                       // The key is always the root screen (i.e. last item)
-                      navStack.stateStore[snapshot.entries.last().screen] = snapshot
+                      navStack.stateStore[snapshot.root.screen] = snapshot
                     }
                 }
               }

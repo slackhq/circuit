@@ -99,7 +99,7 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.rememberAnsweringNavigator
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.overlay.OverlayEffect
-import com.slack.circuit.retained.collectAsRetainedState
+import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -198,12 +198,13 @@ class PetListPresenter(
       }
     }
 
-    val animalsFlow =
-      rememberRetained(petRepo) {
-        petRepo.animalsFlow().map { animals -> animals?.map(Animal::toPetListAnimal) }
+    val animalState by
+      produceRetainedState<List<PetListAnimal>?>(null, petRepo) {
+        petRepo
+          .animalsFlow()
+          .map { animals -> animals?.map(Animal::toPetListAnimal) }
+          .collect { value = it }
       }
-
-    val animalState by animalsFlow.collectAsRetainedState(null)
 
     var isUpdateFiltersModalShowing by rememberRetained { mutableStateOf(false) }
     var filters by rememberSaveable { mutableStateOf(Filters()) }
@@ -316,9 +317,10 @@ internal object PetListTestConstants {
 @CircuitInject(PetListScreen::class, AppScope::class)
 @Composable
 internal fun PetList(state: State, modifier: Modifier = Modifier) {
+  val sheetBackgroundColor = MaterialTheme.colorScheme.background
   if (state is Success && state.isUpdateFiltersModalShowing) {
     OverlayEffect(state) {
-      val result = updateFilters(state.filters)
+      val result = updateFilters(state.filters, sheetBackgroundColor)
       state.eventSink(UpdatedFilters(result))
     }
   }
@@ -450,7 +452,11 @@ private fun PetListGridItem(
   val boundsState = rememberSharedContentState(key = PetCardBoundsKey(animal.id))
   val fraction by
     remember(boundsState, animatedScope) {
-      derivedStateOf { if (boundsState.isMatchFound) animatedScope.progress().value else 1f }
+      derivedStateOf {
+        if (boundsState.isMatchFound) {
+          animatedScope.progress().value
+        } else 1f
+      }
     }
   val topCornerSize = lerp(12.dp, 16.dp, fraction)
   val bottomCornerSize = lerp(0.dp, 12.dp, 1 - fraction)

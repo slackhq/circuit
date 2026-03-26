@@ -15,7 +15,11 @@ public fun AnimatedVisibilityScope.progress(): FloatState {
         when {
           isRunning || isSeeking -> {
             val fraction = playTimeNanos * 1f / totalDurationNanos
-            fraction.coerceIn(0f, 1f)
+            if (fraction.isNaN()) {
+              0f
+            } else {
+              fraction.coerceIn(0f, 1f)
+            }
           }
           currentState == EnterExitState.Visible -> 1f
           else -> 0f

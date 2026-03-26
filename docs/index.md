@@ -33,7 +33,7 @@ Circuit’s core components are its `Presenter` and `Ui` interfaces.
     * Composite presenter/UIs would be “composite screen".
     * etc etc.
 
-Circuit’s repo (https://github.com/slackhq/circuit) is being actively developed in the open, which allows us to continue collaborating with external folks too. We have a trivial-but-not-too-trivial sample app that we have been developing in it to serve as a demo for a number of common patterns in Circuit use.
+Circuit’s repo (https://github.com/slackhq/circuit) is being actively developed in the open, which allows us to continue collaborating with external folks too. We have a trivial-but-not-too-trivial multiplatform sample app (the "Star" sample, targeting Android, Desktop, and iOS) that we have been developing in it to serve as a demo for a number of common patterns in Circuit use.
 
 ## Counter Example
 

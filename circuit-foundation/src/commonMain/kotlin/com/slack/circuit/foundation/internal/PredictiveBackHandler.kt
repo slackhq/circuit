@@ -138,16 +138,15 @@ public class PredictiveBack(scope: CoroutineScope, public val onEvent: suspend (
 
   private var initialTouch = Offset.Zero
   private val channel = Channel<Event>(capacity = BUFFERED)
-  private val job =
-    scope.launch {
-      for (event in channel) {
-        if (event is Event.Progress) {
-          onEvent(progressAsDelta(event))
-        } else {
-          onEvent(event)
-        }
+  private val job = scope.launch {
+    for (event in channel) {
+      if (event is Event.Progress) {
+        onEvent(progressAsDelta(event))
+      } else {
+        onEvent(event)
       }
     }
+  }
 
   public fun send(event: Event) {
     channel.trySend(event)

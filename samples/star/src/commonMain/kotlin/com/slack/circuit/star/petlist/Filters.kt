@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
+import androidx.compose.ui.graphics.Color
 import com.slack.circuit.internal.runtime.Parcelable
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.overlay.OverlayHost
@@ -15,4 +16,7 @@ class Filters(
 ) : Parcelable
 
 /** Indirection for showing filters in the pet list screen. */
-expect suspend fun OverlayHost.updateFilters(currentFilters: Filters): Filters
+expect suspend fun OverlayHost.updateFilters(
+  currentFilters: Filters,
+  sheetBackgroundColor: Color = Color.Unspecified,
+): Filters

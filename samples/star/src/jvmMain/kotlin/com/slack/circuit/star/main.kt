@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -13,6 +13,8 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.MenuBar
 import androidx.compose.ui.window.Window
@@ -20,40 +22,14 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.SingletonImageLoader
-import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.foundation.NavigableCircuitContent
-import com.slack.circuit.foundation.rememberCircuitNavigator
-import com.slack.circuit.overlay.ContentWithOverlays
-import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuit.star.di.AppGraph
-import com.slack.circuit.star.home.HomeScreen
-import com.slack.circuit.star.navigation.OpenUrlScreen
-import com.slack.circuit.star.ui.StarTheme
 import java.awt.Desktop
 import java.net.URI
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun main() {
   val appGraph = AppGraph.create()
   SingletonImageLoader.setSafe { appGraph.imageLoader }
   application {
-    val initialBackStack = listOf<Screen>(HomeScreen)
-    val backStack = rememberSaveableBackStack(initialBackStack)
-    val circuitNavigator = rememberCircuitNavigator(backStack) { exitApplication() }
-    val navigator =
-      remember(circuitNavigator) {
-        object : Navigator by circuitNavigator {
-          override fun goTo(screen: Screen): Boolean {
-            return when (screen) {
-              is OpenUrlScreen -> openUrl(screen.url)
-              else -> circuitNavigator.goTo(screen)
-            }
-          }
-        }
-      }
     val windowState =
       rememberWindowState(
         width = 1200.dp,
@@ -61,51 +37,56 @@ fun main() {
         position = WindowPosition(Alignment.Center),
       )
     var darkMode by remember { mutableStateOf(false) }
-
-    Window(
-      title = "STAR",
-      state = windowState,
-      onCloseRequest = ::exitApplication,
-      alwaysOnTop = true,
-      // In lieu of a global shortcut handler, we best-effort with this
-      // https://youtrack.jetbrains.com/issue/CMP-5337
-      onKeyEvent = { event ->
-        when (event.key) {
-          Key.W if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
-            exitApplication()
-            true
+    val uriHandler = remember { DesktopUriHandler() }
+    CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+      val state = rememberStarAppState(useDarkTheme = darkMode)
+      Window(
+        title = "STAR",
+        state = windowState,
+        onCloseRequest = ::exitApplication,
+        alwaysOnTop = true,
+        // In lieu of a global shortcut handler, we best-effort with this
+        // https://youtrack.jetbrains.com/issue/CMP-5337
+        onKeyEvent = { event ->
+          when (event.key) {
+            Key.W if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
+              exitApplication()
+              true
+            }
+            Key.U if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
+              darkMode = !darkMode
+              true
+            }
+            // Backpress ish
+            Key.Escape -> {
+              if (state.backStack.size > 1) {
+                state.navigator.pop()
+                true
+              } else {
+                false
+              }
+            }
+            else -> false
           }
-          Key.U if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
-            darkMode = !darkMode
-            true
-          }
-          else -> false
-        }
-      },
-    ) {
-      MenuBar {
-        Menu("Data") {
-          Item("Clear app data and quit") {
-            appGraph.appDirs.clearAll()
-            exitApplication()
-          }
-        }
-      }
-      StarTheme(useDarkTheme = darkMode) {
-        CircuitCompositionLocals(appGraph.circuit) {
-          SharedElementTransitionLayout {
-            ContentWithOverlays {
-              NavigableCircuitContent(navigator = navigator, backStack = backStack)
+        },
+      ) {
+        MenuBar {
+          Menu("Data") {
+            Item("Clear app data and quit") {
+              appGraph.appDirs.clearAll()
+              exitApplication()
             }
           }
         }
+        StarCircuitApp(circuit = appGraph.circuit, state = state)
       }
     }
   }
 }
 
-private fun openUrl(url: String): Boolean {
-  val desktop = Desktop.getDesktop()
-  desktop.browse(URI.create(url))
-  return true
+class DesktopUriHandler : UriHandler {
+  override fun openUri(uri: String) {
+    val desktop = Desktop.getDesktop()
+    desktop.browse(URI.create(uri))
+  }
 }

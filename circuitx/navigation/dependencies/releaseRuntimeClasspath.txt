@@ -113,6 +113,7 @@ org.jetbrains.compose.ui:ui-unit
 org.jetbrains.compose.ui:ui-util
 org.jetbrains.compose.ui:ui
 org.jetbrains.kotlin:kotlin-bom
+org.jetbrains.kotlin:kotlin-parcelize-runtime
 org.jetbrains.kotlin:kotlin-stdlib
 org.jetbrains.kotlinx:atomicfu-jvm
 org.jetbrains.kotlinx:atomicfu

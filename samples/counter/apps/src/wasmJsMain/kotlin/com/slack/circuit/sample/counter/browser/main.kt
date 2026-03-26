@@ -10,5 +10,5 @@ import com.slack.circuit.sample.counter.CounterApp
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-  ComposeViewport { CounterApp(WasmCounterScreen) }
+  ComposeViewport { CounterApp() }
 }

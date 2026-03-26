@@ -3,7 +3,7 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.backstack.rememberSaveableBackStack
@@ -24,7 +24,7 @@ import org.junit.runner.RunWith
 @RunWith(ComposeUiTestRunner::class)
 class NavigableCircuitRetainedStateTest {
 
-  @get:Rule val composeTestRule = createComposeRule()
+  @Suppress("DEPRECATION") @get:Rule val composeTestRule = createComposeRule()
 
   @Test fun retainedStateScopedToBackstackWithKeys() = retainedStateScopedToBackstack(true)
 

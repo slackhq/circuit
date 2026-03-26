@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.runtime.CircuitUiState
@@ -46,7 +46,7 @@ private const val TAG_STATE = "TAG_STATE"
 @RunWith(ComposeUiTestRunner::class)
 class KeyedCircuitContentTests {
 
-  @get:Rule val composeTestRule = createComposeRule()
+  @Suppress("DEPRECATION") @get:Rule val composeTestRule = createComposeRule()
 
   private val circuit =
     Circuit.Builder()

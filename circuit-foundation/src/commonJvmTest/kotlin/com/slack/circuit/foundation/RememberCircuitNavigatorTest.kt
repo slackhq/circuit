@@ -7,7 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
@@ -21,7 +21,7 @@ import org.junit.runner.RunWith
 @RunWith(ComposeUiTestRunner::class)
 class RememberCircuitNavigatorTest {
 
-  @get:Rule val composeTestRule = createComposeRule()
+  @Suppress("DEPRECATION") @get:Rule val composeTestRule = createComposeRule()
 
   @Test
   fun `rememberCircuitNavigator creates navigator with correct initial state`() =

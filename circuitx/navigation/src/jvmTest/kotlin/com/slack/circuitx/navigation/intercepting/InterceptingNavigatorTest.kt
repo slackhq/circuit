@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navigation.intercepting
 
-import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.junit4.createComposeRule
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.Navigator.StateOptions
@@ -13,7 +13,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 
 class InterceptingNavigatorTest {
-  @get:Rule val composeTestRule = createComposeRule()
+  @Suppress("DEPRECATION") @get:Rule val composeTestRule = createComposeRule()
 
   @Test
   fun `Navigator delegation check`() = runTest {

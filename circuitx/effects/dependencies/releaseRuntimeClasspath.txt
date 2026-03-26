@@ -100,8 +100,6 @@ org.jetbrains.androidx.savedstate:savedstate-compose
 org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.compose.animation:animation-core
 org.jetbrains.compose.animation:animation
-org.jetbrains.compose.annotation-internal:annotation
-org.jetbrains.compose.collection-internal:collection
 org.jetbrains.compose.foundation:foundation-layout
 org.jetbrains.compose.foundation:foundation
 org.jetbrains.compose.runtime:runtime-saveable

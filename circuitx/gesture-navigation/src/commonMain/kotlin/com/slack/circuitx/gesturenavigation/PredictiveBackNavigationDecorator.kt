@@ -34,7 +34,7 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
   protected var showPrevious: Boolean by mutableStateOf(false)
     private set
 
-  protected var isSeeking: Boolean by mutableStateOf(false)
+  protected var isSwipeInProgress: Boolean by mutableStateOf(false)
     private set
 
   protected var swipeProgress: Float by mutableFloatStateOf(0f)
@@ -72,7 +72,7 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
         snapshotFlow { swipeProgress }
           .collect { progress ->
             if (progress != 0f) {
-              isSeeking = true
+              isSwipeInProgress = true
               try {
                 seekableTransitionState.seekTo(fraction = abs(progress), targetState = previous)
               } catch (_: CancellationException) {
@@ -97,7 +97,7 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
 
   suspend fun resetTo(current: GestureNavTransitionHolder<T>) {
     swipeProgress = 0f
-    isSeeking = false
+    isSwipeInProgress = false
     seekableTransitionState.animateTo(current)
     // After the current state has changed (i.e. any transition has completed),
     // clear out any transient state

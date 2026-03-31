@@ -117,7 +117,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
         .graphicsLayer { alpha = fade }
         .predictiveBackMotion(
           enabled = { showPrevious },
-          isSeeking = { isSeeking },
+          isSeeking = { isSwipeInProgress },
           shape = MaterialTheme.shapes.extraLarge,
           elevation = if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
           transition = transition,
@@ -148,7 +148,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
         }
       }
     ) { targetState ->
-      if (isSeeking) {
+      if (isSwipeInProgress) {
         1f
       } else {
         when (targetState) {
@@ -174,7 +174,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
     ) { targetState ->
       val preEnter = fullWidth() / -10
       val postExit = fullWidth() / 10
-      if (isSeeking) {
+      if (isSwipeInProgress) {
         IntOffset.Zero
       } else {
         when (targetState) {

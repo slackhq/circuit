@@ -10,21 +10,34 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Transition
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateIntOffset
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.GraphicsLayerScope
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.constrain
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.slack.circuit.foundation.NavigatorDefaults
@@ -35,6 +48,14 @@ import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import kotlin.math.absoluteValue
+
+private val FastOutExtraSlowInEasing = CubicBezierEasing(0.208333f, 0.82f, 0.25f, 1f)
+private val AccelerateEasing = CubicBezierEasing(0.3f, 0f, 1f, 1f)
+private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
+
+private const val DEBUG_MULTIPLIER = 1
+private const val SHORT_DURATION = 83 * DEBUG_MULTIPLIER
+private const val NORMAL_DURATION = 450 * DEBUG_MULTIPLIER
 
 public actual fun GestureNavigationDecorationFactory(
   fallback: AnimatedNavDecorator.Factory,
@@ -65,13 +86,10 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
       // come back from back stack
       AnimatedNavEvent.Backward,
       AnimatedNavEvent.Pop -> {
-        if (showPrevious) {
-            // Handle all the animation in predictiveBackMotion
-            EnterTransition.None togetherWith ExitTransition.None
-          } else {
-            NavigatorDefaults.backward
-          }
-          .apply { targetContentZIndex = --zIndexDepth }
+        // Handle all the animation in predictiveBackMotion
+        (EnterTransition.None togetherWith ExitTransition.None).apply {
+          targetContentZIndex = --zIndexDepth
+        }
       }
       // Root reset. Crossfade
       AnimatedNavEvent.RootReset -> {
@@ -86,18 +104,85 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
     targetState: GestureNavTransitionHolder<T>,
     innerContent: @Composable (T) -> Unit,
   ) {
+    var fullWidth by remember { mutableIntStateOf(0) }
+    val fade by transition.fade()
+    val offset by transition.offset { fullWidth }
     Box(
-      Modifier.predictiveBackMotion(
-        enabled = { showPrevious },
-        isSeeking = { isSeeking },
-        shape = MaterialTheme.shapes.extraLarge,
-        elevation = if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
-        transition = transition,
-        offset = { swipeOffset },
-        progress = { seekableTransitionState.fraction },
-      )
+      Modifier.layout { measurable, constraints ->
+          val placeable = measurable.measure(constraints)
+          val size = constraints.constrain(IntSize(placeable.width, placeable.height))
+          fullWidth = size.width
+          layout(size.width, size.height) { placeable.place(offset.x, offset.y) }
+        }
+        .graphicsLayer { alpha = fade }
+        .predictiveBackMotion(
+          enabled = { showPrevious },
+          isSeeking = { isSeeking },
+          shape = MaterialTheme.shapes.extraLarge,
+          elevation = if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
+          transition = transition,
+          offset = { swipeOffset },
+          progress = { seekableTransitionState.fraction },
+        )
     ) {
       innerContent(targetState.navStack.active)
+    }
+  }
+
+  /**
+   * Fade the same as [androidx.compose.animation.fadeIn] + [androidx.compose.animation.fadeOut]
+   * from [NavigatorDefaults.backward].
+   */
+  @Composable
+  private fun Transition<EnterExitState>.fade(): State<Float> {
+    return animateFloat(
+      transitionSpec = {
+        when {
+          EnterExitState.PreEnter isTransitioningTo EnterExitState.Visible ->
+            tween(durationMillis = SHORT_DURATION, delayMillis = 0, easing = LinearEasing)
+
+          EnterExitState.Visible isTransitioningTo EnterExitState.PostExit ->
+            tween(durationMillis = SHORT_DURATION, delayMillis = 50, easing = AccelerateEasing)
+
+          else -> spring()
+        }
+      }
+    ) { targetState ->
+      if (isSeeking) {
+        1f
+      } else {
+        when (targetState) {
+          EnterExitState.Visible -> 1f
+          EnterExitState.PreEnter -> 1f
+          EnterExitState.PostExit -> 0f
+        }
+      }
+    }
+  }
+
+  /**
+   * Offset the same as
+   * [androidx.compose.animation.slideInHorizontally] + [androidx.compose.animation.slideOutHorizontally]
+   * from [NavigatorDefaults.backward].
+   */
+  @Composable
+  private fun Transition<EnterExitState>.offset(fullWidth: () -> Int): State<IntOffset> {
+    return animateIntOffset(
+      transitionSpec = {
+        tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing)
+      }
+    ) { targetState ->
+      val preEnter = fullWidth() / -10
+      val postExit = fullWidth() / 10
+      if (isSeeking) {
+        IntOffset.Zero
+      } else {
+        when (targetState) {
+          EnterExitState.Visible -> IntOffset.Zero
+          EnterExitState.PreEnter -> IntOffset(preEnter, 0)
+          EnterExitState.PostExit -> IntOffset(postExit, 0)
+        }
+      }
     }
   }
 
@@ -108,8 +193,6 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
   }
 }
 
-private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
-
 /**
  * Implements most of the treatment specified at
  * https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back
@@ -117,7 +200,7 @@ private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
 private fun Modifier.predictiveBackMotion(
   enabled: () -> Boolean,
   isSeeking: () -> Boolean,
-  shape: Shape,
+  shape: CornerBasedShape,
   elevation: Dp,
   transition: Transition<EnterExitState>,
   progress: () -> Float,
@@ -134,7 +217,7 @@ private fun Modifier.predictiveBackMotion(
 // https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back#shared-element-transition
 private fun GraphicsLayerScope.sharedElementTransition(
   isSeeking: () -> Boolean,
-  shape: Shape,
+  shape: CornerBasedShape,
   elevation: Dp,
   transition: Transition<EnterExitState>,
   progress: Float,
@@ -144,12 +227,21 @@ private fun GraphicsLayerScope.sharedElementTransition(
   when (transition.targetState) {
     EnterExitState.PreEnter,
     EnterExitState.Visible -> return
+
     EnterExitState.PostExit -> Unit
   }
 
   clip = true
-  this.shape = shape
-  shadowElevation = elevation.toPx()
+
+  val shapeElevationFraction = (progress.absoluteValue * 5f).coerceAtMost(1f)
+  this.shape =
+    RoundedCornerShape(
+      topStart = (shape.topStart.toPx(size, this) * shapeElevationFraction).toDp(),
+      topEnd = (shape.topEnd.toPx(size, this) * shapeElevationFraction).toDp(),
+      bottomEnd = (shape.bottomEnd.toPx(size, this) * shapeElevationFraction).toDp(),
+      bottomStart = (shape.bottomStart.toPx(size, this) * shapeElevationFraction).toDp(),
+    )
+  shadowElevation = lerp(0f, elevation.toPx(), shapeElevationFraction)
 
   val scale = lerp(1f, 0.9f, progress.absoluteValue)
   scaleX = scale
@@ -159,7 +251,7 @@ private fun GraphicsLayerScope.sharedElementTransition(
   val marginX = ((size.width * (1 - scale)) / 2).coerceAtMost(8.dp.toPx())
   val marginY = ((size.height * (1 - scale)) / 2).coerceAtMost(8.dp.toPx())
   val maxTranslationX = (progress.absoluteValue * (size.width / 20))
-  // Determine a y axis easing to match the x progress
+  // Determine a y-axis easing to match the x progress
   val progressY = (offset.y.absoluteValue / size.height).coerceIn(0f, 1f)
   val transformY = DecelerateEasing.transform(progressY)
   val maxTranslationY = (transformY * (size.height / 20))

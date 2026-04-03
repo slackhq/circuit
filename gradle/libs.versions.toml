@@ -43,7 +43,7 @@ robolectric = "4.16.1"
 roborazzi = "1.59.0"
 spotless = "8.0.0"
 sqldelight = "2.3.2"
-telephoto = "0.18.0"
+telephoto = "0.19.0"
 testParameterInjector = "1.21"
 turbine = "1.2.1"
 

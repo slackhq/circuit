@@ -18,7 +18,7 @@ val catalog = rootProject.extensions.getByType<VersionCatalogsExtension>().named
 val jvmTargetVersion = catalog.findVersion("jvmTarget").get().requiredVersion
 val jdkVersion = catalog.findVersion("jdk").get().requiredVersion.removeSuffix("-ea").toInt()
 
-val circuitExtension = extensions.create<CircuitProjectExtension>("circuitProject")
+val circuitExtension = extensions.create<CircuitProjectExtension>("circuitProject", project)
 
 // Java configuration
 pluginManager.withPlugin("java") {

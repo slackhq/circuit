@@ -8,11 +8,6 @@ plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.plugin.parcelize)
-  id("circuit.base")
-}
-
-circuitProject {
-  hasCompose.set(false)
 }
 
 kotlin {

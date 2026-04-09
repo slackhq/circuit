@@ -95,6 +95,8 @@ dependencyResolutionManagement {
 }
 
 pluginManagement {
+  includeBuild("build-logic")
+
   // Non-delegate APIs are annoyingly not public so we have to use withGroovyBuilder
   fun hasProperty(key: String): Boolean {
     return settings.withGroovyBuilder { "hasProperty"(key) as Boolean }

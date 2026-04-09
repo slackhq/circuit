@@ -1,7 +1,7 @@
 [versions]
 agp = "8.13.2"
 androidx-activity = "1.13.0"
-androidx-annotation = "1.9.1"
+androidx-annotation = "1.10.0"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.10.0"
 androidx-compose = "1.10.6"  # Keep in sync with the androidx version used by jb-compose

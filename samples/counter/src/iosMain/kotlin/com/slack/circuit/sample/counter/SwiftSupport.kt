@@ -4,7 +4,6 @@ package com.slack.circuit.sample.counter
 
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -27,7 +26,6 @@ class SupportSwiftPresenter<UiState : CircuitUiState>(
 ) {
   constructor(delegate: Presenter<UiState>) : this(delegate, MainScope())
 
-  @NativeCoroutinesState
   val state: StateFlow<UiState> =
     scope.launchMolecule(RecompositionMode.Immediate) { delegate.present() }
 }

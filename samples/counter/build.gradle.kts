@@ -1,15 +1,12 @@
-// Copyright (C) 2024 Slack Technologies, LLC
+// Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
-// Copyright (C) 2022 Slack Technologies, LLC
-// SPDX-License-Identifier: Apache-2.0
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.agp.library)
-  alias(libs.plugins.nativecoroutines)
   alias(libs.plugins.kotlin.plugin.parcelize)
 }
 
@@ -28,9 +25,8 @@ kotlin {
     outputModuleName = "counterbrowser"
     browser()
   }
-  listOf(iosArm64(), iosSimulatorArm64()).forEach {
-    it.binaries.framework { baseName = "CounterKt" }
-  }
+  iosArm64()
+  iosSimulatorArm64()
   // endregion
 
   applyDefaultHierarchyTemplate()
@@ -48,10 +44,8 @@ kotlin {
       }
     }
     commonTest { dependencies { implementation(libs.kotlin.test) } }
-    val iosMain by sourceSets.getting { dependencies { api(libs.coroutines) } }
-    val iosSimulatorArm64Main by sourceSets.getting
+    iosMain { dependencies { api(libs.coroutines) } }
 
-    configureEach { languageSettings.optIn("kotlin.experimental.ExperimentalObjCName") }
     targets.configureEach {
       if (platformType == KotlinPlatformType.androidJvm) {
         compilations.configureEach {
@@ -66,6 +60,13 @@ kotlin {
         }
       }
     }
+  }
+
+  swiftExport {
+    moduleName = "Shared"
+    flattenPackage = "com.slack.circuit.sample.counter"
+
+    configure { freeCompilerArgs.add("-Xexpect-actual-classes") }
   }
 }
 

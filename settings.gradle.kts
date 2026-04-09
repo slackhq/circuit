@@ -70,7 +70,7 @@ dependencyResolutionManagement {
     // Kotlin dev repository, useful for testing against Kotlin dev builds.
     // Usually only tested on CI shadow jobs
     // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1616514468003200?thread_ts=1616509748.001400&cid=C0KLZSCHF
-    maven(findProperty("circuit.mavenUrls.kotlinDev")!!) {
+    maven(findProperty("circuit.mavenUrls.kotlinBootstrap")!!) {
       name = "Kotlin-Bootstrap"
       content {
         // this repository *only* contains Kotlin artifacts (don't try others here)
@@ -140,7 +140,7 @@ pluginManagement {
     // Kotlin dev repository, useful for testing against Kotlin dev builds.
     // Usually only tested on CI shadow jobs
     // https://kotlinlang.slack.com/archives/C0KLZSCHF/p1616514468003200?thread_ts=1616509748.001400&cid=C0KLZSCHF
-    maven(findProperty("circuit.mavenUrls.kotlinDev")!!) {
+    maven(findProperty("circuit.mavenUrls.kotlinBootstrap")!!) {
       name = "Kotlin-Bootstrap"
       content {
         // this repository *only* contains Kotlin artifacts (don't try others here)

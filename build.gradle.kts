@@ -11,8 +11,6 @@ import com.diffplug.spotless.LineEnding
 import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
 import com.squareup.anvil.plugin.AnvilExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
-import io.gitlab.arturbosch.detekt.Detekt
-import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import kotlinx.validation.ExperimentalBCVApi
 import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
@@ -43,7 +41,6 @@ plugins {
   alias(libs.plugins.agp.library) apply false
   alias(libs.plugins.agp.test) apply false
   alias(libs.plugins.anvil) apply false
-  alias(libs.plugins.detekt) apply false
   alias(libs.plugins.spotless)
   alias(libs.plugins.mavenPublish) apply false
   alias(libs.plugins.dokka)
@@ -57,8 +54,6 @@ plugins {
 }
 
 val ktfmtVersion = libs.versions.ktfmt.get()
-val detektVersion = libs.versions.detekt.get()
-val twitterDetektPlugin = libs.detektPlugins.twitterCompose
 
 dokka {
   dokkaPublications.html {
@@ -217,29 +212,6 @@ subprojects {
     if (!project.path.startsWith(":samples") && !project.path.startsWith(":internal")) {
       extensions.configure<KotlinProjectExtension> { explicitApi() }
     }
-
-    // region Detekt
-    project.apply(plugin = "io.gitlab.arturbosch.detekt")
-    configure<DetektExtension> {
-      toolVersion = detektVersion
-      allRules = true
-      config.from(rootProject.file("config/detekt/detekt.yml"))
-      buildUponDefaultConfig = true
-    }
-
-    val buildDir = project.layout.buildDirectory.asFile.get().canonicalPath
-    tasks.withType<Detekt>().configureEach {
-      jvmTarget = jvmTargetProject.get()
-      exclude { it.file.canonicalPath.startsWith(buildDir) }
-      reports {
-        html.required.set(true)
-        xml.required.set(true)
-        txt.required.set(true)
-      }
-    }
-
-    dependencies.add("detektPlugins", twitterDetektPlugin)
-    // endregion
   }
 
   // Teach Gradle that full guava replaces listenablefuture.
@@ -560,8 +532,6 @@ afterEvaluate {
         tasks.findByPath(name)?.let { dependsOn(it) }
       }
       findAndDependOn("check")
-      findAndDependOn("detektTest")
-      findAndDependOn("detektMain")
       findAndDependOn("assembleAndroidTest")
     }
   }

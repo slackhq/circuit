@@ -5,7 +5,7 @@ plugins {
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.plugin.compose)
   alias(libs.plugins.kotlin.plugin.parcelize)
-  alias(libs.plugins.mavenPublish)
+  id("circuit.publish")
 }
 
 android { namespace = "com.slack.circuitx.android" }

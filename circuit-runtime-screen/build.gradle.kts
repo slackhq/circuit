@@ -7,7 +7,7 @@ plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  alias(libs.plugins.mavenPublish)
+  id("circuit.publish")
   alias(libs.plugins.baselineprofile)
 }
 

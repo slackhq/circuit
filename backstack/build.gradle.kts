@@ -9,7 +9,7 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.atomicfu)
   alias(libs.plugins.compose)
-  alias(libs.plugins.mavenPublish)
+  id("circuit.publish")
   alias(libs.plugins.baselineprofile)
 }
 

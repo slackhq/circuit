@@ -137,6 +137,8 @@ subprojects {
         jvmTargetProject.map(JavaVersion::toVersion).map { it.majorVersion.toInt() }
       )
     }
+
+    tasks.withType<Test>().configureEach { jvmArgs("java.awt.headless=true") }
   }
 
   val hasCompose = !project.hasProperty("circuit.noCompose")

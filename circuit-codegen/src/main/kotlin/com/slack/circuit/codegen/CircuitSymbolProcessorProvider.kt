@@ -278,8 +278,6 @@ private class CircuitSymbolProcessor(
   )
 
   /** Computes the data needed to generate a factory. */
-  // Detekt and ktfmt don't agree on whether or not the rectangle rule makes for readable code.
-  @Suppress("ComplexMethod", "LongMethod", "ReturnCount", "LongParameterList")
   private fun computeFactoryData(
     annotatedElement: KSAnnotated,
     symbols: CircuitSymbols,
@@ -492,7 +490,6 @@ private class CircuitSymbolProcessor(
             // Nothing to do here, we'll just use the provider directly.
             CodeBlock.of("")
           } else {
-            @Suppress("UnnecessarySafeCall") // detekt hasn't caught up to Kotlin 2.3
             creatorOrConstructor?.assistedParameters(
               symbols = symbols,
               logger = logger,

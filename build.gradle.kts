@@ -138,7 +138,7 @@ subprojects {
       )
     }
 
-    tasks.withType<Test>().configureEach { jvmArgs("java.awt.headless=true") }
+    tasks.withType<Test>().configureEach { systemProperty("java.awt.headless", "true") }
   }
 
   val hasCompose = !project.hasProperty("circuit.noCompose")

@@ -27,8 +27,15 @@ pluginManager.withPlugin("java") {
   }
 
   tasks.withType<JavaCompile>().configureEach { options.release.set(jvmTargetVersion.toInt()) }
+}
 
-  tasks.withType<Test>().configureEach { systemProperty("java.awt.headless", "true") }
+tasks.withType<Test>().configureEach {
+  jvmArgs("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
+  systemProperty("java.awt.headless", "true")
+}
+
+tasks.withType<JavaExec>().configureEach {
+  jvmArgs("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
 }
 
 // Kotlin configuration

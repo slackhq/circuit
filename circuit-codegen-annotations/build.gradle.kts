@@ -6,7 +6,12 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 plugins {
   alias(libs.plugins.agp.library)
   alias(libs.plugins.kotlin.multiplatform)
+  id("circuit.base")
   id("circuit.publish")
+}
+
+circuitProject {
+  hasCompose.set(false)
 }
 
 kotlin {

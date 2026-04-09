@@ -6,6 +6,11 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.agp.library)
+  id("circuit.base")
+}
+
+circuitProject {
+  hasCompose.set(false)
 }
 
 android { namespace = "com.slack.circuit.sample.coil.test" }

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 plugins {
   alias(libs.plugins.agp.application)
-  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.baselineprofile)
 }
 

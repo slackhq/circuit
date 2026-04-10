@@ -1,5 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.android.build.api.withAndroid
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
@@ -49,9 +50,17 @@ kotlin {
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
+    common {
+      group("commonJvm") {
+        withJvm()
+        withAndroid()
+      }
+    }
+    common {
+      group("browserCommon") {
+        withJs()
+        withWasmJs()
+      }
     }
   }
 
@@ -77,18 +86,12 @@ kotlin {
         implementation(projects.internalTestUtils)
       }
     }
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
-    androidMain {}
-    val commonJvmTest =
-      maybeCreate("commonJvmTest").apply {
-        dependsOn(commonTest.get())
-        dependencies {
-          implementation(libs.junit)
-          implementation(libs.truth)
-        }
+    maybeCreate("commonJvmTest").apply {
+      dependencies {
+        implementation(libs.junit)
+        implementation(libs.truth)
       }
-    jvmTest { dependsOn(commonJvmTest) }
+    }
   }
 }
 

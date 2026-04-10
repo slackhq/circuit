@@ -35,9 +35,11 @@ kotlin {
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
+    common {
+      group("browserCommon") {
+        withJs()
+        withWasmJs()
+      }
     }
   }
 
@@ -54,8 +56,6 @@ kotlin {
         implementation(libs.lifecycle.viewModel.compose)
       }
     }
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
   }
 
   targets.configureEach {

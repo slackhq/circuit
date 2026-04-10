@@ -14,7 +14,7 @@ import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
@@ -37,7 +37,6 @@ import com.slack.circuit.runtime.ui.ui
 import kotlin.test.Test
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalTestApi::class)
-@Suppress("DEPRECATION")
 class BackNavigationTest {
 
   @Test

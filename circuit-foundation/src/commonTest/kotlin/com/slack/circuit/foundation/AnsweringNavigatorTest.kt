@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import app.cash.turbine.Turbine
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.SaveableBackStack
@@ -27,7 +27,6 @@ import kotlinx.coroutines.test.runTest
  * navigation event.
  */
 @OptIn(ExperimentalTestApi::class)
-@Suppress("DEPRECATION")
 @RunWith(ComposeUiTestRunner::class)
 class AnsweringNavigatorTest {
 

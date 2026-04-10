@@ -13,7 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.internal.runtime.Parcelize
@@ -30,7 +30,7 @@ import org.junit.runner.RunWith
 @RunWith(ComposeUiTestRunner::class)
 class CircuitContentTest {
 
-  @Suppress("DEPRECATION") @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
   // Regression test for https://github.com/slackhq/circuit/pull/799
   @Test

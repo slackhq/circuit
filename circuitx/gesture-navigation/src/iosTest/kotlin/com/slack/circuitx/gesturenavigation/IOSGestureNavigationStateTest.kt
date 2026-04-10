@@ -4,14 +4,13 @@ package com.slack.circuitx.gesturenavigation
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.slack.circuit.internal.test.TestCountPresenter.RememberType
 import com.slack.circuit.runtime.Navigator
 import kotlin.test.Ignore
 import kotlin.test.Test
 
 @OptIn(ExperimentalTestApi::class)
-@Suppress("DEPRECATION")
 class IOSGestureNavigationStateTest : GestureNavigationStateTest {
 
   override fun SemanticsNodeInteractionsProvider.swipeRight() {

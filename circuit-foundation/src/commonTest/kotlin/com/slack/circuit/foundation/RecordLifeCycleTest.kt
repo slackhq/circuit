@@ -8,7 +8,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import app.cash.turbine.Turbine
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.retained.rememberRetained
@@ -21,7 +21,6 @@ import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
 
 @OptIn(ExperimentalTestApi::class)
-@Suppress("DEPRECATION")
 @RunWith(ComposeUiTestRunner::class)
 class RecordLifeCycleTest {
 

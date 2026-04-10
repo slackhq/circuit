@@ -28,9 +28,7 @@ kotlin {
     compileSdk = 36
     minSdk = 30
     androidResources { enable = true }
-    withHostTest {
-      isIncludeAndroidResources = true
-    }
+    withHostTest { isIncludeAndroidResources = true }
     withDeviceTest {}
   }
   jvmToolchain(libs.versions.jdk.get().toInt())

@@ -69,7 +69,6 @@ kotlin {
   }
 }
 
-
 baselineProfile {
   mergeIntoMain = true
   saveInSrc = true

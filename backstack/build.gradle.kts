@@ -99,4 +99,3 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
     allWarningsAsErrors = false
   }
 }
-

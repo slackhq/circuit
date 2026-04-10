@@ -6,7 +6,9 @@ import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 
 apply(plugin = "com.vanniktech.maven.publish")
+
 apply(plugin = "org.jetbrains.dokka")
+
 apply(plugin = "com.dropbox.dependency-guard")
 
 // Dokka configuration
@@ -38,9 +40,7 @@ configure<DokkaExtension> {
       localDirectory.set(layout.projectDirectory.dir("src"))
       val relPath = rootProject.projectDir.toPath().relativize(projectDir.toPath())
       remoteUrl(
-        providers.gradleProperty("POM_SCM_URL").map { scmUrl ->
-          "$scmUrl/tree/main/$relPath/src"
-        }
+        providers.gradleProperty("POM_SCM_URL").map { scmUrl -> "$scmUrl/tree/main/$relPath/src" }
       )
       remoteLineSuffix.set("#L")
     }
@@ -56,6 +56,14 @@ configure<DependencyGuardPluginExtension> {
         it.substringBeforeLast(":")
       }
     }
+  } else if (project.path == ":circuitx:android") {
+    // Android-only project
+    configuration("releaseRuntimeClasspath") {
+      baselineMap = {
+        // Remove the version
+        it.substringBeforeLast(":")
+      }
+    }
   } else {
     configuration("androidRuntimeClasspath") {
       baselineMap = {
@@ -63,13 +71,10 @@ configure<DependencyGuardPluginExtension> {
         it.substringBeforeLast(":")
       }
     }
-    if (project.path != ":circuitx:android") {
-      // Android-only project
-      configuration("jvmRuntimeClasspath") {
-        baselineMap = {
-          // Remove the version
-          it.substringBeforeLast(":")
-        }
+    configuration("jvmRuntimeClasspath") {
+      baselineMap = {
+        // Remove the version
+        it.substringBeforeLast(":")
       }
     }
   }

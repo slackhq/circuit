@@ -1,9 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import com.squareup.anvil.plugin.AnvilExtension
 import kotlinx.validation.ExperimentalBCVApi
-import wtf.emulator.DeviceModel
-import wtf.emulator.EwExtension
 
 buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
 

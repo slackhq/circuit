@@ -47,18 +47,16 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        api(libs.compose.runtime)
-        implementation(projects.circuitFoundation)
+        api(projects.circuitRetained)
+        api(projects.circuitRuntime)
       }
     }
+    androidMain { dependencies { api(libs.compose.ui) } }
     commonTest {
       dependencies {
-        implementation(libs.compose.foundation)
         implementation(libs.compose.material.material3)
         implementation(libs.coroutines.test)
         implementation(libs.kotlin.test)
-        implementation(libs.molecule.runtime)
-        implementation(libs.turbine)
         implementation(projects.circuitTest)
       }
     }

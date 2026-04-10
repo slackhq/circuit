@@ -57,7 +57,7 @@ configure<DependencyGuardPluginExtension> {
       }
     }
   } else {
-    configuration("releaseRuntimeClasspath") {
+    configuration("androidRuntimeClasspath") {
       baselineMap = {
         // Remove the version
         it.substringBeforeLast(":")

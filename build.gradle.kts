@@ -10,11 +10,10 @@ buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
 plugins {
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.kotlin.multiplatform) apply false
-  alias(libs.plugins.kotlin.android) apply false
-  alias(libs.plugins.kotlin.kapt) apply false
   alias(libs.plugins.kotlin.plugin.parcelize) apply false
   alias(libs.plugins.kotlin.plugin.serialization) apply false
   alias(libs.plugins.agp.application) apply false
+  alias(libs.plugins.agp.kmp) apply false
   alias(libs.plugins.agp.library) apply false
   alias(libs.plugins.agp.test) apply false
   alias(libs.plugins.anvil) apply false
@@ -25,8 +24,10 @@ plugins {
   alias(libs.plugins.compose) apply false
   alias(libs.plugins.kotlin.plugin.compose) apply false
   alias(libs.plugins.baselineprofile) apply false
+  alias(libs.plugins.baselineprofile.consumer) apply false
   alias(libs.plugins.emulatorWtf) apply false
   alias(libs.plugins.binaryCompatibilityValidator)
+  id("circuit.base") apply false
   id("circuit.spotless")
 }
 
@@ -34,36 +35,6 @@ dokka {
   dokkaPublications.html {
     outputDirectory.set(rootDir.resolve("docs/api/0.x"))
     includes.from(project.layout.projectDirectory.file("README.md"))
-  }
-}
-
-subprojects {
-  apply(plugin = "circuit.base")
-
-  pluginManager.withPlugin("wtf.emulator.gradle") {
-    val emulatorWtfToken = providers.gradleProperty("emulatorWtfToken")
-    configure<EwExtension> {
-      device {
-        model = DeviceModel.PIXEL_2_ATD
-        version = 30
-      }
-      if (emulatorWtfToken.isPresent) {
-        token.set(emulatorWtfToken)
-      }
-    }
-    // We don't always run emulator.wtf on CI (forks can't access it), so we add this helper
-    // lifecycle task that depends on connectedCheck as an alternative. We do this only on projects
-    // that apply emulator.wtf though as we don't want to run _all_ connected checks on CI since
-    // that would include benchmarks.
-    tasks.register("ciConnectedCheck") { dependsOn("connectedCheck") }
-  }
-
-  subprojects {
-    pluginManager.withPlugin("dev.zacsweers.anvil") {
-      configure<AnvilExtension> {
-        useKsp(contributesAndFactoryGeneration = true, componentMerging = true)
-      }
-    }
   }
 }
 
@@ -85,7 +56,7 @@ apiValidation {
   // https://github.com/Kotlin/binary-compatibility-validator/issues/16
   ignoredProjects +=
     listOf(
-      "apk",
+      "androidApp",
       "apps",
       "benchmark",
       "bottom-navigation",
@@ -143,9 +114,9 @@ val circuitCi: TaskProvider<Task> =
     group = "CI"
     description = "Aggregates multiple verification tasks for CI."
     dependsOn(
-      ":samples:star:apk:assembleDebug",
+      ":samples:star:androidApp:assembleDebug",
       ":samples:star:jvmJar",
-      ":samples:bottom-navigation:assembleDebug",
+      ":samples:bottom-navigation:androidApp:assembleDebug",
       ":samples:bottom-navigation:jvmJar",
     )
   }

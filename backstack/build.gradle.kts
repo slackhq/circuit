@@ -5,17 +5,20 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.atomicfu)
   alias(libs.plugins.compose)
+  id("circuit.base")
   id("circuit.publish")
-  alias(libs.plugins.baselineprofile)
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.backstack"
+    compileSdk = 36
+  }
   jvm()
   iosArm64()
   iosSimulatorArm64()
@@ -97,13 +100,3 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
   }
 }
 
-android { namespace = "com.slack.circuit.backstack" }
-
-androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
-
-baselineProfile {
-  mergeIntoMain = true
-  saveInSrc = true
-  from(project(projects.samples.star.benchmark.path))
-  filter { include("com.slack.circuit.backstack.**") }
-}

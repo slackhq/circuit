@@ -5,18 +5,17 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.compose)
-  alias(libs.plugins.agp.application)
   alias(libs.plugins.kotlin.plugin.parcelize)
-}
-
-android {
-  namespace = "com.slack.circuit.sample.navigation"
-  testOptions { unitTests { isIncludeAndroidResources = true } }
+  id("circuit.base")
 }
 
 kotlin {
-  androidTarget()
+  android {
+    namespace = "com.slack.circuit.sample.navigation"
+    compileSdk = 36
+  }
   jvm {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     mainRun { mainClass.set("com.slack.circuit.sample.navigation.MainKt") }
@@ -41,22 +40,7 @@ kotlin {
         implementation(projects.internalRuntime)
       }
     }
-    androidMain {
-      dependencies {
-        implementation(libs.androidx.activity.ktx)
-        implementation(libs.androidx.activity.compose)
-        implementation(libs.androidx.appCompat)
-        implementation(libs.compose.ui.tooling.preview)
-      }
-    }
-    androidUnitTest {
-      dependencies {
-        implementation(libs.compose.ui.testing.junit)
-        implementation(libs.androidx.compose.ui.testing.manifest)
-        implementation(libs.robolectric)
-        implementation(libs.androidx.test.espresso.core)
-      }
-    }
+    androidMain {}
     jvmMain {
       dependencies {
         implementation(libs.compose.ui.tooling.preview)

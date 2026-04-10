@@ -173,7 +173,7 @@ pluginManagement {
   }
   plugins {
     // Release notes at https://docs.gradle.com/enterprise/gradle-plugin/#release_history
-    id("com.gradle.develocity") version "4.1.1"
+    id("com.gradle.develocity") version "4.4.0"
   }
 }
 
@@ -230,17 +230,20 @@ include(
   ":circuitx:navigation",
   ":circuitx:overlays",
   ":samples:bottom-navigation",
+  ":samples:bottom-navigation:androidApp",
   ":samples:counter",
+  ":samples:counter:androidApp",
   ":samples:counter:apps",
   ":samples:counter:mosaic",
   ":samples:interop",
   ":samples:kotlin-inject",
   ":samples:star",
-  ":samples:star:apk",
+  ":samples:star:androidApp",
   ":samples:star:benchmark",
   ":samples:star:coil-rule",
   ":samples:tacos",
   ":samples:tutorial",
+  ":samples:tutorial:androidApp",
   ":internal-runtime",
   ":internal-test-utils",
 )

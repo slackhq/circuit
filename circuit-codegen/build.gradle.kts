@@ -3,6 +3,7 @@
 plugins {
   kotlin("jvm")
   alias(libs.plugins.ksp)
+  id("circuit.base")
   id("circuit.publish")
 }
 

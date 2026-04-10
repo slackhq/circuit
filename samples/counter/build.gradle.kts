@@ -1,23 +1,25 @@
-// Copyright (C) 2024 Slack Technologies, LLC
+// Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
-// Copyright (C) 2022 Slack Technologies, LLC
-// SPDX-License-Identifier: Apache-2.0
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.nativecoroutines)
   alias(libs.plugins.kotlin.plugin.parcelize)
+  id("circuit.base")
 }
 
 version = "1.0.0-SNAPSHOT"
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.sample.counter"
+    compileSdk = 36
+  }
   jvm()
   js(IR) {
     outputModuleName = "counterbrowser"
@@ -69,6 +71,3 @@ kotlin {
   }
 }
 
-android { namespace = "com.slack.circuit.sample.counter" }
-
-androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }

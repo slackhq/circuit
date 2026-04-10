@@ -4,16 +4,20 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
+  id("circuit.base")
   id("circuit.publish")
-  alias(libs.plugins.baselineprofile)
+  alias(libs.plugins.baselineprofile.consumer)
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.sharedelements"
+    compileSdk = 36
+  }
   jvm()
   iosArm64()
   iosSimulatorArm64()
@@ -43,8 +47,6 @@ kotlin {
     }
   }
 }
-
-android { namespace = "com.slack.circuit.sharedelements" }
 
 baselineProfile {
   mergeIntoMain = true

@@ -4,16 +4,21 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.compose)
+  id("circuit.base")
   id("circuit.publish")
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.test"
+    compileSdk = 36
+    withHostTest {}
+  }
   jvm()
   iosArm64()
   iosSimulatorArm64()
@@ -63,8 +68,6 @@ kotlin {
         }
       }
     jvmTest { dependsOn(commonJvmTest) }
-    androidUnitTest { dependsOn(commonJvmTest) }
+    getByName("androidHostTest") { dependsOn(commonJvmTest) }
   }
 }
-
-android { namespace = "com.slack.circuit.test" }

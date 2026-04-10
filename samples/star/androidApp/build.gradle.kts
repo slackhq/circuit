@@ -3,6 +3,7 @@
 plugins {
   alias(libs.plugins.agp.application)
   alias(libs.plugins.baselineprofile)
+  id("circuit.base")
 }
 
 android {

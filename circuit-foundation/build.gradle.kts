@@ -5,17 +5,22 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.compose)
+  id("circuit.base")
   id("circuit.publish")
-  alias(libs.plugins.baselineprofile)
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.foundation"
+    compileSdk = 36
+    withHostTest {}
+    withDeviceTest {}
+  }
   jvm()
   iosArm64()
   iosSimulatorArm64()
@@ -105,7 +110,7 @@ kotlin {
         implementation(libs.picnic)
       }
     }
-    androidUnitTest {
+    getByName("androidHostTest") {
       dependsOn(commonJvmTest)
       dependencies {
         implementation(libs.robolectric)
@@ -113,7 +118,7 @@ kotlin {
         implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
-    androidInstrumentedTest {
+    getByName("androidDeviceTest") {
       dependencies {
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.compose.ui.testing.manifest)
@@ -162,19 +167,4 @@ tasks.withType<Test>().configureEach {
   // to be test infra related. Best guess is that ComposeTestRule doesn't like content which calls
   // a composable with a return value. Needs more investigation.
   setForkEvery(1)
-}
-
-android {
-  namespace = "com.slack.circuit.foundation"
-  defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
-
-  testOptions { unitTests.isIncludeAndroidResources = true }
-  testBuildType = "release"
-}
-
-baselineProfile {
-  mergeIntoMain = true
-  saveInSrc = true
-  from(project(projects.samples.star.benchmark.path))
-  filter { include("com.slack.circuit.foundation.**") }
 }

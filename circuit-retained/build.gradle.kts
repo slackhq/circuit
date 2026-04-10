@@ -5,16 +5,21 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
+  id("circuit.base")
   id("circuit.publish")
-  alias(libs.plugins.emulatorWtf)
+  alias(libs.plugins.emulatorWtf) apply false
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.retained"
+    compileSdk = 36
+    withDeviceTest {}
+  }
   jvm()
   iosArm64()
   iosSimulatorArm64()
@@ -77,10 +82,7 @@ kotlin {
 
     jvmTest { dependencies { commonJvmTest() } }
 
-    // TODO export this in Android too when it's supported in kotlin projects
-    jvmMain { dependencies.add("testFixturesApi", projects.circuitTest) }
-
-    androidInstrumentedTest {
+    getByName("androidDeviceTest") {
       dependencies {
         commonJvmTest()
         implementation(libs.androidx.activity.compose)
@@ -108,10 +110,4 @@ kotlin {
   }
 }
 
-android {
-  namespace = "com.slack.circuit.retained"
-
-  defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
-
-  testBuildType = "release"
-}
+apply(plugin = "wtf.emulator.gradle")

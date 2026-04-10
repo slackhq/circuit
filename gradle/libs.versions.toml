@@ -1,7 +1,7 @@
 [versions]
 agp = "8.13.2"
 androidx-activity = "1.13.0"
-androidx-annotation = "1.9.1"
+androidx-annotation = "1.10.0"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.9.0"
 androidx-compose = "1.11.0-beta02"  # Keep in sync with the androidx version used by jb-compose
@@ -9,11 +9,10 @@ anvil = "0.5.3"
 atomicfu = "0.32.1"
 benchmark = "1.4.1"
 coil = "3.4.0"
-compose-runtime = "1.11.0-beta02" # Keep in sync with the androidx version used by jb-compose
+compose-runtime = "1.10.5" # Keep in sync with the androidx version used by jb-compose
 dagger = "2.59.2"
 datastore = "1.2.1"
-detekt = "1.23.8"
-dokka = "2.1.0"
+dokka = "2.2.0"
 eithernet = "2.0.0"
 jb-compose = "1.11.0-beta02"
 jb-compose-material-icons-core = "1.7.3"
@@ -26,15 +25,15 @@ kct = "0.12.1"
 kotlin = "2.3.20"
 kotlinInject = "0.9.0"
 kotlinInject-anvil = "0.1.7"
-kotlinpoet = "2.2.0"
+kotlinpoet = "2.3.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
 ksp = "2.3.6"
 ktfmt = "0.62"
-ktor = "3.4.1"
+ktor = "3.4.2"
 leakcanary = "2.14"
 mavenPublish = "0.36.0"
-markdownRenderer = "0.39.2"
+markdownRenderer = "0.40.2"
 molecule = "2.2.0"
 okhttp = "5.3.2"
 okio = "3.17.0"
@@ -43,8 +42,8 @@ robolectric = "4.16.1"
 roborazzi = "1.59.0"
 spotless = "8.0.0"
 sqldelight = "2.3.2"
-telephoto = "0.18.0"
-testParameterInjector = "1.21"
+telephoto = "0.19.0"
+testParameterInjector = "1.22"
 turbine = "1.2.1"
 
 [plugins]
@@ -56,7 +55,6 @@ baselineprofile = { id = "androidx.baselineprofile", version.ref = "benchmark" }
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.18.1" }
 compose = { id = "org.jetbrains.compose", version.ref = "jb-compose" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 emulatorWtf = { id = "wtf.emulator.gradle", version = "1.5.1" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
@@ -69,7 +67,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.12.0" }
+metro = { id = "dev.zacsweers.metro", version = "0.13.2" }
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.2" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
@@ -142,9 +140,6 @@ coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", ve
 dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
 
 desugarJdkLibs = "com.android.tools:desugar_jdk_libs:2.1.5"
-
-# Referenced in the root build.gradle
-detektPlugins-twitterCompose = "com.twitter.compose.rules:detekt:0.0.26"
 
 eithernet = { module = "com.slack.eithernet:eithernet", version.ref = "eithernet" }
 eithernet-testFixtures = { module = "com.slack.eithernet:eithernet-test-fixtures", version.ref = "eithernet" }

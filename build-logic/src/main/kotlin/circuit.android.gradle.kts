@@ -2,67 +2,105 @@
 // SPDX-License-Identifier: Apache-2.0
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.api.variant.LibraryAndroidComponentsExtension
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.TestExtension
+import com.android.build.api.dsl.KotlinMultiplatformAndroidHostTestCompilation
+import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.TestExtension
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
 val catalog = rootProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
 val jvmTargetVersion = catalog.findVersion("jvmTarget").get().requiredVersion
+val compileSdkVersion = catalog.findVersion("android-compileSdk").get().requiredVersion.toInt()
 val circuitExtension = extensions.getByType<CircuitProjectExtension>()
 
-fun CommonExtension<*, *, *, *, *, *>.configureCommonAndroid() {
-  compileSdk = 36
-
-  buildFeatures { compose = circuitExtension.hasCompose.get() }
-
-  compileOptions {
-    sourceCompatibility = JavaVersion.toVersion(jvmTargetVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmTargetVersion)
+// Android Library configuration
+pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
+  pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+    (kotlinExtension as KotlinMultiplatformExtension)
+      .targets
+      .withType(KotlinMultiplatformAndroidLibraryTarget::class.java)
+      .configureEach {
+        compileSdk = compileSdkVersion
+        minSdk = 23
+        compilations.withType(KotlinMultiplatformAndroidHostTestCompilation::class.java) {
+          targetSdk { release(compileSdkVersion) }
+        }
+        lint {
+          // https://issuetracker.google.com/issues/243267012
+          disable += "Instantiatable"
+          checkTestSources = true
+          lintConfig = rootProject.file("config/lint/lint.xml")
+        }
+      }
   }
-
-  lint {
-    // https://issuetracker.google.com/issues/243267012
-    disable += "Instantiatable"
-    checkTestSources = true
-    lintConfig = rootProject.file("config/lint/lint.xml")
-  }
+  dependencies { add("lintChecks", catalog.findLibrary("lints-compose").get()) }
 }
 
-// Android Library configuration
-pluginManager.withPlugin("com.android.library") {
-  with(extensions.getByType<LibraryExtension>()) {
+fun CommonExtension.configureCommonAndroid() {
+  compileSdk = compileSdkVersion
+}
+
+pluginManager.withPlugin("com.android.test") {
+  extensions.configure<TestExtension> {
     configureCommonAndroid()
-    defaultConfig { minSdk = 23 }
-    testOptions { targetSdk = 36 }
-  }
 
-  dependencies { add("lintChecks", catalog.findLibrary("lints-compose").get()) }
+    defaultConfig { minSdk = 28 }
 
-  // Single-variant libraries
-  extensions.configure<LibraryAndroidComponentsExtension> {
-    beforeVariants { builder ->
-      if (builder.buildType == "debug") {
-        builder.enable = false
-      }
+    compileOptions {
+      sourceCompatibility = JavaVersion.toVersion(jvmTargetVersion)
+      targetCompatibility = JavaVersion.toVersion(jvmTargetVersion)
     }
   }
 }
 
-pluginManager.withPlugin("com.android.test") {
-  with(extensions.getByType<TestExtension>()) {
+// Android (non-KMP) Library configuration
+pluginManager.withPlugin("com.android.library") {
+  extensions.configure<LibraryExtension> {
     configureCommonAndroid()
-    defaultConfig { minSdk = 28 }
+
+    buildFeatures { compose = circuitExtension.hasCompose.get() }
+
+    compileOptions {
+      sourceCompatibility = JavaVersion.toVersion(jvmTargetVersion)
+      targetCompatibility = JavaVersion.toVersion(jvmTargetVersion)
+      isCoreLibraryDesugaringEnabled = true
+    }
+
+    defaultConfig { minSdk = 23 }
+
+    lint {
+      // https://issuetracker.google.com/issues/243267012
+      disable += "Instantiatable"
+      checkTestSources = true
+      lintConfig = rootProject.file("config/lint/lint.xml")
+    }
+  }
+
+  dependencies {
+    add("lintChecks", catalog.findLibrary("lints-compose").get())
+    add("coreLibraryDesugaring", catalog.findLibrary("desugarJdkLibs").get())
   }
 }
 
 // Android Application configuration
 pluginManager.withPlugin("com.android.application") {
-  with(extensions.getByType<ApplicationExtension>()) {
+  extensions.configure<ApplicationExtension> {
     configureCommonAndroid()
+
+    buildFeatures { compose = circuitExtension.hasCompose.get() }
+
+    compileOptions {
+      sourceCompatibility = JavaVersion.toVersion(jvmTargetVersion)
+      targetCompatibility = JavaVersion.toVersion(jvmTargetVersion)
+      isCoreLibraryDesugaringEnabled = true
+    }
+
     defaultConfig {
       minSdk = 23
-      targetSdk = 36
+      targetSdk = compileSdkVersion
     }
+
     buildTypes {
       maybeCreate("debug").apply { matchingFallbacks += listOf("release") }
       maybeCreate("release").apply {
@@ -71,8 +109,15 @@ pluginManager.withPlugin("com.android.application") {
         matchingFallbacks += listOf("release")
       }
     }
-    compileOptions { isCoreLibraryDesugaringEnabled = true }
+
+    lint {
+      // https://issuetracker.google.com/issues/243267012
+      disable += "Instantiatable"
+      checkTestSources = true
+      lintConfig = rootProject.file("config/lint/lint.xml")
+    }
   }
+
   dependencies {
     add("lintChecks", catalog.findLibrary("lints-compose").get())
     add("coreLibraryDesugaring", catalog.findLibrary("desugarJdkLibs").get())

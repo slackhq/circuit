@@ -53,8 +53,6 @@ kotlin {
         withJvm()
         withIos()
         withMacos()
-        withWasmJs()
-        withJs()
       }
     }
   }
@@ -75,7 +73,9 @@ kotlin {
         implementation(libs.lifecycle.viewModel.compose)
       }
     }
+    // These require explicit dependencies as they are their own groups
     iosMain { dependsOn(sharedMain) }
+    webMain { dependsOn(sharedMain) }
 
     commonTest { dependencies { implementation(libs.kotlin.test) } }
 

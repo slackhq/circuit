@@ -1,14 +1,14 @@
 // Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import com.android.build.api.dsl.LibraryExtension
+
 import com.squareup.anvil.plugin.AnvilExtension
 import org.gradle.kotlin.dsl.assign
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinNativeCompilerOptions
-import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinBasePlugin
 import org.jetbrains.kotlin.gradle.targets.js.ir.DefaultIncrementalSyncTask
 import org.jetbrains.kotlin.gradle.targets.js.testing.KotlinJsTest
@@ -77,7 +77,7 @@ plugins.withType<KotlinBasePlugin> {
   }
 
   if (!project.path.startsWith(":samples") && !project.path.startsWith(":internal")) {
-    // Can't use KotlinProjectExtension.explicitApi() due to android projects not using that anymore
+    extensions.configure<KotlinBaseExtension> { explicitApi() }
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       if (!name.contains("Test")) {
         compilerOptions.freeCompilerArgs.add("-Xexplicit-api=strict")
@@ -94,7 +94,9 @@ dependencies.modules {
 // Android auto-apply
 pluginManager.withPlugin("com.android.library") { apply(plugin = "circuit.android") }
 
-pluginManager.withPlugin("com.android.kotlin.multiplatform.library") { apply(plugin = "circuit.android") }
+pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
+  apply(plugin = "circuit.android")
+}
 
 pluginManager.withPlugin("com.android.application") { apply(plugin = "circuit.android") }
 
@@ -130,9 +132,7 @@ pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
 
   // Workaround for missing task dependency in WASM
   val executableCompileSyncTasks = tasks.withType(DefaultIncrementalSyncTask::class.java)
-  executableCompileSyncTasks.configureEach {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-  }
+  executableCompileSyncTasks.configureEach { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
   tasks.withType(KotlinJsTest::class.java).configureEach {
     mustRunAfter(executableCompileSyncTasks)
   }

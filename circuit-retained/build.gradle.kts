@@ -43,7 +43,18 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("shared") {
+        withJvm()
+        withIos()
+        withMacos()
+        withWasmJs()
+        withJs()
+      }
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -54,21 +65,13 @@ kotlin {
       }
     }
 
-    val sharedMain =
-      maybeCreate("sharedMain").apply {
-        dependsOn(commonMain.get())
-        // ViewModel doesn't have artifacts for linux, tvOS, watchOS, or Windows
-        dependencies {
-          implementation(libs.lifecycle.runtime.compose)
-          implementation(libs.lifecycle.viewModel.compose)
-        }
+    maybeCreate("sharedMain").apply {
+      // ViewModel doesn't have artifacts for linux, tvOS, watchOS, or Windows
+      dependencies {
+        implementation(libs.lifecycle.runtime.compose)
+        implementation(libs.lifecycle.viewModel.compose)
       }
-
-    jvmMain { dependsOn(sharedMain) }
-    iosMain { dependsOn(sharedMain) }
-    macosMain { dependsOn(sharedMain) }
-    androidMain { dependsOn(sharedMain) }
-    webMain { dependsOn(sharedMain) }
+    }
 
     commonTest { dependencies { implementation(libs.kotlin.test) } }
 

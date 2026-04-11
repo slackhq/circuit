@@ -1,6 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import app.cash.sqldelight.gradle.SqlDelightTask
+import com.android.build.api.withAndroid
 import com.google.devtools.ksp.gradle.KspAATask
 import java.util.Locale
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
@@ -34,7 +35,15 @@ kotlin {
   jvmToolchain(libs.versions.jdk.get().toInt())
   listOf(iosArm64(), iosSimulatorArm64()).forEach { it.binaries.framework { baseName = "StarKt" } }
 
-  applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("jvmCommon") {
+        withAndroid()
+        withJvm()
+      }
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -84,29 +93,21 @@ kotlin {
         implementation(libs.eithernet.testFixtures)
       }
     }
-    val jvmCommonMain =
-      maybeCreate("jvmCommonMain").apply {
-        dependsOn(commonMain.get())
-        dependencies {
-          implementation(libs.compose.material.icons)
-          implementation(libs.coil.network.okhttp)
-          implementation(libs.ktor.client.engine.okhttp)
-          implementation(libs.okhttp)
-          implementation(libs.okhttp.loggingInterceptor)
-        }
+    maybeCreate("jvmCommonMain").apply {
+      dependencies {
+        implementation(libs.compose.material.icons)
+        implementation(libs.coil.network.okhttp)
+        implementation(libs.ktor.client.engine.okhttp)
+        implementation(libs.okhttp)
+        implementation(libs.okhttp.loggingInterceptor)
       }
-    jvmMain { dependsOn(jvmCommonMain) }
-    androidMain { dependsOn(jvmCommonMain) }
-    val jvmCommonTest =
-      maybeCreate("jvmCommonTest").apply {
-        dependsOn(commonTest.get())
-        dependencies {
-          implementation(libs.junit)
-          implementation(libs.truth)
-        }
+    }
+    maybeCreate("jvmCommonTest").apply {
+      dependencies {
+        implementation(libs.junit)
+        implementation(libs.truth)
       }
-    jvmTest { dependsOn(jvmCommonTest) }
-    getByName("androidHostTest") { dependsOn(jvmCommonTest) }
+    }
     androidMain {
       dependencies {
         implementation(libs.androidx.appCompat)

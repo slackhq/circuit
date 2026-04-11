@@ -1,5 +1,6 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.android.build.api.withAndroid
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
@@ -42,7 +43,15 @@ kotlin {
     }
   }
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("commonJvm") {
+        withAndroid()
+        withJvm()
+      }
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -57,17 +66,13 @@ kotlin {
 
     commonTest { dependencies { implementation(libs.coroutines.test) } }
 
-    val commonJvmTest =
-      maybeCreate("commonJvmTest").apply {
-        dependsOn(commonTest.get())
-        dependencies {
-          implementation(libs.junit)
-          implementation(libs.truth)
-          implementation(libs.testing.testParameterInjector)
-          implementation(projects.internalTestUtils)
-        }
+    maybeCreate("commonJvmTest").apply {
+      dependencies {
+        implementation(libs.junit)
+        implementation(libs.truth)
+        implementation(libs.testing.testParameterInjector)
+        implementation(projects.internalTestUtils)
       }
-    jvmTest { dependsOn(commonJvmTest) }
-    getByName("androidHostTest") { dependsOn(commonJvmTest) }
+    }
   }
 }

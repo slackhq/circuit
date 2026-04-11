@@ -30,6 +30,7 @@ pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
           // https://issuetracker.google.com/issues/243267012
           disable += "Instantiatable"
           checkTestSources = true
+          checkDependencies = false
           lintConfig = rootProject.file("config/lint/lint.xml")
         }
       }
@@ -50,6 +51,13 @@ pluginManager.withPlugin("com.android.test") {
     compileOptions {
       sourceCompatibility = JavaVersion.toVersion(jvmTargetVersion)
       targetCompatibility = JavaVersion.toVersion(jvmTargetVersion)
+    }
+    lint {
+      // https://issuetracker.google.com/issues/243267012
+      disable += "Instantiatable"
+      checkTestSources = true
+      checkDependencies = false
+      lintConfig = rootProject.file("config/lint/lint.xml")
     }
   }
 }
@@ -73,6 +81,7 @@ pluginManager.withPlugin("com.android.library") {
       // https://issuetracker.google.com/issues/243267012
       disable += "Instantiatable"
       checkTestSources = true
+      checkDependencies = false
       lintConfig = rootProject.file("config/lint/lint.xml")
     }
   }
@@ -110,11 +119,13 @@ pluginManager.withPlugin("com.android.application") {
       }
     }
 
-    lint {
-      // https://issuetracker.google.com/issues/243267012
-      disable += "Instantiatable"
-      checkTestSources = true
-      lintConfig = rootProject.file("config/lint/lint.xml")
+    // AGP 9 ignores lint configuration on application modules entirely,
+    // causing it to lint transitive dependency test sources.
+    // Just disable the tasks until this is fixed.
+    afterEvaluate {
+      tasks.matching { it.name.contains("lint", ignoreCase = true) }.configureEach {
+        enabled = false
+      }
     }
   }
 

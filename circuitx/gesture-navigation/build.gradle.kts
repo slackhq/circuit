@@ -16,7 +16,7 @@ kotlin {
   android {
     namespace = "com.slack.circuitx.gesturenavigation"
     compileSdk = 36
-    withHostTest {}
+    withHostTest { isIncludeAndroidResources = true }
   }
   jvm { testRuns["test"].executionTask.configure { enabled = false } }
   iosArm64()

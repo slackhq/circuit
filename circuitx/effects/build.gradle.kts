@@ -17,7 +17,7 @@ kotlin {
   android {
     namespace = "com.slack.circuitx.sideeffects"
     compileSdk = 36
-    withHostTest {}
+    withHostTest { isIncludeAndroidResources = true }
   }
   jvm()
   iosArm64()

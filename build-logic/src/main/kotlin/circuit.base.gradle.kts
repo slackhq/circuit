@@ -131,7 +131,7 @@ pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
   // Workaround for missing task dependency in WASM
   val executableCompileSyncTasks = tasks.withType(DefaultIncrementalSyncTask::class.java)
   executableCompileSyncTasks.configureEach {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
   }
   tasks.withType(KotlinJsTest::class.java).configureEach {
     mustRunAfter(executableCompileSyncTasks)

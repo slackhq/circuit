@@ -24,7 +24,7 @@
         android:enableOnBackInvokedCallback="true"
         tools:ignore="MissingApplicationIcon">
         <activity
-            android:name=".MainActivity"
+            android:name="com.slack.circuit.tutorial.MainActivity"
             android:exported="true"
             android:configChanges="colorMode|density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
             >

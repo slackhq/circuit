@@ -72,7 +72,6 @@ pluginManager.withPlugin("com.android.library") {
     compileOptions {
       sourceCompatibility = JavaVersion.toVersion(jvmTargetVersion)
       targetCompatibility = JavaVersion.toVersion(jvmTargetVersion)
-      isCoreLibraryDesugaringEnabled = true
     }
 
     defaultConfig { minSdk = 23 }
@@ -88,7 +87,6 @@ pluginManager.withPlugin("com.android.library") {
 
   dependencies {
     add("lintChecks", catalog.findLibrary("lints-compose").get())
-    add("coreLibraryDesugaring", catalog.findLibrary("desugarJdkLibs").get())
   }
 }
 
@@ -126,6 +124,13 @@ pluginManager.withPlugin("com.android.application") {
       tasks.matching { it.name.contains("lint", ignoreCase = true) }.configureEach {
         enabled = false
       }
+    }
+    lint {
+      // https://issuetracker.google.com/issues/243267012
+      disable += "Instantiatable"
+      checkTestSources = true
+      checkDependencies = false
+      lintConfig = rootProject.file("config/lint/lint.xml")
     }
   }
 

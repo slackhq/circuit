@@ -18,6 +18,7 @@ kotlin {
   android {
     namespace = "com.slack.circuit.retained"
     compileSdk = 36
+    androidResources { enable = true }
     withDeviceTest {}
   }
   jvm()

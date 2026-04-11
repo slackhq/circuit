@@ -19,6 +19,7 @@ kotlin {
   android {
     namespace = "com.slack.circuit.foundation"
     compileSdk = 36
+    androidResources { enable = true }
     withHostTest { isIncludeAndroidResources = true }
     withDeviceTest {}
   }

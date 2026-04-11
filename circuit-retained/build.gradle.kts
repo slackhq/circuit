@@ -1,5 +1,6 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.android.build.api.withAndroid
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
@@ -48,6 +49,7 @@ kotlin {
   applyDefaultHierarchyTemplate {
     common {
       group("shared") {
+        withAndroid()
         withJvm()
         withIos()
         withMacos()

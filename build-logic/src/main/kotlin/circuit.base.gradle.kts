@@ -1,11 +1,8 @@
 // Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-
 import com.squareup.anvil.plugin.AnvilExtension
-import org.gradle.kotlin.dsl.assign
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinNativeCompilerOptions
@@ -77,7 +74,7 @@ plugins.withType<KotlinBasePlugin> {
   }
 
   if (!project.path.startsWith(":samples") && !project.path.startsWith(":internal")) {
-    extensions.configure<KotlinBaseExtension> { explicitApi() }
+    // Can't use KotlinProjectExtension.explicitApi() due to android projects not using that anymore
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
       if (!name.contains("Test")) {
         compilerOptions.freeCompilerArgs.add("-Xexplicit-api=strict")

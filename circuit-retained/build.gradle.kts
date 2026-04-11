@@ -68,13 +68,14 @@ kotlin {
       }
     }
 
-    maybeCreate("sharedMain").apply {
+    val sharedMain = maybeCreate("sharedMain").apply {
       // ViewModel doesn't have artifacts for linux, tvOS, watchOS, or Windows
       dependencies {
         implementation(libs.lifecycle.runtime.compose)
         implementation(libs.lifecycle.viewModel.compose)
       }
     }
+    iosMain { dependsOn(sharedMain) }
 
     commonTest { dependencies { implementation(libs.kotlin.test) } }
 

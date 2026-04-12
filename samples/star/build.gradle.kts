@@ -30,7 +30,7 @@ kotlin {
     minSdk = 30
     androidResources { enable = true }
     withHostTest { isIncludeAndroidResources = true }
-    withDeviceTest {}
+    withDeviceTestBuilder { sourceSetTreeName = "test" }
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
   listOf(iosArm64(), iosSimulatorArm64()).forEach { it.binaries.framework { baseName = "StarKt" } }
@@ -139,15 +139,14 @@ kotlin {
       }
     }
     val androidDeviceTest by getting {
-      // Annoyingly cannot depend on commonJvmTest
       dependencies {
         implementation(libs.androidx.activity.compose)
         implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
-        implementation(libs.compose.ui.testing.junit)
         implementation(libs.coroutines.android)
         implementation(libs.coroutines.test)
         implementation(libs.junit)
+        implementation(libs.truth)
         implementation(libs.leakcanary.android.instrumentation)
         implementation(projects.circuitTest)
         implementation(projects.internalTestUtils)

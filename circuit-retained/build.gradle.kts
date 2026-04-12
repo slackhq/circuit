@@ -20,7 +20,7 @@ kotlin {
     namespace = "com.slack.circuit.retained"
     compileSdk = 36
     androidResources { enable = true }
-    withDeviceTest {}
+    withDeviceTest { androidResources { enable = true } }
   }
   jvm()
   iosArm64()
@@ -51,8 +51,6 @@ kotlin {
       group("shared") {
         withAndroid()
         withJvm()
-        withIos()
-        withMacos()
       }
     }
   }
@@ -66,15 +64,17 @@ kotlin {
       }
     }
 
-    val sharedMain = maybeCreate("sharedMain").apply {
-      // ViewModel doesn't have artifacts for linux, tvOS, watchOS, or Windows
-      dependencies {
-        implementation(libs.lifecycle.runtime.compose)
-        implementation(libs.lifecycle.viewModel.compose)
+    val sharedMain =
+      maybeCreate("sharedMain").apply {
+        // ViewModel doesn't have artifacts for linux, tvOS, watchOS, or Windows
+        dependencies {
+          implementation(libs.lifecycle.runtime.compose)
+          implementation(libs.lifecycle.viewModel.compose)
+        }
       }
-    }
     // These require explicit dependencies as they are their own groups
     iosMain { dependsOn(sharedMain) }
+    macosMain { dependsOn(sharedMain) }
     webMain { dependsOn(sharedMain) }
 
     commonTest { dependencies { implementation(libs.kotlin.test) } }
@@ -108,7 +108,7 @@ kotlin {
       compileTaskProvider.configure {
         compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
       }
-      if (compilationName == "releaseAndroidTest") {
+      if (compilationName == "deviceTest") {
         compileTaskProvider.configure {
           compilerOptions { optIn.add("com.slack.circuit.retained.DelicateCircuitRetainedApi") }
         }

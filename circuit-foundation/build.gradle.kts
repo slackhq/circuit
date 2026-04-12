@@ -21,7 +21,7 @@ kotlin {
     compileSdk = 36
     androidResources { enable = true }
     withHostTest { isIncludeAndroidResources = true }
-    withDeviceTest {}
+    withDeviceTest { androidResources { enable = true } }
   }
   jvm()
   iosArm64()

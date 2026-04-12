@@ -33,6 +33,7 @@ pluginManager.withPlugin("java") {
 tasks.withType<Test>().configureEach {
   jvmArgs("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
   systemProperty("java.awt.headless", "true")
+  maxParallelForks = Runtime.getRuntime().availableProcessors() * 2
 }
 
 tasks.withType<JavaExec>().configureEach {

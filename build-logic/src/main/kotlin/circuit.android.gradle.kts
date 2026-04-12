@@ -117,6 +117,7 @@ pluginManager.withPlugin("com.android.application") {
       }
     }
 
+    // https://issuetracker.google.com/issues/501744304
     // AGP 9 ignores lint configuration on application modules entirely,
     // causing it to lint transitive dependency test sources.
     // Just disable the tasks until this is fixed.

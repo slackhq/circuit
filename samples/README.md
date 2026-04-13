@@ -17,4 +17,4 @@ See the README.md files in each sample directory for more information.
 - `tutorial` - A tutorial that walks through the creation of a simple Circuit app. Follow the
   instructions [here](https://slackhq.github.io/circuit/tutorial/).
   - Run the Desktop app via `./gradlew :samples:tutorial:run`.
-  - Install the Android app via `./gradlew :samples:tutorial:installDebug`.
+  - Install the Android app via `./gradlew :samples:tutorial:androidApp:installDebug`.

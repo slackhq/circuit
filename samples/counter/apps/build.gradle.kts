@@ -3,20 +3,12 @@
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  alias(libs.plugins.agp.application)
   alias(libs.plugins.kotlin.plugin.parcelize)
+  id("circuit.base")
 }
-
-android {
-  namespace = "com.slack.circuit.sample.counter.android"
-  defaultConfig {
-    minSdk = 31 // For the dynamic m3 color schemes
-  }
-}
-
-androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
 
 compose.desktop {
   application { mainClass = "com.slack.circuit.sample.counter.desktop.DesktopCounterCircuitKt" }
@@ -24,7 +16,10 @@ compose.desktop {
 
 kotlin {
   // region KMP Targets
-  androidTarget()
+  android {
+    namespace = "com.slack.circuit.sample.counter.android"
+    compileSdk = 36
+  }
   jvm()
   iosArm64()
   @OptIn(ExperimentalWasmDsl::class)
@@ -46,14 +41,7 @@ kotlin {
     }
     commonTest { dependencies { implementation(libs.kotlin.test) } }
     jvmMain { dependencies { implementation(compose.desktop.currentOs) } }
-    androidMain {
-      dependencies {
-        implementation(libs.androidx.appCompat)
-        implementation(libs.androidx.activity.compose)
-        implementation(libs.compose.material.icons)
-        implementation(libs.compose.ui.tooling)
-      }
-    }
+    androidMain {}
     wasmJsMain {
       dependencies {
         implementation(libs.compose.components.resources)

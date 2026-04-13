@@ -8,7 +8,7 @@
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         tools:ignore="MissingApplicationIcon">
         <activity
-            android:name=".MainActivity"
+            android:name="com.slack.circuit.sample.navigation.MainActivity"
             android:configChanges="colorMode|density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
             android:exported="true">
             <intent-filter>

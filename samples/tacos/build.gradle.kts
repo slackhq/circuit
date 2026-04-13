@@ -1,15 +1,14 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import org.jetbrains.kotlin.gradle.internal.KaptGenerateStubsTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
   alias(libs.plugins.agp.application)
-  alias(libs.plugins.kotlin.android)
-  alias(libs.plugins.kotlin.kapt)
   alias(libs.plugins.kotlin.plugin.parcelize)
-  alias(libs.plugins.ksp)
   alias(libs.plugins.kotlin.plugin.compose)
+  alias(libs.plugins.ksp)
+  alias(libs.plugins.metro)
+  id("circuit.base")
 }
 
 android {
@@ -17,19 +16,16 @@ android {
   testOptions { unitTests.isIncludeAndroidResources = true }
 }
 
-androidComponents { beforeVariants { it.enable = it.name.contains("debug", ignoreCase = true) } }
-
-tasks
-  .withType<KotlinCompile>()
-  .matching { it !is KaptGenerateStubsTask }
-  .configureEach {
-    compilerOptions {
-      freeCompilerArgs.addAll(
-        "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-      )
-    }
+tasks.withType<KotlinCompilationTask<*>>().configureEach {
+  compilerOptions {
+    freeCompilerArgs.addAll(
+      "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+      "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+    )
   }
+}
+
+ksp { arg("circuit.codegen.mode", "metro") }
 
 dependencies {
   ksp(projects.circuitCodegen)
@@ -39,10 +35,10 @@ dependencies {
   implementation(libs.androidx.appCompat)
   implementation(libs.compose.material.icons)
   implementation(libs.compose.material.material3)
-  implementation(libs.dagger)
   implementation(projects.circuitCodegenAnnotations)
   implementation(projects.circuitFoundation)
 
+  implementation(libs.compose.ui.tooling.preview)
   debugImplementation(libs.compose.ui.tooling)
 
   testImplementation(libs.compose.ui.testing.junit)

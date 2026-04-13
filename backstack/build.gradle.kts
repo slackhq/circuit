@@ -1,21 +1,25 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.android.build.api.withAndroid
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.atomicfu)
   alias(libs.plugins.compose)
-  alias(libs.plugins.mavenPublish)
-  alias(libs.plugins.baselineprofile)
+  id("circuit.base")
+  id("circuit.publish")
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.backstack"
+    compileSdk = 36
+  }
   jvm()
   iosArm64()
   iosSimulatorArm64()
@@ -46,9 +50,17 @@ kotlin {
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
+    common {
+      group("commonJvm") {
+        withJvm()
+        withAndroid()
+      }
+    }
+    common {
+      group("browserCommon") {
+        withJs()
+        withWasmJs()
+      }
     }
   }
 
@@ -74,18 +86,12 @@ kotlin {
         implementation(projects.internalTestUtils)
       }
     }
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
-    androidMain {}
-    val commonJvmTest =
-      maybeCreate("commonJvmTest").apply {
-        dependsOn(commonTest.get())
-        dependencies {
-          implementation(libs.junit)
-          implementation(libs.truth)
-        }
+    maybeCreate("commonJvmTest").apply {
+      dependencies {
+        implementation(libs.junit)
+        implementation(libs.truth)
       }
-    jvmTest { dependsOn(commonJvmTest) }
+    }
   }
 }
 
@@ -95,15 +101,4 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
     // https://youtrack.jetbrains.com/issue/KT-64115
     allWarningsAsErrors = false
   }
-}
-
-android { namespace = "com.slack.circuit.backstack" }
-
-androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
-
-baselineProfile {
-  mergeIntoMain = true
-  saveInSrc = true
-  from(project(projects.samples.star.benchmark.path))
-  filter { include("com.slack.circuit.backstack.**") }
 }

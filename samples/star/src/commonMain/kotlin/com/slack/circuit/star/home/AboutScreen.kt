@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.internal.runtime.Parcelize
@@ -24,6 +25,7 @@ import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.star.common.Strings
 import com.slack.circuit.star.resources.Res
 import com.slack.circuit.star.resources.star_icon
+import com.slack.circuit.star.ui.StarTheme
 import dev.zacsweers.metro.AppScope
 import org.jetbrains.compose.resources.painterResource
 
@@ -52,9 +54,8 @@ fun About(modifier: Modifier = Modifier) {
   }
 }
 
-// TODO this breaks kapt because it's only on desktop and not other platforms
-// @Preview
-// @Composable
-// private fun AboutPreview() {
-//  StarTheme { About() }
-// }
+@Preview
+@Composable
+private fun AboutPreview() {
+  StarTheme { About() }
+}

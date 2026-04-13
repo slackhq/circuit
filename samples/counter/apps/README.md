@@ -4,7 +4,7 @@ Counter – KMM Apps
 This projects contains KMM apps for the multiplatform Counter sample.
 
 There are four apps:
-- Android (under `src/androidMain`)
+- Android (under `../androidApp`)
 - Desktop (under `src/jvmMain`)
 - iOS (under `iosApp`)
 - WASM (under `src/wasmJsMain`)

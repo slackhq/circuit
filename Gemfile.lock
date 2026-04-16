@@ -179,7 +179,7 @@ GEM
     ostruct (0.6.3)
     plist (3.7.2)
     public_suffix (5.1.1)
-    rake (13.4.1)
+    rake (13.4.2)
     representable (3.2.0)
       declarative (< 0.1.0)
       trailblazer-option (>= 0.1.1, < 0.2.0)

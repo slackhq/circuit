@@ -61,6 +61,16 @@ final class com.slack.circuit.backstack/SaveableBackStack : com.slack.circuit.ba
         final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.backstack/SaveableBackStack.Record.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.slack.circuit.backstack/SaveableBackStack.Record.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.slack.circuit.backstack/SaveableBackStack.Record.toString|toString(){}[0]
+
+        final object Companion { // com.slack.circuit.backstack/SaveableBackStack.Record.Companion|null[0]
+            final val Saver // com.slack.circuit.backstack/SaveableBackStack.Record.Companion.Saver|{}Saver[0]
+                final fun <get-Saver>(): androidx.compose.runtime.saveable/Saver<com.slack.circuit.backstack/SaveableBackStack.Record, kotlin/Any> // com.slack.circuit.backstack/SaveableBackStack.Record.Companion.Saver.<get-Saver>|<get-Saver>(){}[0]
+        }
+    }
+
+    final object Companion { // com.slack.circuit.backstack/SaveableBackStack.Companion|null[0]
+        final val Saver // com.slack.circuit.backstack/SaveableBackStack.Companion.Saver|{}Saver[0]
+            final fun <get-Saver>(): androidx.compose.runtime.saveable/Saver<com.slack.circuit.backstack/SaveableBackStack, kotlin/Any> // com.slack.circuit.backstack/SaveableBackStack.Companion.Saver.<get-Saver>|<get-Saver>(){}[0]
     }
 }
 

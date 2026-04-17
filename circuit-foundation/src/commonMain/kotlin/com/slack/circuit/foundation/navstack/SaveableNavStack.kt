@@ -253,8 +253,8 @@ internal constructor(
     @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
   ) : NavStack.Record {
 
-    internal companion object {
-      val Saver: Saver<Record, Any> =
+    public companion object {
+      public val Saver: Saver<Record, Any> =
         mapSaver(
           save = { value ->
             buildMap {
@@ -270,7 +270,7 @@ internal constructor(
     }
   }
 
-  internal data class SaveableNavStackList(val entries: List<Record>, val currentIndex: Int) :
+  public data class SaveableNavStackList(val entries: List<Record>, val currentIndex: Int) :
     NavStackList<Record> {
 
     override val top: Record
@@ -292,8 +292,8 @@ internal constructor(
       return entries.iterator()
     }
 
-    companion object {
-      val Saver: Saver<SaveableNavStackList, Any> =
+    public companion object {
+      public val Saver: Saver<SaveableNavStackList, Any> =
         mapSaver(
           save = { value ->
             buildMap {
@@ -312,9 +312,9 @@ internal constructor(
     }
   }
 
-  internal companion object {
+  public companion object {
     @Suppress("UNCHECKED_CAST")
-    val Saver =
+    public val Saver: Saver<SaveableNavStack, Any> =
       listSaver<SaveableNavStack, List<Any?>>(
         save = { value ->
           buildList {

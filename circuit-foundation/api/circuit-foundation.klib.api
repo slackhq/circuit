@@ -231,6 +231,48 @@ final class com.slack.circuit.foundation.navstack/SaveableNavStack : com.slack.c
         final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.toString|toString(){}[0]
+
+        final object Companion { // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.Companion|null[0]
+            final val Saver // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.Companion.Saver|{}Saver[0]
+                final fun <get-Saver>(): androidx.compose.runtime.saveable/Saver<com.slack.circuit.foundation.navstack/SaveableNavStack.Record, kotlin/Any> // com.slack.circuit.foundation.navstack/SaveableNavStack.Record.Companion.Saver.<get-Saver>|<get-Saver>(){}[0]
+        }
+    }
+
+    final class SaveableNavStackList : com.slack.circuit.runtime.navigation/NavStackList<com.slack.circuit.foundation.navstack/SaveableNavStack.Record> { // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList|null[0]
+        constructor <init>(kotlin.collections/List<com.slack.circuit.foundation.navstack/SaveableNavStack.Record>, kotlin/Int) // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.<init>|<init>(kotlin.collections.List<com.slack.circuit.foundation.navstack.SaveableNavStack.Record>;kotlin.Int){}[0]
+
+        final val active // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.active|{}active[0]
+            final fun <get-active>(): com.slack.circuit.foundation.navstack/SaveableNavStack.Record // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.active.<get-active>|<get-active>(){}[0]
+        final val backwardItems // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.backwardItems|{}backwardItems[0]
+            final fun <get-backwardItems>(): kotlin.collections/Iterable<com.slack.circuit.foundation.navstack/SaveableNavStack.Record> // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.backwardItems.<get-backwardItems>|<get-backwardItems>(){}[0]
+        final val currentIndex // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.currentIndex|{}currentIndex[0]
+            final fun <get-currentIndex>(): kotlin/Int // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.currentIndex.<get-currentIndex>|<get-currentIndex>(){}[0]
+        final val entries // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.entries|{}entries[0]
+            final fun <get-entries>(): kotlin.collections/List<com.slack.circuit.foundation.navstack/SaveableNavStack.Record> // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.entries.<get-entries>|<get-entries>(){}[0]
+        final val forwardItems // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.forwardItems|{}forwardItems[0]
+            final fun <get-forwardItems>(): kotlin.collections/Iterable<com.slack.circuit.foundation.navstack/SaveableNavStack.Record> // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.forwardItems.<get-forwardItems>|<get-forwardItems>(){}[0]
+        final val root // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.root|{}root[0]
+            final fun <get-root>(): com.slack.circuit.foundation.navstack/SaveableNavStack.Record // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.root.<get-root>|<get-root>(){}[0]
+        final val top // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.top|{}top[0]
+            final fun <get-top>(): com.slack.circuit.foundation.navstack/SaveableNavStack.Record // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.top.<get-top>|<get-top>(){}[0]
+
+        final fun component1(): kotlin.collections/List<com.slack.circuit.foundation.navstack/SaveableNavStack.Record> // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.component1|component1(){}[0]
+        final fun component2(): kotlin/Int // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.component2|component2(){}[0]
+        final fun copy(kotlin.collections/List<com.slack.circuit.foundation.navstack/SaveableNavStack.Record> = ..., kotlin/Int = ...): com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.copy|copy(kotlin.collections.List<com.slack.circuit.foundation.navstack.SaveableNavStack.Record>;kotlin.Int){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.hashCode|hashCode(){}[0]
+        final fun iterator(): kotlin.collections/Iterator<com.slack.circuit.foundation.navstack/SaveableNavStack.Record> // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.iterator|iterator(){}[0]
+        final fun toString(): kotlin/String // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.toString|toString(){}[0]
+
+        final object Companion { // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.Companion|null[0]
+            final val Saver // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.Companion.Saver|{}Saver[0]
+                final fun <get-Saver>(): androidx.compose.runtime.saveable/Saver<com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList, kotlin/Any> // com.slack.circuit.foundation.navstack/SaveableNavStack.SaveableNavStackList.Companion.Saver.<get-Saver>|<get-Saver>(){}[0]
+        }
+    }
+
+    final object Companion { // com.slack.circuit.foundation.navstack/SaveableNavStack.Companion|null[0]
+        final val Saver // com.slack.circuit.foundation.navstack/SaveableNavStack.Companion.Saver|{}Saver[0]
+            final fun <get-Saver>(): androidx.compose.runtime.saveable/Saver<com.slack.circuit.foundation.navstack/SaveableNavStack, kotlin/Any> // com.slack.circuit.foundation.navstack/SaveableNavStack.Companion.Saver.<get-Saver>|<get-Saver>(){}[0]
     }
 }
 
@@ -345,6 +387,7 @@ final val com.slack.circuit.foundation.backstack/com_slack_circuit_foundation_ba
 final val com.slack.circuit.foundation.backstack/com_slack_circuit_foundation_backstack_ViewModelNavStackRecordLocalProvider$stableprop // com.slack.circuit.foundation.backstack/com_slack_circuit_foundation_backstack_ViewModelNavStackRecordLocalProvider$stableprop|#static{}com_slack_circuit_foundation_backstack_ViewModelNavStackRecordLocalProvider$stableprop[0]
 final val com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack$stableprop // com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack$stableprop|#static{}com_slack_circuit_foundation_navstack_SaveableNavStack$stableprop[0]
 final val com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack_Record$stableprop // com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack_Record$stableprop|#static{}com_slack_circuit_foundation_navstack_SaveableNavStack_Record$stableprop[0]
+final val com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack_SaveableNavStackList$stableprop // com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack_SaveableNavStackList$stableprop|#static{}com_slack_circuit_foundation_navstack_SaveableNavStack_SaveableNavStackList$stableprop[0]
 final val com.slack.circuit.foundation/LocalAnsweringResultHandler // com.slack.circuit.foundation/LocalAnsweringResultHandler|{}LocalAnsweringResultHandler[0]
     final fun <get-LocalAnsweringResultHandler>(): androidx.compose.runtime/ProvidableCompositionLocal<com.slack.circuit.foundation/AnsweringResultHandler?> // com.slack.circuit.foundation/LocalAnsweringResultHandler.<get-LocalAnsweringResultHandler>|<get-LocalAnsweringResultHandler>(){}[0]
 final val com.slack.circuit.foundation/LocalCircuit // com.slack.circuit.foundation/LocalCircuit|{}LocalCircuit[0]
@@ -394,6 +437,7 @@ final fun com.slack.circuit.foundation.backstack/com_slack_circuit_foundation_ba
 final fun com.slack.circuit.foundation.backstack/com_slack_circuit_foundation_backstack_ViewModelNavStackRecordLocalProvider$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation.backstack/com_slack_circuit_foundation_backstack_ViewModelNavStackRecordLocalProvider$stableprop_getter|com_slack_circuit_foundation_backstack_ViewModelNavStackRecordLocalProvider$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack$stableprop_getter|com_slack_circuit_foundation_navstack_SaveableNavStack$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack_Record$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack_Record$stableprop_getter|com_slack_circuit_foundation_navstack_SaveableNavStack_Record$stableprop_getter(){}[0]
+final fun com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack_SaveableNavStackList$stableprop_getter(): kotlin/Int // com.slack.circuit.foundation.navstack/com_slack_circuit_foundation_navstack_SaveableNavStack_SaveableNavStackList$stableprop_getter|com_slack_circuit_foundation_navstack_SaveableNavStack_SaveableNavStackList$stableprop_getter(){}[0]
 final fun com.slack.circuit.foundation.navstack/rememberSaveableNavStack(com.slack.circuit.runtime.navigation/NavStackList<com.slack.circuit.runtime.screen/Screen>, androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuit.runtime.navigation/NavStack<out com.slack.circuit.runtime.navigation/NavStack.Record> // com.slack.circuit.foundation.navstack/rememberSaveableNavStack|rememberSaveableNavStack(com.slack.circuit.runtime.navigation.NavStackList<com.slack.circuit.runtime.screen.Screen>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
 final fun com.slack.circuit.foundation.navstack/rememberSaveableNavStack(com.slack.circuit.runtime.screen/Screen, kotlin/Function1<com.slack.circuit.foundation.navstack/SaveableNavStack, kotlin/Unit>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.slack.circuit.runtime.navigation/NavStack<out com.slack.circuit.runtime.navigation/NavStack.Record> // com.slack.circuit.foundation.navstack/rememberSaveableNavStack|rememberSaveableNavStack(com.slack.circuit.runtime.screen.Screen;kotlin.Function1<com.slack.circuit.foundation.navstack.SaveableNavStack,kotlin.Unit>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
 final fun com.slack.circuit.foundation.navstack/rememberSaveableNavStack(kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>, androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuit.runtime.navigation/NavStack<out com.slack.circuit.runtime.navigation/NavStack.Record> // com.slack.circuit.foundation.navstack/rememberSaveableNavStack|rememberSaveableNavStack(kotlin.collections.List<com.slack.circuit.runtime.screen.Screen>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]

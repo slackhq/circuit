@@ -53,6 +53,21 @@ internal object CircuitNames {
       "me.tatarka.inject.annotations.Qualifier",
     )
 
+  /**
+   * FQCNs of provider/lazy types that are already deferrable references to a dependency. When a
+   * function parameter already has one of these types (or is a Kotlin function type), the codegen
+   * passes it through to the factory constructor as-is instead of re-wrapping it in a provider.
+   */
+  val PASS_THROUGH_PROVIDER_NAMES =
+    setOf(
+      "javax.inject.Provider",
+      "jakarta.inject.Provider",
+      "dev.zacsweers.metro.Provider",
+      "kotlin.Function0",
+      "dagger.Lazy",
+      "kotlin.Lazy",
+    )
+
   object KotlinInject {
     private const val ANNOTATIONS_PACKAGE = "me.tatarka.inject.annotations"
     val INJECT = ClassName(ANNOTATIONS_PACKAGE, "Inject")

@@ -71,7 +71,7 @@ class CircuitContentTest {
   }
 
   @Composable
-  private fun Count(state: CountScreen.State, modifier: Modifier) {
+  private fun Count(state: CountScreen.State, modifier: Modifier = Modifier) {
     BasicText(text = state.count.toString(), modifier = modifier.testTag(TAG_COUNT))
   }
 

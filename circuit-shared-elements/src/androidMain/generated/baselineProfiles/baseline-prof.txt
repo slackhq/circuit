@@ -1,5 +1,4 @@
 Lcom/slack/circuit/sharedelements/SharedElementTransitionLayoutKt;
-HSPLcom/slack/circuit/sharedelements/SharedElementTransitionLayoutKt;->$r8$lambda$3gF31ed8vI3htemLdrLi3RK23TE(Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function2;Landroidx/compose/animation/SharedTransitionScope;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)Lkotlin/Unit;
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionLayoutKt;->$r8$lambda$AfLJj0Zm3yspUJ6sy-XqPpR9ebA(Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)Lkotlin/Unit;
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionLayoutKt;->$r8$lambda$BElpNAhhY9rhzUHJINVKvILyUdw(Landroidx/compose/ui/layout/MeasureScope;Lcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;Landroidx/compose/ui/layout/Placeable;Landroidx/compose/ui/layout/Placeable$PlacementScope;)Lkotlin/Unit;
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionLayoutKt;->$r8$lambda$hVg39uCuSyJHwJGD6a8oZyzJ_7E(Lcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;Landroidx/compose/ui/layout/MeasureScope;Landroidx/compose/ui/layout/Measurable;Landroidx/compose/ui/unit/Constraints;)Landroidx/compose/ui/layout/MeasureResult;
@@ -43,13 +42,12 @@ HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;-><clinit>
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;-><init>(Landroidx/compose/animation/SharedTransitionScope;)V
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;->findAnimatedScope(Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;)Landroidx/compose/animation/AnimatedVisibilityScope;
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;->isTransitionActive()Z
-PLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;->rememberSharedContentState(Ljava/lang/Object;Landroidx/compose/runtime/Composer;I)Landroidx/compose/animation/SharedTransitionScope$SharedContentState;
+HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;->rememberSharedContentState(Ljava/lang/Object;Landroidx/compose/runtime/Composer;I)Landroidx/compose/animation/SharedTransitionScope$SharedContentState;
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;->renderInSharedTransitionScopeOverlay(Landroidx/compose/ui/Modifier;FLkotlin/jvm/functions/Function0;)Landroidx/compose/ui/Modifier;
-HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;->setHasLayoutCoordinates$circuit_shared_elements_release(Z)V
+HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;->setHasLayoutCoordinates$circuit_shared_elements(Z)V
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;->setScope(Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;Landroidx/compose/animation/AnimatedVisibilityScope;)V
-PLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;->sharedBounds(Landroidx/compose/ui/Modifier;Landroidx/compose/animation/SharedTransitionScope$SharedContentState;Landroidx/compose/animation/AnimatedVisibilityScope;Landroidx/compose/animation/EnterTransition;Landroidx/compose/animation/ExitTransition;Landroidx/compose/animation/BoundsTransform;Landroidx/compose/animation/SharedTransitionScope$ResizeMode;Landroidx/compose/animation/SharedTransitionScope$PlaceholderSize;ZFLandroidx/compose/animation/SharedTransitionScope$OverlayClip;)Landroidx/compose/ui/Modifier;
+HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;->sharedBounds(Landroidx/compose/ui/Modifier;Landroidx/compose/animation/SharedTransitionScope$SharedContentState;Landroidx/compose/animation/AnimatedVisibilityScope;Landroidx/compose/animation/EnterTransition;Landroidx/compose/animation/ExitTransition;Landroidx/compose/animation/BoundsTransform;Landroidx/compose/animation/SharedTransitionScope$ResizeMode;Landroidx/compose/animation/SharedTransitionScope$PlaceholderSize;ZFLandroidx/compose/animation/SharedTransitionScope$OverlayClip;)Landroidx/compose/ui/Modifier;
 Lcom/slack/circuit/sharedelements/SharedElementTransitionScopeKt;
-HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeKt;->$r8$lambda$_6-eZ10mtlRc92vGxaA3qijJFx4(Lkotlin/jvm/functions/Function3;Lcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;Landroidx/compose/runtime/Composer;I)Lkotlin/Unit;
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeKt;-><clinit>()V
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeKt;->ProvideAnimatedTransitionScope$lambda$2(Lkotlin/jvm/functions/Function3;Lcom/slack/circuit/sharedelements/SharedElementTransitionScopeImpl;Landroidx/compose/runtime/Composer;I)Lkotlin/Unit;
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionScopeKt;->ProvideAnimatedTransitionScope(Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;Landroidx/compose/animation/AnimatedVisibilityScope;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
@@ -68,3 +66,4 @@ Lcom/slack/circuit/sharedelements/SharedElementTransitionState;
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionState;->$values()[Lcom/slack/circuit/sharedelements/SharedElementTransitionState;
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionState;-><clinit>()V
 HSPLcom/slack/circuit/sharedelements/SharedElementTransitionState;-><init>(Ljava/lang/String;I)V
+Lcom/slack/circuit/sharedelements/SharedTransitionKey;

@@ -3,24 +3,18 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  alias(libs.plugins.agp.application)
   alias(libs.plugins.kotlin.plugin.parcelize)
+  id("circuit.base")
 }
-
-android {
-  namespace = "com.slack.circuit.tutorial"
-  defaultConfig {
-    minSdk = 23
-    targetSdk = 36
-  }
-}
-
-androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }
 
 kotlin {
-  androidTarget()
+  android {
+    namespace = "com.slack.circuit.tutorial"
+    compileSdk = 36
+  }
   jvm {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
     mainRun { mainClass.set("com.slack.circuit.tutorial.MainKt") }
@@ -39,13 +33,7 @@ kotlin {
         implementation(projects.circuitFoundation)
       }
     }
-    androidMain {
-      dependencies {
-        implementation(libs.androidx.activity.ktx)
-        implementation(libs.androidx.activity.compose)
-        implementation(libs.androidx.appCompat)
-      }
-    }
+    androidMain {}
     jvmMain { dependencies { implementation(compose.desktop.currentOs) } }
 
     configureEach {

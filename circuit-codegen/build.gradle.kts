@@ -3,7 +3,8 @@
 plugins {
   kotlin("jvm")
   alias(libs.plugins.ksp)
-  alias(libs.plugins.mavenPublish)
+  id("circuit.base")
+  id("circuit.publish")
 }
 
 dependencies {

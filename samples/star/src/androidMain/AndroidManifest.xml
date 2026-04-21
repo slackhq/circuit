@@ -20,7 +20,7 @@
 
     <application>
         <activity
-            android:name="com.slack.circuit.star.MainActivity"
+            android:name=".MainActivity"
             android:configChanges="colorMode|density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
             android:exported="true">
             <intent-filter>

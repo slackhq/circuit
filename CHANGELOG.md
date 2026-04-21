@@ -13,6 +13,7 @@ Unreleased
 
 - Update to Kotlin `2.3.20`.
 - Remove deprecated X64 Apple targets.
+- SaveableNavStack & SaveableBackStack - Made the Savers public apis
 
 0.33.1
 ------

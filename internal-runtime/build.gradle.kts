@@ -5,14 +5,18 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.plugin.parcelize)
+  id("circuit.base")
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.internal.runtime"
+    compileSdk = 36
+  }
   jvm()
   iosArm64()
   iosSimulatorArm64()
@@ -30,15 +34,15 @@ kotlin {
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class)
   applyDefaultHierarchyTemplate {
-    group("browserCommon") {
-      withJs()
-      withWasmJs()
+    common {
+      group("browserCommon") {
+        withJs()
+        withWasmJs()
+      }
     }
   }
 
   sourceSets {
-    get("browserCommonMain").dependsOn(commonMain.get())
-    get("browserCommonTest").dependsOn(commonTest.get())
     configureEach { compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") } }
   }
 
@@ -57,7 +61,3 @@ kotlin {
     }
   }
 }
-
-android { namespace = "com.slack.circuit.internal.runtime" }
-
-androidComponents { beforeVariants { variant -> variant.androidTest.enable = false } }

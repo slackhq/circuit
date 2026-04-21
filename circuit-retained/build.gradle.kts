@@ -1,20 +1,27 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.android.build.api.withAndroid
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  alias(libs.plugins.mavenPublish)
-  alias(libs.plugins.emulatorWtf)
+  id("circuit.base")
+  id("circuit.publish")
+  alias(libs.plugins.emulatorWtf) apply false
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.retained"
+    compileSdk = 36
+    androidResources { enable = true }
+    withDeviceTest { androidResources { enable = true } }
+  }
   jvm()
   iosArm64()
   iosSimulatorArm64()
@@ -38,7 +45,15 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("shared") {
+        withAndroid()
+        withJvm()
+      }
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -51,18 +66,15 @@ kotlin {
 
     val sharedMain =
       maybeCreate("sharedMain").apply {
-        dependsOn(commonMain.get())
         // ViewModel doesn't have artifacts for linux, tvOS, watchOS, or Windows
         dependencies {
           implementation(libs.lifecycle.runtime.compose)
           implementation(libs.lifecycle.viewModel.compose)
         }
       }
-
-    jvmMain { dependsOn(sharedMain) }
+    // These require explicit dependencies as they are their own groups
     iosMain { dependsOn(sharedMain) }
     macosMain { dependsOn(sharedMain) }
-    androidMain { dependsOn(sharedMain) }
     webMain { dependsOn(sharedMain) }
 
     commonTest { dependencies { implementation(libs.kotlin.test) } }
@@ -77,10 +89,7 @@ kotlin {
 
     jvmTest { dependencies { commonJvmTest() } }
 
-    // TODO export this in Android too when it's supported in kotlin projects
-    jvmMain { dependencies.add("testFixturesApi", projects.circuitTest) }
-
-    androidInstrumentedTest {
+    getByName("androidDeviceTest") {
       dependencies {
         commonJvmTest()
         implementation(libs.androidx.activity.compose)
@@ -99,7 +108,7 @@ kotlin {
       compileTaskProvider.configure {
         compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
       }
-      if (compilationName == "releaseAndroidTest") {
+      if (compilationName == "deviceTest") {
         compileTaskProvider.configure {
           compilerOptions { optIn.add("com.slack.circuit.retained.DelicateCircuitRetainedApi") }
         }
@@ -108,10 +117,4 @@ kotlin {
   }
 }
 
-android {
-  namespace = "com.slack.circuit.retained"
-
-  defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
-
-  testBuildType = "release"
-}
+apply(plugin = "wtf.emulator.gradle")

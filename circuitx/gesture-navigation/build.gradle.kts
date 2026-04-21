@@ -4,15 +4,20 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  alias(libs.plugins.mavenPublish)
+  id("circuit.base")
+  id("circuit.publish")
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuitx.gesturenavigation"
+    compileSdk = 36
+    withHostTest { isIncludeAndroidResources = true }
+  }
   jvm { testRuns["test"].executionTask.configure { enabled = false } }
   iosArm64()
   iosSimulatorArm64()
@@ -55,7 +60,7 @@ kotlin {
       }
     }
 
-    androidUnitTest {
+    getByName("androidHostTest") {
       dependencies {
         implementation(libs.robolectric)
         implementation(libs.compose.ui.testing.junit)
@@ -63,13 +68,4 @@ kotlin {
       }
     }
   }
-}
-
-android {
-  namespace = "com.slack.circuitx.gesturenavigation"
-
-  defaultConfig { testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
-
-  testOptions { unitTests.isIncludeAndroidResources = true }
-  testBuildType = "release"
 }

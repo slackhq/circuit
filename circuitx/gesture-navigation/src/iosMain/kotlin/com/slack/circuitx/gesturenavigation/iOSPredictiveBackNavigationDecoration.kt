@@ -108,7 +108,7 @@ internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
         Modifier.gestureTranslation(
           targetState = targetState,
           transition = transition,
-          isSeeking = { isSeeking },
+          isSeeking = { isSwipeInProgress },
           showPrevious = { showPrevious },
           swipeOffset = { swipeOffset },
         )

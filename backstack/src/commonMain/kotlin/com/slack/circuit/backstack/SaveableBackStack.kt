@@ -181,8 +181,8 @@ internal constructor(
     @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
   ) : BackStack.Record {
 
-    internal companion object {
-      val Saver: Saver<Record, Any> =
+    public companion object {
+      public val Saver: Saver<Record, Any> =
         mapSaver(
           save = { value ->
             buildMap {
@@ -203,9 +203,9 @@ internal constructor(
     }
   }
 
-  internal companion object {
+  public companion object {
     @Suppress("UNCHECKED_CAST")
-    val Saver =
+    public val Saver: Saver<SaveableBackStack, Any> =
       listSaver<SaveableBackStack, List<Any?>>(
         save = { value ->
           buildList {

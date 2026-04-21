@@ -15,6 +15,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CornerBasedShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.GraphicsLayerScope
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -35,6 +36,8 @@ import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import kotlin.math.absoluteValue
+
+private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
 
 public actual fun GestureNavigationDecorationFactory(
   fallback: AnimatedNavDecorator.Factory,
@@ -89,7 +92,7 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
     Box(
       Modifier.predictiveBackMotion(
         enabled = { showPrevious },
-        isSeeking = { isSeeking },
+        isSeeking = { isSwipeInProgress },
         shape = MaterialTheme.shapes.extraLarge,
         elevation = if (SharedElementTransitionScope.isTransitionActive) 0.dp else 6.dp,
         transition = transition,
@@ -108,8 +111,6 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
   }
 }
 
-private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
-
 /**
  * Implements most of the treatment specified at
  * https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back
@@ -117,7 +118,7 @@ private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
 private fun Modifier.predictiveBackMotion(
   enabled: () -> Boolean,
   isSeeking: () -> Boolean,
-  shape: Shape,
+  shape: CornerBasedShape,
   elevation: Dp,
   transition: Transition<EnterExitState>,
   progress: () -> Float,
@@ -134,7 +135,7 @@ private fun Modifier.predictiveBackMotion(
 // https://developer.android.com/design/ui/mobile/guides/patterns/predictive-back#shared-element-transition
 private fun GraphicsLayerScope.sharedElementTransition(
   isSeeking: () -> Boolean,
-  shape: Shape,
+  shape: CornerBasedShape,
   elevation: Dp,
   transition: Transition<EnterExitState>,
   progress: Float,
@@ -144,12 +145,21 @@ private fun GraphicsLayerScope.sharedElementTransition(
   when (transition.targetState) {
     EnterExitState.PreEnter,
     EnterExitState.Visible -> return
+
     EnterExitState.PostExit -> Unit
   }
 
   clip = true
-  this.shape = shape
-  shadowElevation = elevation.toPx()
+
+  val shapeElevationFraction = (progress.absoluteValue * 5f).coerceAtMost(1f)
+  this.shape =
+    RoundedCornerShape(
+      topStart = (shape.topStart.toPx(size, this) * shapeElevationFraction).toDp(),
+      topEnd = (shape.topEnd.toPx(size, this) * shapeElevationFraction).toDp(),
+      bottomEnd = (shape.bottomEnd.toPx(size, this) * shapeElevationFraction).toDp(),
+      bottomStart = (shape.bottomStart.toPx(size, this) * shapeElevationFraction).toDp(),
+    )
+  shadowElevation = lerp(0f, elevation.toPx(), shapeElevationFraction)
 
   val scale = lerp(1f, 0.9f, progress.absoluteValue)
   scaleX = scale
@@ -159,7 +169,7 @@ private fun GraphicsLayerScope.sharedElementTransition(
   val marginX = ((size.width * (1 - scale)) / 2).coerceAtMost(8.dp.toPx())
   val marginY = ((size.height * (1 - scale)) / 2).coerceAtMost(8.dp.toPx())
   val maxTranslationX = (progress.absoluteValue * (size.width / 20))
-  // Determine a y axis easing to match the x progress
+  // Determine a y-axis easing to match the x progress
   val progressY = (offset.y.absoluteValue / size.height).coerceIn(0f, 1f)
   val transformY = DecelerateEasing.transform(progressY)
   val maxTranslationY = (transformY * (size.height / 20))

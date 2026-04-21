@@ -4,9 +4,9 @@ import com.android.build.api.dsl.ManagedVirtualDevice
 
 plugins {
   alias(libs.plugins.agp.test)
-  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.baselineprofile)
   alias(libs.plugins.kotlin.plugin.compose)
+  id("circuit.base")
 }
 
 val mvdApi = 33
@@ -25,7 +25,7 @@ android {
     }
   }
 
-  targetProjectPath = ":samples:star:apk"
+  targetProjectPath = ":samples:star:androidApp"
   // Load the target app in a separate process so that it can be restarted multiple times, which
   // is necessary for startup benchmarking to work correctly.
   // https://source.android.com/docs/core/tests/development/instr-self-e2e

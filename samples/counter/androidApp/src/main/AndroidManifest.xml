@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (C) 2024 Slack Technologies, LLC
+  ~ Copyright (C) 2022 Slack Technologies, LLC
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:label="Circuit Tutorial"
+        android:label="Circuit Counter"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
         android:enableOnBackInvokedCallback="true"
         tools:ignore="MissingApplicationIcon">
         <activity
-            android:name=".MainActivity"
+            android:name="com.slack.circuit.sample.counter.android.CounterActivity"
             android:exported="true"
             android:configChanges="colorMode|density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
             >

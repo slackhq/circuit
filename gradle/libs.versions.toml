@@ -35,6 +35,7 @@ ktor = "3.4.2"
 leakcanary = "2.14"
 mavenPublish = "0.36.0"
 markdownRenderer = "0.40.2"
+metro = "1.0.0-RC2"
 molecule = "2.2.0"
 okhttp = "5.3.2"
 okio = "3.17.0"
@@ -68,7 +69,7 @@ kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", versio
 kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
-metro = { id = "dev.zacsweers.metro", version = "0.13.2" }
+metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.2" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
@@ -191,6 +192,8 @@ lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
 
 markdownRenderer = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdownRenderer" }
 markdownRenderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }
+
+metro = { module = "dev.zacsweers.metro:runtime", version.ref = "metro" }
 
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 

@@ -153,6 +153,7 @@ class CircuitSymbolProcessorTest {
       annotation class AssistedFactory
       annotation class Origin(val value: KClass<*>)
       annotation class ContributesIntoSet(val scope: KClass<*>)
+      annotation class Qualifier
       interface Provider<T> {
         operator fun invoke(): T
       }
@@ -2000,13 +2001,12 @@ class CircuitSymbolProcessorTest {
         import dev.zacsweers.metro.ContributesIntoSet
         import dev.zacsweers.metro.Inject
         import dev.zacsweers.metro.Origin
-        import dev.zacsweers.metro.Provider
 
         @Inject
         @ContributesIntoSet(AppScope::class)
         @Origin(FavoritesPresenter::class)
         public class FavoritesPresenterFactory(
-          private val provider: Provider<FavoritesPresenter>,
+          private val provider: () -> FavoritesPresenter,
         ) : Presenter.Factory {
           override fun create(
             screen: Screen,
@@ -2085,6 +2085,128 @@ class CircuitSymbolProcessorTest {
             context: CircuitContext,
           ): Presenter<*>? = when (screen) {
             is FavoritesScreen -> factory.create(navigator = navigator)
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+      codegenMode = CodegenMode.METRO,
+    )
+  }
+
+  @Test
+  fun presenterClass_propagatesQualifierAnnotation_anvil() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "FavoritesPresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import jakarta.inject.Inject
+          import jakarta.inject.Named
+
+          @Named("qualified")
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class FavoritesPresenter @Inject constructor() : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Named
+        import jakarta.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        @Named(`value` = "qualified")
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val provider: Provider<FavoritesPresenter>,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> provider.get()
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun presenterClass_propagatesQualifierAnnotation_metro() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "FavoritesPresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import dev.zacsweers.metro.Inject
+          import dev.zacsweers.metro.Named
+
+          @Named("home")
+          @Inject
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class FavoritesPresenter : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import dev.zacsweers.metro.ContributesIntoSet
+        import dev.zacsweers.metro.Inject
+        import dev.zacsweers.metro.Named
+        import dev.zacsweers.metro.Origin
+
+        @Inject
+        @ContributesIntoSet(AppScope::class)
+        @Origin(FavoritesPresenter::class)
+        @Named(name = "home")
+        public class FavoritesPresenterFactory(
+          private val provider: () -> FavoritesPresenter,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> provider()
             else -> null
           }
         }

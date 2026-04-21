@@ -346,7 +346,7 @@ internal enum class CodegenMode {
       override val assistedFactory: ClassName = CircuitNames.Metro.ASSISTED_FACTORY
 
       override fun asProvider(providedType: TypeName, options: CircuitOptions): TypeName {
-        return CircuitNames.Metro.PROVIDER.parameterizedBy(providedType)
+        return LambdaTypeName.get(returnType = providedType)
       }
 
       override fun getProviderBlock(provider: CodeBlock): CodeBlock {

@@ -8,12 +8,14 @@ Unreleased
 
 - SaveableNavStack - `isRecordReachable()` off-by-one where depth of 0 didn't check the current record
 - SaveableBackStack — Update `isRecordReachable()` to match SaveableNavStack behaviour
+- [codegen] Propagate qualifier annotations from `@CircuitInject` declarations to generated factories.
 
 ### Changes
 
 - Update to Kotlin `2.3.20`.
 - Remove deprecated X64 Apple targets.
 - SaveableNavStack & SaveableBackStack - Made the Savers public apis
+- [codegen/metro] Generate function providers when Metro mode is enabled. Note this requires `enableFunctionProviders` to be set enabled, which will be the default in Metro 1.0.0.
 
 0.33.1
 ------

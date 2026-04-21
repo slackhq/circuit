@@ -23,6 +23,8 @@ androidx.lifecycle:lifecycle-viewmodel-desktop
 androidx.lifecycle:lifecycle-viewmodel-savedstate-desktop
 androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
+androidx.navigationevent:navigationevent-compose-desktop
+androidx.navigationevent:navigationevent-compose
 androidx.navigationevent:navigationevent-desktop
 androidx.navigationevent:navigationevent
 androidx.savedstate:savedstate-compose-desktop

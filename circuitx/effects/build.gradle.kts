@@ -59,7 +59,6 @@ kotlin {
     androidMain { dependencies { api(libs.compose.ui) } }
     commonTest {
       dependencies {
-        implementation(libs.compose.material.material3)
         implementation(libs.coroutines.test)
         implementation(libs.kotlin.test)
         implementation(projects.circuitTest)
@@ -67,9 +66,10 @@ kotlin {
     }
     getByName("androidHostTest") {
       dependencies {
-        implementation(libs.robolectric)
-        implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
+        implementation(libs.compose.material.material3)
+        implementation(libs.compose.ui.testing.junit)
+        implementation(libs.robolectric)
       }
     }
   }

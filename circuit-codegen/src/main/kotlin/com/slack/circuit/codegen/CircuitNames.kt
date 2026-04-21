@@ -40,6 +40,19 @@ internal object CircuitNames {
   const val MODULE = "Module"
   const val FACTORY = "Factory"
 
+  /**
+   * Qualified names of annotations that mark an annotation as a qualifier. Any annotation
+   * meta-annotated with one of these is propagated from the annotated declaration to the generated
+   * factory class.
+   */
+  val QUALIFIER_ANNOTATION_NAMES =
+    setOf(
+      "javax.inject.Qualifier",
+      "jakarta.inject.Qualifier",
+      "dev.zacsweers.metro.Qualifier",
+      "me.tatarka.inject.annotations.Qualifier",
+    )
+
   object KotlinInject {
     private const val ANNOTATIONS_PACKAGE = "me.tatarka.inject.annotations"
     val INJECT = ClassName(ANNOTATIONS_PACKAGE, "Inject")
@@ -59,7 +72,6 @@ internal object CircuitNames {
     val INJECT = ClassName(RUNTIME_PACKAGE, "Inject")
     val ASSISTED = ClassName(RUNTIME_PACKAGE, "Assisted")
     val ASSISTED_FACTORY = ClassName(RUNTIME_PACKAGE, "AssistedFactory")
-    val PROVIDER = ClassName(RUNTIME_PACKAGE, "Provider")
     val ORIGIN = OriginAnnotation(ClassName(RUNTIME_PACKAGE, "Origin"))
     internal val CONTRIBUTES_INTO_SET = ClassName(RUNTIME_PACKAGE, "ContributesIntoSet")
   }

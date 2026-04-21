@@ -41,6 +41,7 @@ import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.joinToCode
 import com.squareup.kotlinpoet.ksp.addOriginatingKSFile
+import com.squareup.kotlinpoet.ksp.toAnnotationSpec
 import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
@@ -178,6 +179,7 @@ private class CircuitSymbolProcessor(
               .build()
           )
         }
+        annotatedElement.qualifierAnnotation()?.let(::addAnnotation)
       }
     val screenBranch =
       if (screenIsObject) {
@@ -253,6 +255,21 @@ private class CircuitSymbolProcessor(
 
   private fun KSAnnotated.isAnnotationPresentWithLeniency(annotation: ClassName) =
     getKSAnnotationsWithLeniency(annotation).any()
+
+  /**
+   * Returns all annotations on this declaration that are meta-annotated with a known
+   * [qualifier annotation][CircuitNames.QUALIFIER_ANNOTATION_NAMES], so they can be propagated to
+   * the generated factory class.
+   */
+  private fun KSAnnotated.qualifierAnnotation(): AnnotationSpec? =
+    annotations
+      .firstOrNull { annotation ->
+        annotation.annotationType.resolve().declaration.annotations.any { meta ->
+          meta.annotationType.resolve().declaration.qualifiedName?.asString() in
+            CircuitNames.QUALIFIER_ANNOTATION_NAMES
+        }
+      }
+      ?.toAnnotationSpec()
 
   private fun KSAnnotated.getKSAnnotationsWithLeniency(
     annotation: ClassName

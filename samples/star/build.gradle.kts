@@ -240,6 +240,8 @@ fun String.capitalizeUS() = replaceFirstChar {
   if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString()
 }
 
+metro { enableFunctionProviders.set(true) }
+
 val kspTargets = kotlin.targets.names.map { it.capitalizeUS() }
 
 ksp { arg("circuit.codegen.mode", "metro") }

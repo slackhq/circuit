@@ -27,6 +27,8 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
 
 ksp { arg("circuit.codegen.mode", "metro") }
 
+metro { enableFunctionProviders.set(true) }
+
 dependencies {
   ksp(projects.circuitCodegen)
 

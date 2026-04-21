@@ -191,10 +191,20 @@ private class CircuitSymbolProcessor(
     val typeSpec =
       when (factoryData.factoryType) {
         FactoryType.PRESENTER ->
-          builder.buildPresenterFactory(annotatedElement, screenBranch, factoryData.codeBlock)
+          builder.buildPresenterFactory(
+            annotatedElement,
+            screenBranch,
+            factoryData.codeBlock,
+            factoryData.hoistedBindings,
+          )
 
         FactoryType.UI ->
-          builder.buildUiFactory(annotatedElement, screenBranch, factoryData.codeBlock)
+          builder.buildUiFactory(
+            annotatedElement,
+            screenBranch,
+            factoryData.codeBlock,
+            factoryData.hoistedBindings,
+          )
       }
 
     val originatingFile = listOfNotNull(annotatedElement.containingFile)
@@ -292,6 +302,12 @@ private class CircuitSymbolProcessor(
     val factoryType: FactoryType,
     val constructorParams: List<ParameterSpec>,
     val codeBlock: CodeBlock,
+    /**
+     * `val` bindings to emit inside the matching `when` branch of `create()`, before the final
+     * instantiation expression. Used to hoist provider invocations out of the composable
+     * `presenterOf`/`ui` lambda so they don't fire on every recomposition.
+     */
+    val hoistedBindings: List<CodeBlock>,
   )
 
   /** Computes the data needed to generate a factory. */
@@ -307,6 +323,7 @@ private class CircuitSymbolProcessor(
     val packageName: String
     val factoryType: FactoryType
     val constructorParams = mutableListOf<ParameterSpec>()
+    val hoistedBindings = mutableListOf<CodeBlock>()
     val codeBlock: CodeBlock
 
     when (instantiationType) {
@@ -324,7 +341,7 @@ private class CircuitSymbolProcessor(
           } else {
             FactoryType.UI
           }
-        val assistedParams =
+        val circuitProvidedParams =
           fd.assistedParameters(
             symbols = symbols,
             logger = logger,
@@ -332,6 +349,49 @@ private class CircuitSymbolProcessor(
             allowNavigator = factoryType == FactoryType.PRESENTER,
             includeParameterNames = true,
           )
+
+        // Any function parameter that isn't a circuit-provided type is treated as an injected
+        // dependency: added to the factory constructor as a provider (`Provider<T>` or `() -> T`,
+        // depending on the mode) and invoked when the function is called.
+        //
+        // Exception: if the parameter type is already an indirect reference (Provider, Lazy, or
+        // a Kotlin function type), we pass it through as-is without re-wrapping or invoking it.
+        //
+        // Non-pass-through providers are hoisted to a local `val` outside the presenterOf/ui
+        // lambda so they're only invoked once per `create()` call, otherwise the composable
+        // block would re-invoke the provider on every recomposition.
+        val injectedParamBlocks = mutableListOf<CodeBlock>()
+        for (param in fd.parameters) {
+          val type = param.type.resolve()
+          if (type.isCircuitProvidedParameter(symbols, factoryType)) continue
+          val paramName = param.name!!.getShortName()
+          if (type.isPassThroughProvider(mode)) {
+            constructorParams.add(
+              ParameterSpec.builder(paramName, type.toPassThroughTypeName()).build()
+            )
+            injectedParamBlocks.add(CodeBlock.of("%L·=·%L", paramName, paramName))
+          } else {
+            constructorParams.add(
+              ParameterSpec.builder(paramName, mode.runtime.asProvider(type.toTypeName(), options))
+                .build()
+            )
+            hoistedBindings.add(
+              CodeBlock.of(
+                "val·%L·=·%L",
+                paramName,
+                mode.runtime.getProviderBlock(CodeBlock.of(paramName)),
+              )
+            )
+            injectedParamBlocks.add(CodeBlock.of("%L·=·%L", paramName, paramName))
+          }
+        }
+
+        val assistedParams =
+          when {
+            injectedParamBlocks.isEmpty() -> circuitProvidedParams
+            circuitProvidedParams.isEmpty() -> injectedParamBlocks.joinToCode(",·")
+            else -> (listOf(circuitProvidedParams) + injectedParamBlocks).joinToCode(",·")
+          }
 
         // Check we have a return type
         if (factoryType == FactoryType.PRESENTER) {
@@ -474,6 +534,14 @@ private class CircuitSymbolProcessor(
                 injectionSite.isAnnotationPresentWithLeniency(annotation)
               }
             }
+        if (!isAssisted && !useProvider) {
+          logger.error(
+            "@CircuitInject-annotated classes must be injectable: annotate the class or a " +
+              "constructor with @Inject.",
+            declaration,
+          )
+          return null
+        }
         className = targetClass.simpleName.getShortName()
         packageName = targetClass.packageName.asString()
         factoryType =
@@ -527,8 +595,8 @@ private class CircuitSymbolProcessor(
                 .build()
             )
             mode.runtime.getProviderBlock(CodeBlock.of("provider"))
-          } else if (isAssisted) {
-            // Inject the target class's assisted factory that we'll call its create() on.
+          } else {
+            // isAssisted: inject the target class's assisted factory and call create() on it.
             when (mode) {
               KOTLIN_INJECT_ANVIL -> {
                 val factoryLambda =
@@ -558,13 +626,17 @@ private class CircuitSymbolProcessor(
                 )
               }
             }
-          } else {
-            // Simple constructor call, no injection.
-            CodeBlock.of("%T(%L)", targetClass.toClassName(), assistedParams)
           }
       }
     }
-    return FactoryData(className, packageName, factoryType, constructorParams, codeBlock)
+    return FactoryData(
+      className,
+      packageName,
+      factoryType,
+      constructorParams,
+      codeBlock,
+      hoistedBindings,
+    )
   }
 }
 
@@ -681,10 +753,48 @@ private fun KSType.isInstanceOf(type: KSType): Boolean {
   return type.isAssignableFrom(this)
 }
 
+/** Whether this type matches one of the parameter types that circuit provides for a function. */
+private fun KSType.isCircuitProvidedParameter(
+  symbols: CircuitSymbols,
+  factoryType: FactoryType,
+): Boolean {
+  if (isInstanceOf(symbols.screen) || isInstanceOf(symbols.circuitContext)) return true
+  return when (factoryType) {
+    FactoryType.PRESENTER -> isInstanceOf(symbols.navigator)
+    FactoryType.UI -> isInstanceOf(symbols.circuitUiState) || isInstanceOf(symbols.modifier)
+  }
+}
+
+/**
+ * Whether this type is already an "indirect" reference to a dependency (a provider, a `Lazy`, or
+ * `() -> T`). Such types are passed through to the generated factory as-is rather than being
+ * re-wrapped in a provider and invoked at `create()` time.
+ *
+ * `kotlin.Function0` is only treated as a provider for modes whose runtimes natively understand it
+ * as one, currently Metro and kotlin-inject. For Dagger/Anvil/Hilt it falls through to the normal
+ * "wrap in a Provider" path.
+ */
+private fun KSType.isPassThroughProvider(mode: CodegenMode): Boolean {
+  val qName = declaration.qualifiedName?.asString() ?: return false
+  if (qName !in CircuitNames.PASS_THROUGH_PROVIDER_NAMES) return false
+  return qName != "kotlin.Function0" || mode == CodegenMode.METRO || mode == KOTLIN_INJECT_ANVIL
+}
+
+/**
+ * Like [KSType.toTypeName], but renders `kotlin.Function0<T>` as its lambda form (`() -> T`) so it
+ * appears naturally in generated sources.
+ */
+private fun KSType.toPassThroughTypeName(): TypeName {
+  if (declaration.qualifiedName?.asString() != "kotlin.Function0") return toTypeName()
+  val returnType = arguments.singleOrNull()?.type?.resolve()?.toTypeName() ?: return toTypeName()
+  return LambdaTypeName.get(returnType = returnType)
+}
+
 private fun TypeSpec.Builder.buildUiFactory(
   originatingSymbol: KSAnnotated,
   screenBranch: CodeBlock,
   instantiationCodeBlock: CodeBlock,
+  hoistedBindings: List<CodeBlock>,
 ): TypeSpec {
   return addSuperinterface(CircuitNames.CIRCUIT_UI_FACTORY)
     .addFunction(
@@ -694,7 +804,7 @@ private fun TypeSpec.Builder.buildUiFactory(
         .addParameter("context", CircuitNames.CIRCUIT_CONTEXT)
         .returns(CircuitNames.CIRCUIT_UI.parameterizedBy(STAR).copy(nullable = true))
         .beginControlFlow("return·when·(screen)")
-        .addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
+        .addWhenBranch(screenBranch, instantiationCodeBlock, hoistedBindings)
         .addStatement("else·->·null")
         .endControlFlow()
         .build()
@@ -707,6 +817,7 @@ private fun TypeSpec.Builder.buildPresenterFactory(
   originatingSymbol: KSAnnotated,
   screenBranch: CodeBlock,
   instantiationCodeBlock: CodeBlock,
+  hoistedBindings: List<CodeBlock>,
 ): TypeSpec {
   // The TypeSpec below will generate something similar to the following.
   //  public class AboutPresenterFactory : Presenter.Factory {
@@ -730,13 +841,37 @@ private fun TypeSpec.Builder.buildPresenterFactory(
         .addParameter("context", CircuitNames.CIRCUIT_CONTEXT)
         .returns(CircuitNames.CIRCUIT_PRESENTER.parameterizedBy(STAR).copy(nullable = true))
         .beginControlFlow("return when (screen)")
-        .addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
+        .addWhenBranch(screenBranch, instantiationCodeBlock, hoistedBindings)
         .addStatement("else·->·null")
         .endControlFlow()
         .build()
     )
     .addOriginatingKSFile(originatingSymbol.containingFile!!)
     .build()
+}
+
+/**
+ * Emits a single branch of the `when (screen)` block. If [hoistedBindings] is empty it emits a
+ * simple `is Screen -> expr` line; otherwise it emits a block-bodied branch that declares each
+ * `val` binding before the final expression, so any provider invocations happen once per `create()`
+ * call rather than on every recomposition.
+ */
+private fun FunSpec.Builder.addWhenBranch(
+  screenBranch: CodeBlock,
+  instantiationCodeBlock: CodeBlock,
+  hoistedBindings: List<CodeBlock>,
+): FunSpec.Builder {
+  if (hoistedBindings.isEmpty()) {
+    addStatement("%L·->·%L", screenBranch, instantiationCodeBlock)
+  } else {
+    beginControlFlow("%L·->", screenBranch)
+    for (binding in hoistedBindings) {
+      addStatement("%L", binding)
+    }
+    addStatement("%L", instantiationCodeBlock)
+    endControlFlow()
+  }
+  return this
 }
 
 private inline fun KSDeclaration.checkVisibility(logger: KSPLogger, returnBody: () -> Unit) {

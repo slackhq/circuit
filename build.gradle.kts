@@ -1,7 +1,5 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import kotlinx.validation.ExperimentalBCVApi
-
 buildscript { dependencies { classpath(platform(libs.kotlin.plugins.bom)) } }
 
 plugins {
@@ -23,7 +21,6 @@ plugins {
   alias(libs.plugins.baselineprofile) apply false
   alias(libs.plugins.baselineprofile.consumer) apply false
   alias(libs.plugins.emulatorWtf) apply false
-  alias(libs.plugins.binaryCompatibilityValidator)
   id("circuit.base") apply false
   id("circuit.spotless")
 }
@@ -33,42 +30,6 @@ dokka {
     outputDirectory.set(rootDir.resolve("docs/api/0.x"))
     includes.from(project.layout.projectDirectory.file("README.md"))
   }
-}
-
-apiValidation {
-  @OptIn(ExperimentalBCVApi::class)
-  klib {
-    enabled = true
-    strictValidation = false
-  }
-  nonPublicMarkers +=
-    setOf(
-      "com.slack.circuit.runtime.InternalCircuitApi",
-      "com.slack.circuit.runtime.ExperimentalCircuitApi",
-      "com.slack.circuit.test.ExperimentalForInheritanceCircuitTestApi",
-    )
-  ignoredPackages +=
-    setOf("com.slack.circuit.foundation.internal", "com.slack.circuit.runtime.internal")
-  // Annoyingly this only uses simple names
-  // https://github.com/Kotlin/binary-compatibility-validator/issues/16
-  ignoredProjects +=
-    listOf(
-      "androidApp",
-      "apps",
-      "benchmark",
-      "bottom-navigation",
-      "circuit-codegen",
-      "coil-rule",
-      "counter",
-      "internal-runtime",
-      "internal-test-utils",
-      "interop",
-      "kotlin-inject",
-      "mosaic",
-      "star",
-      "tacos",
-      "tutorial",
-    )
 }
 
 develocity {

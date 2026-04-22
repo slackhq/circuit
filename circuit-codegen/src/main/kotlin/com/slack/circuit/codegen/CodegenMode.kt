@@ -356,7 +356,4 @@ internal enum class CodegenMode {
   }
 }
 
-public class OriginAnnotation(
-  public val className: ClassName,
-  public val parameterName: String? = null,
-)
+internal class OriginAnnotation(val className: ClassName, val parameterName: String? = null)

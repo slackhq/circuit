@@ -4,12 +4,6 @@ import com.dropbox.gradle.plugins.dependencyguard.DependencyGuardPluginExtension
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.jetbrains.dokka.gradle.DokkaExtension
 import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
-import org.jetbrains.kotlin.gradle.dsl.KotlinBaseExtension
-import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationExtension
-import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationMultiplatformExtension
-import org.jetbrains.kotlin.gradle.dsl.abi.AbiValidationVariantSpec
-import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
-import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
 apply(plugin = "com.vanniktech.maven.publish")
 
@@ -91,37 +85,3 @@ configure<MavenPublishBaseExtension> {
   publishToMavenCentral(automaticRelease = true)
   signAllPublications()
 }
-
-fun configureBCV(extension: KotlinBaseExtension) {
-  @OptIn(ExperimentalAbiValidation::class)
-  (extension as ExtensionAware).extensions.findByName("abiValidation")?.apply {
-    when (this) {
-      is AbiValidationMultiplatformExtension -> {
-        enabled.set(true)
-        klib {
-          enabled.set(true)
-        }
-      }
-      is AbiValidationExtension -> {
-        enabled.set(true)
-      }
-      else -> error("Unrecognized extension: $javaClass")
-    }
-    filters {
-      exclude {
-        annotatedWith.addAll(
-          "com.slack.circuit.runtime.InternalCircuitApi",
-          "com.slack.circuit.runtime.ExperimentalCircuitApi",
-          "com.slack.circuit.test.ExperimentalForInheritanceCircuitTestApi",
-        )
-        byNames.add("**.internal.**")
-      }
-    }
-  }
-}
-
-plugins.withId("org.jetbrains.kotlin.jvm") {
-  configureBCV(kotlinExtension) }
-
-plugins.withId("org.jetbrains.kotlin.multiplatform") {
-  configureBCV(kotlinExtension) }

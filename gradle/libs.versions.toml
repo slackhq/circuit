@@ -1,5 +1,5 @@
 [versions]
-agp = "9.1.1"
+agp = "9.2.0"
 android-compileSdk = "36"
 androidx-activity = "1.13.0"
 androidx-annotation = "1.10.0"

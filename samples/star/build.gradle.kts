@@ -3,6 +3,7 @@
 import app.cash.sqldelight.gradle.SqlDelightTask
 import com.android.build.api.withAndroid
 import com.google.devtools.ksp.gradle.KspAATask
+import dev.zacsweers.metro.gradle.ExperimentalMetroGradleApi
 import java.util.Locale
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -240,7 +241,7 @@ fun String.capitalizeUS() = replaceFirstChar {
   if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString()
 }
 
-metro { enableFunctionProviders.set(true) }
+metro { @OptIn(ExperimentalMetroGradleApi::class) enableFunctionProviders.set(true) }
 
 val kspTargets = kotlin.targets.names.map { it.capitalizeUS() }
 

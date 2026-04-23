@@ -5,10 +5,10 @@
 package com.slack.circuit.sample.counter.browser
 
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.window.CanvasBasedWindow
+import androidx.compose.ui.window.ComposeViewport
 import com.slack.circuit.sample.counter.CounterApp
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-  CanvasBasedWindow { CounterApp() }
+  ComposeViewport { CounterApp() }
 }

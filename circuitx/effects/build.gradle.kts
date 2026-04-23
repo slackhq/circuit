@@ -51,26 +51,28 @@ kotlin {
   sourceSets {
     commonMain {
       dependencies {
-        api(libs.compose.runtime)
-        implementation(projects.circuitFoundation)
+        api(projects.circuitRetained)
+        api(projects.circuitRuntime)
       }
     }
+    androidMain { dependencies { api(libs.compose.ui) } }
+    // The compose plugin only checks main deps for compose.ui to decide if skiko should be
+    // unpacked for wasm. This module uses compose.ui only in tests, so we need to add it to
+    // the web main source sets to trigger skiko unpacking.
+    getByName("webMain") { dependencies { implementation(libs.compose.ui) } }
     commonTest {
       dependencies {
-        implementation(libs.compose.foundation)
-        implementation(libs.compose.material.material3)
         implementation(libs.coroutines.test)
         implementation(libs.kotlin.test)
-        implementation(libs.molecule.runtime)
-        implementation(libs.turbine)
         implementation(projects.circuitTest)
       }
     }
     getByName("androidHostTest") {
       dependencies {
-        implementation(libs.robolectric)
-        implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
+        implementation(libs.compose.material.material3)
+        implementation(libs.compose.ui.testing.junit)
+        implementation(libs.robolectric)
       }
     }
   }

@@ -18,7 +18,7 @@ plugins {
   alias(libs.plugins.roborazzi)
   alias(libs.plugins.ksp)
   alias(libs.plugins.sqldelight)
-  alias(libs.plugins.emulatorWtf) apply false
+  alias(libs.plugins.emulatorWtf)
   alias(libs.plugins.metro)
   id("circuit.base")
 }
@@ -201,8 +201,6 @@ kotlin {
     }
   }
 }
-
-apply(plugin = "wtf.emulator.gradle")
 
 if (project.hasProperty("circuit.enableComposeCompilerReports")) {
   val metricsDir = project.layout.buildDirectory.dir("compose_metrics")

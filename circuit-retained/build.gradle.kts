@@ -11,7 +11,7 @@ plugins {
   alias(libs.plugins.compose)
   id("circuit.base")
   id("circuit.publish")
-  alias(libs.plugins.emulatorWtf) apply false
+  alias(libs.plugins.emulatorWtf)
 }
 
 kotlin {
@@ -116,5 +116,3 @@ kotlin {
     }
   }
 }
-
-apply(plugin = "wtf.emulator.gradle")

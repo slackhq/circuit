@@ -1,19 +1,25 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.android.build.api.withAndroid
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.compose)
-  alias(libs.plugins.mavenPublish)
+  id("circuit.base")
+  id("circuit.publish")
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.test"
+    compileSdk = 36
+    withHostTest {}
+  }
   jvm()
   iosArm64()
   iosSimulatorArm64()
@@ -37,7 +43,15 @@ kotlin {
     }
   }
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("commonJvm") {
+        withAndroid()
+        withJvm()
+      }
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -52,19 +66,13 @@ kotlin {
 
     commonTest { dependencies { implementation(libs.coroutines.test) } }
 
-    val commonJvmTest =
-      maybeCreate("commonJvmTest").apply {
-        dependsOn(commonTest.get())
-        dependencies {
-          implementation(libs.junit)
-          implementation(libs.truth)
-          implementation(libs.testing.testParameterInjector)
-          implementation(projects.internalTestUtils)
-        }
+    maybeCreate("commonJvmTest").apply {
+      dependencies {
+        implementation(libs.junit)
+        implementation(libs.truth)
+        implementation(libs.testing.testParameterInjector)
+        implementation(projects.internalTestUtils)
       }
-    jvmTest { dependsOn(commonJvmTest) }
-    androidUnitTest { dependsOn(commonJvmTest) }
+    }
   }
 }
-
-android { namespace = "com.slack.circuit.test" }

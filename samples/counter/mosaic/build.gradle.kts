@@ -4,6 +4,7 @@ plugins {
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.compose)
   application
+  id("circuit.base")
 }
 
 application { mainClass.set("com.slack.circuit.sample.counter.mosaic.Main") }

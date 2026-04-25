@@ -1,17 +1,18 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import app.cash.sqldelight.gradle.SqlDelightTask
+import com.android.build.api.withAndroid
 import com.google.devtools.ksp.gradle.KspAATask
+import dev.zacsweers.metro.gradle.ExperimentalMetroGradleApi
 import java.util.Locale
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.kotlin.plugin.compose)
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.kotlin.plugin.serialization)
   alias(libs.plugins.roborazzi)
@@ -19,14 +20,18 @@ plugins {
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.emulatorWtf)
   alias(libs.plugins.metro)
+  id("circuit.base")
 }
 
 kotlin {
   jvm()
-  androidTarget {
-    publishLibraryVariants("release")
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+  android {
+    namespace = "com.slack.circuit.star"
+    compileSdk = 36
+    minSdk = 30
+    androidResources { enable = true }
+    withHostTest { isIncludeAndroidResources = true }
+    withDeviceTestBuilder { sourceSetTreeName = "test" }
   }
   jvmToolchain(libs.versions.jdk.get().toInt())
   listOf(iosArm64(), iosSimulatorArm64()).forEach { it.binaries.framework { baseName = "StarKt" } }
@@ -35,7 +40,7 @@ kotlin {
   applyDefaultHierarchyTemplate {
     common {
       group("jvmCommon") {
-        withAndroidTarget()
+        withAndroid()
         withJvm()
       }
     }
@@ -55,6 +60,7 @@ kotlin {
         implementation(libs.compose.navigationevent)
         implementation(libs.compose.runtime)
         implementation(libs.compose.ui)
+        implementation(libs.compose.ui.tooling.preview)
         implementation(libs.compose.ui.util)
         implementation(libs.coroutines)
         implementation(libs.ktor.client)
@@ -117,7 +123,7 @@ kotlin {
         implementation(projects.circuitx.android)
       }
     }
-    val androidUnitTest by getting {
+    val androidHostTest by getting {
       dependencies {
         implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
@@ -133,16 +139,15 @@ kotlin {
         implementation(projects.samples.star.coilRule)
       }
     }
-    val androidInstrumentedTest by getting {
-      // Annoyingly cannot depend on commonJvmTest
+    val androidDeviceTest by getting {
       dependencies {
         implementation(libs.androidx.activity.compose)
         implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
-        implementation(libs.compose.ui.testing.junit)
         implementation(libs.coroutines.android)
         implementation(libs.coroutines.test)
         implementation(libs.junit)
+        implementation(libs.truth)
         implementation(libs.leakcanary.android.instrumentation)
         implementation(projects.circuitTest)
         implementation(projects.internalTestUtils)
@@ -205,24 +210,6 @@ if (project.hasProperty("circuit.enableComposeCompilerReports")) {
   }
 }
 
-android {
-  namespace = "com.slack.circuit.star"
-
-  defaultConfig {
-    minSdk = 30
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    testApplicationId = "com.slack.circuit.star.apk.androidTest"
-  }
-  testOptions {
-    unitTests {
-      isIncludeAndroidResources = true
-      // For https://github.com/takahirom/roborazzi/issues/296
-      all { it.systemProperties["robolectric.pixelCopyRenderMode"] = "hardware" }
-    }
-  }
-  testBuildType = "release"
-}
-
 tasks.withType<JavaCompile>().configureEach {
   // Only configure kotlin/jvm tasks with this
   if (name.startsWith("compileJvm")) {
@@ -251,6 +238,8 @@ sqldelight {
 fun String.capitalizeUS() = replaceFirstChar {
   if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString()
 }
+
+metro { @OptIn(ExperimentalMetroGradleApi::class) enableFunctionProviders.set(true) }
 
 val kspTargets = kotlin.targets.names.map { it.capitalizeUS() }
 

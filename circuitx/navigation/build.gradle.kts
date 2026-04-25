@@ -1,17 +1,23 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.android.build.api.withAndroid
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  alias(libs.plugins.mavenPublish)
+  id("circuit.base")
+  id("circuit.publish")
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuitx.navigation"
+    compileSdk = 36
+  }
   jvm()
   iosArm64()
   iosSimulatorArm64()
@@ -27,7 +33,15 @@ kotlin {
   }
   // endregion
 
-  applyDefaultHierarchyTemplate()
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("commonJvm") {
+        withAndroid()
+        withJvm()
+      }
+    }
+  }
 
   sourceSets {
     commonMain {
@@ -52,16 +66,13 @@ kotlin {
     }
 
     androidMain { dependencies { api(projects.circuitx.android) } }
-    val commonJvmTest =
-      maybeCreate("commonJvmTest").apply {
-        dependsOn(commonTest.get())
-        dependencies {
-          implementation(libs.junit)
-          implementation(libs.truth)
-        }
+    maybeCreate("commonJvmTest").apply {
+      dependencies {
+        implementation(libs.junit)
+        implementation(libs.truth)
       }
+    }
     jvmTest {
-      dependsOn(commonJvmTest)
       dependencies {
         implementation(compose.desktop.currentOs)
         implementation(libs.compose.ui.testing.junit)
@@ -69,5 +80,3 @@ kotlin {
     }
   }
 }
-
-android { namespace = "com.slack.circuitx.navigation" }

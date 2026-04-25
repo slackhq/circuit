@@ -228,6 +228,5 @@ internal class AndroidSystemBarColorController(
     }
 }
 
-@Suppress("MagicNumber") // This is a constant, detekt doesn't realize it
 private val BlackScrim = Color(0f, 0f, 0f, 0.3f) // 30% opaque black
 private val BlackScrimmed: (Color) -> Color = { original -> BlackScrim.compositeOver(original) }

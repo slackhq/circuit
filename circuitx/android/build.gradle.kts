@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 plugins {
   alias(libs.plugins.agp.library)
-  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.plugin.compose)
   alias(libs.plugins.kotlin.plugin.parcelize)
-  alias(libs.plugins.mavenPublish)
+  id("circuit.base")
+  id("circuit.publish")
 }
 
 android { namespace = "com.slack.circuitx.android" }

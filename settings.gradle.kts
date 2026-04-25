@@ -95,6 +95,8 @@ dependencyResolutionManagement {
 }
 
 pluginManagement {
+  includeBuild("build-logic")
+
   // Non-delegate APIs are annoyingly not public so we have to use withGroovyBuilder
   fun hasProperty(key: String): Boolean {
     return settings.withGroovyBuilder { "hasProperty"(key) as Boolean }
@@ -164,7 +166,6 @@ pluginManagement {
         includeModule("com.gradle", "develocity-gradle-plugin")
         includeModule("com.gradle.develocity", "com.gradle.develocity.gradle.plugin")
         includeModule("com.diffplug.spotless", "com.diffplug.spotless.gradle.plugin")
-        includeModule("io.gitlab.arturbosch.detekt", "io.gitlab.arturbosch.detekt.gradle.plugin")
         includeModule("org.gradle.kotlin.kotlin-dsl", "org.gradle.kotlin.kotlin-dsl.gradle.plugin")
         includeModule("org.gradle.kotlin", "gradle-kotlin-dsl-plugins")
       }
@@ -172,7 +173,7 @@ pluginManagement {
   }
   plugins {
     // Release notes at https://docs.gradle.com/enterprise/gradle-plugin/#release_history
-    id("com.gradle.develocity") version "4.1.1"
+    id("com.gradle.develocity") version "4.4.0"
   }
 }
 
@@ -229,17 +230,20 @@ include(
   ":circuitx:navigation",
   ":circuitx:overlays",
   ":samples:bottom-navigation",
+  ":samples:bottom-navigation:androidApp",
   ":samples:counter",
+  ":samples:counter:androidApp",
   ":samples:counter:apps",
   ":samples:counter:mosaic",
   ":samples:interop",
   ":samples:kotlin-inject",
   ":samples:star",
-  ":samples:star:apk",
+  ":samples:star:androidApp",
   ":samples:star:benchmark",
   ":samples:star:coil-rule",
   ":samples:tacos",
   ":samples:tutorial",
+  ":samples:tutorial:androidApp",
   ":internal-runtime",
   ":internal-test-utils",
 )

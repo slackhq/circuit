@@ -3,7 +3,8 @@
 plugins {
   kotlin("jvm")
   alias(libs.plugins.ksp)
-  alias(libs.plugins.mavenPublish)
+  id("circuit.base")
+  id("circuit.publish")
 }
 
 dependencies {
@@ -24,6 +25,7 @@ dependencies {
   testImplementation(libs.kotlin.compilerEmbeddable)
   testImplementation(libs.ksp)
   testImplementation(libs.ksp.api)
+  testImplementation(libs.metro)
   testImplementation(libs.truth)
   testImplementation(projects.circuitCodegenAnnotations)
   testImplementation(projects.circuitRuntimePresenter)

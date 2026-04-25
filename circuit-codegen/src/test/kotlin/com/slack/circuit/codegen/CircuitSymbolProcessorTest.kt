@@ -153,6 +153,7 @@ class CircuitSymbolProcessorTest {
       annotation class AssistedFactory
       annotation class Origin(val value: KClass<*>)
       annotation class ContributesIntoSet(val scope: KClass<*>)
+      annotation class Qualifier
       interface Provider<T> {
         operator fun invoke(): T
       }
@@ -543,8 +544,8 @@ class CircuitSymbolProcessorTest {
   }
 
   @Test
-  fun uiClass_noInjection() {
-    assertGeneratedFile(
+  fun uiClass_missingInject_errors() {
+    assertProcessingError(
       sourceFile =
         kotlin(
           "TestUi.kt",
@@ -565,28 +566,14 @@ class CircuitSymbolProcessorTest {
           }
           """
             .trimIndent(),
-        ),
-      generatedFilePath = "test/FavoritesFactory.kt",
-      expectedContent =
-        """
-        package test
-
-        import com.slack.circuit.runtime.CircuitContext
-        import com.slack.circuit.runtime.screen.Screen
-        import com.slack.circuit.runtime.ui.Ui
-        import com.squareup.anvil.annotations.ContributesMultibinding
-        import jakarta.inject.Inject
-
-        @ContributesMultibinding(AppScope::class)
-        public class FavoritesFactory @Inject constructor() : Ui.Factory {
-          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
-            is FavoritesScreen -> Favorites()
-            else -> null
-          }
-        }
-        """
-          .trimIndent(),
-    )
+        )
+    ) { messages ->
+      assertThat(messages)
+        .contains(
+          "@CircuitInject-annotated classes must be injectable: annotate the class or a " +
+            "constructor with @Inject."
+        )
+    }
   }
 
   @Test
@@ -1061,8 +1048,40 @@ class CircuitSymbolProcessorTest {
   }
 
   @Test
-  fun presenterClass_noInjection() {
-    assertGeneratedFile(
+  fun presenterClass_missingInject_errors() {
+    assertProcessingError(
+      sourceFile =
+        kotlin(
+          "TestPresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class FavoritesPresenter : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
+          """
+            .trimIndent(),
+        )
+    ) { messages ->
+      assertThat(messages)
+        .contains(
+          "@CircuitInject-annotated classes must be injectable: annotate the class or a " +
+            "constructor with @Inject."
+        )
+    }
+  }
+
+  @Test
+  fun presenterClass_missingInject_errors_metro() {
+    assertProcessingError(
       sourceFile =
         kotlin(
           "TestPresenter.kt",
@@ -1083,32 +1102,14 @@ class CircuitSymbolProcessorTest {
           """
             .trimIndent(),
         ),
-      generatedFilePath = "test/FavoritesPresenterFactory.kt",
-      expectedContent =
-        """
-        package test
-
-        import com.slack.circuit.runtime.CircuitContext
-        import com.slack.circuit.runtime.Navigator
-        import com.slack.circuit.runtime.presenter.Presenter
-        import com.slack.circuit.runtime.screen.Screen
-        import com.squareup.anvil.annotations.ContributesMultibinding
-        import jakarta.inject.Inject
-
-        @ContributesMultibinding(AppScope::class)
-        public class FavoritesPresenterFactory @Inject constructor() : Presenter.Factory {
-          override fun create(
-            screen: Screen,
-            navigator: Navigator,
-            context: CircuitContext,
-          ): Presenter<*>? = when (screen) {
-            is FavoritesScreen -> FavoritesPresenter()
-            else -> null
-          }
-        }
-        """
-          .trimIndent(),
-    )
+      codegenMode = CodegenMode.METRO,
+    ) { messages ->
+      assertThat(messages)
+        .contains(
+          "@CircuitInject-annotated classes must be injectable: annotate the class or a " +
+            "constructor with @Inject."
+        )
+    }
   }
 
   @Test
@@ -1670,9 +1671,10 @@ class CircuitSymbolProcessorTest {
           import com.slack.circuit.codegen.annotations.CircuitInject
           import androidx.compose.runtime.Composable
           import androidx.compose.ui.Modifier
+          import jakarta.inject.Inject
 
           @CircuitInject(FavoritesScreen::class, AppScope::class)
-          class Favorites {
+          class Favorites @Inject constructor() {
             @Composable
             fun Content(state: FavoritesScreen.State, modifier: Modifier) {
 
@@ -2000,13 +2002,12 @@ class CircuitSymbolProcessorTest {
         import dev.zacsweers.metro.ContributesIntoSet
         import dev.zacsweers.metro.Inject
         import dev.zacsweers.metro.Origin
-        import dev.zacsweers.metro.Provider
 
         @Inject
         @ContributesIntoSet(AppScope::class)
         @Origin(FavoritesPresenter::class)
         public class FavoritesPresenterFactory(
-          private val provider: Provider<FavoritesPresenter>,
+          private val provider: () -> FavoritesPresenter,
         ) : Presenter.Factory {
           override fun create(
             screen: Screen,
@@ -2091,6 +2092,614 @@ class CircuitSymbolProcessorTest {
         """
           .trimIndent(),
       codegenMode = CodegenMode.METRO,
+    )
+  }
+
+  @Test
+  fun presenterClass_propagatesQualifierAnnotation_anvil() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "FavoritesPresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import jakarta.inject.Inject
+          import jakarta.inject.Named
+
+          @Named("qualified")
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class FavoritesPresenter @Inject constructor() : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Named
+        import jakarta.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        @Named(`value` = "qualified")
+        public class FavoritesPresenterFactory @Inject constructor(
+          private val provider: Provider<FavoritesPresenter>,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> provider.get()
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun presenterClass_propagatesQualifierAnnotation_metro() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "FavoritesPresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.presenter.Presenter
+          import androidx.compose.runtime.Composable
+          import dev.zacsweers.metro.Inject
+          import dev.zacsweers.metro.Named
+
+          @Named("home")
+          @Inject
+          @CircuitInject(FavoritesScreen::class, AppScope::class)
+          class FavoritesPresenter : Presenter<FavoritesScreen.State> {
+            @Composable
+            override fun present(): FavoritesScreen.State {
+              throw NotImplementedError()
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/FavoritesPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.screen.Screen
+        import dev.zacsweers.metro.ContributesIntoSet
+        import dev.zacsweers.metro.Inject
+        import dev.zacsweers.metro.Named
+        import dev.zacsweers.metro.Origin
+
+        @Inject
+        @ContributesIntoSet(AppScope::class)
+        @Origin(FavoritesPresenter::class)
+        @Named(name = "home")
+        public class FavoritesPresenterFactory(
+          private val provider: () -> FavoritesPresenter,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            is FavoritesScreen -> provider()
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+      codegenMode = CodegenMode.METRO,
+    )
+  }
+
+  @Test
+  fun presenterFunction_injectedDependency_anvil() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "HomePresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import androidx.compose.runtime.Composable
+
+          interface UserRepository
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun HomePresenter(
+            navigator: Navigator,
+            repository: UserRepository,
+          ): HomeScreen.State {
+            throw NotImplementedError()
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HomePresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        public class HomePresenterFactory @Inject constructor(
+          private val repository: Provider<UserRepository>,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            HomeScreen -> {
+              val repository = repository.get()
+              presenterOf { HomePresenter(navigator = navigator, repository = repository) }
+            }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun presenterFunction_injectedDependency_kotlinInjectAnvil() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "HomePresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import androidx.compose.runtime.Composable
+          import me.tatarka.inject.annotations.Inject
+
+          interface UserRepository
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Inject
+          @Composable
+          fun HomePresenter(
+            navigator: Navigator,
+            repository: UserRepository,
+          ): HomeScreen.State {
+            throw NotImplementedError()
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HomePresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import me.tatarka.inject.annotations.Inject
+        import software.amazon.lastmile.kotlin.inject.anvil.ContributesBinding
+
+        @Inject
+        @ContributesBinding(
+          AppScope::class,
+          multibinding = true,
+        )
+        public class HomePresenterFactory(
+          private val repository: () -> UserRepository,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            HomeScreen -> {
+              val repository = repository()
+              presenterOf { HomePresenter(navigator = navigator, repository = repository) }
+            }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+      codegenMode = CodegenMode.KOTLIN_INJECT_ANVIL,
+    )
+  }
+
+  @Test
+  fun presenterFunction_injectedDependency_metro() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "HomePresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import com.slack.circuit.runtime.Navigator
+          import androidx.compose.runtime.Composable
+          import dev.zacsweers.metro.Inject
+
+          interface UserRepository
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Inject
+          @Composable
+          fun HomePresenter(
+            navigator: Navigator,
+            repository: UserRepository,
+          ): HomeScreen.State {
+            throw NotImplementedError()
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HomePresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import dev.zacsweers.metro.ContributesIntoSet
+        import dev.zacsweers.metro.Inject
+
+        @Inject
+        @ContributesIntoSet(AppScope::class)
+        public class HomePresenterFactory(
+          private val repository: () -> UserRepository,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            HomeScreen -> {
+              val repository = repository()
+              presenterOf { HomePresenter(navigator = navigator, repository = repository) }
+            }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+      codegenMode = CodegenMode.METRO,
+    )
+  }
+
+  @Test
+  fun uiFunction_injectedDependency_metro() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "HomeUi.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import dev.zacsweers.metro.Inject
+
+          interface ImageLoader
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Inject
+          @Composable
+          fun Home(
+            state: HomeScreen.State,
+            modifier: Modifier,
+            imageLoader: ImageLoader,
+          ) {
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HomeFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.screen.Screen
+        import com.slack.circuit.runtime.ui.Ui
+        import com.slack.circuit.runtime.ui.ui
+        import dev.zacsweers.metro.ContributesIntoSet
+        import dev.zacsweers.metro.Inject
+
+        @Inject
+        @ContributesIntoSet(AppScope::class)
+        public class HomeFactory(
+          private val imageLoader: () -> ImageLoader,
+        ) : Ui.Factory {
+          override fun create(screen: Screen, context: CircuitContext): Ui<*>? = when (screen) {
+            HomeScreen -> {
+              val imageLoader = imageLoader()
+              ui<HomeScreen.State> { state, modifier -> Home(state = state, modifier = modifier, imageLoader = imageLoader) }
+            }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+      codegenMode = CodegenMode.METRO,
+    )
+  }
+
+  @Test
+  fun presenterFunction_passesThroughProviderParam() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "HomePresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import jakarta.inject.Provider
+
+          interface UserRepository
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun HomePresenter(
+            repository: Provider<UserRepository>,
+          ): HomeScreen.State {
+            throw NotImplementedError()
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HomePresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        public class HomePresenterFactory @Inject constructor(
+          private val repository: Provider<UserRepository>,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            HomeScreen -> presenterOf { HomePresenter(repository = repository) }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun presenterFunction_passesThroughFunctionTypeParam_metro() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "HomePresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import dev.zacsweers.metro.Inject
+
+          interface UserRepository
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Inject
+          @Composable
+          fun HomePresenter(
+            repository: () -> UserRepository,
+          ): HomeScreen.State {
+            throw NotImplementedError()
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HomePresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import dev.zacsweers.metro.ContributesIntoSet
+        import dev.zacsweers.metro.Inject
+
+        @Inject
+        @ContributesIntoSet(AppScope::class)
+        public class HomePresenterFactory(
+          private val repository: () -> UserRepository,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            HomeScreen -> presenterOf { HomePresenter(repository = repository) }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+      codegenMode = CodegenMode.METRO,
+    )
+  }
+
+  @Test
+  fun presenterFunction_functionTypeParam_anvil_isWrappedInProvider() {
+    // Dagger/Anvil/Hilt don't treat `() -> T` as a provider, so it should be wrapped in
+    // `Provider<...>` like any other regular dependency.
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "HomePresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+
+          interface UserRepository
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun HomePresenter(
+            repository: () -> UserRepository,
+          ): HomeScreen.State {
+            throw NotImplementedError()
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HomePresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
+        import kotlin.Function0
+
+        @ContributesMultibinding(AppScope::class)
+        public class HomePresenterFactory @Inject constructor(
+          private val repository: Provider<Function0<UserRepository>>,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            HomeScreen -> {
+              val repository = repository.get()
+              presenterOf { HomePresenter(repository = repository) }
+            }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun presenterFunction_passesThroughLazyParam() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "HomePresenter.kt",
+          """
+          package test
+
+          import com.slack.circuit.codegen.annotations.CircuitInject
+          import androidx.compose.runtime.Composable
+          import dagger.Lazy
+
+          interface UserRepository
+
+          @CircuitInject(HomeScreen::class, AppScope::class)
+          @Composable
+          fun HomePresenter(
+            repository: Lazy<UserRepository>,
+          ): HomeScreen.State {
+            throw NotImplementedError()
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HomePresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.runtime.CircuitContext
+        import com.slack.circuit.runtime.Navigator
+        import com.slack.circuit.runtime.presenter.Presenter
+        import com.slack.circuit.runtime.presenter.presenterOf
+        import com.slack.circuit.runtime.screen.Screen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import dagger.Lazy
+        import jakarta.inject.Inject
+
+        @ContributesMultibinding(AppScope::class)
+        public class HomePresenterFactory @Inject constructor(
+          private val repository: Lazy<UserRepository>,
+        ) : Presenter.Factory {
+          override fun create(
+            screen: Screen,
+            navigator: Navigator,
+            context: CircuitContext,
+          ): Presenter<*>? = when (screen) {
+            HomeScreen -> presenterOf { HomePresenter(repository = repository) }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
     )
   }
 

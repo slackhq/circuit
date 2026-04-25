@@ -1,17 +1,30 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.android.build.api.withAndroid
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
 plugins {
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
-  alias(libs.plugins.mavenPublish)
+  id("circuit.base")
+  id("circuit.publish")
 }
 
 kotlin {
   // region KMP Targets
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.codegen.annotations"
+    compileSdk = 36
+    optimization.consumerKeepRules.apply {
+      publish = true
+      file(
+        layout.projectDirectory.file(
+          "src/commonJvmMain/resources/META-INF/proguard/circuit-codegen-annotations.pro"
+        )
+      )
+    }
+  }
   jvm()
   // Anvil/Dagger does not support iOS targets
   iosArm64()
@@ -40,8 +53,8 @@ kotlin {
   applyDefaultHierarchyTemplate {
     common {
       group("commonJvm") {
+        withAndroid()
         withJvm()
-        withAndroidTarget()
       }
     }
   }
@@ -53,7 +66,7 @@ kotlin {
         api(projects.circuitRuntimeScreen)
       }
     }
-    named("commonJvmMain") { dependencies { compileOnly(libs.hilt) } }
+    maybeCreate("commonJvmMain").apply { dependencies { compileOnly(libs.hilt) } }
     nativeMain {
       dependencies {
         compileOnly(libs.kotlinInject.anvil.runtime)
@@ -74,14 +87,5 @@ kotlin {
         compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
       }
     }
-  }
-}
-
-android {
-  namespace = "com.slack.circuit.codegen.annotations"
-  defaultConfig {
-    consumerProguardFiles(
-      "src/commonJvmMain/resources/META-INF/proguard/circuit-codegen-annotations.pro"
-    )
   }
 }

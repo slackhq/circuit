@@ -21,6 +21,7 @@ import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.navigation.navStackListOf
 import kotlin.math.abs
+import kotlinx.coroutines.CancellationException
 
 internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
   private val onBackInvoked: () -> Unit
@@ -33,7 +34,7 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
   protected var showPrevious: Boolean by mutableStateOf(false)
     private set
 
-  protected var isSeeking: Boolean by mutableStateOf(false)
+  protected var isSwipeInProgress: Boolean by mutableStateOf(false)
     private set
 
   protected var swipeProgress: Float by mutableFloatStateOf(0f)
@@ -64,23 +65,19 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
 
     seekableTransitionState = remember { SeekableTransitionState(current) }
 
-    LaunchedEffect(current) {
-      swipeProgress = 0f
-      isSeeking = false
-      seekableTransitionState.animateTo(current)
-      // After the current state has changed (i.e. any transition has completed),
-      // clear out any transient state
-      showPrevious = false
-      swipeOffset = Offset.Zero
-    }
+    LaunchedEffect(current) { resetTo(current) }
 
     LaunchedEffect(previous, current) {
       if (previous != null) {
         snapshotFlow { swipeProgress }
           .collect { progress ->
             if (progress != 0f) {
-              isSeeking = true
-              seekableTransitionState.seekTo(fraction = abs(progress), targetState = previous)
+              isSwipeInProgress = true
+              try {
+                seekableTransitionState.seekTo(fraction = abs(progress), targetState = previous)
+              } catch (_: CancellationException) {
+                // If seekTo is interrupted we want to keep observing the swipeProgress
+              }
             }
           }
       }
@@ -92,12 +89,19 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
         swipeProgress = progress
         swipeOffset = offset
       },
-      onBackCancelled = {
-        isSeeking = false
-        seekableTransitionState.animateTo(current)
-      },
+      onBackCancelled = { resetTo(current) },
       onBackCompleted = { onBackInvoked() },
     )
     return rememberTransition(seekableTransitionState, label = "PredictiveBackNavigationDecorator")
+  }
+
+  suspend fun resetTo(current: GestureNavTransitionHolder<T>) {
+    swipeProgress = 0f
+    isSwipeInProgress = false
+    seekableTransitionState.animateTo(current)
+    // After the current state has changed (i.e. any transition has completed),
+    // clear out any transient state
+    showPrevious = false
+    swipeOffset = Offset.Zero
   }
 }

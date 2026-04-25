@@ -83,7 +83,7 @@ jobs:
         id: gradle-instrumentation
         env:
           EW_API_TOKEN: ${{ secrets.EMULATOR_WTF_TOKEN }}
-        run: ./gradlew testReleaseWithEmulatorWtf --quiet
+        run: ./gradlew testWithEmulatorWtf --quiet
 
       - name: Enable KVM group perms
         run: |

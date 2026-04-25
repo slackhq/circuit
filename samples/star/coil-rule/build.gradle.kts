@@ -4,14 +4,15 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
-  alias(libs.plugins.compose)
-  alias(libs.plugins.agp.library)
+  alias(libs.plugins.agp.kmp)
+  id("circuit.base")
 }
 
-android { namespace = "com.slack.circuit.sample.coil.test" }
-
 kotlin {
-  androidTarget { publishLibraryVariants("release") }
+  android {
+    namespace = "com.slack.circuit.sample.coil.test"
+    compileSdk = 36
+  }
   jvm()
 
   applyDefaultHierarchyTemplate()

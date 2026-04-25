@@ -6,13 +6,18 @@ Unreleased
 
 ### Fixes
 
-- SaveableNavStack - `isRecordReachable()` off-by-one where depth of 0 didn't check the current record
-- SaveableBackStack — Update `isRecordReachable()` to match SaveableNavStack behaviour
+- `SaveableNavStack` - `isRecordReachable()` off-by-one where depth of 0 didn't check the current record
+- `SaveableBackStack` — Update `isRecordReachable()` to match `SaveableNavStack` behaviour
+- [codegen] Propagate qualifier annotations from `@CircuitInject` declarations to generated factories.
 
 ### Changes
 
 - Update to Kotlin `2.3.20`.
 - Remove deprecated X64 Apple targets.
+- `SaveableNavStack` & `SaveableBackStack` - Made the `Saver`s public apis
+- [codegen] Function-based `@CircuitInject` declarations now treat any non-circuit-provided parameter as an injected dependency across all modes. The generated factory accepts it as a provider (`Provider<T>` for Dagger/Anvil/Hilt, `() -> T` for kotlin-inject and Metro) and invokes it once at `create()` time, hoisted above the composable `presenterOf { }` / `ui { }` block so it isn't re-invoked on every recomposition. Parameters already declared as `Provider<T>` or `Lazy<T>` are passed through as-is rather than re-wrapped. In metro and kotlin-inject modes, `() -> T` is also passed through; in Dagger/Anvil/Hilt modes it is treated as a regular dependency.
+- [codegen] `@CircuitInject`-annotated classes must now be injectable — annotate the class or a constructor with `@Inject`. Previously, classes without `@Inject` silently generated a direct constructor call that could fail to compile.
+- [codegen/metro] Generate function providers when Metro mode is enabled. Note this requires `enableFunctionProviders` to be set enabled, which will be the default in Metro 1.0.0.
 
 0.33.1
 ------

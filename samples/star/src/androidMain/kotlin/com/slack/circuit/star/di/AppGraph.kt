@@ -14,7 +14,7 @@ import kotlin.reflect.KClass
 @DependencyGraph(scope = AppScope::class)
 @SingleIn(AppScope::class)
 interface AppGraph : CommonAppGraph {
-  val activityProviders: Map<KClass<out Activity>, Provider<Activity>>
+  val activityProviders: Map<KClass<out Activity>, () -> Activity>
 
   @DependencyGraph.Factory
   interface Factory {

@@ -8,7 +8,6 @@ import android.content.Intent
 import androidx.annotation.Keep
 import androidx.core.app.AppComponentFactory
 import com.slack.circuit.star.StarApp
-import dev.zacsweers.metro.Provider
 import kotlin.reflect.KClass
 
 @Keep

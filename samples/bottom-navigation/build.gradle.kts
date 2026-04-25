@@ -15,7 +15,7 @@ kotlin {
   android {
     namespace = "com.slack.circuit.sample.navigation"
     compileSdk = 36
-    withHostTest {}
+    withHostTest { isIncludeAndroidResources = true }
   }
   jvm {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -42,6 +42,14 @@ kotlin {
       }
     }
     androidMain {}
+    getByName("androidHostTest") {
+      dependencies {
+        implementation(libs.robolectric)
+        implementation(libs.junit)
+        implementation(libs.androidx.test.ext.junit)
+        implementation(libs.androidx.activity.ktx)
+      }
+    }
     jvmMain {
       dependencies {
         implementation(libs.compose.ui.tooling.preview)

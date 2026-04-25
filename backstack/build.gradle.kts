@@ -19,6 +19,7 @@ kotlin {
   android {
     namespace = "com.slack.circuit.backstack"
     compileSdk = 36
+    withHostTest {  }
   }
   jvm()
   iosArm64()

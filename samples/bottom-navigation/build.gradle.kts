@@ -15,6 +15,7 @@ kotlin {
   android {
     namespace = "com.slack.circuit.sample.navigation"
     compileSdk = 36
+    withHostTest {  }
   }
   jvm {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)

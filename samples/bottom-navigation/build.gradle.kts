@@ -48,6 +48,8 @@ kotlin {
         implementation(libs.junit)
         implementation(libs.androidx.test.ext.junit)
         implementation(libs.androidx.activity.ktx)
+        implementation(libs.compose.ui.testing.junit)
+        implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
     jvmMain {

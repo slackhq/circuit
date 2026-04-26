@@ -19,6 +19,7 @@ kotlin {
   android {
     namespace = "com.slack.circuit.backstack"
     compileSdk = 36
+    withHostTest { isReturnDefaultValues = true }
   }
   jvm()
   iosArm64()
@@ -89,6 +90,13 @@ kotlin {
       dependencies {
         implementation(libs.junit)
         implementation(libs.truth)
+      }
+    }
+    getByName("androidHostTest") {
+      dependencies {
+        implementation(libs.robolectric)
+        implementation(libs.compose.ui.testing.junit)
+        implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
   }

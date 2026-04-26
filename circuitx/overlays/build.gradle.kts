@@ -16,6 +16,7 @@ kotlin {
   android {
     namespace = "com.slack.circuitx.overlays"
     compileSdk = 36
+    withHostTest {}
   }
   jvm()
   iosArm64()

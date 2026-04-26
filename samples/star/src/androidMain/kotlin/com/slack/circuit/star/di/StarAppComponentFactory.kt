@@ -8,7 +8,6 @@ import android.content.Intent
 import androidx.annotation.Keep
 import androidx.core.app.AppComponentFactory
 import com.slack.circuit.star.StarApp
-import dev.zacsweers.metro.Provider
 import kotlin.reflect.KClass
 
 @Keep
@@ -17,7 +16,7 @@ class StarAppComponentFactory : AppComponentFactory() {
   private inline fun <reified T : Any> getInstance(
     cl: ClassLoader,
     className: String,
-    providers: Map<KClass<out T>, Provider<T>>,
+    providers: Map<KClass<out T>, () -> T>,
   ): T? {
     val clazz = Class.forName(className, false, cl).asSubclass(T::class.java)
     val modelProvider = providers[clazz.kotlin] ?: return null
@@ -41,6 +40,6 @@ class StarAppComponentFactory : AppComponentFactory() {
 
   // AppComponentFactory can be created multiple times
   companion object {
-    private lateinit var activityProviders: Map<KClass<out Activity>, Provider<Activity>>
+    private lateinit var activityProviders: Map<KClass<out Activity>, () -> Activity>
   }
 }

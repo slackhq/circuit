@@ -2757,7 +2757,6 @@ class CircuitSymbolProcessorTest {
             CodegenMode.METRO -> listOf(appScope, metroSymbols)
           }
       inheritClassPath = true
-      kotlincArguments += "-Xannotation-default-target=param-property"
       configureKsp {
         kspProcessorOptions += CircuitOptions.MODE to codegenMode.name
         kspProcessorOptions += kspOptions

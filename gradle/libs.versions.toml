@@ -188,7 +188,7 @@ leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcan
 lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jb-lifecycle" }
 lifecycle-viewModel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "jb-lifecycle" }
 
-lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
+lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.3"
 
 markdownRenderer = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdownRenderer" }
 markdownRenderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }

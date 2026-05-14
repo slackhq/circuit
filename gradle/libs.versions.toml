@@ -1,16 +1,16 @@
 [versions]
-agp = "9.2.0"
+agp = "9.2.1"
 android-compileSdk = "36"
 androidx-activity = "1.13.0"
 androidx-annotation = "1.10.0"
 androidx-appcompat = "1.7.1"
 androidx-browser = "1.10.0"
 androidx-compose = "1.10.6"  # Keep in sync with the androidx version used by jb-compose
-anvil = "0.5.3"
+anvil = "0.5.4"
 atomicfu = "0.32.1"
-benchmark = "1.5.0-alpha05"
+benchmark = "1.5.0-alpha06"
 coil = "3.4.0"
-compose-runtime = "1.11.0" # Keep in sync with the androidx version used by jb-compose
+compose-runtime = "1.11.1" # Keep in sync with the androidx version used by jb-compose
 dagger = "2.59.2"
 datastore = "1.2.1"
 dokka = "2.2.0"
@@ -27,7 +27,7 @@ kotlin = "2.4.0-RC"
 kotlinInject = "0.9.0"
 kotlinInject-anvil = "0.1.7"
 kotlinpoet = "2.3.0"
-kotlinx-coroutines = "1.10.2"
+kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.9.0"
 ksp = "2.3.7"
 ktfmt = "0.62"
@@ -35,13 +35,13 @@ ktor = "3.4.3"
 leakcanary = "2.14"
 mavenPublish = "0.36.0"
 markdownRenderer = "0.40.2"
-metro = "1.0.0-RC4"
+metro = "1.0.0"
 molecule = "2.2.0"
 okhttp = "5.3.2"
 okio = "3.17.0"
 picnic = "0.7.0"
 robolectric = "4.16.1"
-roborazzi = "1.59.0"
+roborazzi = "1.60.0"
 spotless = "8.0.0"
 sqldelight = "2.3.2"
 telephoto = "0.19.0"
@@ -60,7 +60,7 @@ binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibilit
 compose = { id = "org.jetbrains.compose", version.ref = "jb-compose" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-emulatorWtf = { id = "wtf.emulator.gradle", version = "1.5.4" }
+emulatorWtf = { id = "wtf.emulator.gradle", version = "1.6.0" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -188,7 +188,7 @@ leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcan
 lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jb-lifecycle" }
 lifecycle-viewModel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "jb-lifecycle" }
 
-lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.2"
+lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.3"
 
 markdownRenderer = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdownRenderer" }
 markdownRenderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }

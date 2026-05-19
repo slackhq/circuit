@@ -25,6 +25,7 @@ dependencies {
   testImplementation(libs.kotlin.compilerEmbeddable)
   testImplementation(libs.ksp)
   testImplementation(libs.ksp.api)
+  testImplementation(libs.metro)
   testImplementation(libs.truth)
   testImplementation(projects.circuitCodegenAnnotations)
   testImplementation(projects.circuitRuntimePresenter)

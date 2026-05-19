@@ -1,5 +1,6 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import dev.zacsweers.metro.gradle.ExperimentalMetroGradleApi
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 plugins {
@@ -26,6 +27,8 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
 }
 
 ksp { arg("circuit.codegen.mode", "metro") }
+
+metro { @OptIn(ExperimentalMetroGradleApi::class) enableFunctionProviders.set(true) }
 
 dependencies {
   ksp(projects.circuitCodegen)

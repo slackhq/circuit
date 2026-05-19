@@ -20,6 +20,7 @@ Currently supported types are:
 - [Anvil](https://github.com/square/anvil) and [Anvil KSP](https://github.com/zacsweers/anvil)
 - [Dagger/Hilt](https://dagger.dev/hilt/)
 - [kotlin-inject](https://github.com/evant/kotlin-inject) + [kotlin-inject-anvil](https://github.com/amzn/kotlin-inject-anvil)
+- [Metro](https://github.com/ZacSweers/metro)
 
 Note that Dagger+Anvil is the default mode. 
 
@@ -27,7 +28,7 @@ If you are using another mode, you must specify the mode as a KSP arg.
 
 ```kotlin
 ksp {
-  arg("circuit.codegen.mode", "hilt") // or "kotlin_inject_anvil"
+  arg("circuit.codegen.mode", "hilt") // or "kotlin_inject_anvil", "metro"
 }
 ```
 
@@ -66,7 +67,9 @@ with the provided `scope` key.
 ## Classes
 
 `Presenter` and `Ui` classes can be annotated and have their corresponding `Presenter.Factory` or
-`Ui.Factory` classes generated for them.
+`Ui.Factory` classes generated for them. The annotated class _must_ be injectable — either
+annotate the class itself with `@Inject` (for kotlin-inject and Metro) or annotate a constructor
+with `@Inject` (Dagger/Anvil/Hilt). Otherwise, the processor will fail with an error.
 
 **Presenter**
 ```kotlin
@@ -174,3 +177,69 @@ class HomePresenter(
   ...
 ) : Presenter<HomeState>
 ```
+
+## Qualifier propagation
+
+Qualifier annotations (any annotation meta-annotated with `@Qualifier` like `javax.inject.Qualifier`,
+`dev.zacsweers.metro.Qualifier`, etc.) are propagated from the `@CircuitInject`-annotated 
+declaration to the generated factory class.
+
+```kotlin
+@Named("home")
+@Inject
+@CircuitInject(HomeScreen::class, AppScope::class)
+class HomePresenter(...) : Presenter<HomeState>
+
+// Generates
+@Inject
+@ContributesIntoSet(AppScope::class)
+@Named("home")
+class HomePresenterFactory(...) : Presenter.Factory { ... }
+```
+
+## Function-based injected dependencies
+
+Function-based presenters and UIs can accept any injected dependency directly as a parameter. Any
+parameter type that isn't one of the circuit-provided types (see [Assisted
+injection](#assisted-injection)) is treated as a regular injected dependency and hoisted: the generated
+factory accepts it as a provider (`Provider<T>` for Dagger/Anvil/Hilt, `() -> T` for
+kotlin-inject and Metro) and invokes it once at `create()` time _outside_ the
+`presenterOf { }`/`ui { }` block (so the provider isn't re-invoked on every recomposition).
+
+Parameters that are already an indirect reference to a dependency (`Provider<T>` (any flavor)
+or `Lazy<T>` (Dagger or Kotlin)) are passed through to the factory constructor as-is rather
+than being re-wrapped in another provider. In `metro` and `kotlin_inject_anvil` modes, `() -> T`
+is also treated as a provider and passed through; in Dagger/Anvil/Hilt modes it is treated as a
+regular dependency and wrapped in `Provider<() -> T>` like any other type.
+
+```kotlin
+@CircuitInject(HomeScreen::class, AppScope::class)
+@Inject
+@Composable
+fun HomePresenter(
+  navigator: Navigator,       // circuit-provided
+  repository: UserRepository, // injected — not recognized as circuit-provided, so treated as a dependency
+): HomeState { ... }
+
+// Generates (metro mode shown)
+@Inject
+@ContributesIntoSet(AppScope::class)
+class HomePresenterFactory(
+  private val repository: () -> UserRepository,
+) : Presenter.Factory {
+  override fun create(
+    screen: Screen,
+    navigator: Navigator,
+    context: CircuitContext,
+  ): Presenter<*>? = when (screen) {
+    HomeScreen -> {
+      val repository = repository()
+      presenterOf { HomePresenter(navigator = navigator, repository = repository) }
+    }
+    else -> null
+  }
+}
+```
+
+Class-based presenters and UIs don't need this special handling, since constructor parameters
+there are already unambiguously injected dependencies.

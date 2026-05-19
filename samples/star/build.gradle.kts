@@ -3,6 +3,7 @@
 import app.cash.sqldelight.gradle.SqlDelightTask
 import com.android.build.api.withAndroid
 import com.google.devtools.ksp.gradle.KspAATask
+import dev.zacsweers.metro.gradle.ExperimentalMetroGradleApi
 import java.util.Locale
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -17,7 +18,7 @@ plugins {
   alias(libs.plugins.roborazzi)
   alias(libs.plugins.ksp)
   alias(libs.plugins.sqldelight)
-  alias(libs.plugins.emulatorWtf) apply false
+  alias(libs.plugins.emulatorWtf)
   alias(libs.plugins.metro)
   id("circuit.base")
 }
@@ -201,8 +202,6 @@ kotlin {
   }
 }
 
-apply(plugin = "wtf.emulator.gradle")
-
 if (project.hasProperty("circuit.enableComposeCompilerReports")) {
   val metricsDir = project.layout.buildDirectory.dir("compose_metrics")
   composeCompiler {
@@ -239,6 +238,8 @@ sqldelight {
 fun String.capitalizeUS() = replaceFirstChar {
   if (it.isLowerCase()) it.titlecase(Locale.US) else it.toString()
 }
+
+metro { @OptIn(ExperimentalMetroGradleApi::class) enableFunctionProviders.set(true) }
 
 val kspTargets = kotlin.targets.names.map { it.capitalizeUS() }
 

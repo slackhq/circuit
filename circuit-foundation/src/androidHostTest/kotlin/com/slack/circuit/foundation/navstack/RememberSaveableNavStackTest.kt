@@ -4,7 +4,7 @@ package com.slack.circuit.foundation.navstack
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.StateRestorationTester
-import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.v2.runComposeUiTest
 import com.slack.circuit.foundation.ComposeUiTestRunner
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.navigation.NavStack

@@ -1,0 +1,21 @@
+public abstract interface class com/slack/circuit/subcircuit/test/SubCircuitReceiveTurbine : app/cash/turbine/ReceiveTurbine {
+	public abstract fun awaitUnchanged (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun getOuterEvents ()Lcom/slack/circuit/subcircuit/test/TestOuterEventSink;
+}
+
+public final class com/slack/circuit/subcircuit/test/SubPresenterTestExtensionsKt {
+	public static final fun subPresenterTestOf-mY9Nd3A (Lkotlin/jvm/functions/Function2;Lcom/slack/circuit/subcircuit/test/TestOuterEventSink;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun subPresenterTestOf-mY9Nd3A$default (Lkotlin/jvm/functions/Function2;Lcom/slack/circuit/subcircuit/test/TestOuterEventSink;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+	public static final fun test-mY9Nd3A (Lcom/slack/circuit/subcircuit/SubPresenter;Lcom/slack/circuit/subcircuit/test/TestOuterEventSink;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public static synthetic fun test-mY9Nd3A$default (Lcom/slack/circuit/subcircuit/SubPresenter;Lcom/slack/circuit/subcircuit/test/TestOuterEventSink;Lkotlin/time/Duration;Ljava/lang/String;Landroidx/compose/runtime/SnapshotMutationPolicy;Lkotlin/jvm/functions/Function2;Lkotlin/coroutines/Continuation;ILjava/lang/Object;)Ljava/lang/Object;
+}
+
+public final class com/slack/circuit/subcircuit/test/TestOuterEventSink {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun assertNoEvents ()V
+	public final fun awaitEvent (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun cancelAndAssertEmpty (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun invoke (Lcom/slack/circuit/subcircuit/SubCircuitOuterEvent;)V
+}
+

@@ -1,0 +1,43 @@
+// Copyright (C) 2026 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
+plugins {
+  alias(libs.plugins.agp.kmp)
+  alias(libs.plugins.kotlin.multiplatform)
+  id("circuit.base")
+  id("circuit.publish")
+}
+
+kotlin {
+  // region KMP Targets
+  android {
+    namespace = "com.slack.circuit.subcircuit.codegen.annotations"
+    compileSdk = 36
+  }
+  jvm()
+  iosArm64()
+  iosSimulatorArm64()
+  macosArm64()
+  js(IR) {
+    outputModuleName = property("POM_ARTIFACT_ID").toString()
+    browser()
+  }
+  @OptIn(ExperimentalWasmDsl::class)
+  wasmJs {
+    outputModuleName = property("POM_ARTIFACT_ID").toString()
+    browser()
+  }
+  // endregion
+
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
+
+  targets.configureEach {
+    compilations.configureEach {
+      compileTaskProvider.configure {
+        compilerOptions { freeCompilerArgs.add("-Xexpect-actual-classes") }
+      }
+    }
+  }
+}

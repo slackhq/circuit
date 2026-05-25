@@ -1,0 +1,64 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, js, macosArm64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root.circuitx:subcircuit>
+open annotation class com.slack.circuit.subcircuit/ExperimentalSubCircuitApi : kotlin/Annotation { // com.slack.circuit.subcircuit/ExperimentalSubCircuitApi|null[0]
+    constructor <init>() // com.slack.circuit.subcircuit/ExperimentalSubCircuitApi.<init>|<init>(){}[0]
+}
+
+abstract fun interface <#A: in com.slack.circuit.subcircuit/SubCircuitUiState> com.slack.circuit.subcircuit/SubUi { // com.slack.circuit.subcircuit/SubUi|null[0]
+    abstract fun Content(#A, androidx.compose.ui/Modifier, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.subcircuit/SubUi.Content|Content(1:0;androidx.compose.ui.Modifier;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+abstract fun interface com.slack.circuit.subcircuit/SubPresenterFactory { // com.slack.circuit.subcircuit/SubPresenterFactory|null[0]
+    abstract fun create(com.slack.circuit.subcircuit/SubScreen<*>): com.slack.circuit.subcircuit/SubPresenter<*, *>? // com.slack.circuit.subcircuit/SubPresenterFactory.create|create(com.slack.circuit.subcircuit.SubScreen<*>){}[0]
+}
+
+abstract fun interface com.slack.circuit.subcircuit/SubUiFactory { // com.slack.circuit.subcircuit/SubUiFactory|null[0]
+    abstract fun create(com.slack.circuit.subcircuit/SubScreen<*>): com.slack.circuit.subcircuit/SubUi<*>? // com.slack.circuit.subcircuit/SubUiFactory.create|create(com.slack.circuit.subcircuit.SubScreen<*>){}[0]
+}
+
+abstract interface <#A: com.slack.circuit.subcircuit/SubCircuitOuterEvent, #B: com.slack.circuit.subcircuit/SubCircuitUiState> com.slack.circuit.subcircuit/SubPresenter { // com.slack.circuit.subcircuit/SubPresenter|null[0]
+    abstract fun present(kotlin/Function1<#A, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int): #B // com.slack.circuit.subcircuit/SubPresenter.present|present(kotlin.Function1<1:0,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+abstract interface <#A: com.slack.circuit.subcircuit/SubCircuitOuterEvent> com.slack.circuit.subcircuit/SubScreen // com.slack.circuit.subcircuit/SubScreen|null[0]
+
+abstract interface com.slack.circuit.subcircuit/SubCircuitOuterEvent // com.slack.circuit.subcircuit/SubCircuitOuterEvent|null[0]
+
+abstract interface com.slack.circuit.subcircuit/SubCircuitUiEvent // com.slack.circuit.subcircuit/SubCircuitUiEvent|null[0]
+
+abstract interface com.slack.circuit.subcircuit/SubCircuitUiState // com.slack.circuit.subcircuit/SubCircuitUiState|null[0]
+
+final class com.slack.circuit.subcircuit/SubCircuit { // com.slack.circuit.subcircuit/SubCircuit|null[0]
+    final fun presenter(com.slack.circuit.subcircuit/SubScreen<*>): com.slack.circuit.subcircuit/SubPresenter<*, *>? // com.slack.circuit.subcircuit/SubCircuit.presenter|presenter(com.slack.circuit.subcircuit.SubScreen<*>){}[0]
+    final fun ui(com.slack.circuit.subcircuit/SubScreen<*>): com.slack.circuit.subcircuit/SubUi<*>? // com.slack.circuit.subcircuit/SubCircuit.ui|ui(com.slack.circuit.subcircuit.SubScreen<*>){}[0]
+
+    final class Builder { // com.slack.circuit.subcircuit/SubCircuit.Builder|null[0]
+        constructor <init>() // com.slack.circuit.subcircuit/SubCircuit.Builder.<init>|<init>(){}[0]
+
+        final fun addPresenterFactories(kotlin.collections/Set<com.slack.circuit.subcircuit/SubPresenterFactory>): com.slack.circuit.subcircuit/SubCircuit.Builder // com.slack.circuit.subcircuit/SubCircuit.Builder.addPresenterFactories|addPresenterFactories(kotlin.collections.Set<com.slack.circuit.subcircuit.SubPresenterFactory>){}[0]
+        final fun addPresenterFactory(com.slack.circuit.subcircuit/SubPresenterFactory): com.slack.circuit.subcircuit/SubCircuit.Builder // com.slack.circuit.subcircuit/SubCircuit.Builder.addPresenterFactory|addPresenterFactory(com.slack.circuit.subcircuit.SubPresenterFactory){}[0]
+        final fun addUiFactories(kotlin.collections/Set<com.slack.circuit.subcircuit/SubUiFactory>): com.slack.circuit.subcircuit/SubCircuit.Builder // com.slack.circuit.subcircuit/SubCircuit.Builder.addUiFactories|addUiFactories(kotlin.collections.Set<com.slack.circuit.subcircuit.SubUiFactory>){}[0]
+        final fun addUiFactory(com.slack.circuit.subcircuit/SubUiFactory): com.slack.circuit.subcircuit/SubCircuit.Builder // com.slack.circuit.subcircuit/SubCircuit.Builder.addUiFactory|addUiFactory(com.slack.circuit.subcircuit.SubUiFactory){}[0]
+        final fun build(): com.slack.circuit.subcircuit/SubCircuit // com.slack.circuit.subcircuit/SubCircuit.Builder.build|build(){}[0]
+    }
+
+    final object Companion { // com.slack.circuit.subcircuit/SubCircuit.Companion|null[0]
+        final fun builder(): com.slack.circuit.subcircuit/SubCircuit.Builder // com.slack.circuit.subcircuit/SubCircuit.Companion.builder|builder(){}[0]
+    }
+}
+
+final val com.slack.circuit.subcircuit/LocalSubCircuit // com.slack.circuit.subcircuit/LocalSubCircuit|{}LocalSubCircuit[0]
+    final fun <get-LocalSubCircuit>(): androidx.compose.runtime/ProvidableCompositionLocal<com.slack.circuit.subcircuit/SubCircuit?> // com.slack.circuit.subcircuit/LocalSubCircuit.<get-LocalSubCircuit>|<get-LocalSubCircuit>(){}[0]
+final val com.slack.circuit.subcircuit/com_slack_circuit_subcircuit_SubCircuit$stableprop // com.slack.circuit.subcircuit/com_slack_circuit_subcircuit_SubCircuit$stableprop|#static{}com_slack_circuit_subcircuit_SubCircuit$stableprop[0]
+final val com.slack.circuit.subcircuit/com_slack_circuit_subcircuit_SubCircuit_Builder$stableprop // com.slack.circuit.subcircuit/com_slack_circuit_subcircuit_SubCircuit_Builder$stableprop|#static{}com_slack_circuit_subcircuit_SubCircuit_Builder$stableprop[0]
+
+final fun <#A: com.slack.circuit.subcircuit/SubCircuitOuterEvent, #B: com.slack.circuit.subcircuit/SubCircuitUiState> com.slack.circuit.subcircuit/SubCircuitContent(com.slack.circuit.subcircuit/SubScreen<#A>, com.slack.circuit.subcircuit/SubPresenter<#A, #B>, com.slack.circuit.subcircuit/SubUi<#B>, kotlin/Function1<#A, kotlin/Unit>, androidx.compose.ui/Modifier?, kotlin/Any?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.subcircuit/SubCircuitContent|SubCircuitContent(com.slack.circuit.subcircuit.SubScreen<0:0>;com.slack.circuit.subcircuit.SubPresenter<0:0,0:1>;com.slack.circuit.subcircuit.SubUi<0:1>;kotlin.Function1<0:0,kotlin.Unit>;androidx.compose.ui.Modifier?;kotlin.Any?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<com.slack.circuit.subcircuit.SubCircuitOuterEvent>;1§<com.slack.circuit.subcircuit.SubCircuitUiState>}[0]
+final fun <#A: com.slack.circuit.subcircuit/SubCircuitOuterEvent> com.slack.circuit.subcircuit/SubCircuitContent(com.slack.circuit.subcircuit/SubScreen<#A>, kotlin/Function1<#A, kotlin/Unit>, androidx.compose.ui/Modifier?, com.slack.circuit.subcircuit/SubCircuit?, kotlin/Function5<com.slack.circuit.subcircuit/SubScreen<*>, kotlin/Boolean, kotlin/Boolean, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>?, kotlin/Any?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuit.subcircuit/SubCircuitContent|SubCircuitContent(com.slack.circuit.subcircuit.SubScreen<0:0>;kotlin.Function1<0:0,kotlin.Unit>;androidx.compose.ui.Modifier?;com.slack.circuit.subcircuit.SubCircuit?;kotlin.Function5<com.slack.circuit.subcircuit.SubScreen<*>,kotlin.Boolean,kotlin.Boolean,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?;kotlin.Any?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<com.slack.circuit.subcircuit.SubCircuitOuterEvent>}[0]
+final fun com.slack.circuit.subcircuit/com_slack_circuit_subcircuit_SubCircuit$stableprop_getter(): kotlin/Int // com.slack.circuit.subcircuit/com_slack_circuit_subcircuit_SubCircuit$stableprop_getter|com_slack_circuit_subcircuit_SubCircuit$stableprop_getter(){}[0]
+final fun com.slack.circuit.subcircuit/com_slack_circuit_subcircuit_SubCircuit_Builder$stableprop_getter(): kotlin/Int // com.slack.circuit.subcircuit/com_slack_circuit_subcircuit_SubCircuit_Builder$stableprop_getter|com_slack_circuit_subcircuit_SubCircuit_Builder$stableprop_getter(){}[0]

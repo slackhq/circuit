@@ -19,3 +19,4 @@ These packages differ from Circuit's core artifacts in a few ways:
 | `com.slack.circuit:circuitx-gesture-navigation` | [Gesture Navigation](circuitx/gesture-navigation.md) |
 | `com.slack.circuit:circuitx-navigation`         | [Navigation](circuitx/navigation.md)                 |
 | `com.slack.circuit:circuitx-overlays`           | [Overlays](circuitx/overlays.md)                     |
+| `com.slack.circuit:circuitx-subcircuit`         | [SubCircuit](circuitx/subcircuit.md)                 |

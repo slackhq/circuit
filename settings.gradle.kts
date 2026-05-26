@@ -228,6 +228,7 @@ include(
   ":circuitx:android",
   ":circuitx:effects",
   ":circuitx:gesture-navigation",
+  ":circuitx:nav-stage",
   ":circuitx:navigation",
   ":circuitx:overlays",
   ":circuitx:subcircuit",

@@ -1,0 +1,28 @@
+// Copyright (C) 2025 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
+package com.slack.circuitx.navstage
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.slack.circuit.runtime.navigation.NavArgument
+import com.slack.circuit.runtime.navigation.NavStackList
+
+@ExperimentalNavStageApi
+public class SinglePaneNavStage<T : NavArgument> : NavStage<T> {
+  override val key: Any = "single-pane"
+
+  @Composable
+  override fun Content(
+    args: NavStackList<T>,
+    paneScope: NavStagePaneScope<T>,
+    modifier: Modifier,
+  ) {
+    Box(modifier) {
+      paneScope.Pane(
+        key = "single",
+        item = args.active,
+      )
+    }
+  }
+}

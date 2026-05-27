@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Slack Technologies, LLC
+// Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
@@ -37,9 +37,7 @@ public interface NavStageTransition {
           targetState: NavStageTransitionState<T>,
           content: @Composable (NavStageTransitionState<T>) -> Unit,
         ) {
-          Crossfade(targetState = targetState.stageKey) {
-            content(targetState)
-          }
+          Crossfade(targetState = targetState.stageKey) { content(targetState) }
         }
       }
   }

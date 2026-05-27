@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Slack Technologies, LLC
+// Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
@@ -10,6 +10,5 @@ import com.slack.circuit.runtime.navigation.NavStackList
 @Stable
 @ExperimentalNavStageApi
 public interface NavStageStrategy {
-  @Composable
-  public fun <T : NavArgument> calculateStage(args: NavStackList<T>): NavStage<T>?
+  @Composable public fun <T : NavArgument> calculateStage(args: NavStackList<T>): NavStage<T>?
 }

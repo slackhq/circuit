@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Slack Technologies, LLC
+// Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.navigation
 
@@ -27,11 +27,9 @@ import com.slack.circuit.runtime.ui.ui
 import com.slack.circuitx.navstage.DetailPane
 import com.slack.circuitx.navstage.ListPane
 
-@Parcelize
-data object ItemListScreen : Screen, ListPane
+@Parcelize data object ItemListScreen : Screen, ListPane
 
-@Parcelize
-data class ItemDetailScreen(val itemId: Int) : Screen, DetailPane
+@Parcelize data class ItemDetailScreen(val itemId: Int) : Screen, DetailPane
 
 data class ItemListState(val items: List<String>, val eventSink: (ItemListEvent) -> Unit) :
   CircuitUiState
@@ -59,8 +57,9 @@ class ItemDetailPresenter(private val screen: ItemDetailScreen) : Presenter<Item
   override fun present(): ItemDetailState {
     return ItemDetailState(
       title = "Item ${screen.itemId + 1}",
-      body = "Detail content for item ${screen.itemId + 1}. " +
-        "This demonstrates the list-detail nav stage pattern.",
+      body =
+        "Detail content for item ${screen.itemId + 1}. " +
+          "This demonstrates the list-detail nav stage pattern.",
     )
   }
 }
@@ -95,7 +94,11 @@ fun ItemDetailUi(state: ItemDetailState, modifier: Modifier = Modifier) {
 }
 
 object ListDetailScreenFactory : Presenter.Factory, Ui.Factory {
-  override fun create(screen: Screen, navigator: Navigator, context: CircuitContext): Presenter<*>? {
+  override fun create(
+    screen: Screen,
+    navigator: Navigator,
+    context: CircuitContext,
+  ): Presenter<*>? {
     return when (screen) {
       is ItemListScreen -> ItemListPresenter(navigator)
       is ItemDetailScreen -> ItemDetailPresenter(screen)
@@ -106,9 +109,8 @@ object ListDetailScreenFactory : Presenter.Factory, Ui.Factory {
   override fun create(screen: Screen, context: CircuitContext): Ui<*>? {
     return when (screen) {
       is ItemListScreen -> ui<ItemListState> { state, modifier -> ItemListUi(state, modifier) }
-      is ItemDetailScreen -> ui<ItemDetailState> { state, modifier ->
-        ItemDetailUi(state, modifier)
-      }
+      is ItemDetailScreen ->
+        ui<ItemDetailState> { state, modifier -> ItemDetailUi(state, modifier) }
       else -> null
     }
   }

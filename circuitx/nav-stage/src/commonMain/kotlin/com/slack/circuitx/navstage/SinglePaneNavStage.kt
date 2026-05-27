@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Slack Technologies, LLC
+// Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
@@ -13,16 +13,7 @@ public class SinglePaneNavStage<T : NavArgument> : NavStage<T> {
   override val key: Any = "single-pane"
 
   @Composable
-  override fun Content(
-    args: NavStackList<T>,
-    paneScope: NavStagePaneScope<T>,
-    modifier: Modifier,
-  ) {
-    Box(modifier) {
-      paneScope.Pane(
-        key = "single",
-        item = args.active,
-      )
-    }
+  override fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
+    Box(modifier) { paneScope.Pane(key = "single", item = args.active) }
   }
 }

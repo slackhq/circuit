@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Slack Technologies, LLC
+// Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
@@ -41,11 +41,13 @@ public interface PaneTransition {
             contentKey = { it.key },
             transitionSpec = {
               if (isForward) {
-                (slideInHorizontally(tween()) { it / 4 } + fadeIn(tween()))
-                  .togetherWith(slideOutHorizontally(tween()) { -it / 4 } + fadeOut(tween()))
+                (slideInHorizontally(tween()) { it / 4 } + fadeIn(tween())).togetherWith(
+                  slideOutHorizontally(tween()) { -it / 4 } + fadeOut(tween())
+                )
               } else {
-                (slideInHorizontally(tween()) { -it / 4 } + fadeIn(tween()))
-                  .togetherWith(slideOutHorizontally(tween()) { it / 4 } + fadeOut(tween()))
+                (slideInHorizontally(tween()) { -it / 4 } + fadeIn(tween())).togetherWith(
+                  slideOutHorizontally(tween()) { it / 4 } + fadeOut(tween())
+                )
               }
             },
           ) { item ->
@@ -76,9 +78,7 @@ public interface PaneTransition {
           navEvent: PaneNavEvent,
           content: @Composable (T) -> Unit,
         ) {
-          Crossfade(targetState = targetItem.key) {
-            content(targetItem)
-          }
+          Crossfade(targetState = targetItem.key) { content(targetItem) }
         }
       }
   }

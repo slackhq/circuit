@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Slack Technologies, LLC
+// Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
@@ -14,9 +14,5 @@ public interface NavStage<T : NavArgument> {
   public val key: Any
 
   @Composable
-  public fun Content(
-    args: NavStackList<T>,
-    paneScope: NavStagePaneScope<T>,
-    modifier: Modifier,
-  )
+  public fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier)
 }

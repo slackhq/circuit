@@ -50,12 +50,13 @@ fun ContentScaffold(
   tabs: List<TabScreen>,
   modifier: Modifier = Modifier,
 ) {
-  val decoration = remember(navigator) {
-    NavStageDecoration(
-      strategy = ListDetailNavStageStrategy(),
-      stageTransition = GestureNavStageTransition(onBack = { navigator.pop() }),
-    )
-  }
+  val decoration =
+    remember(navigator) {
+      NavStageDecoration(
+        strategy = ListDetailNavStageStrategy(),
+        stageTransition = GestureNavStageTransition(onBack = { navigator.pop() }),
+      )
+    }
   Scaffold(
     modifier = modifier.testTag(ContentTags.TAG_SCAFFOLD).fillMaxSize(),
     bottomBar = { BottomTabRow(tabs, navStack, navigator) },

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Slack Technologies, LLC
+// Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
@@ -11,7 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
 import com.slack.circuit.runtime.InternalCircuitApi
@@ -19,9 +18,7 @@ import com.slack.circuit.runtime.navigation.NavArgument
 import kotlin.math.abs
 
 @ExperimentalNavStageApi
-public class GestureNavStageTransition(
-  private val onBack: () -> Unit,
-) : NavStageTransition {
+public class GestureNavStageTransition(private val onBack: () -> Unit) : NavStageTransition {
 
   @OptIn(InternalCircuitApi::class)
   @Composable

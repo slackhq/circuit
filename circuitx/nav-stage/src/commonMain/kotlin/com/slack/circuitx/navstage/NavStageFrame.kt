@@ -9,6 +9,12 @@ import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 
+/**
+ * Wraps the entire stage content with a decorative frame (e.g. borders, elevation, clipping).
+ *
+ * The frame receives the resolved [NavStage] and full [NavStackList] so it can adapt its decoration
+ * based on the active layout. [None] applies no decoration beyond a simple [Box].
+ */
 @Stable
 @ExperimentalNavStageApi
 public interface NavStageFrame {

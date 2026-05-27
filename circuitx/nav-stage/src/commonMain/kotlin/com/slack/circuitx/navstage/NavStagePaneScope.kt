@@ -7,6 +7,12 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.navigation.NavArgument
 
+/**
+ * Scope provided to [NavStage.Content] for placing navigation items into panes.
+ *
+ * Each [Pane] call renders a single navigation item with its own independent [PaneTransition]
+ * animation when the item within that pane changes.
+ */
 @Stable
 @ExperimentalNavStageApi
 public interface NavStagePaneScope<T : NavArgument> {

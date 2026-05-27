@@ -13,6 +13,10 @@ import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
 
+/**
+ * Strategy that activates [ListDetailNavStage] on medium+ width screens when the active screen is a
+ * detail pane and the back stack contains a list pane.
+ */
 @ExperimentalNavStageApi
 public class ListDetailNavStageStrategy(
   private val isListPane: (Screen) -> Boolean = { it is ListPane },
@@ -33,6 +37,7 @@ public class ListDetailNavStageStrategy(
   }
 }
 
+/** Dual-pane stage that renders a list pane (40%) beside a detail pane (60%) in a horizontal row. */
 @ExperimentalNavStageApi
 public class ListDetailNavStage<T : NavArgument>(private val isListPane: (Screen) -> Boolean) :
   NavStage<T> {

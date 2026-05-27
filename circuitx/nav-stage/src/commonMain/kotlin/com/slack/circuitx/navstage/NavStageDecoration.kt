@@ -13,6 +13,12 @@ import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 
+/**
+ * A [NavDecoration] that delegates layout to a [NavStageStrategy]-resolved [NavStage].
+ *
+ * Composes a [NavStageTransition] around the stage content and an optional [NavStageFrame] around
+ * everything. When the strategy returns `null`, falls back to [SinglePaneNavStage].
+ */
 @Stable
 @ExperimentalNavStageApi
 public class NavStageDecoration(

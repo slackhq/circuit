@@ -51,9 +51,9 @@ sealed interface TabScreen : Screen {
 
   @Parcelize @Serializable data class Screen3(override val label: String = "Screen 3") : TabScreen
 
-  fun next(): TabScreen {
+  fun next(): Screen {
     return when (this) {
-      is Root -> Screen1()
+      is Root -> ItemListScreen
       is Screen1 -> Screen2()
       is Screen2 -> Screen3()
       is Screen3 -> Root()

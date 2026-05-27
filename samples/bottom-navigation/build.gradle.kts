@@ -38,8 +38,10 @@ kotlin {
         implementation(projects.circuitFoundation)
         implementation(projects.circuitSerialization)
         implementation(projects.circuitx.gestureNavigation)
+        implementation(projects.circuitx.navStage)
         implementation(projects.circuitx.navigation)
         implementation(projects.internalRuntime)
+        implementation(libs.windowSizeClass)
       }
     }
     androidMain {}
@@ -65,6 +67,7 @@ kotlin {
       compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
         optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
+        optIn.add("com.slack.circuitx.navstage.ExperimentalNavStageApi")
       }
     }
   }

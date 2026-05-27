@@ -7,7 +7,6 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.serialization.SerializableCircuitSaver
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
@@ -22,8 +21,9 @@ fun buildCircuitForTabs(
         addPresenterFactory(TabPresenter.Factory(tab::class))
         addUiFactory(TabUiFactory(tab::class))
       }
+      addPresenterFactory(ListDetailScreenFactory)
+      addUiFactory(ListDetailScreenFactory)
     }
-    .setAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory())
     .setCircuitSaver(circuitSaver)
     .build()
 }

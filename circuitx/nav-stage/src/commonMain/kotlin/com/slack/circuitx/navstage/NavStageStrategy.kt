@@ -10,8 +10,8 @@ import com.slack.circuit.runtime.navigation.NavStackList
 /**
  * Determines which [NavStage] to use for a given navigation stack state.
  *
- * Returns `null` to fall back to [SinglePaneNavStage]. Implementations typically inspect window size
- * class and stack contents to decide between single-pane and multi-pane layouts.
+ * Returns `null` to fall back to [SinglePaneNavStage]. Implementations typically inspect window
+ * size class and stack contents to decide between single-pane and multi-pane layouts.
  */
 @Stable
 @ExperimentalNavStageApi

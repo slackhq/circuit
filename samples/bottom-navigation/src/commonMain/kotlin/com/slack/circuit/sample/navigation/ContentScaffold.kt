@@ -4,6 +4,7 @@ package com.slack.circuit.sample.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -35,13 +36,18 @@ import androidx.compose.ui.unit.dp
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
+import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.navigation.NavStack.Record
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuitx.navstage.ExperimentalNavStageApi
 import com.slack.circuitx.navstage.GestureNavStageTransition
 import com.slack.circuitx.navstage.ListDetailNavStageStrategy
+import com.slack.circuitx.navstage.NavStage
 import com.slack.circuitx.navstage.NavStageDecoration
+import com.slack.circuitx.navstage.NavStageFrame
 
+@Suppress("ComposeModifierReused")
 @OptIn(ExperimentalNavStageApi::class)
 @Composable
 fun ContentScaffold(
@@ -53,8 +59,21 @@ fun ContentScaffold(
   val decoration =
     remember(navigator) {
       NavStageDecoration(
-        strategy = ListDetailNavStageStrategy(),
+        strategies = listOf(ListDetailNavStageStrategy()),
         stageTransition = GestureNavStageTransition(onBack = { navigator.pop() }),
+        frame =
+          object : NavStageFrame {
+            @Suppress("ComposeModifierReused")
+            @Composable
+            override fun <T : NavArgument> Content(
+              modifier: Modifier,
+              stage: NavStage<T>,
+              args: NavStackList<T>,
+              stageContent: @Composable (() -> Unit),
+            ) {
+              Box(modifier.background(Color.LightGray).padding(8.dp)) { stageContent() }
+            }
+          },
       )
     }
   Scaffold(

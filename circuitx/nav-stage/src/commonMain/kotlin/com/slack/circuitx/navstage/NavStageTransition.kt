@@ -49,7 +49,10 @@ public interface NavStageTransition {
   }
 }
 
-/** Snapshot of the current stage layout and navigation stack, used as the target for stage transitions. */
+/**
+ * Snapshot of the current stage layout and navigation stack, used as the target for stage
+ * transitions.
+ */
 @Immutable
 @ExperimentalNavStageApi
 public data class NavStageTransitionState<T : NavArgument>(

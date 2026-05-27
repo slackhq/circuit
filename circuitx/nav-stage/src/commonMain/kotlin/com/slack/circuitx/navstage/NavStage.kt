@@ -18,10 +18,14 @@ import com.slack.circuit.runtime.navigation.NavStackList
 @Stable
 @ExperimentalNavStageApi
 public interface NavStage<T : NavArgument> {
-  /** Stable identity for this stage layout. Transitions animate between stages with different keys. */
+  /**
+   * Stable identity for this stage layout. Transitions animate between stages with different keys.
+   */
   public val key: Any
 
-  /** Renders the stage layout, using [paneScope] to place individual navigation items into panes. */
+  /**
+   * Renders the stage layout, using [paneScope] to place individual navigation items into panes.
+   */
   @Composable
   public fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier)
 }

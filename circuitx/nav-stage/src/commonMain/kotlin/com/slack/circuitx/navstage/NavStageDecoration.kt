@@ -57,23 +57,26 @@ internal fun <T : NavArgument> NavStageContent(
 
 @OptIn(ExperimentalNavStageApi::class)
 private fun <T : NavArgument> determineNavEvent(
-  previous: NavStackList<T>,
-  current: NavStackList<T>,
+  initial: NavStackList<T>,
+  target: NavStackList<T>,
 ): PaneNavEvent {
-  if (previous.root.key != current.root.key) return PaneNavEvent.RootReset
+  if (initial.root.key != target.root.key) return PaneNavEvent.RootReset
 
-  val previousActive = previous.active
-  val currentActive = current.active
+  val previous = initial.active
+  val current = target.active
 
-  if (previousActive.key == currentActive.key) return PaneNavEvent.GoTo
+  if (previous.key == current.key) return PaneNavEvent.GoTo
 
-  val currentInPreviousBackward = current.backwardItems.any { it.key == previousActive.key }
-  val previousInCurrentForward = current.forwardItems.any { it.key == previousActive.key }
+  val initialBackStack = initial.backwardItems
+  val initialForwardStack = initial.forwardItems
+  val targetForwardStack = target.forwardItems
 
   return when {
-    previousInCurrentForward -> PaneNavEvent.Pop
-    currentInPreviousBackward -> PaneNavEvent.Backward
-    current.forwardItems.any { it.key == currentActive.key } -> PaneNavEvent.Forward
+    current in initialBackStack &&
+      previous !in initialForwardStack &&
+      previous in targetForwardStack -> PaneNavEvent.Backward
+    current in initialBackStack && previous !in targetForwardStack -> PaneNavEvent.Pop
+    current in initialForwardStack && current !in targetForwardStack -> PaneNavEvent.Forward
     else -> PaneNavEvent.GoTo
   }
 }

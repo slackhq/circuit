@@ -3,7 +3,7 @@
 package com.slack.circuitx.navstage
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,7 +16,7 @@ import com.slack.circuit.runtime.navigation.NavArgument
 
 @Stable
 @ExperimentalNavStageApi
-public fun interface PaneTransition {
+public interface PaneTransition {
   @Composable
   public fun <T : NavArgument> AnimatedPaneContent(
     targetItem: T,
@@ -26,37 +26,61 @@ public fun interface PaneTransition {
   )
 
   public companion object {
-    public val Default: PaneTransition = PaneTransition { targetItem, _, navEvent, content ->
-      val isForward = navEvent == PaneNavEvent.GoTo || navEvent == PaneNavEvent.Forward
-      AnimatedContent(
-        targetState = targetItem,
-        contentKey = { it.key },
-        transitionSpec = {
-          if (isForward) {
-            (slideInHorizontally(tween()) { it / 4 } + fadeIn(tween()))
-              .togetherWith(slideOutHorizontally(tween()) { -it / 4 } + fadeOut(tween()))
-          } else {
-            (slideInHorizontally(tween()) { -it / 4 } + fadeIn(tween()))
-              .togetherWith(slideOutHorizontally(tween()) { it / 4 } + fadeOut(tween()))
+    public val Default: PaneTransition =
+      object : PaneTransition {
+        @Composable
+        override fun <T : NavArgument> AnimatedPaneContent(
+          targetItem: T,
+          paneKey: Any,
+          navEvent: PaneNavEvent,
+          content: @Composable (T) -> Unit,
+        ) {
+          val isForward = navEvent == PaneNavEvent.GoTo || navEvent == PaneNavEvent.Forward
+          AnimatedContent(
+            targetState = targetItem,
+            contentKey = { it.key },
+            transitionSpec = {
+              if (isForward) {
+                (slideInHorizontally(tween()) { it / 4 } + fadeIn(tween()))
+                  .togetherWith(slideOutHorizontally(tween()) { -it / 4 } + fadeOut(tween()))
+              } else {
+                (slideInHorizontally(tween()) { -it / 4 } + fadeIn(tween()))
+                  .togetherWith(slideOutHorizontally(tween()) { it / 4 } + fadeOut(tween()))
+              }
+            },
+          ) { item ->
+            content(item)
           }
-        },
-      ) { item ->
-        content(item)
+        }
       }
-    }
 
-    public val None: PaneTransition = PaneTransition { targetItem, _, _, content ->
-      content(targetItem)
-    }
-
-    public val Crossfade: PaneTransition = PaneTransition { targetItem, _, _, content ->
-      androidx.compose.animation.Crossfade(
-        targetState = targetItem,
-        contentKey = { it.key },
-      ) { item ->
-        content(item)
+    public val None: PaneTransition =
+      object : PaneTransition {
+        @Composable
+        override fun <T : NavArgument> AnimatedPaneContent(
+          targetItem: T,
+          paneKey: Any,
+          navEvent: PaneNavEvent,
+          content: @Composable (T) -> Unit,
+        ) {
+          content(targetItem)
+        }
       }
-    }
+
+    public val Crossfade: PaneTransition =
+      object : PaneTransition {
+        @Composable
+        override fun <T : NavArgument> AnimatedPaneContent(
+          targetItem: T,
+          paneKey: Any,
+          navEvent: PaneNavEvent,
+          content: @Composable (T) -> Unit,
+        ) {
+          Crossfade(targetState = targetItem.key) {
+            content(targetItem)
+          }
+        }
+      }
   }
 }
 

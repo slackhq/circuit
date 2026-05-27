@@ -11,7 +11,7 @@ import com.slack.circuit.runtime.navigation.NavStackList
 
 @Stable
 @ExperimentalNavStageApi
-public fun interface NavStageFrame {
+public interface NavStageFrame {
   @Composable
   public fun <T : NavArgument> Content(
     modifier: Modifier,
@@ -21,8 +21,17 @@ public fun interface NavStageFrame {
   )
 
   public companion object {
-    public val None: NavStageFrame = NavStageFrame { modifier, _, _, stageContent ->
-      Box(modifier) { stageContent() }
-    }
+    public val None: NavStageFrame =
+      object : NavStageFrame {
+        @Composable
+        override fun <T : NavArgument> Content(
+          modifier: Modifier,
+          stage: NavStage<T>,
+          args: NavStackList<T>,
+          stageContent: @Composable () -> Unit,
+        ) {
+          Box(modifier) { stageContent() }
+        }
+      }
   }
 }

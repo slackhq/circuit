@@ -505,7 +505,10 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
             )
           }
         }
-        // Remove saved states for records that are no longer in the back stack
+        // Remove saved states for records that are no longer in the back stack.
+        // Keep this inside SaveableStateProvider so the active registry's state is saved and the
+        // registry is unregistered before this effect calls removeState().
+        // Otherwise a popped record could remain in the saved state map.
         DisposableEffect(record.registryKey) {
           onDispose {
             if (!lastNavigator.navStack.containsRecord(record, includeSaved = true)) {

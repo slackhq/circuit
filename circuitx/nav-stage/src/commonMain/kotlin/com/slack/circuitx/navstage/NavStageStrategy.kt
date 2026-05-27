@@ -9,7 +9,7 @@ import com.slack.circuit.runtime.navigation.NavStackList
 
 @Stable
 @ExperimentalNavStageApi
-public fun interface NavStageStrategy {
+public interface NavStageStrategy {
   @Composable
   public fun <T : NavArgument> calculateStage(args: NavStackList<T>): NavStage<T>?
 }

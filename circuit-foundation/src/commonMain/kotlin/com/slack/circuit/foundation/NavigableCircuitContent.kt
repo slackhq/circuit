@@ -505,13 +505,13 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
             )
           }
         }
-      }
-      // Remove saved states for records that are no longer in the back stack
-      DisposableEffect(record.registryKey) {
-        onDispose {
-          if (!lastNavigator.navStack.containsRecord(record, includeSaved = true)) {
-            retainedStateHolder.removeState(record.registryKey)
-            saveableStateHolder.removeState(record.registryKey)
+        // Remove saved states for records that are no longer in the back stack
+        DisposableEffect(record.registryKey) {
+          onDispose {
+            if (!lastNavigator.navStack.containsRecord(record, includeSaved = true)) {
+              retainedStateHolder.removeState(record.registryKey)
+              saveableStateHolder.removeState(record.registryKey)
+            }
           }
         }
       }

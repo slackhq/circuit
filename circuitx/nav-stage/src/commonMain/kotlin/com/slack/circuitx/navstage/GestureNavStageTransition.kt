@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Slack Technologies, LLC
+// SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
 import androidx.compose.animation.core.SeekableTransitionState
@@ -71,14 +73,15 @@ public class GestureNavStageTransition(private val onBack: () -> Unit) : NavStag
 
     LaunchedEffect(previous, targetState) {
       if (previous != null) {
-        snapshotFlow { swipeProgress }.collect { progress ->
-          if (progress != 0f) {
-            isSwipeInProgress = true
-            try {
-              seekableTransitionState.seekTo(fraction = abs(progress), targetState = previous)
-            } catch (_: CancellationException) {}
+        snapshotFlow { swipeProgress }
+          .collect { progress ->
+            if (progress != 0f) {
+              isSwipeInProgress = true
+              try {
+                seekableTransitionState.seekTo(fraction = abs(progress), targetState = previous)
+              } catch (_: CancellationException) {}
+            }
           }
-        }
       }
     }
 

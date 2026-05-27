@@ -22,7 +22,7 @@ import com.slack.circuit.runtime.navigation.NavStackList
 @Stable
 @ExperimentalNavStageApi
 public class NavStageDecoration(
-  private val strategy: NavStageStrategy,
+  private val strategies: List<NavStageStrategy>,
   private val stageTransition: NavStageTransition = NavStageTransition.None,
   private val frame: NavStageFrame = NavStageFrame.None,
 ) : NavDecoration {
@@ -33,7 +33,9 @@ public class NavStageDecoration(
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {
-    val stage = strategy.calculateStage(args) ?: SinglePaneNavStage()
+    val stage =
+      strategies.firstNotNullOfOrNull { it.calculateStage(args) }
+        ?: remember { SinglePaneNavStage() }
     frame.Content(modifier, stage, args) { NavStageContent(stage, args, stageTransition, content) }
   }
 }
@@ -81,6 +83,7 @@ private fun <T : NavArgument> determineNavEvent(
     current in initialBackStack &&
       previous !in initialForwardStack &&
       previous in targetForwardStack -> PaneNavEvent.Backward
+
     current in initialBackStack && previous !in targetForwardStack -> PaneNavEvent.Pop
     current in initialForwardStack && current !in targetForwardStack -> PaneNavEvent.Forward
     else -> PaneNavEvent.GoTo

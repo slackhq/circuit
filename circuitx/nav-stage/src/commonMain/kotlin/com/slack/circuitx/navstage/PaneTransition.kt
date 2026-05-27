@@ -10,8 +10,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.navigation.NavArgument
 
 /**
@@ -28,6 +30,7 @@ public interface PaneTransition {
     targetItem: T,
     paneKey: Any,
     navEvent: PaneNavEvent,
+    modifier: Modifier = Modifier,
     content: @Composable (T) -> Unit,
   )
 
@@ -39,12 +42,14 @@ public interface PaneTransition {
           targetItem: T,
           paneKey: Any,
           navEvent: PaneNavEvent,
+          modifier: Modifier,
           content: @Composable (T) -> Unit,
         ) {
           val isForward = navEvent == PaneNavEvent.GoTo || navEvent == PaneNavEvent.Forward
           AnimatedContent(
             targetState = targetItem,
             contentKey = { it.key },
+            modifier = modifier,
             transitionSpec = {
               if (isForward) {
                 (slideInHorizontally(tween()) { it / 4 } + fadeIn(tween())).togetherWith(
@@ -69,9 +74,10 @@ public interface PaneTransition {
           targetItem: T,
           paneKey: Any,
           navEvent: PaneNavEvent,
+          modifier: Modifier,
           content: @Composable (T) -> Unit,
         ) {
-          content(targetItem)
+          Box(modifier) { content(targetItem) }
         }
       }
 
@@ -82,9 +88,10 @@ public interface PaneTransition {
           targetItem: T,
           paneKey: Any,
           navEvent: PaneNavEvent,
+          modifier: Modifier,
           content: @Composable (T) -> Unit,
         ) {
-          Crossfade(targetState = targetItem.key) { content(targetItem) }
+          Crossfade(targetState = targetItem.key, modifier = modifier) { content(targetItem) }
         }
       }
   }

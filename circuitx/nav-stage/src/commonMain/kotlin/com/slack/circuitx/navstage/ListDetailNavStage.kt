@@ -13,6 +13,12 @@ import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
 
+/** Marker interface for screens that act as the list pane in a [ListDetailNavStage]. */
+@ExperimentalNavStageApi public interface ListPane
+
+/** Marker interface for screens that act as the detail pane in a [ListDetailNavStage]. */
+@ExperimentalNavStageApi public interface DetailPane
+
 /**
  * Strategy that activates [ListDetailNavStage] on medium+ width screens when the active screen is a
  * detail pane and the back stack contains a list pane.
@@ -37,7 +43,9 @@ public class ListDetailNavStageStrategy(
   }
 }
 
-/** Dual-pane stage that renders a list pane (40%) beside a detail pane (60%) in a horizontal row. */
+/**
+ * Dual-pane stage that renders a list pane (40%) beside a detail pane (60%) in a horizontal row.
+ */
 @ExperimentalNavStageApi
 public class ListDetailNavStage<T : NavArgument>(private val isListPane: (Screen) -> Boolean) :
   NavStage<T> {
@@ -48,6 +56,9 @@ public class ListDetailNavStage<T : NavArgument>(private val isListPane: (Screen
     val detailItem = args.active
     val listItem = args.backwardItems.first { isListPane(it.screen) }
 
+    // TODO Problems
+    //   - If the list item moves between here and Single it blows up (key was used multiple times)
+    //   - This needs to animate content panes in/out, can use the Compose component for this too.
     Row(modifier.fillMaxSize()) {
       paneScope.Pane(key = "list", item = listItem, modifier = Modifier.weight(0.4f))
       paneScope.Pane(key = "detail", item = detailItem, modifier = Modifier.weight(0.6f))

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Slack Technologies, LLC
+// Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
@@ -28,9 +28,7 @@ public class NavStageDecoration(
     content: @Composable (T) -> Unit,
   ) {
     val stage = strategy.calculateStage(args) ?: SinglePaneNavStage()
-    frame.Content(modifier, stage, args) {
-      NavStageContent(stage, args, stageTransition, content)
-    }
+    frame.Content(modifier, stage, args) { NavStageContent(stage, args, stageTransition, content) }
   }
 }
 
@@ -43,11 +41,12 @@ internal fun <T : NavArgument> NavStageContent(
   content: @Composable (T) -> Unit,
 ) {
   var previousArgs by remember { mutableStateOf(args) }
-  val navEvent = remember(args) {
-    val event = determineNavEvent(previousArgs, args)
-    previousArgs = args
-    event
-  }
+  val navEvent =
+    remember(args) {
+      val event = determineNavEvent(previousArgs, args)
+      previousArgs = args
+      event
+    }
 
   val targetState = NavStageTransitionState(stageKey = stage.key, args = args)
   stageTransition.AnimatedStageContent(targetState) { state ->

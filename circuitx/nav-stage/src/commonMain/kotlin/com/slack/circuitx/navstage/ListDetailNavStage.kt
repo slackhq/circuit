@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Slack Technologies, LLC
+// Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
@@ -34,31 +34,18 @@ public class ListDetailNavStageStrategy(
 }
 
 @ExperimentalNavStageApi
-public class ListDetailNavStage<T : NavArgument>(
-  private val isListPane: (Screen) -> Boolean,
-) : NavStage<T> {
+public class ListDetailNavStage<T : NavArgument>(private val isListPane: (Screen) -> Boolean) :
+  NavStage<T> {
   override val key: Any = "list-detail"
 
   @Composable
-  override fun Content(
-    args: NavStackList<T>,
-    paneScope: NavStagePaneScope<T>,
-    modifier: Modifier,
-  ) {
+  override fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
     val detailItem = args.active
     val listItem = args.backwardItems.first { isListPane(it.screen) }
 
     Row(modifier.fillMaxSize()) {
-      paneScope.Pane(
-        key = "list",
-        item = listItem,
-        modifier = Modifier.weight(0.4f),
-      )
-      paneScope.Pane(
-        key = "detail",
-        item = detailItem,
-        modifier = Modifier.weight(0.6f),
-      )
+      paneScope.Pane(key = "list", item = listItem, modifier = Modifier.weight(0.4f))
+      paneScope.Pane(key = "detail", item = detailItem, modifier = Modifier.weight(0.6f))
     }
   }
 }

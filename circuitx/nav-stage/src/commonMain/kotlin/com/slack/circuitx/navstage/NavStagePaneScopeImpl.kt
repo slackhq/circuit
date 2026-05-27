@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Slack Technologies, LLC
+// Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
@@ -14,11 +14,8 @@ internal class NavStagePaneScopeImpl<T : NavArgument>(
 
   @Composable
   override fun Pane(key: Any, item: T, modifier: Modifier, transition: PaneTransition) {
-    transition.AnimatedPaneContent(
-      targetItem = item,
-      paneKey = key,
-      navEvent = navEvent,
-    ) { targetItem ->
+    transition.AnimatedPaneContent(targetItem = item, paneKey = key, navEvent = navEvent) {
+      targetItem ->
       androidx.compose.foundation.layout.Box(modifier) { content(targetItem) }
     }
   }

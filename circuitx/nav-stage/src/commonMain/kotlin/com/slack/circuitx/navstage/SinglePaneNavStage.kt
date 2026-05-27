@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 
+/** Default stage that renders only the active item in a single pane. Used as the fallback when no strategy matches. */
 @ExperimentalNavStageApi
 public class SinglePaneNavStage<T : NavArgument> : NavStage<T> {
   override val key: Any = "single-pane"

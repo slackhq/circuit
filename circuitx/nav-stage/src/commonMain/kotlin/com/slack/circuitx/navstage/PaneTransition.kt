@@ -14,6 +14,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.navigation.NavArgument
 
+/**
+ * Controls the animation when the content within a single pane changes.
+ *
+ * Each pane in a [NavStage] can have its own [PaneTransition]. The [navEvent] is provided so
+ * transitions can animate directionally (e.g. slide left on forward, slide right on backward).
+ */
 @Stable
 @ExperimentalNavStageApi
 public interface PaneTransition {
@@ -84,6 +90,7 @@ public interface PaneTransition {
   }
 }
 
+/** The type of navigation event, used by [PaneTransition] to determine animation direction. */
 @ExperimentalNavStageApi
 public enum class PaneNavEvent {
   GoTo,

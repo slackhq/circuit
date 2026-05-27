@@ -9,6 +9,12 @@ import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 
+/**
+ * Controls the animation when transitioning between different [NavStage] layouts.
+ *
+ * Stage transitions animate the outer boundary when the layout type changes (e.g. single-pane to
+ * dual-pane). This is distinct from [PaneTransition] which animates individual items within a pane.
+ */
 @Stable
 @ExperimentalNavStageApi
 public interface NavStageTransition {
@@ -43,6 +49,7 @@ public interface NavStageTransition {
   }
 }
 
+/** Snapshot of the current stage layout and navigation stack, used as the target for stage transitions. */
 @Immutable
 @ExperimentalNavStageApi
 public data class NavStageTransitionState<T : NavArgument>(

@@ -22,6 +22,14 @@ import com.slack.circuit.runtime.navigation.navStackListOf
 import kotlin.math.abs
 import kotlinx.coroutines.CancellationException
 
+/**
+ * A [NavStageTransition] that drives predictive back gestures with Material motion.
+ *
+ * During the gesture, the current stage scales down and translates in the swipe direction while the
+ * previous stage is shown behind it. Builds the previous state from the navigation stack using
+ * [SeekableTransitionState] so the animation can be scrubbed interactively. Calls [onBack] when the
+ * gesture completes.
+ */
 @ExperimentalNavStageApi
 public class GestureNavStageTransition(private val onBack: () -> Unit) : NavStageTransition {
 

@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,9 +51,9 @@ sealed interface TabScreen : Screen {
 
   @Parcelize data class Screen3(override val label: String = "Screen 3") : TabScreen
 
-  fun next(): Screen {
+  fun next(): TabScreen {
     return when (this) {
-      is Root -> ItemListScreen
+      is Root -> Screen1()
       is Screen1 -> Screen2()
       is Screen2 -> Screen3()
       is Screen3 -> Root()
@@ -82,6 +83,8 @@ object TabScreenCircuit {
     data object Forward : Event
 
     data object Backward : Event
+
+    data object OpenList : Event
   }
 }
 
@@ -95,6 +98,7 @@ class TabPresenter(private val screen: TabScreen, private val navigator: Navigat
         is TabScreenCircuit.Event.Backward -> navigator.backward()
         is TabScreenCircuit.Event.Forward -> navigator.forward()
         is TabScreenCircuit.Event.Next -> navigator.goTo(screen.next())
+        is TabScreenCircuit.Event.OpenList -> navigator.goTo(ItemListScreen)
       }
     }
   }
@@ -138,6 +142,12 @@ fun TabUI(state: TabScreenCircuit.State, modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.headlineMedium,
         modifier = Modifier.testTag(ContentTags.TAG_LABEL).align(Alignment.Center),
       )
+      IconButton(
+        onClick = { state.eventSink(TabScreenCircuit.Event.OpenList) },
+        modifier = Modifier.align(Alignment.CenterEnd),
+      ) {
+        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Open List")
+      }
     }
     LazyColumn(
       modifier =

@@ -23,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,7 +37,12 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.navigation.NavStack.Record
+import com.slack.circuitx.navstage.ExperimentalNavStageApi
+import com.slack.circuitx.navstage.GestureNavStageTransition
+import com.slack.circuitx.navstage.ListDetailNavStageStrategy
+import com.slack.circuitx.navstage.NavStageDecoration
 
+@OptIn(ExperimentalNavStageApi::class)
 @Composable
 fun ContentScaffold(
   navStack: NavStack<out Record>,
@@ -44,6 +50,12 @@ fun ContentScaffold(
   tabs: List<TabScreen>,
   modifier: Modifier = Modifier,
 ) {
+  val decoration = remember(navigator) {
+    NavStageDecoration(
+      strategy = ListDetailNavStageStrategy(),
+      stageTransition = GestureNavStageTransition(onBack = { navigator.pop() }),
+    )
+  }
   Scaffold(
     modifier = modifier.testTag(ContentTags.TAG_SCAFFOLD).fillMaxSize(),
     bottomBar = { BottomTabRow(tabs, navStack, navigator) },
@@ -51,6 +63,7 @@ fun ContentScaffold(
     NavigableCircuitContent(
       navigator = navigator,
       navStack = navStack,
+      decoration = decoration,
       modifier = Modifier.padding(innerPadding).fillMaxSize(),
     )
   }

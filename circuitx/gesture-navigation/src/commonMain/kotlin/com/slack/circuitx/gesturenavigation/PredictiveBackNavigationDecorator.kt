@@ -17,15 +17,15 @@ import androidx.compose.ui.geometry.Offset
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
 import com.slack.circuit.runtime.InternalCircuitApi
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.navigation.navStackListOf
 import kotlin.math.abs
 import kotlinx.coroutines.CancellationException
 
-internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
-  private val onBackInvoked: () -> Unit
-) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
+internal abstract class PredictiveBackNavigationDecorator<T : NavArgument> :
+  AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
   protected lateinit var seekableTransitionState:
     SeekableTransitionState<GestureNavTransitionHolder<T>>
@@ -42,6 +42,12 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
 
   protected var swipeOffset: Offset by mutableStateOf(Offset.Zero)
     private set
+
+  private var navigatorState by mutableStateOf<Navigator>(Navigator.NoOp)
+
+  override fun updateNavigator(navigator: Navigator) {
+    navigatorState = navigator
+  }
 
   override fun targetState(args: NavStackList<T>): GestureNavTransitionHolder<T> {
     return GestureNavTransitionHolder(args)
@@ -90,7 +96,7 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
         swipeOffset = offset
       },
       onBackCancelled = { resetTo(current) },
-      onBackCompleted = { onBackInvoked() },
+      onBackCompleted = { navigatorState.pop() },
     )
     return rememberTransition(seekableTransitionState, label = "PredictiveBackNavigationDecorator")
   }

@@ -6,4 +6,4 @@
 // - Show declarations: true
 
 // Library unique name: <circuit-root.circuitx:gesture-navigation>
-final fun com.slack.circuitx.gesturenavigation/GestureNavigationDecorationFactory(com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory = ..., kotlin/Function0<kotlin/Unit>): com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory // com.slack.circuitx.gesturenavigation/GestureNavigationDecorationFactory|GestureNavigationDecorationFactory(com.slack.circuit.foundation.animation.AnimatedNavDecorator.Factory;kotlin.Function0<kotlin.Unit>){}[0]
+final fun com.slack.circuitx.gesturenavigation/GestureNavigationDecorationFactory(com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory = ...): com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory // com.slack.circuitx.gesturenavigation/GestureNavigationDecorationFactory|GestureNavigationDecorationFactory(com.slack.circuit.foundation.animation.AnimatedNavDecorator.Factory){}[0]

@@ -19,8 +19,6 @@ import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.GraphicsLayerScope
@@ -40,17 +38,16 @@ import kotlin.math.absoluteValue
 private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
 
 public actual fun GestureNavigationDecorationFactory(
-  fallback: AnimatedNavDecorator.Factory,
-  onBackInvoked: () -> Unit,
+  fallback: AnimatedNavDecorator.Factory
 ): AnimatedNavDecorator.Factory {
   return when {
-    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavDecorator.Factory(onBackInvoked)
+    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavDecorator.Factory()
     else -> fallback
   }
 }
 
-internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked: () -> Unit) :
-  PredictiveBackNavigationDecorator<T>(onBackInvoked) {
+internal class AndroidPredictiveBackNavDecorator<T : NavArgument> :
+  PredictiveBackNavigationDecorator<T>() {
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
@@ -104,9 +101,9 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(onBackInvoked:
     }
   }
 
-  class Factory(private val onBackInvoked: () -> Unit) : AnimatedNavDecorator.Factory {
+  class Factory : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
-      return AndroidPredictiveBackNavDecorator(onBackInvoked = onBackInvoked)
+      return AndroidPredictiveBackNavDecorator()
     }
   }
 }

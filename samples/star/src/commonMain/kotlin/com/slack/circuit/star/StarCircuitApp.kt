@@ -114,10 +114,7 @@ fun StarCircuitApp(
               NavigableCircuitContent(
                 navigator = state.navigator,
                 backStack = state.backStack,
-                decoratorFactory =
-                  remember(state.navigator) {
-                    GestureNavigationDecorationFactory(onBackInvoked = state.navigator::pop)
-                  },
+                decoratorFactory = remember { GestureNavigationDecorationFactory() },
               )
             }
           }

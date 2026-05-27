@@ -9,7 +9,7 @@ import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.Transition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
@@ -50,9 +50,7 @@ import com.slack.circuit.runtime.screen.Screen
  *
  * ```kotlin
  * data class CustomNavState<T : NavArgument>(
- *   val args: ImmutableList<T>,
- *   override val screen: Screen = args.first().screen,
- *   override val rootScreen: Screen = args.last().screen,
+ *   override val navStack: NavStackList<T>,
  * ) : AnimatedNavState
  *
  * class CustomDecorator<T : NavArgument>() : AnimatedNavDecorator<T, CustomNavState<T>> {
@@ -63,14 +61,14 @@ import com.slack.circuit.runtime.screen.Screen
  *     return slideInVertically() + fadeIn() togetherWith slideOutVertically() + fadeOut()
  *   }
  *
- *   override fun targetState(args: ImmutableList<T>): CustomNavState<T> {
+ *   override fun targetState(args: NavStackList<T>): CustomNavState<T> {
  *     // Logic to build your custom navigation state
  *     return CustomNavState(args)
  *   }
  *
  *   @Composable
  *   override fun updateTransition(
- *     args: ImmutableList<T>,
+ *     args: NavStackList<T>,
  *   ): Transition<CustomNavState<T>> {
  *     val targetState = targetState(args)
  *     return updateTransition(targetState = targetState, label = "CustomDecoratorTransition")
@@ -81,7 +79,7 @@ import com.slack.circuit.runtime.screen.Screen
  *     targetState: CustomNavState<T>,
  *     innerContent: @Composable (T) -> Unit,
  *   ) {
- *     Box(modifier = Modifier.fillMaxSize()) { innerContent(targetState.args.first()) }
+ *     Box(modifier = Modifier.fillMaxSize()) { innerContent(targetState.navStack.active) }
  *   }
  * }
  * ```
@@ -94,6 +92,13 @@ import com.slack.circuit.runtime.screen.Screen
  */
 @Stable
 public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
+
+  /**
+   * Updates the [Navigator] used by this decorator to drive navigation events. Decorators that
+   * handle back gestures must override this to receive the navigator.
+   */
+  public fun updateNavigator(navigator: Navigator) {}
+
   /** For the args create the expected target [AnimatedNavState]. */
   public fun targetState(args: NavStackList<T>): S
 

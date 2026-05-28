@@ -18,7 +18,7 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.sample.counter"
-    compileSdk = 36
+    compileSdk = 37
   }
   jvm()
   js(IR) {

@@ -14,7 +14,7 @@ plugins {
 kotlin {
   android {
     namespace = "com.slack.circuit.sample.navigation"
-    compileSdk = 36
+    compileSdk = 37
     withHostTest { isIncludeAndroidResources = true }
   }
   jvm {

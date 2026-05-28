@@ -27,7 +27,7 @@ kotlin {
   jvm()
   android {
     namespace = "com.slack.circuit.star"
-    compileSdk = 36
+    compileSdk = 37
     minSdk = 30
     androidResources { enable = true }
     withHostTest { isIncludeAndroidResources = true }

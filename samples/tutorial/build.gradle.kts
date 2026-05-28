@@ -13,7 +13,7 @@ plugins {
 kotlin {
   android {
     namespace = "com.slack.circuit.tutorial"
-    compileSdk = 36
+    compileSdk = 37
   }
   jvm {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)

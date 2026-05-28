@@ -15,7 +15,7 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.runtime.presenter"
-    compileSdk = 36
+    compileSdk = 37
   }
   jvm()
   iosArm64()

@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 val catalog = rootProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
 val jvmTargetVersion = catalog.findVersion("jvmTarget").get().requiredVersion
 val compileSdkVersion = catalog.findVersion("android-compileSdk").get().requiredVersion.toInt()
+val targetSdkVersion = catalog.findVersion("android-targetSdk").get().requiredVersion.toInt()
 val circuitExtension = extensions.getByType<CircuitProjectExtension>()
 
 // Android Library configuration
@@ -24,7 +25,7 @@ pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
         compileSdk = compileSdkVersion
         minSdk = 23
         compilations.withType(KotlinMultiplatformAndroidHostTestCompilation::class.java) {
-          targetSdk { release(compileSdkVersion) }
+          targetSdk { release(targetSdkVersion) }
         }
         lint {
           // https://issuetracker.google.com/issues/243267012
@@ -105,7 +106,7 @@ pluginManager.withPlugin("com.android.application") {
 
     defaultConfig {
       minSdk = 23
-      targetSdk = compileSdkVersion
+      targetSdk = targetSdkVersion
     }
 
     buildTypes {

@@ -15,7 +15,7 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuitx.gesturenavigation"
-    compileSdk = 36
+    compileSdk = 37
     withHostTest { isIncludeAndroidResources = true }
   }
   jvm { testRuns["test"].executionTask.configure { enabled = false } }

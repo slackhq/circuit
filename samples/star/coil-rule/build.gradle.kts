@@ -11,7 +11,7 @@ plugins {
 kotlin {
   android {
     namespace = "com.slack.circuit.sample.coil.test"
-    compileSdk = 36
+    compileSdk = 37
   }
   jvm()
 

@@ -6,4 +6,15 @@
 // - Show declarations: true
 
 // Library unique name: <circuit-root.circuitx:gesture-navigation>
-final fun com.slack.circuitx.gesturenavigation/GestureNavigationDecorationFactory(com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory = ...): com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory // com.slack.circuitx.gesturenavigation/GestureNavigationDecorationFactory|GestureNavigationDecorationFactory(com.slack.circuit.foundation.animation.AnimatedNavDecorator.Factory){}[0]
+abstract interface com.slack.circuitx.gesturenavigation/GestureNavigationEventListener { // com.slack.circuitx.gesturenavigation/GestureNavigationEventListener|null[0]
+    open fun onBackCancelled() // com.slack.circuitx.gesturenavigation/GestureNavigationEventListener.onBackCancelled|onBackCancelled(){}[0]
+    open fun onBackCompleted() // com.slack.circuitx.gesturenavigation/GestureNavigationEventListener.onBackCompleted|onBackCompleted(){}[0]
+    open fun onBackProgress(kotlin/Float) // com.slack.circuitx.gesturenavigation/GestureNavigationEventListener.onBackProgress|onBackProgress(kotlin.Float){}[0]
+
+    final object Companion { // com.slack.circuitx.gesturenavigation/GestureNavigationEventListener.Companion|null[0]
+        final val NoOp // com.slack.circuitx.gesturenavigation/GestureNavigationEventListener.Companion.NoOp|{}NoOp[0]
+            final fun <get-NoOp>(): com.slack.circuitx.gesturenavigation/GestureNavigationEventListener // com.slack.circuitx.gesturenavigation/GestureNavigationEventListener.Companion.NoOp.<get-NoOp>|<get-NoOp>(){}[0]
+    }
+}
+
+final fun com.slack.circuitx.gesturenavigation/GestureNavigationDecorationFactory(com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory = ..., com.slack.circuitx.gesturenavigation/GestureNavigationEventListener = ...): com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory // com.slack.circuitx.gesturenavigation/GestureNavigationDecorationFactory|GestureNavigationDecorationFactory(com.slack.circuit.foundation.animation.AnimatedNavDecorator.Factory;com.slack.circuitx.gesturenavigation.GestureNavigationEventListener){}[0]

@@ -38,16 +38,18 @@ import kotlin.math.absoluteValue
 private val DecelerateEasing = CubicBezierEasing(0f, 0f, 0f, 1f)
 
 public actual fun GestureNavigationDecorationFactory(
-  fallback: AnimatedNavDecorator.Factory
+  fallback: AnimatedNavDecorator.Factory,
+  listener: GestureNavigationEventListener,
 ): AnimatedNavDecorator.Factory {
   return when {
-    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavDecorator.Factory()
+    Build.VERSION.SDK_INT >= 34 -> AndroidPredictiveBackNavDecorator.Factory(listener)
     else -> fallback
   }
 }
 
-internal class AndroidPredictiveBackNavDecorator<T : NavArgument> :
-  PredictiveBackNavigationDecorator<T>() {
+internal class AndroidPredictiveBackNavDecorator<T : NavArgument>(
+  eventListener: GestureNavigationEventListener = GestureNavigationEventListener.NoOp
+) : PredictiveBackNavigationDecorator<T>(eventListener) {
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
@@ -101,9 +103,11 @@ internal class AndroidPredictiveBackNavDecorator<T : NavArgument> :
     }
   }
 
-  class Factory : AnimatedNavDecorator.Factory {
+  class Factory(
+    private val eventListener: GestureNavigationEventListener = GestureNavigationEventListener.NoOp
+  ) : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
-      return AndroidPredictiveBackNavDecorator()
+      return AndroidPredictiveBackNavDecorator(eventListener)
     }
   }
 }

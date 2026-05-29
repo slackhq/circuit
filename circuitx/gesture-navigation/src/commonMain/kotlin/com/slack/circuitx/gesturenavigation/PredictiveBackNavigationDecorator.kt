@@ -24,8 +24,9 @@ import com.slack.circuit.runtime.navigation.navStackListOf
 import kotlin.math.abs
 import kotlinx.coroutines.CancellationException
 
-internal abstract class PredictiveBackNavigationDecorator<T : NavArgument> :
-  AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
+internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
+  private val eventListener: GestureNavigationEventListener = GestureNavigationEventListener.NoOp
+) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
   protected lateinit var seekableTransitionState:
     SeekableTransitionState<GestureNavTransitionHolder<T>>
@@ -94,9 +95,18 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument> :
         showPrevious = progress != 0f
         swipeProgress = progress
         swipeOffset = offset
+        if (progress != 0f) {
+          eventListener.onBackProgress(progress)
+        }
       },
-      onBackCancelled = { resetTo(current) },
-      onBackCompleted = { navigatorState.pop() },
+      onBackCancelled = {
+        resetTo(current)
+        eventListener.onBackCancelled()
+      },
+      onBackCompleted = {
+        navigatorState.pop()
+        eventListener.onBackCompleted()
+      },
     )
     return rememberTransition(seekableTransitionState, label = "PredictiveBackNavigationDecorator")
   }

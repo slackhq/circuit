@@ -66,20 +66,20 @@ class InboxListPresenterTest {
     val presenter = InboxListPresenter(screen, FakeNavigator(screen), repository)
     presenter.test {
       awaitPopulated().eventSink(InboxListScreen.Event.FolderChanged(EmailFolder.Starred))
-      val starred =
-        awaitMatching {
-          it.folder == EmailFolder.Starred &&
-            it.emails.isNotEmpty() &&
-            it.emails.all { e -> e.isStarred }
-        }
+      val starred = awaitMatching {
+        it.folder == EmailFolder.Starred &&
+          it.emails.isNotEmpty() &&
+          it.emails.all { e -> e.isStarred }
+      }
       assertThat(starred.emails.map { it.id }).containsExactly("3")
       assertThat(starred.emails.single().isStarred).isTrue()
     }
   }
 }
 
-private suspend fun CircuitReceiveTurbine<InboxListScreen.State>.awaitPopulated() =
-  awaitMatching { it.emails.isNotEmpty() }
+private suspend fun CircuitReceiveTurbine<InboxListScreen.State>.awaitPopulated() = awaitMatching {
+  it.emails.isNotEmpty()
+}
 
 private suspend inline fun CircuitReceiveTurbine<InboxListScreen.State>.awaitMatching(
   crossinline predicate: (InboxListScreen.State) -> Boolean

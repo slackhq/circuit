@@ -20,8 +20,8 @@ import kotlinx.coroutines.flow.collect
 /**
  * Detail presenter that works both as a standalone screen and as a child of the composite inbox.
  *
- * Back and archive always call [Navigator.pop]. A standalone screen pops the back stack, while
- * the composite turns that pop into clearing the current selection.
+ * Back and archive always call [Navigator.pop]. A standalone screen pops the back stack, while the
+ * composite turns that pop into clearing the current selection.
  */
 @AssistedInject
 class EmailDetailPresenter(

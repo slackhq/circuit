@@ -47,12 +47,10 @@ import dev.zacsweers.metro.AppScope
 @CircuitInject(InboxScreen::class, AppScope::class)
 @Composable
 fun InboxHomeUi(state: InboxScreen.State, modifier: Modifier = Modifier) {
-  val isExpanded =
-    calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Expanded
+  val isExpanded = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Expanded
 
   // Keep the same scroll state when the layout moves between one pane and two panes.
-  val listScrollState =
-    rememberRetainedSaveable(saver = LazyListState.Saver) { LazyListState() }
+  val listScrollState = rememberRetainedSaveable(saver = LazyListState.Saver) { LazyListState() }
 
   CompositionLocalProvider(LocalSelectedEmailId provides state.selectedEmailId) {
     AnimatedContent(
@@ -98,7 +96,12 @@ private fun CompactSinglePane(state: InboxScreen.State, listScrollState: LazyLis
     remember(state.selectedEmailId) {
       val id = state.selectedEmailId
       if (id == null) navStackListOf(InboxPane.List)
-      else navStackListOf(forwardItems = emptyList(), activeItem = InboxPane.Detail(id), backwardItems = listOf(InboxPane.List))
+      else
+        navStackListOf(
+          forwardItems = emptyList(),
+          activeItem = InboxPane.Detail(id),
+          backwardItems = listOf(InboxPane.List),
+        )
     }
 
   // Previews may render without a Circuit in the composition.
@@ -152,11 +155,11 @@ private object FadeNavDecoration : NavDecoration {
       transitionSpec = { fadeIn(tween(220)) togetherWith fadeOut(tween(220)) },
       contentKey = { it.key },
       label = "FadeNavDecoration",
-    ) { content(it) }
+    ) {
+      content(it)
+    }
   }
 }
 
-/**
- * Platform hook for clearing selection from system back.
- */
+/** Platform hook for clearing selection from system back. */
 @Composable expect fun BackHandlerForSelection(active: Boolean, onBack: () -> Unit)

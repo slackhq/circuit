@@ -39,14 +39,10 @@ class InboxListPresenter(
     val emailsFlow = remember(folder) { emailRepository.observeEmails(folder) }
     val emails by emailsFlow.collectAsState(initial = emptyList())
 
-    return InboxListScreen.State(
-      folder = folder,
-      folders = EmailFolder.entries,
-      emails = emails,
-    ) { event ->
+    return InboxListScreen.State(folder = folder, folders = EmailFolder.entries, emails = emails) {
+      event ->
       when (event) {
-        is InboxListScreen.Event.EmailClicked ->
-          navigator.goTo(EmailDetailScreen(event.emailId))
+        is InboxListScreen.Event.EmailClicked -> navigator.goTo(EmailDetailScreen(event.emailId))
         is InboxListScreen.Event.ToggleStar -> emailRepository.toggleStar(event.emailId)
         is InboxListScreen.Event.FolderChanged -> folder = event.folder
       }

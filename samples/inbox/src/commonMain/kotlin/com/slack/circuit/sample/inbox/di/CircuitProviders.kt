@@ -23,8 +23,5 @@ interface CircuitProviders {
     presenterFactories: Set<Presenter.Factory>,
     uiFactories: Set<Ui.Factory>,
   ): Circuit =
-    Circuit.Builder()
-      .addPresenterFactories(presenterFactories)
-      .addUiFactories(uiFactories)
-      .build()
+    Circuit.Builder().addPresenterFactories(presenterFactories).addUiFactories(uiFactories).build()
 }

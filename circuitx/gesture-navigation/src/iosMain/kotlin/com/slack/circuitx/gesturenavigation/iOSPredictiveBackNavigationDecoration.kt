@@ -44,14 +44,14 @@ private val End: (Int) -> Int = { it }
  * A factory that creates an [IOSPredictiveBackNavDecorator] for iOS predictive back navigation.
  *
  * @param fallback The [AnimatedNavDecorator.Factory] to use when predictive back is not supported.
- * @param onBackInvoked A callback to be invoked when a back gesture is performed.
+ * @param listener A [GestureNavigationEventListener] to observe the back gesture lifecycle.
  * @return An [AnimatedNavDecorator.Factory] that provides iOS predictive back navigation.
  */
 public actual fun GestureNavigationDecorationFactory(
   fallback: AnimatedNavDecorator.Factory,
-  onBackInvoked: () -> Unit,
+  listener: GestureNavigationEventListener,
 ): AnimatedNavDecorator.Factory {
-  return IOSPredictiveBackNavDecorator.Factory(onBackInvoked = onBackInvoked)
+  return IOSPredictiveBackNavDecorator.Factory(eventListener = listener)
 }
 
 /**
@@ -61,12 +61,11 @@ public actual fun GestureNavigationDecorationFactory(
  *
  * @property enterOffsetFraction The fraction (from 0f to 1f) of the entering content's width which
  *   the content starts from. Defaults to 0.25f (25%).
- * @param onBackInvoked A callback to be invoked when a back gesture is performed.
  */
 internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
   private val enterOffsetFraction: Float = 0.25f,
-  onBackInvoked: () -> Unit,
-) : PredictiveBackNavigationDecorator<T>(onBackInvoked) {
+  eventListener: GestureNavigationEventListener = GestureNavigationEventListener.NoOp,
+) : PredictiveBackNavigationDecorator<T>(eventListener) {
 
   // Track popped zIndex so screens are layered correctly
   private var zIndexDepth = 0f
@@ -119,12 +118,12 @@ internal class IOSPredictiveBackNavDecorator<T : NavArgument>(
 
   internal class Factory(
     private val enterOffsetFraction: Float = 0.25f,
-    private val onBackInvoked: () -> Unit,
+    private val eventListener: GestureNavigationEventListener = GestureNavigationEventListener.NoOp,
   ) : AnimatedNavDecorator.Factory {
     override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
       return IOSPredictiveBackNavDecorator(
         enterOffsetFraction = enterOffsetFraction,
-        onBackInvoked = onBackInvoked,
+        eventListener = eventListener,
       )
     }
   }

@@ -42,7 +42,6 @@ import androidx.compose.runtime.toString
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.foundation.NavigatorDefaults.DefaultDecorator.DefaultAnimatedState
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
@@ -294,7 +293,11 @@ public fun <R : Record> NavigableCircuitContent(
       buildCircuitContentProviders(navStack = navigator.navStack) ?: return@CompositionLocalProvider
     val circuitProvidedValues =
       providedValuesForNavStack(navigator.navStack, circuit.navStackLocalProviders)
-    navDecoration.DecoratedContent(activeContentProviders, modifier) { provider ->
+    navDecoration.DecoratedContent(
+      args = activeContentProviders,
+      navigator = navigator,
+      modifier = modifier,
+    ) { provider ->
       val record = provider.record
 
       // Remember the `providedValues` lookup because this composition can live longer than
@@ -619,6 +622,10 @@ public object NavigatorDefaults {
       override val navStack: NavStackList<T>
     ) : AnimatedNavState
 
+    override fun updateNavigator(navigator: Navigator) {
+      // The default decorator doesn't drive navigation, so the navigator is unused.
+    }
+
     override fun targetState(args: NavStackList<T>): DefaultAnimatedState<T> {
       return DefaultAnimatedState(args)
     }
@@ -664,6 +671,7 @@ public object NavigatorDefaults {
     @Composable
     override fun <T : NavArgument> DecoratedContent(
       args: NavStackList<T>,
+      navigator: Navigator,
       modifier: Modifier,
       content: @Composable (T) -> Unit,
     ) {

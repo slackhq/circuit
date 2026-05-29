@@ -62,7 +62,7 @@ kotlin {
         implementation(libs.androidx.appCompat)
       }
     }
-    getByName(androidHostTest) {
+    getByName("androidHostTest") {
       dependencies {
         implementation(libs.robolectric)
         implementation(libs.compose.ui.testing.junit)

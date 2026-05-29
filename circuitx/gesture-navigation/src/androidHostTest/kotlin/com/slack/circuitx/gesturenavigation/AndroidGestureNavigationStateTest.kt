@@ -4,7 +4,7 @@ package com.slack.circuitx.gesturenavigation
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import com.slack.circuit.internal.test.TestCountPresenter.RememberType
 import com.slack.circuit.runtime.Navigator
 import org.junit.Rule

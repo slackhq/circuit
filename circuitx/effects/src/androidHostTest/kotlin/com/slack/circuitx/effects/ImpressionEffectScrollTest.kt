@@ -13,7 +13,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
@@ -21,6 +21,7 @@ import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -48,42 +49,45 @@ class ImpressionEffectScrollTest {
     }
   }
 
-  private fun testScrollingImpression(content: @Composable (Int, MutableMap<Int, Int>) -> Unit) {
-    composeTestRule.run {
-      val counts = mutableMapOf<Int, Int>()
-      setRetainedContent {
-        LazyColumn(Modifier.testTag(TAG_COLUMN).size(200.dp)) {
-          items(40) { index ->
-            Row(Modifier.fillMaxWidth().height(20.dp)) {
-              content(index, counts)
-              Text(text = "$index")
+  private fun testScrollingImpression(content: @Composable (Int, MutableMap<Int, Int>) -> Unit) =
+    runTest {
+      composeTestRule.run {
+        val counts = mutableMapOf<Int, Int>()
+        setRetainedContent {
+          LazyColumn(Modifier.testTag(TAG_COLUMN).size(200.dp)) {
+            items(40) { index ->
+              Row(Modifier.fillMaxWidth().height(20.dp)) {
+                content(index, counts)
+                Text(text = "$index")
+              }
             }
           }
         }
-      }
-      // Verify initial impressions are counted.
-      assertEquals(10, counts.size)
-      assertTrue(counts.all { it.value == 1 })
-      for ((key, value) in counts) {
-        assertTrue(value == 1, "Value at index $key != 1, is $value")
-      }
-      // Scroll to remove all initial rows, verify impressions are counted.
-      onNodeWithTag(TAG_COLUMN).performScrollToIndex(20)
-      assertEquals(20, counts.size)
-      for ((key, value) in counts) {
-        assertTrue(value == 1, "Value at index $key != 1, is $value")
-      }
-      // Scroll back to the start and verify new impressions.
-      onNodeWithTag(TAG_COLUMN).performScrollToIndex(0)
-      for ((key, value) in counts) {
-        if (key >= 10) {
+        // Verify initial impressions are counted.
+        assertEquals(10, counts.size)
+        assertTrue(counts.all { it.value == 1 })
+        for ((key, value) in counts) {
           assertTrue(value == 1, "Value at index $key != 1, is $value")
-        } else {
-          assertTrue(value == 2, "Value at index $key != 2, is $value")
+        }
+        // Scroll to remove all initial rows, verify impressions are counted.
+        onNodeWithTag(TAG_COLUMN).performScrollToIndex(20)
+        awaitIdle()
+        assertEquals(20, counts.size)
+        for ((key, value) in counts) {
+          assertTrue(value == 1, "Value at index $key != 1, is $value")
+        }
+        // Scroll back to the start and verify new impressions.
+        onNodeWithTag(TAG_COLUMN).performScrollToIndex(0)
+        awaitIdle()
+        for ((key, value) in counts) {
+          if (key >= 10) {
+            assertTrue(value == 1, "Value at index $key != 1, is $value")
+          } else {
+            assertTrue(value == 2, "Value at index $key != 2, is $value")
+          }
         }
       }
     }
-  }
 
   private fun ComposeContentTestRule.setRetainedContent(content: @Composable () -> Unit = {}) {
     setContent {

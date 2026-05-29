@@ -36,8 +36,6 @@ org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
 org.jetbrains.androidx.savedstate:savedstate-compose-desktop
 org.jetbrains.androidx.savedstate:savedstate-compose
 org.jetbrains.androidx.savedstate:savedstate
-org.jetbrains.compose.annotation-internal:annotation
-org.jetbrains.compose.collection-internal:collection
 org.jetbrains.compose.runtime:runtime-desktop
 org.jetbrains.compose.runtime:runtime-saveable-desktop
 org.jetbrains.compose.runtime:runtime-saveable
@@ -57,8 +55,6 @@ org.jetbrains.compose.ui:ui-util-desktop
 org.jetbrains.compose.ui:ui-util
 org.jetbrains.compose.ui:ui
 org.jetbrains.kotlin:kotlin-bom
-org.jetbrains.kotlin:kotlin-stdlib-jdk7
-org.jetbrains.kotlin:kotlin-stdlib-jdk8
 org.jetbrains.kotlin:kotlin-stdlib
 org.jetbrains.kotlinx:atomicfu-jvm
 org.jetbrains.kotlinx:atomicfu

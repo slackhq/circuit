@@ -155,7 +155,9 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
         backStack = backStack,
         modifier = Modifier.padding(paddingValues),
         decoratorFactory =
-          remember(navigator) { GestureNavigationDecorationFactory(onBackInvoked = navigator::pop) },
+          remember(navigator) {
+            GestureNavigationDecorationFactory(onBackInvoked = navigator::pop)
+          },
       )
       contentComposed = true
     }

@@ -151,7 +151,6 @@ tasks
       )
 
       if (name == "compileAndroidHostTest" || name == "compileAndroidDeviceTest") {
-        logger.lifecycle("Configuring parcelize for $name")
         freeCompilerArgs.addAll(
           "-P",
           "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",

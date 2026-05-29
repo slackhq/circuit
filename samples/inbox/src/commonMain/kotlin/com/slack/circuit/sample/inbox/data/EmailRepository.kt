@@ -13,15 +13,15 @@ import kotlinx.coroutines.flow.update
 @SingleIn(AppScope::class)
 class EmailRepository(seed: List<Email>) {
 
-  // Primary constructor is tests only
+  // Tests use the primary constructor to supply a small deterministic seed.
   @Inject constructor() : this(generateSeedEmails())
 
   private val emails = MutableStateFlow(seed.associateBy { it.id })
 
   /**
-   * Observe emails for a given [EmailFolder]. [EmailFolder.Starred] is a virtual view — it returns
-   * every starred email regardless of storage [EmailLocation], so starring an email in the Inbox
-   * keeps it in the Inbox tab *and* shows it in the Starred tab.
+   * Observes emails for [folder].
+   *
+   * [EmailFolder.Starred] is virtual, so it includes starred emails from every storage location.
    */
   fun observeEmails(folder: EmailFolder): Flow<List<Email>> = emails.map { map ->
     map.values

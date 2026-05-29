@@ -18,9 +18,10 @@ import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.flow.collect
 
 /**
- * When [EmailDetailScreen] is at the top of the back stack, [navigator] is the real navigator
- * and back/archive call `navigator.pop()`. When embedded inside the composite, the composite
- * hands in a stub Navigator that captures `pop()` and turns it into "clear selection" instead.
+ * Detail presenter that works both as a standalone screen and as a child of the composite inbox.
+ *
+ * Back and archive always call [Navigator.pop]. A standalone screen pops the back stack, while
+ * the composite turns that pop into clearing the current selection.
  */
 @AssistedInject
 class EmailDetailPresenter(

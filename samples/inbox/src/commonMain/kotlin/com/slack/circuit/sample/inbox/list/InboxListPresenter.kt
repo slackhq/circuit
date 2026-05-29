@@ -21,14 +21,10 @@ import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 
 /**
- * Standard `@AssistedInject` Circuit presenter — looks like any other presenter in this app.
- * Constructor takes the Screen + Navigator (assisted) plus the [EmailRepository] (injected).
+ * List presenter that works both as a standalone screen and as a child of the composite inbox.
  *
- * When [InboxListScreen] is at the top of the back stack, [navigator] is the real navigator and
- * an email click does `navigator.goTo(EmailDetailScreen(id))`. When embedded inside the
- * composite (see `com.slack.circuit.sample.inbox.home.InboxPresenter`), the composite hands in
- * a stub Navigator that captures that `goTo` and turns it into selection-state mutation
- * instead — see the composite for the details.
+ * Email clicks always go through [navigator]. A standalone screen receives the real navigator,
+ * while the composite provides one that converts detail navigation into selection.
  */
 @AssistedInject
 class InboxListPresenter(

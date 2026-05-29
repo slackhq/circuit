@@ -17,12 +17,7 @@ import com.slack.circuit.test.presenterTestOf
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 
-/**
- * Composite tests — verify that the composite assembles real `InboxListPresenter` /
- * `EmailDetailPresenter` instances (via Metro-generated `@AssistedFactory` impls) and that
- * their would-be navigation events flow through the intercepting `Navigator` stubs into the
- * composite's `selectedEmailId` state.
- */
+/** Tests the composite with the real child presenter factories from Metro. */
 class InboxPresenterTest {
 
   @Test
@@ -73,11 +68,13 @@ class InboxPresenterTest {
   }
 }
 
-private suspend fun CircuitReceiveTurbine<InboxScreen.State>.awaitListPopulated() =
-  awaitMatching { it.listState.emails.isNotEmpty() }
+private suspend fun CircuitReceiveTurbine<InboxScreen.State>.awaitListPopulated() = awaitMatching {
+  it.listState.emails.isNotEmpty()
+}
 
-private suspend fun CircuitReceiveTurbine<InboxScreen.State>.awaitDetailLoaded() =
-  awaitMatching { it.detailState is EmailDetailScreen.State.Loaded }
+private suspend fun CircuitReceiveTurbine<InboxScreen.State>.awaitDetailLoaded() = awaitMatching {
+  it.detailState is EmailDetailScreen.State.Loaded
+}
 
 private suspend inline fun CircuitReceiveTurbine<InboxScreen.State>.awaitMatching(
   crossinline predicate: (InboxScreen.State) -> Boolean

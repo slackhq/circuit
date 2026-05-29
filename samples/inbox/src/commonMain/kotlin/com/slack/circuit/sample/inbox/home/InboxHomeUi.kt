@@ -40,31 +40,9 @@ import dev.zacsweers.metro.AppScope
 /**
  * Adaptive UI for the composite [InboxScreen].
  *
- * Layout is the only place this app cares about window size:
- * - **Compact / Medium width**: single-pane. We show the detail pane when there's a selection,
- *   otherwise the list. A `BackHandler` clears the selection.
- * - **Expanded width** (~840dp+): two-pane list-detail. The detail pane shows [EmptyDetailPane]
- *   when nothing is selected.
- *
- * The composite presenter is layout-agnostic — it just exposes `listState` and (optional)
- * `detailState`. Because `selectedEmailId` lives in `rememberRetained`, resizing the window
- * across the breakpoint preserves the user's current selection. The UI swaps between
- * single-pane and two-pane rendering, but the user's selection stays put.
- *
- * **Transitions:**
- * - In compact mode the list ↔ detail swap is driven by Circuit's *own* default
- *   [NavDecoration]: we read it off [LocalCircuit] and call [NavDecoration.DecoratedContent]
- *   with a synthetic [NavStackList] (`[List]` when nothing is selected, `[Detail, List]` when
- *   something is). The decoration diffs the stack and produces the same forward/pop animations
- *   you'd get from a real `NavigableCircuitContent` — including any per-screen
- *   `AnimatedScreenTransform`s registered on the Circuit. The child presenters never know any
- *   of this is happening; they just call `navigator.goTo()` / `navigator.pop()` and the
- *   composite intercepts those.
- * - The compact ↔ expanded layout change cross-fades.
- *
- * The current selection id is published via [LocalSelectedEmailId] so [InboxListPane] can
- * highlight the open conversation in the two-pane layout without it being threaded as an
- * argument.
+ * Window size is handled here instead of in the presenter: compact widths render one pane, while
+ * expanded widths render the list and detail side by side. The compact list-detail transition is
+ * still driven by Circuit's [NavDecoration] so it behaves like regular navigation.
  */
 @CircuitInject(InboxScreen::class, AppScope::class)
 @Composable
@@ -72,8 +50,7 @@ fun InboxHomeUi(state: InboxScreen.State, modifier: Modifier = Modifier) {
   val isExpanded =
     calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Expanded
 
-  // Hoist the list scroll state above everything so it survives the compact ↔ expanded swap and
-  // configuration changes.
+  // Keep the same scroll state when the layout moves between one pane and two panes.
   val listScrollState =
     rememberRetainedSaveable(saver = LazyListState.Saver) { LazyListState() }
 
@@ -116,7 +93,7 @@ private fun CompactSinglePane(state: InboxScreen.State, listScrollState: LazyLis
     state.eventSink(InboxScreen.Event.ClearSelection)
   }
 
-  // Synthetic nav stack: list at the root, detail on top when something is selected.
+  // Model the compact pane swap as a tiny back stack so NavDecoration can animate it.
   val args: NavStackList<InboxPane> =
     remember(state.selectedEmailId) {
       val id = state.selectedEmailId
@@ -124,21 +101,19 @@ private fun CompactSinglePane(state: InboxScreen.State, listScrollState: LazyLis
       else navStackListOf(forwardItems = emptyList(), activeItem = InboxPane.Detail(id), backwardItems = listOf(InboxPane.List))
     }
 
-  // Use Circuit's configured default decoration if available; otherwise (e.g. previews) fall back.
+  // Previews may render without a Circuit in the composition.
   val decoration: NavDecoration = LocalCircuit.current?.defaultNavDecoration ?: FadeNavDecoration
 
   decoration.DecoratedContent(args = args, modifier = Modifier.fillMaxSize()) { pane ->
     when (pane) {
       InboxPane.List ->
-        // The list may remain composed while the detail pane animates in/out, so keep selection
-        // highlighting ambient and harmless rather than special-casing compact mode.
         InboxListPane(
           state = state.listState,
           modifier = Modifier.fillMaxSize(),
           scrollState = listScrollState,
         )
       is InboxPane.Detail ->
-        // detailState may briefly be null while the pop animates out — guard with the snapshot.
+        // A pop animation can outlive the selected detail state.
         state.detailState?.let { detail ->
           EmailDetailPane(
             state = detail,
@@ -150,7 +125,7 @@ private fun CompactSinglePane(state: InboxScreen.State, listScrollState: LazyLis
   }
 }
 
-/** Synthetic [NavArgument]s for the compact single-pane "stack." Identity/keying only. */
+/** Synthetic compact-mode destinations used only for transition identity. */
 private sealed interface InboxPane : NavArgument {
   data object List : InboxPane {
     override val key: String = "inbox-list"
@@ -163,7 +138,7 @@ private sealed interface InboxPane : NavArgument {
   }
 }
 
-/** Minimal fallback decoration for environments without a Circuit (e.g. `@Preview`). */
+/** Fallback decoration for previews and tests that do not provide a Circuit. */
 private object FadeNavDecoration : NavDecoration {
   @Composable
   override fun <T : NavArgument> DecoratedContent(
@@ -182,7 +157,6 @@ private object FadeNavDecoration : NavDecoration {
 }
 
 /**
- * Cross-platform "back to clear selection" hook. Hooked up on Android via an actual
- * `BackHandler`; a no-op on desktop where the gesture isn't available.
+ * Platform hook for clearing selection from system back.
  */
 @Composable expect fun BackHandlerForSelection(active: Boolean, onBack: () -> Unit)

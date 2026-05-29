@@ -39,30 +39,21 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.sample.inbox.data.Email
 import dev.zacsweers.metro.AppScope
 
-/**
- * Controls what icon (if any) is rendered in the detail TopAppBar's navigation slot.
- * - [Back] — arrow-back (compact / standalone navigation use)
- * - [Close] — X (used in expanded two-pane layout to deselect)
- * - [None] — no nav icon at all
- */
+/** Navigation affordance shown in the detail app bar. */
 enum class DetailNavStyle {
   Back,
   Close,
   None,
 }
 
-/**
- * Standalone-registered Circuit UI for [EmailDetailScreen]. Simple `(state, modifier)` signature
- * so the Circuit codegen / Metro graph can wire it up. Always renders the [DetailNavStyle.Back]
- * nav icon; the composite calls [EmailDetailPane] directly when it needs the deselect-style X.
- */
+/** Circuit-registered UI for the standalone [EmailDetailScreen]. */
 @CircuitInject(EmailDetailScreen::class, AppScope::class)
 @Composable
 fun EmailDetail(state: EmailDetailScreen.State, modifier: Modifier = Modifier) {
   EmailDetailPane(state, modifier, DetailNavStyle.Back)
 }
 
-/** Email detail pane with explicit nav-icon control. */
+/** Shared detail pane with caller-controlled app bar navigation. */
 @Composable
 fun EmailDetailPane(
   state: EmailDetailScreen.State,
@@ -157,8 +148,7 @@ private fun LoadedPane(
   ) { innerPadding ->
     EmailContent(
       email = email,
-      modifier =
-        Modifier.padding(innerPadding).verticalScroll(rememberScrollState()).padding(16.dp),
+      modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState()).padding(16.dp),
     )
   }
 }
@@ -192,7 +182,7 @@ private fun EmailContent(email: Email, modifier: Modifier = Modifier) {
   }
 }
 
-/** Placeholder shown in the detail pane when nothing is selected (expanded layout only). */
+/** Placeholder shown by the expanded layout before a conversation is selected. */
 @Composable
 fun EmptyDetailPane(modifier: Modifier = Modifier) {
   DetailStatusPane(
@@ -217,7 +207,10 @@ private fun DetailStatusPane(
 ) {
   // Subtly recessed surface so detail status panes read as part of the same list-detail surface
   // family rather than a bare background.
-  Surface(modifier = modifier.fillMaxSize(), color = MaterialTheme.colorScheme.surfaceContainerLow) {
+  Surface(
+    modifier = modifier.fillMaxSize(),
+    color = MaterialTheme.colorScheme.surfaceContainerLow,
+  ) {
     Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
       Column(
         horizontalAlignment = Alignment.CenterHorizontally,

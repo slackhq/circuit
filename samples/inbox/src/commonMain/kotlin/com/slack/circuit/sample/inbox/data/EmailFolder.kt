@@ -3,9 +3,9 @@
 package com.slack.circuit.sample.inbox.data
 
 /**
- * A UI-level "tab" the user can filter the list by. Distinct from [EmailLocation] (the actual
- * storage state of an email) — for example, [Starred] is a virtual view across both [Inbox] and
- * [Archive] locations.
+ * Folder shown by the list UI.
+ *
+ * [Starred] is a virtual folder: it can include messages from both [Inbox] and [Archive].
  */
 enum class EmailFolder(val displayName: String) {
   Inbox("Inbox"),
@@ -13,7 +13,7 @@ enum class EmailFolder(val displayName: String) {
   Archive("Archive"),
 }
 
-/** Storage location of an email. The [EmailFolder.Starred] tab is virtual and not represented here. */
+/** Storage location of an email. Starred state is tracked separately. */
 enum class EmailLocation {
   Inbox,
   Archive,

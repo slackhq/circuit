@@ -11,11 +11,10 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createGraphFactory
 
 /**
- * A test-only [DependencyGraph] that exposes the Metro-generated `@AssistedFactory` impls for
- * the child presenters. Tests build it with a test [EmailRepository] seed via the
- * [Factory.create] @Provides override, so they get the same factories the production graph
- * would hand to [com.slack.circuit.sample.inbox.home.InboxPresenter] — no hand-rolled factory
- * stubs needed.
+ * Test graph that exposes the same assisted presenter factories used by production.
+ *
+ * The factory accepts a provided [EmailRepository] so tests can seed data without replacing the
+ * generated child factories.
  */
 @DependencyGraph(scope = AppScope::class)
 interface InboxTestGraph {

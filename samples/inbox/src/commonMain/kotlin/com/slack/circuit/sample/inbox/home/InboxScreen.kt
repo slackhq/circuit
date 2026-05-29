@@ -9,10 +9,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sample.inbox.detail.EmailDetailScreen
 import com.slack.circuit.sample.inbox.list.InboxListScreen
 
-/**
- * Root screen for the inbox sample. Composes the [InboxListScreen] and [EmailDetailScreen]
- * children into a single adaptive surface.
- */
+/** Root screen for the adaptive inbox surface. */
 @Parcelize
 data object InboxScreen : Screen {
   data class State(
@@ -25,10 +22,7 @@ data object InboxScreen : Screen {
   ) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {
-    /**
-     * Clears the current selection (and so the detail pane). Emitted by the UI when the user
-     * presses back on a compact layout, for instance.
-     */
+    /** Clears the current selection and hides the detail pane. */
     data object ClearSelection : Event
   }
 }

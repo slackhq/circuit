@@ -44,32 +44,20 @@ import com.slack.circuit.sample.inbox.data.EmailFolder
 import dev.zacsweers.metro.AppScope
 
 /**
- * The id of the email the surrounding surface currently has "selected", or `null` if there's no
- * such concept here. The composite home UI provides this so [InboxListPane] can highlight the
- * open conversation in the two-pane layout; when the list is shown standalone (no composite
- * above it), it defaults to `null` and nothing is highlighted.
+ * Selected email id supplied by a parent list-detail surface.
+ *
+ * Standalone lists do not provide a value, so no row is highlighted.
  */
 val LocalSelectedEmailId: ProvidableCompositionLocal<String?> = compositionLocalOf { null }
 
-/**
- * Standalone-registered Circuit UI for [InboxListScreen]. Signature is intentionally the simple
- * `(state, modifier)` form so the Circuit codegen / Metro graph can wire it up cleanly.
- */
+/** Circuit-registered UI for the standalone [InboxListScreen]. */
 @CircuitInject(InboxListScreen::class, AppScope::class)
 @Composable
 fun InboxList(state: InboxListScreen.State, modifier: Modifier = Modifier) {
   InboxListPane(state = state, modifier = modifier)
 }
 
-/**
- * Inbox list pane with a caller-controlled [scrollState]. The composite home UI hoists a single
- * [LazyListState] above its `AnimatedContent` so the scroll position survives layout-mode swaps
- * (e.g. compact <-> two-pane) and configuration changes; standalone callers can omit it and get a
- * local [rememberLazyListState] (which already survives configuration changes via its Saver).
- *
- * [selectedEmailId] defaults to [LocalSelectedEmailId], so the composite just provides that
- * local and this pane picks it up ambiently — no need to thread it through as an argument.
- */
+/** Shared list pane used by both the standalone list screen and the composite inbox screen. */
 @Composable
 fun InboxListPane(
   state: InboxListScreen.State,
@@ -130,8 +118,7 @@ private fun EmailRow(
   onToggleStar: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val background =
-    if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
+  val background = if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
   Row(
     modifier
       .background(background)

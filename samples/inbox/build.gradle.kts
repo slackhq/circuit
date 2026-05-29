@@ -19,6 +19,7 @@ kotlin {
   android {
     namespace = "com.slack.circuit.sample.inbox"
     compileSdk = 36
+    withHostTest {}
   }
   jvm {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)

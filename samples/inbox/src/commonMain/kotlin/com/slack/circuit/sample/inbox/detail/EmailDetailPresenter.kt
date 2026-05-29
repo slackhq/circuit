@@ -15,7 +15,6 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
-import kotlinx.coroutines.flow.collect
 
 /**
  * Detail presenter that works both as a standalone screen and as a child of the composite inbox.

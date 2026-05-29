@@ -148,7 +148,8 @@ private fun LoadedPane(
   ) { innerPadding ->
     EmailContent(
       email = email,
-      modifier = Modifier.padding(innerPadding).verticalScroll(rememberScrollState()).padding(16.dp),
+      modifier =
+        Modifier.padding(innerPadding).verticalScroll(rememberScrollState()).padding(16.dp),
     )
   }
 }

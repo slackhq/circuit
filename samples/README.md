@@ -10,6 +10,11 @@ See the README.md files in each sample directory for more information.
   use Circuit in a real-world app. Contains lots of cute dogs.
 - `counter` – A multiplatform counter circuit. This circuit is a simple counter that increments or
   decrements a count.
+- `inbox` - An adaptive list-detail email app sample demonstrating a composite Circuit presenter with
+  reusable child presenters and an adaptive single-pane / two-pane layout. See
+  [`docs/presenter-patterns.md`](../docs/presenter-patterns.md) for the underlying patterns.
+  - Run the Desktop app via `./gradlew :samples:inbox:run`.
+  - Install the Android app via `./gradlew :samples:inbox:androidApp:installDebug`.
 - `interop` - A set of examples of interop from different paradigms into Circuit using a simple
   Counter example.
 - `tacos` - A food ordering flow/wizard app demonstrating use of a composite Circuit presenter and

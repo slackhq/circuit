@@ -60,7 +60,9 @@ class GestureNavigationCrashTest {
             navigator = navigator,
             backStack = backStack,
             decoratorFactory =
-              remember { AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
+              remember {
+                AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop)
+              },
           )
         }
       }

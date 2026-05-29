@@ -3,4 +3,7 @@
   <issue id="ComposeNamingUppercase,ComposeNamingLowercase">
     <option name="allowed-composable-function-names" value=".*Presenter" />
   </issue>
+  <issue id="ComposeCompositionLocalUsage">
+    <option name="allowed-composition-locals" value="LocalSelectedEmailId" />
+  </issue>
 </lint>

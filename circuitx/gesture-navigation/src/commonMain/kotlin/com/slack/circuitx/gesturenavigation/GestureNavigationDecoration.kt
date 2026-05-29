@@ -15,8 +15,8 @@ import com.slack.circuit.foundation.animation.AnimatedNavDecorator
  *
  * @param fallback The [AnimatedNavDecorator.Factory] which should be used when running on platforms
  *   which [GestureNavigationDecorationFactory] does not support.
- * @param listener A [GestureNavigationEventListener] to observe the back gesture lifecycle, e.g. for
- *   analytics side effects. This is observational only, the `Navigator` still drives the pop.
+ * @param listener A [GestureNavigationEventListener] to observe the back gesture lifecycle, e.g.
+ *   for analytics side effects. This is observational only, the `Navigator` still drives the pop.
  */
 public expect fun GestureNavigationDecorationFactory(
   fallback: AnimatedNavDecorator.Factory = NavigatorDefaults.DefaultDecoratorFactory,

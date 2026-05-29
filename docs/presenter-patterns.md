@@ -406,6 +406,9 @@ When a presenter grows too large, you have options. Here are three patterns for 
 !!! tip "Injecting Child Presenters"
     How you get child presenters into the composite presenter is flexible: inject them directly, create them inline, or pull them from a Circuit instance. The key is that shared state should flow through the data layer when possible.
 
+!!! example "Runnable example: `samples/inbox`"
+    The [`samples/inbox`](https://github.com/slackhq/circuit/tree/main/samples/inbox) sample is a runnable, multiplatform demo of this pattern. `InboxPresenter` injects the `@AssistedFactory`s for two real child Presenters (`InboxListPresenter` and `EmailDetailPresenter`) and calls `factory.create(screen, navigator).present()` on each, so the same children still work as standalone `@CircuitInject` screens.
+
 ### Pattern 3: StateProducer
 
 **StateProducers** are reusable components that produce state but aren't used on their own. Unlike full presenters, they don't implement the `Presenter` interface and are always consumed by a parent presenter that coordinates their output.

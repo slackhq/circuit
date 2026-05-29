@@ -21,6 +21,7 @@ kotlin {
     compileSdk = 36
     withHostTest {
       isIncludeAndroidResources = true
+      isReturnDefaultValues = true
     }
   }
   jvm {

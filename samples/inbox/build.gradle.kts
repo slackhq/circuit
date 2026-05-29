@@ -19,7 +19,9 @@ kotlin {
   android {
     namespace = "com.slack.circuit.sample.inbox"
     compileSdk = 36
-    withHostTest {}
+    withHostTest {
+      isIncludeAndroidResources = true
+    }
   }
   jvm {
     @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -58,6 +60,13 @@ kotlin {
       dependencies {
         implementation(libs.androidx.activity.compose)
         implementation(libs.androidx.appCompat)
+      }
+    }
+    androidHostTest {
+      dependencies {
+        implementation(libs.robolectric)
+        implementation(libs.compose.ui.testing.junit)
+        implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
     jvmMain { dependencies { implementation(compose.desktop.currentOs) } }

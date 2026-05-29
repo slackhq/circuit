@@ -206,6 +206,7 @@ public final class com/slack/circuit/foundation/NavigatorDefaults$DefaultDecorat
 	public fun targetState (Lcom/slack/circuit/runtime/navigation/NavStackList;)Lcom/slack/circuit/foundation/NavigatorDefaults$DefaultDecorator$DefaultAnimatedState;
 	public synthetic fun targetState (Lcom/slack/circuit/runtime/navigation/NavStackList;)Lcom/slack/circuit/foundation/animation/AnimatedNavState;
 	public fun transitionSpec (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;)Landroidx/compose/animation/ContentTransform;
+	public fun updateNavigator (Lcom/slack/circuit/runtime/Navigator;)V
 	public fun updateTransition (Lcom/slack/circuit/runtime/navigation/NavStackList;Landroidx/compose/runtime/Composer;I)Landroidx/compose/animation/core/Transition;
 }
 
@@ -268,7 +269,7 @@ public abstract interface class com/slack/circuit/foundation/animation/AnimatedN
 	public abstract fun Decoration (Landroidx/compose/animation/AnimatedContentScope;Lcom/slack/circuit/foundation/animation/AnimatedNavState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
 	public abstract fun targetState (Lcom/slack/circuit/runtime/navigation/NavStackList;)Lcom/slack/circuit/foundation/animation/AnimatedNavState;
 	public abstract fun transitionSpec (Landroidx/compose/animation/AnimatedContentTransitionScope;Lcom/slack/circuit/foundation/animation/AnimatedNavEvent;)Landroidx/compose/animation/ContentTransform;
-	public fun updateNavigator (Lcom/slack/circuit/runtime/Navigator;)V
+	public abstract fun updateNavigator (Lcom/slack/circuit/runtime/Navigator;)V
 	public abstract fun updateTransition (Lcom/slack/circuit/runtime/navigation/NavStackList;Landroidx/compose/runtime/Composer;I)Landroidx/compose/animation/core/Transition;
 }
 

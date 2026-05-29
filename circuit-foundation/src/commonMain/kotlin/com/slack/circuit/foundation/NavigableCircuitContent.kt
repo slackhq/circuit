@@ -622,6 +622,10 @@ public object NavigatorDefaults {
       override val navStack: NavStackList<T>
     ) : AnimatedNavState
 
+    override fun updateNavigator(navigator: Navigator) {
+      // The default decorator doesn't drive navigation, so the navigator is unused.
+    }
+
     override fun targetState(args: NavStackList<T>): DefaultAnimatedState<T> {
       return DefaultAnimatedState(args)
     }

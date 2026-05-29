@@ -55,6 +55,10 @@ import com.slack.circuit.runtime.screen.Screen
  *
  * class CustomDecorator<T : NavArgument>() : AnimatedNavDecorator<T, CustomNavState<T>> {
  *
+ *   override fun updateNavigator(navigator: Navigator) {
+ *     // Store the navigator if this decorator drives navigation, otherwise ignore it.
+ *   }
+ *
  *   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
  *     animatedNavEvent: AnimatedNavEvent
  *   ): ContentTransform {
@@ -95,9 +99,9 @@ public interface AnimatedNavDecorator<T : NavArgument, S : AnimatedNavState> {
 
   /**
    * Updates the [Navigator] used by this decorator to drive navigation events. Decorators that
-   * handle back gestures must override this to receive the navigator.
+   * don't handle navigation themselves can ignore the [navigator].
    */
-  public fun updateNavigator(navigator: Navigator) {}
+  public fun updateNavigator(navigator: Navigator)
 
   /** For the args create the expected target [AnimatedNavState]. */
   public fun targetState(args: NavStackList<T>): S

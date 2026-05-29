@@ -14,8 +14,8 @@ public interface GestureNavigationEventListener {
   /**
    * Called as a back gesture progresses.
    *
-   * @param progress The gesture progress, ranging from `0f` to `1f` (or `0f` to `-1f` depending on
-   *   the swipe edge).
+   * @param progress The gesture progress, up to `1f` (or down to `-1f` depending on the swipe
+   *   edge). `0f` is never emitted.
    */
   public fun onBackProgress(progress: Float) {}
 

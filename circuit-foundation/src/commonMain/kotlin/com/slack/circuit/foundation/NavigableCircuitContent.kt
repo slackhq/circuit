@@ -570,7 +570,8 @@ public object NavigatorDefaults {
       ) +
         slideInHorizontally(
           initialOffsetX = { fullWidth -> (fullWidth / 10) * sign },
-          animationSpec = tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+          animationSpec =
+            tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
         ) +
         if (sign > 0) {
           expandHorizontally(
@@ -594,7 +595,8 @@ public object NavigatorDefaults {
       ) +
         slideOutHorizontally(
           targetOffsetX = { fullWidth -> (fullWidth / 10) * -sign },
-          animationSpec = tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
+          animationSpec =
+            tween(durationMillis = NORMAL_DURATION, easing = FastOutExtraSlowInEasing),
         ) +
         if (sign > 0) {
           shrinkHorizontally(

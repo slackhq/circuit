@@ -1,18 +1,14 @@
 # `nav-stage`
 
-A modular, multi-pane navigation decoration system for the [Circuit](https://github.com/slackhq/circuit) framework. `nav-stage` enables declarative, layout-agnostic split-screen navigation (such as List-Detail split screens on tablets or foldables) that adapt dynamically to window metrics and device postures.
+A modular, layout-agnostic navigation decoration system for Circuit.
 
 ---
 
-## 🏛 Architectural Review & Core Design
+## Overview
 
-Traditional navigation frameworks suffer from the **"split-pane state synchronization problem"**—they force presenters to coordinate layout changes or manage complex nested routers when the device shifts from single-pane (portrait phone) to multi-pane (tablet/foldable). 
+`nav-stage` decouples **navigation hierarchy** from **physical stage layout**. Your presenters emit pure, flat UI states, while `nav-stage` determines *how* and *where* to render them using layout strategies.
 
-`nav-stage` resolves this by decoupling **navigation hierarchy** from **physical stage layout**. Your presenters emit pure, flat UI states, while `nav-stage` determines *how* and *where* to render them using layout strategies.
 
-### Separation of Concerns
-
-`nav-stage` achieves absolute separation of concerns by isolating different facets of multi-pane navigation into five dedicated primitives:
 
 ```mermaid
 graph TD
@@ -37,7 +33,7 @@ graph TD
 
 ---
 
-## 🔄 Runtime Flow Sequence
+## Runtime Flow Sequence
 
 Below is the runtime lifecycle of how a stack push/pop propagates through the layout decoration layers:
 
@@ -63,34 +59,11 @@ sequenceDiagram
     Note over Pane: Renders individual screen content<br/>with localized PaneTransition
 ```
 
----
 
-## 🆚 `nav-stage` vs. Traditional Nested Navigation
-
-| Aspect | Traditional Nested Routers | `nav-stage` Declarative Pipeline |
-| :--- | :--- | :--- |
-| **Presenter Complexity** | High. Presenters must know about screen density, folding states, and coordinate nested sub-navigator instances. | **Zero**. Presenters focus 100% on business logic and screen state, completely oblivious to screen density or layout. |
-| **State Synchronization** | Manual & Error-Prone. Deep-linking to a detail pane when no list is selected requires custom state machine overrides. | **Automatic**. Driven by a pure function of the flat navigation stack (`NavStackList`). |
-| **Dynamic Refolding** | Destroys/re-creates screens or triggers complex transition code to reconcile two separate routing trees. | **Stateless Reconciliation**. Re-evaluates strategies and shifts stages instantly; screens are retained seamlessly. |
 
 ---
 
-## ⚡️ DX (Developer Experience) Best Practices
-
-### 1. Stateless Allocation (`SinglePaneNavStage`)
-To avoid slot-table allocations during rapid recomposition, `SinglePaneNavStage` is designed as a stateless singleton. 
-- Access the shared stateless instance using `SinglePaneNavStage.get()`.
-- To maintain backwards compatibility, the module exposes a top-level factory function `SinglePaneNavStage()` which maps directly to the singleton instance under the hood:
-  ```kotlin
-  val stage = SinglePaneNavStage() // Stateless mapping, zero-allocation
-  ```
-
-### 2. Explicit Parameter Flow (No Magic Contexts)
-`nav-stage` enforces compile-time safety and transparency by **explicitly passing** the active `Navigator` parameter down through transition scopes (such as `AnimatedStageContent`) rather than storing mutable state or relying on implicit `CompositionLocal` side-effects.
-
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Define Split-Screen Strategy
 Define when your layout should split into dual-panes (list & detail) by providing a predicate and pane-specific transitions:
@@ -98,8 +71,8 @@ Define when your layout should split into dual-panes (list & detail) by providin
 ```kotlin
 val listDetailStrategy = ListDetailNavStageStrategy(
   isListPane = { it is ListScreen },
-  listTransition = PaneTransition.None, // Keep list stable
-  detailTransition = PaneTransition.Default // Slide+fade the detail pane
+  listTransition = { PaneTransition.None }, // Keep list stable
+  detailTransition = { PaneTransition.Default } // Slide+fade the detail pane
 )
 ```
 
@@ -123,7 +96,7 @@ CircuitCompositionLocals(circuit) {
 
 ---
 
-## ✨ Shared Elements & Scope Resolution
+## Shared Elements
 
 `nav-stage` is fully integrated with standard Compose shared element transitions across Overlay, Stage, and individual Pane boundaries.
 

@@ -2,7 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.SeekableTransitionState
+import androidx.compose.animation.core.Transition
+import androidx.compose.animation.core.createChildTransition
 import androidx.compose.animation.core.rememberTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +29,8 @@ import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.navStackListOf
+import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import kotlin.math.abs
 import kotlinx.coroutines.CancellationException
 
@@ -36,11 +45,15 @@ import kotlinx.coroutines.CancellationException
 @ExperimentalNavStageApi
 public class GestureNavStageTransition(private val onBack: () -> Unit) : NavStageTransition {
 
-  @OptIn(InternalCircuitApi::class)
+  @OptIn(
+    InternalCircuitApi::class,
+    ExperimentalSharedTransitionApi::class,
+    ExperimentalTransitionApi::class,
+  )
   @Composable
   override fun <T : NavArgument> AnimatedStageContent(
     targetState: NavStageTransitionState<T>,
-    content: @Composable (NavStageTransitionState<T>) -> Unit,
+    @Suppress("SlotReused") content: @Composable (NavStageTransitionState<T>) -> Unit,
   ) {
     var swipeProgress by remember { mutableFloatStateOf(0f) }
     var swipeOffset by remember { mutableStateOf(Offset.Zero) }
@@ -103,14 +116,20 @@ public class GestureNavStageTransition(private val onBack: () -> Unit) : NavStag
       onBackCompleted = { onBack() },
     )
 
-    rememberTransition(seekableTransitionState, label = "GestureNavStageTransition")
+    val transition =
+      rememberTransition(seekableTransitionState, label = "GestureNavStageTransition")
+
+    val previousScope = transition.animatedVisibilityScope { previous != null && it == previous }
+    val targetScope = transition.animatedVisibilityScope { it == targetState }
 
     Box(Modifier.fillMaxSize()) {
       if (showPrevious && previous != null) {
         // Mark the previous state as secondary so overlapping items render as
         // shared-bounds placeholders instead of real content (avoids movableContent crash).
         CompositionLocalProvider(LocalNavStagePrimary provides false) {
-          content(previous)
+          ProvideAnimatedTransitionScope(Navigation, previousScope) {
+            content(previous)
+          }
         }
       }
 
@@ -142,8 +161,59 @@ public class GestureNavStageTransition(private val onBack: () -> Unit) : NavStag
           }
         }
       ) {
-        content(targetState)
+        ProvideAnimatedTransitionScope(Navigation, targetScope) {
+          content(targetState)
+        }
       }
     }
   }
 }
+
+@OptIn(ExperimentalTransitionApi::class)
+@Composable
+private fun <T> Transition<T>.animatedVisibilityScope(
+  visible: (T) -> Boolean
+): AnimatedVisibilityScope {
+  val childTransition =
+    createChildTransition(label = "GestureNavStageTransition child") { state ->
+      targetEnterExit(visible, state)
+    }
+  return remember(childTransition) { SimpleAnimatedVisibilityScope(childTransition) }
+}
+
+private data class SimpleAnimatedVisibilityScope(
+  override val transition: Transition<EnterExitState>
+) : AnimatedVisibilityScope
+
+@Composable
+private fun <T> Transition<T>.targetEnterExit(
+  visible: (T) -> Boolean,
+  targetState: T,
+): EnterExitState =
+  key(this) {
+    if (this.isSeeking) {
+      if (visible(targetState)) {
+        EnterExitState.Visible
+      } else {
+        if (visible(this.currentState)) {
+          EnterExitState.PostExit
+        } else {
+          EnterExitState.PreEnter
+        }
+      }
+    } else {
+      val hasBeenVisible = remember { mutableStateOf(false) }
+      if (visible(currentState)) {
+        hasBeenVisible.value = true
+      }
+      if (visible(targetState)) {
+        EnterExitState.Visible
+      } else {
+        if (hasBeenVisible.value) {
+          EnterExitState.PostExit
+        } else {
+          EnterExitState.PreEnter
+        }
+      }
+    }
+  }

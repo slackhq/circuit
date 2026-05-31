@@ -15,6 +15,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.navigation.NavArgument
+import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+
+/**
+ * A custom [SharedElementTransitionScope.AnimatedScope] for shared element transitions within or between panes.
+ */
+@ExperimentalNavStageApi
+public object Pane : SharedElementTransitionScope.AnimatedScope
 
 /**
  * Controls the animation when the content within a single pane changes.
@@ -37,6 +46,7 @@ public interface PaneTransition {
   public companion object {
     public val Default: PaneTransition =
       object : PaneTransition {
+        @OptIn(ExperimentalSharedTransitionApi::class)
         @Composable
         override fun <T : NavArgument> AnimatedPaneContent(
           targetItem: T,
@@ -62,7 +72,9 @@ public interface PaneTransition {
               }
             },
           ) { item ->
-            content(item)
+            ProvideAnimatedTransitionScope(Pane, this@AnimatedContent) {
+              content(item)
+            }
           }
         }
       }

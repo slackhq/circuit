@@ -1,0 +1,157 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, js, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root.circuitx:nav-stage>
+open annotation class com.slack.circuitx.navstage/ExperimentalNavStageApi : kotlin/Annotation { // com.slack.circuitx.navstage/ExperimentalNavStageApi|null[0]
+    constructor <init>() // com.slack.circuitx.navstage/ExperimentalNavStageApi.<init>|<init>(){}[0]
+}
+
+final enum class com.slack.circuitx.navstage/PaneNavEvent : kotlin/Enum<com.slack.circuitx.navstage/PaneNavEvent> { // com.slack.circuitx.navstage/PaneNavEvent|null[0]
+    enum entry Backward // com.slack.circuitx.navstage/PaneNavEvent.Backward|null[0]
+    enum entry Forward // com.slack.circuitx.navstage/PaneNavEvent.Forward|null[0]
+    enum entry GoTo // com.slack.circuitx.navstage/PaneNavEvent.GoTo|null[0]
+    enum entry Pop // com.slack.circuitx.navstage/PaneNavEvent.Pop|null[0]
+    enum entry RootReset // com.slack.circuitx.navstage/PaneNavEvent.RootReset|null[0]
+
+    final val entries // com.slack.circuitx.navstage/PaneNavEvent.entries|#static{}entries[0]
+        final fun <get-entries>(): kotlin.enums/EnumEntries<com.slack.circuitx.navstage/PaneNavEvent> // com.slack.circuitx.navstage/PaneNavEvent.entries.<get-entries>|<get-entries>#static(){}[0]
+
+    final fun valueOf(kotlin/String): com.slack.circuitx.navstage/PaneNavEvent // com.slack.circuitx.navstage/PaneNavEvent.valueOf|valueOf#static(kotlin.String){}[0]
+    final fun values(): kotlin/Array<com.slack.circuitx.navstage/PaneNavEvent> // com.slack.circuitx.navstage/PaneNavEvent.values|values#static(){}[0]
+}
+
+abstract interface <#A: com.slack.circuit.runtime.navigation/NavArgument> com.slack.circuitx.navstage/NavStage { // com.slack.circuitx.navstage/NavStage|null[0]
+    abstract val key // com.slack.circuitx.navstage/NavStage.key|{}key[0]
+        abstract fun <get-key>(): kotlin/Any // com.slack.circuitx.navstage/NavStage.key.<get-key>|<get-key>(){}[0]
+
+    abstract fun Content(com.slack.circuit.runtime.navigation/NavStackList<#A>, com.slack.circuitx.navstage/NavStagePaneScope<#A>, androidx.compose.ui/Modifier, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.navstage/NavStage.Content|Content(com.slack.circuit.runtime.navigation.NavStackList<1:0>;com.slack.circuitx.navstage.NavStagePaneScope<1:0>;androidx.compose.ui.Modifier;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+    open fun renderedItemKeys(com.slack.circuit.runtime.navigation/NavStackList<#A>): kotlin.collections/Set<kotlin/Any> // com.slack.circuitx.navstage/NavStage.renderedItemKeys|renderedItemKeys(com.slack.circuit.runtime.navigation.NavStackList<1:0>){}[0]
+}
+
+abstract interface <#A: com.slack.circuit.runtime.navigation/NavArgument> com.slack.circuitx.navstage/NavStagePaneScope { // com.slack.circuitx.navstage/NavStagePaneScope|null[0]
+    abstract fun Pane(kotlin/Any, #A, androidx.compose.ui/Modifier, com.slack.circuitx.navstage/PaneTransition, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.navstage/NavStagePaneScope.Pane|Pane(kotlin.Any;1:0;androidx.compose.ui.Modifier;com.slack.circuitx.navstage.PaneTransition;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+
+    final class ComposeDefaultImpls { // com.slack.circuitx.navstage/NavStagePaneScope.ComposeDefaultImpls|null[0]
+        final fun Pane$default(kotlin/Any, #A, androidx.compose.ui/Modifier?, com.slack.circuitx.navstage/PaneTransition?, com.slack.circuitx.navstage/NavStagePaneScope<#A>, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuitx.navstage/NavStagePaneScope.ComposeDefaultImpls.Pane$default|Pane$default#static(kotlin.Any;2:0;androidx.compose.ui.Modifier?;com.slack.circuitx.navstage.PaneTransition?;com.slack.circuitx.navstage.NavStagePaneScope<2:0>;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+    }
+}
+
+abstract interface com.slack.circuitx.navstage/DetailPane // com.slack.circuitx.navstage/DetailPane|null[0]
+
+abstract interface com.slack.circuitx.navstage/ListPane // com.slack.circuitx.navstage/ListPane|null[0]
+
+abstract interface com.slack.circuitx.navstage/NavStageFrame { // com.slack.circuitx.navstage/NavStageFrame|null[0]
+    abstract fun <#A1: com.slack.circuit.runtime.navigation/NavArgument> Content(androidx.compose.ui/Modifier, com.slack.circuitx.navstage/NavStage<#A1>, com.slack.circuit.runtime.navigation/NavStackList<#A1>, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.navstage/NavStageFrame.Content|Content(androidx.compose.ui.Modifier;com.slack.circuitx.navstage.NavStage<0:0>;com.slack.circuit.runtime.navigation.NavStackList<0:0>;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
+
+    final object Companion { // com.slack.circuitx.navstage/NavStageFrame.Companion|null[0]
+        final val None // com.slack.circuitx.navstage/NavStageFrame.Companion.None|{}None[0]
+            final fun <get-None>(): com.slack.circuitx.navstage/NavStageFrame // com.slack.circuitx.navstage/NavStageFrame.Companion.None.<get-None>|<get-None>(){}[0]
+    }
+}
+
+abstract interface com.slack.circuitx.navstage/NavStageStrategy { // com.slack.circuitx.navstage/NavStageStrategy|null[0]
+    abstract fun <#A1: com.slack.circuit.runtime.navigation/NavArgument> calculateStage(com.slack.circuit.runtime.navigation/NavStackList<#A1>, androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuitx.navstage/NavStage<#A1>? // com.slack.circuitx.navstage/NavStageStrategy.calculateStage|calculateStage(com.slack.circuit.runtime.navigation.NavStackList<0:0>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
+}
+
+abstract interface com.slack.circuitx.navstage/NavStageTransition { // com.slack.circuitx.navstage/NavStageTransition|null[0]
+    abstract fun <#A1: com.slack.circuit.runtime.navigation/NavArgument> AnimatedStageContent(com.slack.circuitx.navstage/NavStageTransitionState<#A1>, kotlin/Function3<com.slack.circuitx.navstage/NavStageTransitionState<#A1>, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.navstage/NavStageTransition.AnimatedStageContent|AnimatedStageContent(com.slack.circuitx.navstage.NavStageTransitionState<0:0>;kotlin.Function3<com.slack.circuitx.navstage.NavStageTransitionState<0:0>,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
+
+    final object Companion { // com.slack.circuitx.navstage/NavStageTransition.Companion|null[0]
+        final val Crossfade // com.slack.circuitx.navstage/NavStageTransition.Companion.Crossfade|{}Crossfade[0]
+            final fun <get-Crossfade>(): com.slack.circuitx.navstage/NavStageTransition // com.slack.circuitx.navstage/NavStageTransition.Companion.Crossfade.<get-Crossfade>|<get-Crossfade>(){}[0]
+        final val None // com.slack.circuitx.navstage/NavStageTransition.Companion.None|{}None[0]
+            final fun <get-None>(): com.slack.circuitx.navstage/NavStageTransition // com.slack.circuitx.navstage/NavStageTransition.Companion.None.<get-None>|<get-None>(){}[0]
+    }
+}
+
+abstract interface com.slack.circuitx.navstage/PaneTransition { // com.slack.circuitx.navstage/PaneTransition|null[0]
+    abstract fun <#A1: com.slack.circuit.runtime.navigation/NavArgument> AnimatedPaneContent(#A1, kotlin/Any, com.slack.circuitx.navstage/PaneNavEvent, androidx.compose.ui/Modifier, kotlin/Function3<#A1, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.navstage/PaneTransition.AnimatedPaneContent|AnimatedPaneContent(0:0;kotlin.Any;com.slack.circuitx.navstage.PaneNavEvent;androidx.compose.ui.Modifier;kotlin.Function3<0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
+
+    final class ComposeDefaultImpls { // com.slack.circuitx.navstage/PaneTransition.ComposeDefaultImpls|null[0]
+        final fun <#A2: com.slack.circuit.runtime.navigation/NavArgument> AnimatedPaneContent$default(#A2, kotlin/Any, com.slack.circuitx.navstage/PaneNavEvent, androidx.compose.ui/Modifier?, kotlin/Function3<#A2, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, com.slack.circuitx.navstage/PaneTransition, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int) // com.slack.circuitx.navstage/PaneTransition.ComposeDefaultImpls.AnimatedPaneContent$default|AnimatedPaneContent$default#static(0:0;kotlin.Any;com.slack.circuitx.navstage.PaneNavEvent;androidx.compose.ui.Modifier?;kotlin.Function3<0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;com.slack.circuitx.navstage.PaneTransition;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
+    }
+
+    final object Companion { // com.slack.circuitx.navstage/PaneTransition.Companion|null[0]
+        final val Crossfade // com.slack.circuitx.navstage/PaneTransition.Companion.Crossfade|{}Crossfade[0]
+            final fun <get-Crossfade>(): com.slack.circuitx.navstage/PaneTransition // com.slack.circuitx.navstage/PaneTransition.Companion.Crossfade.<get-Crossfade>|<get-Crossfade>(){}[0]
+        final val Default // com.slack.circuitx.navstage/PaneTransition.Companion.Default|{}Default[0]
+            final fun <get-Default>(): com.slack.circuitx.navstage/PaneTransition // com.slack.circuitx.navstage/PaneTransition.Companion.Default.<get-Default>|<get-Default>(){}[0]
+        final val None // com.slack.circuitx.navstage/PaneTransition.Companion.None|{}None[0]
+            final fun <get-None>(): com.slack.circuitx.navstage/PaneTransition // com.slack.circuitx.navstage/PaneTransition.Companion.None.<get-None>|<get-None>(){}[0]
+    }
+}
+
+final class <#A: com.slack.circuit.runtime.navigation/NavArgument> com.slack.circuitx.navstage/ListDetailNavStage : com.slack.circuitx.navstage/NavStage<#A> { // com.slack.circuitx.navstage/ListDetailNavStage|null[0]
+    constructor <init>(kotlin/Function1<com.slack.circuit.runtime.screen/Screen, kotlin/Boolean>, kotlin/Function1<com.slack.circuit.runtime.screen/Screen, com.slack.circuitx.navstage/PaneTransition> = ..., kotlin/Function1<com.slack.circuit.runtime.screen/Screen, com.slack.circuitx.navstage/PaneTransition> = ...) // com.slack.circuitx.navstage/ListDetailNavStage.<init>|<init>(kotlin.Function1<com.slack.circuit.runtime.screen.Screen,kotlin.Boolean>;kotlin.Function1<com.slack.circuit.runtime.screen.Screen,com.slack.circuitx.navstage.PaneTransition>;kotlin.Function1<com.slack.circuit.runtime.screen.Screen,com.slack.circuitx.navstage.PaneTransition>){}[0]
+
+    final val key // com.slack.circuitx.navstage/ListDetailNavStage.key|{}key[0]
+        final fun <get-key>(): kotlin/Any // com.slack.circuitx.navstage/ListDetailNavStage.key.<get-key>|<get-key>(){}[0]
+
+    final fun Content(com.slack.circuit.runtime.navigation/NavStackList<#A>, com.slack.circuitx.navstage/NavStagePaneScope<#A>, androidx.compose.ui/Modifier, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.navstage/ListDetailNavStage.Content|Content(com.slack.circuit.runtime.navigation.NavStackList<1:0>;com.slack.circuitx.navstage.NavStagePaneScope<1:0>;androidx.compose.ui.Modifier;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+    final fun renderedItemKeys(com.slack.circuit.runtime.navigation/NavStackList<#A>): kotlin.collections/Set<kotlin/Any> // com.slack.circuitx.navstage/ListDetailNavStage.renderedItemKeys|renderedItemKeys(com.slack.circuit.runtime.navigation.NavStackList<1:0>){}[0]
+}
+
+final class <#A: com.slack.circuit.runtime.navigation/NavArgument> com.slack.circuitx.navstage/NavStageTransitionState { // com.slack.circuitx.navstage/NavStageTransitionState|null[0]
+    constructor <init>(kotlin/Any, com.slack.circuit.runtime.navigation/NavStackList<#A>) // com.slack.circuitx.navstage/NavStageTransitionState.<init>|<init>(kotlin.Any;com.slack.circuit.runtime.navigation.NavStackList<1:0>){}[0]
+
+    final val args // com.slack.circuitx.navstage/NavStageTransitionState.args|{}args[0]
+        final fun <get-args>(): com.slack.circuit.runtime.navigation/NavStackList<#A> // com.slack.circuitx.navstage/NavStageTransitionState.args.<get-args>|<get-args>(){}[0]
+    final val stageKey // com.slack.circuitx.navstage/NavStageTransitionState.stageKey|{}stageKey[0]
+        final fun <get-stageKey>(): kotlin/Any // com.slack.circuitx.navstage/NavStageTransitionState.stageKey.<get-stageKey>|<get-stageKey>(){}[0]
+
+    final fun component1(): kotlin/Any // com.slack.circuitx.navstage/NavStageTransitionState.component1|component1(){}[0]
+    final fun component2(): com.slack.circuit.runtime.navigation/NavStackList<#A> // com.slack.circuitx.navstage/NavStageTransitionState.component2|component2(){}[0]
+    final fun copy(kotlin/Any = ..., com.slack.circuit.runtime.navigation/NavStackList<#A> = ...): com.slack.circuitx.navstage/NavStageTransitionState<#A> // com.slack.circuitx.navstage/NavStageTransitionState.copy|copy(kotlin.Any;com.slack.circuit.runtime.navigation.NavStackList<1:0>){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.navstage/NavStageTransitionState.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // com.slack.circuitx.navstage/NavStageTransitionState.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // com.slack.circuitx.navstage/NavStageTransitionState.toString|toString(){}[0]
+}
+
+final class <#A: com.slack.circuit.runtime.navigation/NavArgument> com.slack.circuitx.navstage/SinglePaneNavStage : com.slack.circuitx.navstage/NavStage<#A> { // com.slack.circuitx.navstage/SinglePaneNavStage|null[0]
+    constructor <init>() // com.slack.circuitx.navstage/SinglePaneNavStage.<init>|<init>(){}[0]
+
+    final val key // com.slack.circuitx.navstage/SinglePaneNavStage.key|{}key[0]
+        final fun <get-key>(): kotlin/Any // com.slack.circuitx.navstage/SinglePaneNavStage.key.<get-key>|<get-key>(){}[0]
+
+    final fun Content(com.slack.circuit.runtime.navigation/NavStackList<#A>, com.slack.circuitx.navstage/NavStagePaneScope<#A>, androidx.compose.ui/Modifier, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.navstage/SinglePaneNavStage.Content|Content(com.slack.circuit.runtime.navigation.NavStackList<1:0>;com.slack.circuitx.navstage.NavStagePaneScope<1:0>;androidx.compose.ui.Modifier;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+}
+
+final class com.slack.circuitx.navstage/GestureNavStageTransition : com.slack.circuitx.navstage/NavStageTransition { // com.slack.circuitx.navstage/GestureNavStageTransition|null[0]
+    constructor <init>(kotlin/Function0<kotlin/Unit>) // com.slack.circuitx.navstage/GestureNavStageTransition.<init>|<init>(kotlin.Function0<kotlin.Unit>){}[0]
+
+    final fun <#A1: com.slack.circuit.runtime.navigation/NavArgument> AnimatedStageContent(com.slack.circuitx.navstage/NavStageTransitionState<#A1>, kotlin/Function3<com.slack.circuitx.navstage/NavStageTransitionState<#A1>, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.navstage/GestureNavStageTransition.AnimatedStageContent|AnimatedStageContent(com.slack.circuitx.navstage.NavStageTransitionState<0:0>;kotlin.Function3<com.slack.circuitx.navstage.NavStageTransitionState<0:0>,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
+}
+
+final class com.slack.circuitx.navstage/ListDetailNavStageStrategy : com.slack.circuitx.navstage/NavStageStrategy { // com.slack.circuitx.navstage/ListDetailNavStageStrategy|null[0]
+    constructor <init>(kotlin/Function1<com.slack.circuit.runtime.screen/Screen, kotlin/Boolean> = ..., kotlin/Function1<com.slack.circuit.runtime.screen/Screen, kotlin/Boolean> = ..., kotlin/Function1<com.slack.circuit.runtime.screen/Screen, com.slack.circuitx.navstage/PaneTransition> = ..., kotlin/Function1<com.slack.circuit.runtime.screen/Screen, com.slack.circuitx.navstage/PaneTransition> = ...) // com.slack.circuitx.navstage/ListDetailNavStageStrategy.<init>|<init>(kotlin.Function1<com.slack.circuit.runtime.screen.Screen,kotlin.Boolean>;kotlin.Function1<com.slack.circuit.runtime.screen.Screen,kotlin.Boolean>;kotlin.Function1<com.slack.circuit.runtime.screen.Screen,com.slack.circuitx.navstage.PaneTransition>;kotlin.Function1<com.slack.circuit.runtime.screen.Screen,com.slack.circuitx.navstage.PaneTransition>){}[0]
+
+    final fun <#A1: com.slack.circuit.runtime.navigation/NavArgument> calculateStage(com.slack.circuit.runtime.navigation/NavStackList<#A1>, androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuitx.navstage/NavStage<#A1>? // com.slack.circuitx.navstage/ListDetailNavStageStrategy.calculateStage|calculateStage(com.slack.circuit.runtime.navigation.NavStackList<0:0>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
+}
+
+final class com.slack.circuitx.navstage/NavStageDecoration : com.slack.circuit.foundation/NavDecoration { // com.slack.circuitx.navstage/NavStageDecoration|null[0]
+    constructor <init>(kotlin.collections/List<com.slack.circuitx.navstage/NavStageStrategy>, com.slack.circuitx.navstage/NavStageTransition = ..., com.slack.circuitx.navstage/NavStageFrame = ...) // com.slack.circuitx.navstage/NavStageDecoration.<init>|<init>(kotlin.collections.List<com.slack.circuitx.navstage.NavStageStrategy>;com.slack.circuitx.navstage.NavStageTransition;com.slack.circuitx.navstage.NavStageFrame){}[0]
+
+    final fun <#A1: com.slack.circuit.runtime.navigation/NavArgument> DecoratedContent(com.slack.circuit.runtime.navigation/NavStackList<#A1>, com.slack.circuit.runtime/Navigator, androidx.compose.ui/Modifier, kotlin/Function3<#A1, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.navstage/NavStageDecoration.DecoratedContent|DecoratedContent(com.slack.circuit.runtime.navigation.NavStackList<0:0>;com.slack.circuit.runtime.Navigator;androidx.compose.ui.Modifier;kotlin.Function3<0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
+}
+
+final object com.slack.circuitx.navstage/Pane : com.slack.circuit.sharedelements/SharedElementTransitionScope.AnimatedScope // com.slack.circuitx.navstage/Pane|null[0]
+
+final val com.slack.circuitx.navstage/com_slack_circuitx_navstage_GestureNavStageTransition$stableprop // com.slack.circuitx.navstage/com_slack_circuitx_navstage_GestureNavStageTransition$stableprop|#static{}com_slack_circuitx_navstage_GestureNavStageTransition$stableprop[0]
+final val com.slack.circuitx.navstage/com_slack_circuitx_navstage_ListDetailNavStage$stableprop // com.slack.circuitx.navstage/com_slack_circuitx_navstage_ListDetailNavStage$stableprop|#static{}com_slack_circuitx_navstage_ListDetailNavStage$stableprop[0]
+final val com.slack.circuitx.navstage/com_slack_circuitx_navstage_ListDetailNavStageStrategy$stableprop // com.slack.circuitx.navstage/com_slack_circuitx_navstage_ListDetailNavStageStrategy$stableprop|#static{}com_slack_circuitx_navstage_ListDetailNavStageStrategy$stableprop[0]
+final val com.slack.circuitx.navstage/com_slack_circuitx_navstage_NavStageDecoration$stableprop // com.slack.circuitx.navstage/com_slack_circuitx_navstage_NavStageDecoration$stableprop|#static{}com_slack_circuitx_navstage_NavStageDecoration$stableprop[0]
+final val com.slack.circuitx.navstage/com_slack_circuitx_navstage_NavStageTransitionState$stableprop // com.slack.circuitx.navstage/com_slack_circuitx_navstage_NavStageTransitionState$stableprop|#static{}com_slack_circuitx_navstage_NavStageTransitionState$stableprop[0]
+final val com.slack.circuitx.navstage/com_slack_circuitx_navstage_Pane$stableprop // com.slack.circuitx.navstage/com_slack_circuitx_navstage_Pane$stableprop|#static{}com_slack_circuitx_navstage_Pane$stableprop[0]
+final val com.slack.circuitx.navstage/com_slack_circuitx_navstage_SinglePaneNavStage$stableprop // com.slack.circuitx.navstage/com_slack_circuitx_navstage_SinglePaneNavStage$stableprop|#static{}com_slack_circuitx_navstage_SinglePaneNavStage$stableprop[0]
+
+final fun com.slack.circuitx.navstage/com_slack_circuitx_navstage_GestureNavStageTransition$stableprop_getter(): kotlin/Int // com.slack.circuitx.navstage/com_slack_circuitx_navstage_GestureNavStageTransition$stableprop_getter|com_slack_circuitx_navstage_GestureNavStageTransition$stableprop_getter(){}[0]
+final fun com.slack.circuitx.navstage/com_slack_circuitx_navstage_ListDetailNavStage$stableprop_getter(): kotlin/Int // com.slack.circuitx.navstage/com_slack_circuitx_navstage_ListDetailNavStage$stableprop_getter|com_slack_circuitx_navstage_ListDetailNavStage$stableprop_getter(){}[0]
+final fun com.slack.circuitx.navstage/com_slack_circuitx_navstage_ListDetailNavStageStrategy$stableprop_getter(): kotlin/Int // com.slack.circuitx.navstage/com_slack_circuitx_navstage_ListDetailNavStageStrategy$stableprop_getter|com_slack_circuitx_navstage_ListDetailNavStageStrategy$stableprop_getter(){}[0]
+final fun com.slack.circuitx.navstage/com_slack_circuitx_navstage_NavStageDecoration$stableprop_getter(): kotlin/Int // com.slack.circuitx.navstage/com_slack_circuitx_navstage_NavStageDecoration$stableprop_getter|com_slack_circuitx_navstage_NavStageDecoration$stableprop_getter(){}[0]
+final fun com.slack.circuitx.navstage/com_slack_circuitx_navstage_NavStageTransitionState$stableprop_getter(): kotlin/Int // com.slack.circuitx.navstage/com_slack_circuitx_navstage_NavStageTransitionState$stableprop_getter|com_slack_circuitx_navstage_NavStageTransitionState$stableprop_getter(){}[0]
+final fun com.slack.circuitx.navstage/com_slack_circuitx_navstage_Pane$stableprop_getter(): kotlin/Int // com.slack.circuitx.navstage/com_slack_circuitx_navstage_Pane$stableprop_getter|com_slack_circuitx_navstage_Pane$stableprop_getter(){}[0]
+final fun com.slack.circuitx.navstage/com_slack_circuitx_navstage_SinglePaneNavStage$stableprop_getter(): kotlin/Int // com.slack.circuitx.navstage/com_slack_circuitx_navstage_SinglePaneNavStage$stableprop_getter|com_slack_circuitx_navstage_SinglePaneNavStage$stableprop_getter(){}[0]

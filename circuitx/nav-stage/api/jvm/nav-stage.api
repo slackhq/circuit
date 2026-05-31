@@ -1,0 +1,128 @@
+public abstract interface class com/slack/circuitx/navstage/DetailPane {
+}
+
+public abstract interface annotation class com/slack/circuitx/navstage/ExperimentalNavStageApi : java/lang/annotation/Annotation {
+}
+
+public final class com/slack/circuitx/navstage/GestureNavStageTransition : com/slack/circuitx/navstage/NavStageTransition {
+	public static final field $stable I
+	public fun <init> (Lkotlin/jvm/functions/Function0;)V
+	public fun AnimatedStageContent (Lcom/slack/circuitx/navstage/NavStageTransitionState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/slack/circuitx/navstage/ListDetailNavStage : com/slack/circuitx/navstage/NavStage {
+	public static final field $stable I
+	public fun <init> (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun Content (Lcom/slack/circuit/runtime/navigation/NavStackList;Lcom/slack/circuitx/navstage/NavStagePaneScope;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)V
+	public fun getKey ()Ljava/lang/Object;
+	public fun renderedItemKeys (Lcom/slack/circuit/runtime/navigation/NavStackList;)Ljava/util/Set;
+}
+
+public final class com/slack/circuitx/navstage/ListDetailNavStageStrategy : com/slack/circuitx/navstage/NavStageStrategy {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun calculateStage (Lcom/slack/circuit/runtime/navigation/NavStackList;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuitx/navstage/NavStage;
+}
+
+public abstract interface class com/slack/circuitx/navstage/ListPane {
+}
+
+public abstract interface class com/slack/circuitx/navstage/NavStage {
+	public abstract fun Content (Lcom/slack/circuit/runtime/navigation/NavStackList;Lcom/slack/circuitx/navstage/NavStagePaneScope;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)V
+	public abstract fun getKey ()Ljava/lang/Object;
+	public fun renderedItemKeys (Lcom/slack/circuit/runtime/navigation/NavStackList;)Ljava/util/Set;
+}
+
+public final class com/slack/circuitx/navstage/NavStageDecoration : com/slack/circuit/foundation/NavDecoration {
+	public static final field $stable I
+	public fun <init> (Ljava/util/List;Lcom/slack/circuitx/navstage/NavStageTransition;Lcom/slack/circuitx/navstage/NavStageFrame;)V
+	public synthetic fun <init> (Ljava/util/List;Lcom/slack/circuitx/navstage/NavStageTransition;Lcom/slack/circuitx/navstage/NavStageFrame;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun DecoratedContent (Lcom/slack/circuit/runtime/navigation/NavStackList;Lcom/slack/circuit/runtime/Navigator;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+}
+
+public abstract interface class com/slack/circuitx/navstage/NavStageFrame {
+	public static final field Companion Lcom/slack/circuitx/navstage/NavStageFrame$Companion;
+	public abstract fun Content (Landroidx/compose/ui/Modifier;Lcom/slack/circuitx/navstage/NavStage;Lcom/slack/circuit/runtime/navigation/NavStackList;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/slack/circuitx/navstage/NavStageFrame$Companion {
+	public final fun getNone ()Lcom/slack/circuitx/navstage/NavStageFrame;
+}
+
+public abstract interface class com/slack/circuitx/navstage/NavStagePaneScope {
+	public abstract fun Pane (Ljava/lang/Object;Lcom/slack/circuit/runtime/navigation/NavArgument;Landroidx/compose/ui/Modifier;Lcom/slack/circuitx/navstage/PaneTransition;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/slack/circuitx/navstage/NavStagePaneScope$ComposeDefaultImpls {
+	public static final fun Pane$default (Ljava/lang/Object;Lcom/slack/circuit/runtime/navigation/NavArgument;Landroidx/compose/ui/Modifier;Lcom/slack/circuitx/navstage/PaneTransition;Lcom/slack/circuitx/navstage/NavStagePaneScope;Landroidx/compose/runtime/Composer;II)V
+}
+
+public abstract interface class com/slack/circuitx/navstage/NavStageStrategy {
+	public abstract fun calculateStage (Lcom/slack/circuit/runtime/navigation/NavStackList;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuitx/navstage/NavStage;
+}
+
+public abstract interface class com/slack/circuitx/navstage/NavStageTransition {
+	public static final field Companion Lcom/slack/circuitx/navstage/NavStageTransition$Companion;
+	public abstract fun AnimatedStageContent (Lcom/slack/circuitx/navstage/NavStageTransitionState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/slack/circuitx/navstage/NavStageTransition$Companion {
+	public final fun getCrossfade ()Lcom/slack/circuitx/navstage/NavStageTransition;
+	public final fun getNone ()Lcom/slack/circuitx/navstage/NavStageTransition;
+}
+
+public final class com/slack/circuitx/navstage/NavStageTransitionState {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/Object;Lcom/slack/circuit/runtime/navigation/NavStackList;)V
+	public final fun component1 ()Ljava/lang/Object;
+	public final fun component2 ()Lcom/slack/circuit/runtime/navigation/NavStackList;
+	public final fun copy (Ljava/lang/Object;Lcom/slack/circuit/runtime/navigation/NavStackList;)Lcom/slack/circuitx/navstage/NavStageTransitionState;
+	public static synthetic fun copy$default (Lcom/slack/circuitx/navstage/NavStageTransitionState;Ljava/lang/Object;Lcom/slack/circuit/runtime/navigation/NavStackList;ILjava/lang/Object;)Lcom/slack/circuitx/navstage/NavStageTransitionState;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArgs ()Lcom/slack/circuit/runtime/navigation/NavStackList;
+	public final fun getStageKey ()Ljava/lang/Object;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuitx/navstage/Pane : com/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/slack/circuitx/navstage/Pane;
+}
+
+public final class com/slack/circuitx/navstage/PaneNavEvent : java/lang/Enum {
+	public static final field Backward Lcom/slack/circuitx/navstage/PaneNavEvent;
+	public static final field Forward Lcom/slack/circuitx/navstage/PaneNavEvent;
+	public static final field GoTo Lcom/slack/circuitx/navstage/PaneNavEvent;
+	public static final field Pop Lcom/slack/circuitx/navstage/PaneNavEvent;
+	public static final field RootReset Lcom/slack/circuitx/navstage/PaneNavEvent;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuitx/navstage/PaneNavEvent;
+	public static fun values ()[Lcom/slack/circuitx/navstage/PaneNavEvent;
+}
+
+public abstract interface class com/slack/circuitx/navstage/PaneTransition {
+	public static final field Companion Lcom/slack/circuitx/navstage/PaneTransition$Companion;
+	public abstract fun AnimatedPaneContent (Lcom/slack/circuit/runtime/navigation/NavArgument;Ljava/lang/Object;Lcom/slack/circuitx/navstage/PaneNavEvent;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/slack/circuitx/navstage/PaneTransition$Companion {
+	public final fun getCrossfade ()Lcom/slack/circuitx/navstage/PaneTransition;
+	public final fun getDefault ()Lcom/slack/circuitx/navstage/PaneTransition;
+	public final fun getNone ()Lcom/slack/circuitx/navstage/PaneTransition;
+}
+
+public final class com/slack/circuitx/navstage/PaneTransition$ComposeDefaultImpls {
+	public static final fun AnimatedPaneContent$default (Lcom/slack/circuit/runtime/navigation/NavArgument;Ljava/lang/Object;Lcom/slack/circuitx/navstage/PaneNavEvent;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Lcom/slack/circuitx/navstage/PaneTransition;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/slack/circuitx/navstage/SinglePaneNavStage : com/slack/circuitx/navstage/NavStage {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun Content (Lcom/slack/circuit/runtime/navigation/NavStackList;Lcom/slack/circuitx/navstage/NavStagePaneScope;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)V
+	public fun getKey ()Ljava/lang/Object;
+}
+

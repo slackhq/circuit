@@ -4,6 +4,8 @@ package com.slack.circuitx.navstage
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +44,13 @@ public class NavStageDecoration(
   }
 }
 
+/**
+ * CompositionLocal indicating whether the current composition is the primary (target) state. Set to
+ * `false` by transitions that overlay a secondary composition (e.g. [GestureNavStageTransition]
+ * showing the previous state behind the current one).
+ */
+internal val LocalNavStagePrimary = compositionLocalOf { true }
+
 @OptIn(ExperimentalNavStageApi::class)
 @Composable
 internal fun <T : NavArgument> NavStageContent(
@@ -53,15 +62,57 @@ internal fun <T : NavArgument> NavStageContent(
   var previousArgs by remember { mutableStateOf(args) }
   val navEvent =
     remember(args) {
-      val event = determineNavEvent(previousArgs, args)
-      previousArgs = args
-      event
+      determineNavEvent(previousArgs, args)
     }
+  SideEffect {
+    previousArgs = args
+  }
+
+  // Track the previous stage so we can render the outgoing layout during transitions.
+  var previousStage by remember { mutableStateOf(stage) }
+  val resolvedPreviousStage =
+    remember(stage.key) {
+      previousStage
+    }
+  SideEffect {
+    previousStage = stage
+  }
+
+  // Pre-compute the items the target stage will render, so overlapping items in the
+  // outgoing/secondary composition can be rendered as placeholders (with shared bounds).
+  val targetRenderedItemKeys = remember(stage, args) { stage.renderedItemKeys(args) }
 
   val targetState = NavStageTransitionState(stageKey = stage.key, args = args)
   stageTransition.AnimatedStageContent(targetState) { state ->
-    val paneScope = NavStagePaneScopeImpl(content = content, navEvent = navEvent)
-    stage.Content(state.args, paneScope, Modifier)
+    val isPrimary = LocalNavStagePrimary.current
+    val isTargetState = state.stageKey == stage.key
+
+    // Determine which stage layout to use for rendering.
+    // The target state uses the current stage; any non-target state (outgoing during a
+    // stage-to-stage transition) uses the previous stage so shared bounds are positioned
+    // according to the old layout.
+    val activeStage = if (isTargetState) stage else resolvedPreviousStage
+
+    // Compute placeholder keys: items that are already composed by the primary/target state
+    // should be rendered as empty shared-bounds placeholders in the secondary composition
+    // to avoid composing a movableContentOf in multiple places simultaneously.
+    val placeholderKeys =
+      remember(isPrimary, isTargetState, activeStage, state.args, targetRenderedItemKeys) {
+        if (isPrimary && isTargetState) {
+          emptySet()
+        } else {
+          val activeItems = activeStage.renderedItemKeys(state.args)
+          activeItems.intersect(targetRenderedItemKeys)
+        }
+      }
+
+    val paneScope =
+      NavStagePaneScopeImpl(
+        content = content,
+        navEvent = navEvent,
+        placeholderItemKeys = placeholderKeys,
+      )
+    activeStage.Content(state.args, paneScope, Modifier)
   }
 }
 

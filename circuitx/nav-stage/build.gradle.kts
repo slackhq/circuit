@@ -40,6 +40,7 @@ kotlin {
         api(projects.circuitFoundation)
         implementation(libs.compose.foundation)
         implementation(libs.windowSizeClass)
+        implementation(projects.circuitSharedElements)
       }
     }
   }

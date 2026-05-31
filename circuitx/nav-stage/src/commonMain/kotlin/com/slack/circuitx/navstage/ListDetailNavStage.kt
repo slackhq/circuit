@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
@@ -27,6 +29,8 @@ import com.slack.circuit.runtime.screen.Screen
 public class ListDetailNavStageStrategy(
   private val isListPane: (Screen) -> Boolean = { it is ListPane },
   private val isDetailPane: (Screen) -> Boolean = { it is DetailPane },
+  private val listTransition: PaneTransition = PaneTransition.None,
+  private val detailTransition: PaneTransition = PaneTransition.Default,
 ) : NavStageStrategy {
 
   @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -39,7 +43,13 @@ public class ListDetailNavStageStrategy(
     val hasList = args.backwardItems.any { isListPane(it.screen) }
     if (!hasDetail || !hasList) return null
 
-    return ListDetailNavStage(isListPane = isListPane)
+    return remember(isListPane, listTransition, detailTransition) {
+      ListDetailNavStage(
+        isListPane = isListPane,
+        listTransition = listTransition,
+        detailTransition = detailTransition,
+      )
+    }
   }
 }
 
@@ -47,21 +57,35 @@ public class ListDetailNavStageStrategy(
  * Dual-pane stage that renders a list pane (40%) beside a detail pane (60%) in a horizontal row.
  */
 @ExperimentalNavStageApi
-public class ListDetailNavStage<T : NavArgument>(private val isListPane: (Screen) -> Boolean) :
-  NavStage<T> {
+public class ListDetailNavStage<T : NavArgument>(
+  private val isListPane: (Screen) -> Boolean,
+  private val listTransition: PaneTransition = PaneTransition.None,
+  private val detailTransition: PaneTransition = PaneTransition.Default,
+) : NavStage<T> {
   override val key: Any = "list-detail"
+
+  override fun renderedItemKeys(args: NavStackList<T>): Set<Any> {
+    val listKey = args.backwardItems.firstOrNull { isListPane(it.screen) }?.key
+    return setOfNotNull(args.active.key, listKey)
+  }
 
   @Composable
   override fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
     val detailItem = args.active
-    val listItem = args.backwardItems.first { isListPane(it.screen) }
+    // Find the nearest list pane behind the current detail.
+    // If multiple list panes exist, we want the most recently pushed one.
+    val listItem = args.backwardItems.firstOrNull { isListPane(it.screen) }
+    if (listItem == null) {
+      // Fallback: render only the detail pane until the next recomposition picks a new stage
+      Box(modifier.fillMaxSize()) {
+        paneScope.Pane(key = "detail", item = detailItem, transition = detailTransition)
+      }
+      return
+    }
 
-    // TODO Problems
-    //   - If the list item moves between here and Single it blows up (key was used multiple times)
-    //   - This needs to animate content panes in/out, can use the Compose component for this too.
     Row(modifier.fillMaxSize()) {
-      paneScope.Pane(key = "list", item = listItem, modifier = Modifier.weight(0.4f))
-      paneScope.Pane(key = "detail", item = detailItem, modifier = Modifier.weight(0.6f))
+      paneScope.Pane(key = "list", item = listItem, modifier = Modifier.weight(0.4f), transition = listTransition)
+      paneScope.Pane(key = "detail", item = detailItem, modifier = Modifier.weight(0.6f), transition = detailTransition)
     }
   }
 }

@@ -7,6 +7,7 @@ import androidx.compose.animation.core.rememberTransition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -106,7 +107,11 @@ public class GestureNavStageTransition(private val onBack: () -> Unit) : NavStag
 
     Box(Modifier.fillMaxSize()) {
       if (showPrevious && previous != null) {
-        content(previous)
+        // Mark the previous state as secondary so overlapping items render as
+        // shared-bounds placeholders instead of real content (avoids movableContent crash).
+        CompositionLocalProvider(LocalNavStagePrimary provides false) {
+          content(previous)
+        }
       }
 
       Box(

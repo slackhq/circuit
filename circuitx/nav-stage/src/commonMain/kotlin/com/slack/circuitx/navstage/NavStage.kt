@@ -24,6 +24,17 @@ public interface NavStage<T : NavArgument> {
   public val key: Any
 
   /**
+   * Returns the keys of navigation items this stage will render for the given [args].
+   *
+   * Used during stage transitions to detect items shared between the outgoing and incoming stages.
+   * Shared items are rendered as placeholders (with animated bounds) in the outgoing stage to avoid
+   * composing a `movableContentOf` in multiple places simultaneously.
+   *
+   * Override this when the stage renders additional items beyond the active one (e.g. a list pane).
+   */
+  public fun renderedItemKeys(args: NavStackList<T>): Set<Any> = setOf(args.active.key)
+
+  /**
    * Renders the stage layout, using [paneScope] to place individual navigation items into panes.
    */
   @Composable

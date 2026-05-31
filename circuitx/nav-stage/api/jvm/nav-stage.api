@@ -6,8 +6,10 @@ public abstract interface annotation class com/slack/circuitx/navstage/Experimen
 
 public final class com/slack/circuitx/navstage/GestureNavStageTransition : com/slack/circuitx/navstage/NavStageTransition {
 	public static final field $stable I
+	public fun <init> ()V
 	public fun <init> (Lkotlin/jvm/functions/Function0;)V
-	public fun AnimatedStageContent (Lcom/slack/circuitx/navstage/NavStageTransitionState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun AnimatedStageContent (Lcom/slack/circuitx/navstage/NavStageTransitionState;Lcom/slack/circuit/runtime/Navigator;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
 }
 
 public final class com/slack/circuitx/navstage/ListDetailNavStage : com/slack/circuitx/navstage/NavStage {
@@ -66,7 +68,7 @@ public abstract interface class com/slack/circuitx/navstage/NavStageStrategy {
 
 public abstract interface class com/slack/circuitx/navstage/NavStageTransition {
 	public static final field Companion Lcom/slack/circuitx/navstage/NavStageTransition$Companion;
-	public abstract fun AnimatedStageContent (Lcom/slack/circuitx/navstage/NavStageTransitionState;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+	public abstract fun AnimatedStageContent (Lcom/slack/circuitx/navstage/NavStageTransitionState;Lcom/slack/circuit/runtime/Navigator;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
 }
 
 public final class com/slack/circuitx/navstage/NavStageTransition$Companion {

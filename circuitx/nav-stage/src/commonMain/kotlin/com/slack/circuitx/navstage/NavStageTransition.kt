@@ -10,6 +10,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
@@ -31,6 +32,7 @@ public interface NavStageTransition {
   @Composable
   public fun <T : NavArgument> AnimatedStageContent(
     targetState: NavStageTransitionState<T>,
+    navigator: Navigator,
     content: @Composable (NavStageTransitionState<T>) -> Unit,
   )
 
@@ -41,6 +43,7 @@ public interface NavStageTransition {
         @Composable
         override fun <T : NavArgument> AnimatedStageContent(
           targetState: NavStageTransitionState<T>,
+          navigator: Navigator,
           content: @Composable (NavStageTransitionState<T>) -> Unit,
         ) {
           content(targetState)
@@ -58,6 +61,7 @@ public interface NavStageTransition {
         @Composable
         override fun <T : NavArgument> AnimatedStageContent(
           targetState: NavStageTransitionState<T>,
+          navigator: Navigator,
           content: @Composable (NavStageTransitionState<T>) -> Unit,
         ) {
           AnimatedContent(

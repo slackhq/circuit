@@ -27,6 +27,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
 import com.slack.circuit.runtime.InternalCircuitApi
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.navStackListOf
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
@@ -43,7 +44,8 @@ import kotlinx.coroutines.CancellationException
  * gesture completes.
  */
 @ExperimentalNavStageApi
-public class GestureNavStageTransition(private val onBack: () -> Unit) : NavStageTransition {
+public class GestureNavStageTransition(private val onBack: (() -> Unit)? = null) :
+  NavStageTransition {
 
   @OptIn(
     InternalCircuitApi::class,
@@ -53,6 +55,7 @@ public class GestureNavStageTransition(private val onBack: () -> Unit) : NavStag
   @Composable
   override fun <T : NavArgument> AnimatedStageContent(
     targetState: NavStageTransitionState<T>,
+    navigator: Navigator,
     @Suppress("SlotReused") content: @Composable (NavStageTransitionState<T>) -> Unit,
   ) {
     var swipeProgress by remember { mutableFloatStateOf(0f) }
@@ -113,7 +116,13 @@ public class GestureNavStageTransition(private val onBack: () -> Unit) : NavStag
         seekableTransitionState.animateTo(targetState)
         showPrevious = false
       },
-      onBackCompleted = { onBack() },
+      onBackCompleted = {
+        if (onBack != null) {
+          onBack()
+        } else {
+          navigator.pop()
+        }
+      },
     )
 
     val transition =

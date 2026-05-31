@@ -38,9 +38,10 @@ public class NavStageDecoration(
     content: @Composable (T) -> Unit,
   ) {
     val stage =
-      strategies.firstNotNullOfOrNull { it.calculateStage(args) }
-        ?: SinglePaneNavStage.get()
-    frame.Content(modifier, stage, args) { NavStageContent(stage, args, stageTransition, content) }
+      strategies.firstNotNullOfOrNull { it.calculateStage(args) } ?: SinglePaneNavStage.get()
+    frame.Content(modifier, stage, args) {
+      NavStageContent(stage, args, stageTransition, navigator, content)
+    }
   }
 }
 
@@ -57,6 +58,7 @@ internal fun <T : NavArgument> NavStageContent(
   stage: NavStage<T>,
   args: NavStackList<T>,
   stageTransition: NavStageTransition,
+  navigator: Navigator,
   content: @Composable (T) -> Unit,
 ) {
   var previousArgs by remember { mutableStateOf(args) }
@@ -83,7 +85,7 @@ internal fun <T : NavArgument> NavStageContent(
   val targetRenderedItemKeys = remember(stage, args) { stage.renderedItemKeys(args) }
 
   val targetState = NavStageTransitionState(stageKey = stage.key, args = args)
-  stageTransition.AnimatedStageContent(targetState) { state ->
+  stageTransition.AnimatedStageContent(targetState, navigator) { state ->
     val isPrimary = LocalNavStagePrimary.current
     val isTargetState = state.stageKey == stage.key
 

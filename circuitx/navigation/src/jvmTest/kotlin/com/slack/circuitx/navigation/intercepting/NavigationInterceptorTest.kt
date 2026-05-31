@@ -472,7 +472,9 @@ class NavigationInterceptorTest {
         ResetRootEvent(
           navStack,
           TestScreen.ScreenA,
-          InterceptedResult.Rewrite(NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)),
+          InterceptedResult.Rewrite(
+            NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)
+          ),
         ),
         fakeInterceptor1.awaitResetRoot(),
       )
@@ -503,7 +505,9 @@ class NavigationInterceptorTest {
         ResetRootEvent(
           navStack,
           TestScreen.ScreenA,
-          InterceptedResult.Rewrite(NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)),
+          InterceptedResult.Rewrite(
+            NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)
+          ),
         ),
         fakeInterceptor1.awaitResetRoot(),
       )
@@ -531,7 +535,9 @@ class NavigationInterceptorTest {
         ResetRootEvent(
           navStack,
           TestScreen.ScreenA,
-          InterceptedResult.Rewrite(NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)),
+          InterceptedResult.Rewrite(
+            NavEvent.ResetRoot(TestScreen.RootBeta, options = stateOptions)
+          ),
         ),
         fakeInterceptor1.awaitResetRoot(),
       )

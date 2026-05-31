@@ -12,6 +12,8 @@ Unreleased
 
 ### Changes
 
+- **Breaking**: Moved `NavDecoration` from `backstack` to `circuit-foundation` and added a `Navigator` parameter to `DecoratedContent`. `AnimatedNavDecorator` now has an `updateNavigator` method to receive the new `Navigator` parameter. This gives decorations direct access to the correct Navigator for handling back gestures.
+- Add `GestureNavigationEventListener` and an optional `listener` parameter to `GestureNavigationDecorationFactory`, for observing the back gesture lifecycle (e.g. analytics). It's observational only, the `Navigator` still drives the pop.
 - Update to Kotlin `2.3.20`.
 - Remove deprecated X64 Apple targets.
 - `SaveableNavStack` & `SaveableBackStack` - Made the `Saver`s public apis

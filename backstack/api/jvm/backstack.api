@@ -15,10 +15,6 @@ public final class com/slack/circuit/backstack/BackStackKt {
 	public static final fun isEmpty (Lcom/slack/circuit/backstack/BackStack;)Z
 }
 
-public abstract interface class com/slack/circuit/backstack/NavDecoration {
-	public abstract fun DecoratedContent (Lcom/slack/circuit/runtime/navigation/NavStackList;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
-}
-
 public final class com/slack/circuit/backstack/SaveableBackStack : com/slack/circuit/backstack/BackStack {
 	public static final field $stable I
 	public static final field Companion Lcom/slack/circuit/backstack/SaveableBackStack$Companion;

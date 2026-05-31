@@ -22,7 +22,6 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_RESET_ROOT_BETA
 import com.slack.circuit.internal.test.TestCountPresenter.RememberType
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
-import com.slack.circuit.runtime.Navigator
 
 internal interface GestureNavigationStateTest {
 
@@ -40,7 +39,7 @@ internal interface GestureNavigationStateTest {
     useKeys: Boolean,
     useSwipe: Boolean,
     rememberType: RememberType,
-    decoratorFactory: (Navigator) -> AnimatedNavDecorator.Factory,
+    decoratorFactory: () -> AnimatedNavDecorator.Factory,
     setContent: (@Composable () -> Unit) -> Unit,
   ) {
     val circuit = createTestCircuit(useKeys = useKeys, rememberType = rememberType)
@@ -55,7 +54,7 @@ internal interface GestureNavigationStateTest {
         NavigableCircuitContent(
           navigator = navigator,
           backStack = backStack,
-          decoratorFactory = remember(navigator) { decoratorFactory(navigator) },
+          decoratorFactory = remember { decoratorFactory() },
         )
       }
     }
@@ -122,7 +121,7 @@ internal interface GestureNavigationStateTest {
     useKeys: Boolean,
     useSwipe: Boolean,
     rememberType: RememberType,
-    decoratorFactory: (Navigator) -> AnimatedNavDecorator.Factory,
+    decoratorFactory: () -> AnimatedNavDecorator.Factory,
     setContent: (@Composable () -> Unit) -> Unit,
   ) {
     val circuit =
@@ -144,7 +143,7 @@ internal interface GestureNavigationStateTest {
         NavigableCircuitContent(
           navigator = navigator,
           backStack = backStack,
-          decoratorFactory = remember(navigator) { decoratorFactory(navigator) },
+          decoratorFactory = remember { decoratorFactory() },
         )
       }
     }

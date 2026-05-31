@@ -1,5 +1,16 @@
 public final class com/slack/circuitx/gesturenavigation/GestureNavigationDecoration_jvmKt {
-	public static final fun GestureNavigationDecorationFactory (Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;Lkotlin/jvm/functions/Function0;)Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
-	public static synthetic fun GestureNavigationDecorationFactory$default (Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;Lkotlin/jvm/functions/Function0;ILjava/lang/Object;)Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
+	public static final fun GestureNavigationDecorationFactory (Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;Lcom/slack/circuitx/gesturenavigation/GestureNavigationEventListener;)Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
+	public static synthetic fun GestureNavigationDecorationFactory$default (Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;Lcom/slack/circuitx/gesturenavigation/GestureNavigationEventListener;ILjava/lang/Object;)Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
+}
+
+public abstract interface class com/slack/circuitx/gesturenavigation/GestureNavigationEventListener {
+	public static final field Companion Lcom/slack/circuitx/gesturenavigation/GestureNavigationEventListener$Companion;
+	public fun onBackCancelled ()V
+	public fun onBackCompleted ()V
+	public fun onBackProgress (F)V
+}
+
+public final class com/slack/circuitx/gesturenavigation/GestureNavigationEventListener$Companion {
+	public final fun getNoOp ()Lcom/slack/circuitx/gesturenavigation/GestureNavigationEventListener;
 }
 

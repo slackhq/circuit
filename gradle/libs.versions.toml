@@ -7,7 +7,7 @@ androidx-appcompat = "1.7.1"
 androidx-browser = "1.10.0"
 androidx-compose = "1.11.2"  # Keep in sync with the androidx version used by jb-compose
 anvil = "0.5.4"
-atomicfu = "0.32.1"
+atomicfu = "0.33.0"
 benchmark = "1.5.0-alpha06"
 coil = "3.4.0"
 compose-runtime = "1.11.2" # Keep in sync with the androidx version used by jb-compose
@@ -29,8 +29,8 @@ kotlinInject-anvil = "0.1.7"
 kotlinpoet = "2.3.0"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.9.0"
-ksp = "2.3.8"
-ktfmt = "0.62"
+ksp = "2.3.9"
+ktfmt = "0.63"
 ktor = "3.5.0"
 leakcanary = "2.14"
 mavenPublish = "0.36.0"
@@ -188,7 +188,7 @@ leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcan
 lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jb-lifecycle" }
 lifecycle-viewModel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "jb-lifecycle" }
 
-lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.3"
+lints-compose = "com.slack.lint.compose:compose-lint-checks:1.5.0"
 
 markdownRenderer = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdownRenderer" }
 markdownRenderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }

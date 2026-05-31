@@ -9,7 +9,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.foundation.NavDecoration
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 
@@ -30,6 +31,7 @@ public class NavStageDecoration(
   @Composable
   override fun <T : NavArgument> DecoratedContent(
     args: NavStackList<T>,
+    navigator: Navigator,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {

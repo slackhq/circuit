@@ -21,6 +21,12 @@ Unreleased
 - [codegen] `@CircuitInject`-annotated classes must now be injectable — annotate the class or a constructor with `@Inject`. Previously, classes without `@Inject` silently generated a direct constructor call that could fail to compile.
 - [codegen/metro] Generate function providers when Metro mode is enabled. Note this requires `enableFunctionProviders` to be set enabled, which will be the default in Metro 1.0.0.
 
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@easternkite](https://github.com/easternkite)
+
 0.33.1
 ------
 

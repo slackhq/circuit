@@ -78,14 +78,28 @@ public class ListDetailNavStage<T : NavArgument>(
     if (listItem == null) {
       // Fallback: render only the detail pane until the next recomposition picks a new stage
       Box(modifier.fillMaxSize()) {
-        paneScope.Pane(key = "detail", item = detailItem, transition = detailTransition(detailItem.screen))
+        paneScope.Pane(
+          key = "detail",
+          item = detailItem,
+          transition = detailTransition(detailItem.screen),
+        )
       }
       return
     }
 
     Row(modifier.fillMaxSize()) {
-      paneScope.Pane(key = "list", item = listItem, modifier = Modifier.weight(0.4f), transition = listTransition(listItem.screen))
-      paneScope.Pane(key = "detail", item = detailItem, modifier = Modifier.weight(0.6f), transition = detailTransition(detailItem.screen))
+      paneScope.Pane(
+        key = "list",
+        item = listItem,
+        modifier = Modifier.weight(0.4f),
+        transition = listTransition(listItem.screen),
+      )
+      paneScope.Pane(
+        key = "detail",
+        item = detailItem,
+        modifier = Modifier.weight(0.6f),
+        transition = detailTransition(detailItem.screen),
+      )
     }
   }
 }

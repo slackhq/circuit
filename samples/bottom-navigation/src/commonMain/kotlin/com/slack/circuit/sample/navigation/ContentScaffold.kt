@@ -41,7 +41,6 @@ import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.navigation.NavStack.Record
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuitx.navstage.ExperimentalNavStageApi
-import com.slack.circuitx.navstage.GestureNavStageTransition
 import com.slack.circuitx.navstage.ListDetailNavStageStrategy
 import com.slack.circuitx.navstage.NavStage
 import com.slack.circuitx.navstage.NavStageDecoration
@@ -61,7 +60,8 @@ fun ContentScaffold(
     remember(navigator) {
       NavStageDecoration(
         strategies = listOf(ListDetailNavStageStrategy()),
-        stageTransition = NavStageTransition.Crossfade, //GestureNavStageTransition(onBack = { navigator.pop() }),
+        stageTransition =
+          NavStageTransition.Crossfade, // GestureNavStageTransition(onBack = { navigator.pop() }),
         frame =
           object : NavStageFrame {
             @Suppress("ComposeModifierReused")

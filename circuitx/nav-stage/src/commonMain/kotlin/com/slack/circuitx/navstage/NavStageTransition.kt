@@ -13,7 +13,6 @@ import androidx.compose.runtime.Stable
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
-import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 
 /**

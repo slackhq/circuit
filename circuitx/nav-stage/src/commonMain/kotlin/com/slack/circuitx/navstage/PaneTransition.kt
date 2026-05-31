@@ -4,6 +4,7 @@ package com.slack.circuitx.navstage
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,13 +18,12 @@ import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 
 /**
- * A custom [SharedElementTransitionScope.AnimatedScope] for shared element transitions within or between panes.
+ * A custom [SharedElementTransitionScope.AnimatedScope] for shared element transitions within or
+ * between panes.
  */
-@ExperimentalNavStageApi
-public object Pane : SharedElementTransitionScope.AnimatedScope
+@ExperimentalNavStageApi public object Pane : SharedElementTransitionScope.AnimatedScope
 
 /**
  * Controls the animation when the content within a single pane changes.

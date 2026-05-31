@@ -29,8 +29,8 @@ import com.slack.circuit.runtime.screen.Screen
 public class ListDetailNavStageStrategy(
   private val isListPane: (Screen) -> Boolean = { it is ListPane },
   private val isDetailPane: (Screen) -> Boolean = { it is DetailPane },
-  private val listTransition: PaneTransition = PaneTransition.None,
-  private val detailTransition: PaneTransition = PaneTransition.Default,
+  private val listTransition: (Screen) -> PaneTransition = { PaneTransition.None },
+  private val detailTransition: (Screen) -> PaneTransition = { PaneTransition.Default },
 ) : NavStageStrategy {
 
   @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -59,8 +59,8 @@ public class ListDetailNavStageStrategy(
 @ExperimentalNavStageApi
 public class ListDetailNavStage<T : NavArgument>(
   private val isListPane: (Screen) -> Boolean,
-  private val listTransition: PaneTransition = PaneTransition.None,
-  private val detailTransition: PaneTransition = PaneTransition.Default,
+  private val listTransition: (Screen) -> PaneTransition = { PaneTransition.None },
+  private val detailTransition: (Screen) -> PaneTransition = { PaneTransition.Default },
 ) : NavStage<T> {
   override val key: Any = "list-detail"
 
@@ -78,14 +78,14 @@ public class ListDetailNavStage<T : NavArgument>(
     if (listItem == null) {
       // Fallback: render only the detail pane until the next recomposition picks a new stage
       Box(modifier.fillMaxSize()) {
-        paneScope.Pane(key = "detail", item = detailItem, transition = detailTransition)
+        paneScope.Pane(key = "detail", item = detailItem, transition = detailTransition(detailItem.screen))
       }
       return
     }
 
     Row(modifier.fillMaxSize()) {
-      paneScope.Pane(key = "list", item = listItem, modifier = Modifier.weight(0.4f), transition = listTransition)
-      paneScope.Pane(key = "detail", item = detailItem, modifier = Modifier.weight(0.6f), transition = detailTransition)
+      paneScope.Pane(key = "list", item = listItem, modifier = Modifier.weight(0.4f), transition = listTransition(listItem.screen))
+      paneScope.Pane(key = "detail", item = detailItem, modifier = Modifier.weight(0.6f), transition = detailTransition(detailItem.screen))
     }
   }
 }

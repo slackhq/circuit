@@ -119,10 +119,18 @@ public final class com/slack/circuitx/navstage/PaneTransition$ComposeDefaultImpl
 	public static final fun AnimatedPaneContent$default (Lcom/slack/circuit/runtime/navigation/NavArgument;Ljava/lang/Object;Lcom/slack/circuitx/navstage/PaneNavEvent;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Lcom/slack/circuitx/navstage/PaneTransition;Landroidx/compose/runtime/Composer;II)V
 }
 
+public final class com/slack/circuitx/navstage/PaneTransitionKt {
+	public static final fun findActiveStageScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope;)Landroidx/compose/animation/AnimatedVisibilityScope;
+}
+
 public final class com/slack/circuitx/navstage/SinglePaneNavStage : com/slack/circuitx/navstage/NavStage {
 	public static final field $stable I
-	public fun <init> ()V
+	public static final field Companion Lcom/slack/circuitx/navstage/SinglePaneNavStage$Companion;
 	public fun Content (Lcom/slack/circuit/runtime/navigation/NavStackList;Lcom/slack/circuitx/navstage/NavStagePaneScope;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)V
 	public fun getKey ()Ljava/lang/Object;
+}
+
+public final class com/slack/circuitx/navstage/SinglePaneNavStage$Companion {
+	public final fun get ()Lcom/slack/circuitx/navstage/SinglePaneNavStage;
 }
 

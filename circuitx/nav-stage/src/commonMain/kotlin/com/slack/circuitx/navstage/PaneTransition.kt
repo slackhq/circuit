@@ -3,6 +3,7 @@
 package com.slack.circuitx.navstage
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.tween
@@ -18,6 +19,8 @@ import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
 
 /**
  * A custom [SharedElementTransitionScope.AnimatedScope] for shared element transitions within or
@@ -117,4 +120,13 @@ public enum class PaneNavEvent {
   RootReset,
   Forward,
   Backward,
+}
+
+/**
+ * Extension on [SharedElementTransitionScope] to dynamically resolve the active stage, pane, or
+ * overlay transition scope.
+ */
+@ExperimentalNavStageApi
+public fun SharedElementTransitionScope.findActiveStageScope(): AnimatedVisibilityScope? {
+  return findAnimatedScope(Pane) ?: findAnimatedScope(Navigation) ?: findAnimatedScope(Overlay)
 }

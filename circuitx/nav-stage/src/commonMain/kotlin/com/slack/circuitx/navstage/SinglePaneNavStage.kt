@@ -13,11 +13,19 @@ import com.slack.circuit.runtime.navigation.NavStackList
  * strategy matches.
  */
 @ExperimentalNavStageApi
-public class SinglePaneNavStage<T : NavArgument> : NavStage<T> {
+public class SinglePaneNavStage<T : NavArgument> private constructor() : NavStage<T> {
   override val key: Any = "single-pane"
 
   @Composable
   override fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
     Box(modifier) { paneScope.Pane(key = "single", item = args.active) }
+  }
+
+  public companion object {
+    private val SinglePaneNavStageInstance = SinglePaneNavStage<NavArgument>()
+
+    @Suppress("UNCHECKED_CAST")
+    public fun <T : NavArgument> get(): SinglePaneNavStage<T> =
+      SinglePaneNavStageInstance as SinglePaneNavStage<T>
   }
 }

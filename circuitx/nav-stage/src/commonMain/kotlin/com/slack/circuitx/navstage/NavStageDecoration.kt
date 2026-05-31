@@ -39,7 +39,7 @@ public class NavStageDecoration(
   ) {
     val stage =
       strategies.firstNotNullOfOrNull { it.calculateStage(args) }
-        ?: remember { SinglePaneNavStage() }
+        ?: SinglePaneNavStage.get()
     frame.Content(modifier, stage, args) { NavStageContent(stage, args, stageTransition, content) }
   }
 }

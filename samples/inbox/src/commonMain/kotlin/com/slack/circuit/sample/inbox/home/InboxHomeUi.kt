@@ -110,7 +110,11 @@ private fun CompactSinglePane(state: InboxScreen.State, listScrollState: LazyLis
   // Previews may render without a Circuit in the composition.
   val decoration: NavDecoration = LocalCircuit.current?.defaultNavDecoration ?: FadeNavDecoration
 
-  decoration.DecoratedContent(args = args, navigator = Navigator.NoOp, modifier = Modifier.fillMaxSize()) { pane ->
+  decoration.DecoratedContent(
+    args = args,
+    navigator = Navigator.NoOp,
+    modifier = Modifier.fillMaxSize(),
+  ) { pane ->
     when (pane) {
       InboxPane.List ->
         InboxListPane(

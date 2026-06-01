@@ -45,6 +45,7 @@ kotlin {
         implementation(projects.circuitCodegenAnnotations)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitRetained)
+        implementation(projects.circuitx.effects)
         implementation(projects.internalRuntime)
       }
     }

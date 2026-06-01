@@ -3,7 +3,6 @@
 package com.slack.circuit.sample.inbox.detail
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.produceRetainedState
@@ -11,6 +10,7 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.sample.inbox.data.Email
 import com.slack.circuit.sample.inbox.data.EmailRepository
+import com.slack.circuitx.effects.LaunchedImpressionEffect
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -39,7 +39,7 @@ class EmailDetailPresenter(
       }
 
     // Mark read on first open. The user can flip it back via the MarkUnread event below.
-    LaunchedEffect(screen.emailId) { emailRepository.markRead(screen.emailId) }
+    LaunchedImpressionEffect(screen.emailId) { emailRepository.markRead(screen.emailId) }
 
     return when (val current = email) {
       EmailLoadState.Loading -> EmailDetailScreen.State.Loading

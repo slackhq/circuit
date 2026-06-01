@@ -40,12 +40,12 @@ Navigator)` as assisted parameters, and they do not expose a special API for emb
 KSP registers those same classes for their standalone screens through `@CircuitInject` on each
 nested `@AssistedFactory`.
 
-| File                                                                                                                    | Role                                                                                                                                     |
-|-------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| [`home/InboxPresenter.kt`](src/commonMain/kotlin/com/slack/circuit/sample/inbox/home/InboxPresenter.kt)                 | Composite presenter that owns selection, creates the child presenters from injected factories, and gives them a `SelectionNavigator`.    |
-| [`home/InboxHomeUi.kt`](src/commonMain/kotlin/com/slack/circuit/sample/inbox/home/InboxHomeUi.kt)                       | Adaptive UI that chooses single-pane or two-pane rendering from `WindowSizeClass` and preserves list scroll state across layout changes. |
-| [`list/InboxListPresenter.kt`](src/commonMain/kotlin/com/slack/circuit/sample/inbox/list/InboxListPresenter.kt)         | List child presenter. It is an `@AssistedInject` class that takes a screen and navigator.                                                |
-| [`detail/EmailDetailPresenter.kt`](src/commonMain/kotlin/com/slack/circuit/sample/inbox/detail/EmailDetailPresenter.kt) | Detail child presenter. It has the same standalone-friendly shape as the list presenter.                                                 |
+| File                                                                                                                    | Role                                                                                                                                                                   |
+|-------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`home/InboxPresenter.kt`](src/commonMain/kotlin/com/slack/circuit/sample/inbox/home/InboxPresenter.kt)                 | Composite presenter that owns selection, creates the child presenters from injected factories, and gives them a `SelectionNavigator`.                                  |
+| [`home/InboxHomeUi.kt`](src/commonMain/kotlin/com/slack/circuit/sample/inbox/home/InboxHomeUi.kt)                       | Adaptive UI that chooses single-pane or two-pane rendering from `WindowSizeClass`, highlights the selected row, and preserves list scroll state across layout changes. |
+| [`list/InboxListPresenter.kt`](src/commonMain/kotlin/com/slack/circuit/sample/inbox/list/InboxListPresenter.kt)         | List child presenter. It is an `@AssistedInject` class that takes a screen and navigator.                                                                              |
+| [`detail/EmailDetailPresenter.kt`](src/commonMain/kotlin/com/slack/circuit/sample/inbox/detail/EmailDetailPresenter.kt) | Detail child presenter. It has the same standalone-friendly shape as the list presenter.                                                                               |
 
 ## Composing The Children
 
@@ -63,9 +63,9 @@ The list presenter opens an email with `navigator.goTo(EmailDetailScreen(id))`. 
 presenter goes back with `navigator.pop()`. When these presenters are used as standalone screens,
 Circuit gives them the real navigator and those calls move the back stack.
 
-Inside the composite, both children receive a `SelectionNavigator`. It does not perform _real_
-navigation, rather it only translates the two navigation intents this sample cares about into selection
-state.
+Inside the composite, both children receive a `SelectionNavigator`. It does not mutate a back
+stack. It is a small adapter at the composite boundary that translates the two navigation intents
+this sample cares about into selection state.
 
 ```kotlin
 private class SelectionNavigator(
@@ -89,10 +89,9 @@ All other navigation calls fall through to `Navigator.NoOp`. The important part 
 presenters keep speaking normal Circuit navigation, while the composite controls how those calls
 are interpreted in the embedded layout.
 
-`InboxHomeUi` also provides the current selected email id through `LocalSelectedEmailId`. That lets
-`InboxListPane` highlight the open conversation in the two-pane layout without adding composite-only
-parameters to the list presenter's state. When the list is shown standalone, the local defaults to
-`null` and no row is highlighted.
+`InboxHomeUi` passes the current selected email id to `InboxListPane` in the two-pane layout so the
+open conversation can be highlighted. The standalone list screen uses the default `null` selection,
+so no row is highlighted there.
 
 ## Selection And Layout
 

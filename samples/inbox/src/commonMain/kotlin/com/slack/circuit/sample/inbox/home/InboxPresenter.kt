@@ -25,7 +25,7 @@ import dev.zacsweers.metro.AppScope
  *
  * The list and detail presenters are the same assisted classes Circuit registers for standalone
  * use. This presenter creates them with a [SelectionNavigator], which lets the children keep using
- * normal navigation calls while the parent stores the selected email id as retained state.
+ * normal navigation calls while the parent decides how those calls map to local selection state.
  */
 @CircuitInject(InboxScreen::class, AppScope::class)
 @Composable
@@ -65,7 +65,7 @@ fun InboxPresenter(
   }
 }
 
-/** Interprets child navigation as selection changes instead of back stack changes. */
+/** Adapts the child presenters' normal navigation events to local selection changes. */
 private class SelectionNavigator(private val onSelectedEmailIdChanged: (String?) -> Unit) :
   Navigator by Navigator.NoOp {
   override fun goTo(screen: Screen): Boolean {

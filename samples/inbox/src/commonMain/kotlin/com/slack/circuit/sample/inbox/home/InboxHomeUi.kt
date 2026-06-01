@@ -24,10 +24,11 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
-import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.LocalCircuit
+import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.retained.rememberRetainedSaveable
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.navigation.navStackListOf
@@ -109,7 +110,7 @@ private fun CompactSinglePane(state: InboxScreen.State, listScrollState: LazyLis
   // Previews may render without a Circuit in the composition.
   val decoration: NavDecoration = LocalCircuit.current?.defaultNavDecoration ?: FadeNavDecoration
 
-  decoration.DecoratedContent(args = args, modifier = Modifier.fillMaxSize()) { pane ->
+  decoration.DecoratedContent(args = args, navigator = Navigator.NoOp, modifier = Modifier.fillMaxSize()) { pane ->
     when (pane) {
       InboxPane.List ->
         InboxListPane(
@@ -148,6 +149,7 @@ private object FadeNavDecoration : NavDecoration {
   @Composable
   override fun <T : NavArgument> DecoratedContent(
     args: NavStackList<T>,
+    navigator: Navigator,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {

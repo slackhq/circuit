@@ -18,8 +18,13 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.backstack.NavDecoration
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.LocalCircuit
@@ -161,5 +166,13 @@ private object FadeNavDecoration : NavDecoration {
   }
 }
 
-/** Platform hook for clearing selection from system back. */
-@Composable expect fun BackHandlerForSelection(active: Boolean, onBack: () -> Unit)
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun BackHandlerForSelection(active: Boolean, onBack: () -> Unit) {
+  if (LocalNavigationEventDispatcherOwner.current == null) return
+  NavigationBackHandler(
+    state = rememberNavigationEventState(NavigationEventInfo.None),
+    isBackEnabled = active,
+    onBackCompleted = onBack,
+  )
+}

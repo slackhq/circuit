@@ -16,7 +16,6 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -39,7 +38,6 @@ import com.slack.circuit.sample.inbox.detail.EmailDetailScreen
 import com.slack.circuit.sample.inbox.detail.EmptyDetailPane
 import com.slack.circuit.sample.inbox.list.InboxListPane
 import com.slack.circuit.sample.inbox.list.InboxListScreen
-import com.slack.circuit.sample.inbox.list.LocalSelectedEmailId
 import dev.zacsweers.metro.AppScope
 
 /**
@@ -57,35 +55,34 @@ fun InboxHomeUi(state: InboxScreen.State, modifier: Modifier = Modifier) {
   // Keep the same scroll state when the layout moves between one pane and two panes.
   val listScrollState = rememberRetainedSaveable(saver = LazyListState.Saver) { LazyListState() }
 
-  CompositionLocalProvider(LocalSelectedEmailId provides state.selectedEmailId) {
-    AnimatedContent(
-      targetState = isExpanded,
-      modifier = modifier,
-      transitionSpec = { fadeIn(tween(300)) togetherWith fadeOut(tween(300)) },
-      label = "InboxLayout",
-    ) { expanded ->
-      if (expanded) {
-        Row(Modifier.fillMaxSize()) {
-          InboxListPane(
-            state = state.listState,
-            modifier = Modifier.width(360.dp).fillMaxHeight(),
-            scrollState = listScrollState,
+  AnimatedContent(
+    targetState = isExpanded,
+    modifier = modifier,
+    transitionSpec = { fadeIn(tween(300)) togetherWith fadeOut(tween(300)) },
+    label = "InboxLayout",
+  ) { expanded ->
+    if (expanded) {
+      Row(Modifier.fillMaxSize()) {
+        InboxListPane(
+          state = state.listState,
+          modifier = Modifier.width(360.dp).fillMaxHeight(),
+          selectedEmailId = state.selectedEmailId,
+          scrollState = listScrollState,
+        )
+        VerticalDivider()
+        val detail = state.detailState
+        if (detail != null) {
+          EmailDetailPane(
+            state = detail,
+            modifier = Modifier.fillMaxSize(),
+            navStyle = DetailNavStyle.Close,
           )
-          VerticalDivider()
-          val detail = state.detailState
-          if (detail != null) {
-            EmailDetailPane(
-              state = detail,
-              modifier = Modifier.fillMaxSize(),
-              navStyle = DetailNavStyle.Close,
-            )
-          } else {
-            EmptyDetailPane(modifier = Modifier.fillMaxSize())
-          }
+        } else {
+          EmptyDetailPane(modifier = Modifier.fillMaxSize())
         }
-      } else {
-        CompactSinglePane(state = state, listScrollState = listScrollState)
       }
+    } else {
+      CompactSinglePane(state = state, listScrollState = listScrollState)
     }
   }
 }

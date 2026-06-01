@@ -28,8 +28,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -43,13 +41,6 @@ import com.slack.circuit.sample.inbox.data.Email
 import com.slack.circuit.sample.inbox.data.EmailFolder
 import dev.zacsweers.metro.AppScope
 
-/**
- * Selected email id supplied by a parent list-detail surface.
- *
- * Standalone lists do not provide a value, so no row is highlighted.
- */
-val LocalSelectedEmailId: ProvidableCompositionLocal<String?> = compositionLocalOf { null }
-
 /** Circuit-registered UI for the standalone [InboxListScreen]. */
 @CircuitInject(InboxListScreen::class, AppScope::class)
 @Composable
@@ -62,7 +53,7 @@ fun InboxList(state: InboxListScreen.State, modifier: Modifier = Modifier) {
 fun InboxListPane(
   state: InboxListScreen.State,
   modifier: Modifier = Modifier,
-  selectedEmailId: String? = LocalSelectedEmailId.current,
+  selectedEmailId: String? = null,
   scrollState: LazyListState = rememberLazyListState(),
 ) {
   Scaffold(modifier = modifier, topBar = { TopAppBar(title = { Text("Inbox") }) }) { innerPadding ->

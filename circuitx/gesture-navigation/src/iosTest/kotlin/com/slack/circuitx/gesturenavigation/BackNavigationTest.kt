@@ -99,8 +99,7 @@ class BackNavigationTest {
         NavigableCircuitContent(
           navigator = navigator,
           backStack = backStack,
-          decoratorFactory =
-            remember { IOSPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
+          decoratorFactory = remember { IOSPredictiveBackNavDecorator.Factory() },
         )
       }
     }

@@ -5,7 +5,6 @@ package com.slack.circuit.sample.navigation
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.ComposeUIViewController
@@ -13,7 +12,6 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.LoggingNavigationEventListener
 import com.slack.circuitx.navigation.intercepting.LoggingNavigatorFailureNotifier
@@ -35,6 +33,7 @@ fun MainViewController(): UIViewController {
   val notifier = LoggingNavigatorFailureNotifier(Logger)
 
   val tabs = TabScreen.all
+  val circuit = buildCircuitForTabs(tabs)
   return ComposeUIViewController {
     MaterialTheme {
       val navStack = rememberSaveableNavStack(tabs.first())
@@ -47,15 +46,6 @@ fun MainViewController(): UIViewController {
           eventListeners = eventListeners,
           notifier = notifier,
         )
-      val circuit =
-        remember(navigator) {
-          buildCircuitForTabs(tabs)
-            .newBuilder()
-            .setAnimatedNavDecoratorFactory(
-              GestureNavigationDecorationFactory(onBackInvoked = { interceptingNavigator.pop() })
-            )
-            .build()
-        }
       CircuitCompositionLocals(circuit) {
         ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
       }

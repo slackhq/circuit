@@ -12,12 +12,20 @@ Unreleased
 
 ### Changes
 
+- **Breaking**: Moved `NavDecoration` from `backstack` to `circuit-foundation` and added a `Navigator` parameter to `DecoratedContent`. `AnimatedNavDecorator` now has an `updateNavigator` method to receive the new `Navigator` parameter. This gives decorations direct access to the correct Navigator for handling back gestures.
+- Add `GestureNavigationEventListener` and an optional `listener` parameter to `GestureNavigationDecorationFactory`, for observing the back gesture lifecycle (e.g. analytics). It's observational only, the `Navigator` still drives the pop.
 - Update to Kotlin `2.3.20`.
 - Remove deprecated X64 Apple targets.
 - `SaveableNavStack` & `SaveableBackStack` - Made the `Saver`s public apis
 - [codegen] Function-based `@CircuitInject` declarations now treat any non-circuit-provided parameter as an injected dependency across all modes. The generated factory accepts it as a provider (`Provider<T>` for Dagger/Anvil/Hilt, `() -> T` for kotlin-inject and Metro) and invokes it once at `create()` time, hoisted above the composable `presenterOf { }` / `ui { }` block so it isn't re-invoked on every recomposition. Parameters already declared as `Provider<T>` or `Lazy<T>` are passed through as-is rather than re-wrapped. In metro and kotlin-inject modes, `() -> T` is also passed through; in Dagger/Anvil/Hilt modes it is treated as a regular dependency.
 - [codegen] `@CircuitInject`-annotated classes must now be injectable — annotate the class or a constructor with `@Inject`. Previously, classes without `@Inject` silently generated a direct constructor call that could fail to compile.
 - [codegen/metro] Generate function providers when Metro mode is enabled. Note this requires `enableFunctionProviders` to be set enabled, which will be the default in Metro 1.0.0.
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@easternkite](https://github.com/easternkite)
 
 0.33.1
 ------

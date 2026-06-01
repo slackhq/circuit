@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.sample.inbox.data.Email
@@ -108,7 +109,7 @@ private fun LoadedPane(
           Text(
             text = email.subject,
             maxLines = 1,
-            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+            overflow = TextOverflow.Ellipsis,
           )
         },
         navigationIcon = {

@@ -87,7 +87,7 @@ public final class com/slack/circuit/foundation/CircuitKt {
 public final class com/slack/circuit/foundation/ComposableSingletons$CircuitKt {
 	public static final field INSTANCE Lcom/slack/circuit/foundation/ComposableSingletons$CircuitKt;
 	public fun <init> ()V
-	public final fun getLambda$-1518521136$circuit_foundation ()Lkotlin/jvm/functions/Function4;
+	public final fun getLambda$-1518521136$circuit_root_circuit_foundation ()Lkotlin/jvm/functions/Function4;
 }
 
 public abstract interface annotation class com/slack/circuit/foundation/DelicateCircuitFoundationApi : java/lang/annotation/Annotation {

@@ -72,7 +72,7 @@ class RetainedStateHolderTest {
           restorableNumberOnScreen1 = rememberRetained { increment++ }
         } else {
           // screen 2
-          remember { 100 }
+          val unused = remember { 100 }
         }
       }
     }
@@ -173,7 +173,7 @@ class RetainedStateHolderTest {
           restorableNumberOnScreen1 = rememberRetained { increment++ }
         } else {
           // screen 2
-          remember { 100 }
+          val unused = remember { 100 }
         }
       }
     }
@@ -215,7 +215,7 @@ class RetainedStateHolderTest {
           restorableNumberOnScreen1 = rememberRetained { increment++ }
         } else {
           // screen 2
-          remember { 100 }
+          val unused = remember { 100 }
         }
       }
     }
@@ -249,7 +249,7 @@ class RetainedStateHolderTest {
           restorableNumberOnScreen1 = rememberRetained { increment++ }
         } else {
           // screen 2
-          remember { 100 }
+          val unused = remember { 100 }
         }
       }
     }

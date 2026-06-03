@@ -59,8 +59,6 @@ plugins.withType<KotlinBasePlugin> {
             // https://blog.jetbrains.com/kotlin/2020/07/kotlin-1-4-m3-generating-default-methods-in-interfaces/
             "-jvm-default=no-compatibility",
             "-Xjspecify-annotations=strict",
-            // https://youtrack.jetbrains.com/issue/KT-73255
-            "-Xannotation-default-target=param-property",
           )
         }
         is KotlinNativeCompilerOptions -> {

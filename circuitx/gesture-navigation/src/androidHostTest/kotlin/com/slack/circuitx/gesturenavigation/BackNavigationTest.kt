@@ -12,7 +12,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.performClick
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
@@ -68,8 +68,7 @@ class BackNavigationTest(private val androidNavigator: Boolean) {
           NavigableCircuitContent(
             navigator = navigator,
             backStack = backStack,
-            decoratorFactory =
-              remember { AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
+            decoratorFactory = remember { AndroidPredictiveBackNavDecorator.Factory() },
           )
         }
       }

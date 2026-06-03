@@ -10,7 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -59,8 +59,7 @@ class GestureNavigationCrashTest {
           NavigableCircuitContent(
             navigator = navigator,
             backStack = backStack,
-            decoratorFactory =
-              remember { AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop) },
+            decoratorFactory = remember { AndroidPredictiveBackNavDecorator.Factory() },
           )
         }
       }

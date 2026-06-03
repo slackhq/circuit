@@ -12,7 +12,7 @@ Circuit is a simple, lightweight, and extensible framework for building Kotlin a
     
     Jake Wharton has an excellent post about this: https://jakewharton.com/a-jetpack-compose-by-any-other-name/
 
-It builds upon core principles we already know like Presenters and UDF, and adds native support in its framework for all the other requirements we set out for above. It’s heavily influenced by Cash App’s Broadway architecture ([talked about at Droidcon NYC](https://www.droidcon.com/2022/09/29/architecture-at-scale/), also very derived from our conversations with them).
+It builds upon core principles we already know like Presenters and UDF, and adds native support in its framework for all the other requirements we set out for above. It’s heavily influenced by Cash App’s Broadway architecture ([talked about at Droidcon NYC](https://youtu.be/NAWq8VWiK5g), also very derived from our conversations with them).
 
 Circuit’s core components are its `Presenter` and `Ui` interfaces.
 

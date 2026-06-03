@@ -161,11 +161,10 @@ if (project.rootProject != project) {
         token.set(emulatorWtfToken)
       }
     }
-    // We don't always run emulator.wtf on CI (forks can't access it), so we add this helper
-    // lifecycle task that depends on connectedCheck as an alternative. We do this only on projects
-    // that apply emulator.wtf though as we don't want to run _all_ connected checks on CI since
-    // that would include benchmarks.
-    tasks.register("ciConnectedCheck") { dependsOn("connectedCheck") }
+    // Fork PRs cannot use emulator.wtf secrets, so CI runs this helper against a local emulator
+    // instead. Keep it scoped to projects that opted into emulator.wtf so we do not pick up every
+    // connected test in the repo, including benchmark modules.
+    tasks.register("ciConnectedCheck") { dependsOn("androidConnectedCheck") }
   }
 
   pluginManager.withPlugin("dev.zacsweers.anvil") {

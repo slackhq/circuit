@@ -6,9 +6,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.internal.test.TestContentTags.TAG_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
@@ -20,6 +21,7 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_RESET_ROOT_BETA
 import com.slack.circuit.internal.test.TestCountPresenter
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -259,7 +261,7 @@ class NavigableCircuitSaveableStateTest {
       // Pop to Screen A
       onNodeWithTag(TAG_POP).performClick()
 
-      val savedStates1 = saveableStateRegistry.performSave()
+      val savedStates1 = saveableStateRegistry.performSave().takeSnapshot()
 
       // Navigate to Screen B
       onNodeWithTag(TAG_GO_NEXT).performClick()
@@ -267,8 +269,77 @@ class NavigableCircuitSaveableStateTest {
       // Pop to Screen A
       onNodeWithTag(TAG_POP).performClick()
 
-      val savedStates2 = saveableStateRegistry.performSave()
+      val savedStates2 = saveableStateRegistry.performSave().takeSnapshot()
       assertTrue(areStructuresEqual(savedStates1, savedStates2))
     }
+  }
+
+  @Test
+  fun saveableStateRemovesPoppedRecordState() {
+    val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Saveable)
+    val saveableStateRegistry = SaveableStateRegistry(emptyMap(), { true })
+    lateinit var backStack: SaveableBackStack
+
+    composeTestRule.setContent {
+      CircuitCompositionLocals(circuit) {
+        backStack = rememberSaveableBackStack(TestScreen.ScreenA)
+        val navigator =
+          rememberCircuitNavigator(
+            backStack = backStack,
+            onRootPop = {}, // no-op for tests
+          )
+        CompositionLocalProvider(LocalSaveableStateRegistry provides saveableStateRegistry) {
+          NavigableCircuitContent(navigator = navigator, backStack = backStack)
+        }
+      }
+    }
+
+    fun Any?.containsRegistryKey(key: String): Boolean =
+      when (this) {
+        is Map<*, *> -> key in keys || values.any { it.containsRegistryKey(key) }
+        is Iterable<*> -> any { it.containsRegistryKey(key) }
+        is Array<*> -> any { it.containsRegistryKey(key) }
+        else -> false
+      }
+
+    composeTestRule.run {
+      onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+
+      onNodeWithTag(TAG_GO_NEXT).performClick()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("B")
+      val poppedRegistryKey = "_registry_${backStack.topRecord!!.key}"
+      val savedStatesWithPoppedRecord = saveableStateRegistry.performSave().takeSnapshot()
+      assertTrue(
+        savedStatesWithPoppedRecord.containsRegistryKey(poppedRegistryKey),
+        "Expected active record state $poppedRegistryKey to be present before popping.",
+      )
+
+      onNodeWithTag(TAG_POP).performClick()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+      waitForIdle()
+
+      val savedStates = saveableStateRegistry.performSave().takeSnapshot()
+      assertFalse(
+        savedStates.containsRegistryKey(poppedRegistryKey),
+        "Expected popped record state $poppedRegistryKey to be removed from saved state.",
+      )
+    }
+  }
+
+  private fun Map<String, List<Any?>>.takeSnapshot(): Map<String, List<Any?>> {
+    fun copy(value: Any?): Any? =
+      when (value) {
+        is List<*> -> value.map(::copy)
+        is Map<*, *> -> value.mapValues { (_, v) -> copy(v) }
+        is Set<*> -> value.map(::copy).toSet()
+        is Array<*> -> value.map(::copy).toTypedArray()
+        is IntArray -> value.copyOf()
+        is LongArray -> value.copyOf()
+        is BooleanArray -> value.copyOf()
+        is ByteArray -> value.copyOf()
+        else -> value
+      }
+
+    return mapValues { (_, values) -> values.map(::copy) }
   }
 }

@@ -21,7 +21,7 @@ kotlin {
     compileSdk = 36
   }
   jvm()
-  js(IR) {
+  js {
     outputModuleName = "counterbrowser"
     browser()
   }

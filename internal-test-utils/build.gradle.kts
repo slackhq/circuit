@@ -22,7 +22,7 @@ kotlin {
   iosArm64()
   iosSimulatorArm64()
   macosArm64()
-  js(IR) {
+  js {
     outputModuleName = "internal-test-utils"
     browser()
   }

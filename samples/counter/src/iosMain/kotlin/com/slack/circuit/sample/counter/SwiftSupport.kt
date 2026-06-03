@@ -3,15 +3,12 @@
 package com.slack.circuit.sample.counter
 
 import app.cash.molecule.RecompositionMode
-import app.cash.molecule.launchMolecule
-import com.rickclephas.kmp.nativecoroutines.NativeCoroutinesState
+import app.cash.molecule.moleculeFlow
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 
 fun newCounterPresenter() = presenterOf { CounterPresenter(Navigator.NoOp) }
 
@@ -21,13 +18,8 @@ fun newCounterPresenter() = presenterOf { CounterPresenter(Navigator.NoOp) }
 // TODO let's try to generify this pattern somehow.
 class SupportSwiftPresenter<UiState : CircuitUiState>(
   private val delegate: Presenter<UiState>,
-  // TODO what's the right thing here? Can we get a scope from the UI? Should it be exposed via
-  //  Circuit?
-  scope: CoroutineScope,
 ) {
-  constructor(delegate: Presenter<UiState>) : this(delegate, MainScope())
 
-  @NativeCoroutinesState
-  val state: StateFlow<UiState> =
-    scope.launchMolecule(RecompositionMode.Immediate) { delegate.present() }
+  val state: Flow<UiState> get() =
+    moleculeFlow(RecompositionMode.Immediate) { delegate.present() }
 }

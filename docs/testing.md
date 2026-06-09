@@ -18,12 +18,6 @@ Test helpers are available via the `circuit-test` artifact.
 testImplementation("com.slack.circuit:circuit-test:<version>")
 ```
 
-For Gradle JVM projects, you can use Gradle test fixtures syntax on the core circuit artifact.
-
-```kotlin
-testImplementation(testFixtures("com.slack.circuit:circuit:<version>"))
-```
-
 For unit tests on the JVM in an Android module, please set below in your project's AGP config.
 
 ```gradle

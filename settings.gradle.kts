@@ -239,6 +239,8 @@ include(
   ":samples:counter:androidApp",
   ":samples:counter:apps",
   ":samples:counter:mosaic",
+  ":samples:inbox",
+  ":samples:inbox:androidApp",
   ":samples:interop",
   ":samples:kotlin-inject",
   ":samples:star",

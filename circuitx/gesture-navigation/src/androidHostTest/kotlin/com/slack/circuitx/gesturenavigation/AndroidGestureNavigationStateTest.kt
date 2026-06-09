@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import com.slack.circuit.internal.test.TestCountPresenter.RememberType
-import com.slack.circuit.runtime.Navigator
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -38,8 +37,8 @@ class AndroidGestureNavigationStateTest(
     composeTestRule.activityRule.scenario.performGestureNavigationBackSwipe()
   }
 
-  private fun decoratorFactory(navigator: Navigator): AndroidPredictiveBackNavDecorator.Factory {
-    return AndroidPredictiveBackNavDecorator.Factory(onBackInvoked = navigator::pop)
+  private fun decoratorFactory(): AndroidPredictiveBackNavDecorator.Factory {
+    return AndroidPredictiveBackNavDecorator.Factory()
   }
 
   @Test

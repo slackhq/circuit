@@ -7,7 +7,7 @@ androidx-appcompat = "1.7.1"
 androidx-browser = "1.10.0"
 androidx-compose = "1.11.2"  # Keep in sync with the androidx version used by jb-compose
 anvil = "0.5.4"
-atomicfu = "0.32.1"
+atomicfu = "0.33.0"
 benchmark = "1.5.0-alpha06"
 coil = "3.4.0"
 compose-runtime = "1.11.2" # Keep in sync with the androidx version used by jb-compose
@@ -15,22 +15,22 @@ dagger = "2.59.2"
 datastore = "1.2.1"
 dokka = "2.2.0"
 eithernet = "2.0.0"
-jb-compose = "1.11.0"
+jb-compose = "1.11.1"
 jb-compose-material-icons-core = "1.7.3"
 jb-compose-material3 = "1.9.0"
 jb-compose-navigationevent = "1.1.0"
 jb-lifecycle = "2.11.0-beta01"
 jdk = "23"
 jvmTarget = "11"
-kct = "0.12.1"
-kotlin = "2.3.21"
+kct = "0.13.0"
+kotlin = "2.4.0"
 kotlinInject = "0.9.0"
 kotlinInject-anvil = "0.1.7"
 kotlinpoet = "2.3.0"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.9.0"
-ksp = "2.3.8"
-ktfmt = "0.62"
+ksp = "2.3.9"
+ktfmt = "0.63"
 ktor = "3.5.0"
 leakcanary = "2.14"
 mavenPublish = "0.36.0"
@@ -70,7 +70,7 @@ kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization"
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }
 metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.3" }
+nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.2-kotlin-2.4.0-Beta1" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
@@ -188,7 +188,7 @@ leakcanary-android-instrumentation = { module = "com.squareup.leakcanary:leakcan
 lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "jb-lifecycle" }
 lifecycle-viewModel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "jb-lifecycle" }
 
-lints-compose = "com.slack.lint.compose:compose-lint-checks:1.4.3"
+lints-compose = "com.slack.lint.compose:compose-lint-checks:1.5.2"
 
 markdownRenderer = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdownRenderer" }
 markdownRenderer-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdownRenderer" }

@@ -13,8 +13,9 @@ import com.jakewharton.mosaic.runMosaic
 import com.jakewharton.mosaic.ui.Color
 import com.jakewharton.mosaic.ui.Column
 import com.jakewharton.mosaic.ui.Text
-import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.runtime.CircuitContext
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
@@ -82,6 +83,7 @@ data object EmptyNavDecoration : NavDecoration {
   @Composable
   override fun <T : NavArgument> DecoratedContent(
     args: NavStackList<T>,
+    navigator: Navigator,
     modifier: androidx.compose.ui.Modifier,
     content: @Composable (T) -> Unit,
   ) {

@@ -27,7 +27,7 @@ kotlin {
   iosArm64()
   iosSimulatorArm64()
   macosArm64()
-  js(IR) {
+  js {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser {
       testTask {
@@ -151,7 +151,6 @@ tasks
       )
 
       if (name == "compileAndroidHostTest" || name == "compileAndroidDeviceTest") {
-        logger.lifecycle("Configuring parcelize for $name")
         freeCompilerArgs.addAll(
           "-P",
           "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",

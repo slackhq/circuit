@@ -373,8 +373,7 @@ class RetainedTest {
       @Composable {
         val registry = rememberRetained { RetainedStateRegistry({ canRetainChecker.canRetain() }) }
         CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
-          rememberRetained { subject }
-          Unit
+          val subj = rememberRetained { subject }
         }
       }
     setActivityContent(content)
@@ -426,8 +425,7 @@ class RetainedTest {
       @Composable {
         val registry = rememberRetained { RetainedStateRegistry({ canRetainChecker.canRetain() }) }
         CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
-          rememberRetained { subject }
-          Unit
+          val subj = rememberRetained { subject }
         }
       }
     setActivityContent(content)
@@ -491,7 +489,7 @@ class RetainedTest {
         holder1.RetainedStateProvider("registry1") {
           val holder2 = rememberRetainedStateHolder()
           holder2.RetainedStateProvider("registry2") {
-            @Suppress("UNUSED_VARIABLE") val retainedSubject = rememberRetained { subject }
+            val subj = rememberRetained { subject }
           }
         }
       }
@@ -768,7 +766,10 @@ private fun NestedRetainLevel1(useKeys: Boolean) {
   TextField(
     modifier = Modifier.testTag(TAG_RETAINED_2),
     value = retainedText2,
-    onValueChange = { retainedText2 = it },
+    onValueChange = {
+      @Suppress("AssignedValueIsNeverRead")
+      retainedText2 = it
+    },
     label = {},
   )
 
@@ -784,7 +785,10 @@ private fun NestedRetainLevel2(useKeys: Boolean) {
   TextField(
     modifier = Modifier.testTag(TAG_RETAINED_3),
     value = retainedInt.toString(),
-    onValueChange = { retainedInt = it.toInt() },
+    onValueChange = {
+      @Suppress("AssignedValueIsNeverRead")
+      retainedInt = it.toInt()
+    },
     label = {},
   )
 }

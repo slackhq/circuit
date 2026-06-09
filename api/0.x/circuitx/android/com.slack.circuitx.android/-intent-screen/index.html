@@ -18,7 +18,6 @@
         }
       }
     </script>
-<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
 <script type="text/javascript" src="../../../../scripts/sourceset_dependencies.js" async></script>
 <link href="../../../../styles/style.css" rel="Stylesheet">
 <link href="../../../../styles/main.css" rel="Stylesheet">
@@ -43,7 +42,7 @@
         </div>
         <div class="navigation-controls">
         <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
-                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":circuitx:android/main">androidJvm</button>
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":circuitx:android/release">release</button>
             <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
                 <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
                 <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
@@ -54,9 +53,9 @@
                     </div>
                         <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
                             <label class="checkbox">
-                                <input type="checkbox" class="checkbox--input" id=":circuitx:android/main" data-filter=":circuitx:android/main">
+                                <input type="checkbox" class="checkbox--input" id=":circuitx:android/release" data-filter=":circuitx:android/release">
                                 <span class="checkbox--icon"></span>
-                                androidJvm
+                                release
                             </label>
                         </li>
                 </ul>
@@ -90,28 +89,28 @@
         </nav>
         <div id="resizer" class="resizer" data-item-type="BAR"></div>
         <div id="main" data-item-type="SECTION" role="main">
-<div class="main-content" data-page-type="classlike" id="content" pageids="circuitx/android::com.slack.circuitx.android/IntentScreen///PointingToDeclaration//-832126715">
+<div class="main-content" data-page-type="classlike" id="content" pageids="circuitx/android::com.slack.circuitx.android/IntentScreen///PointingToDeclaration//991245396">
   <div class="breadcrumbs"><a href="../../index.html">circuitx/android</a><span class="delimiter">/</span><a href="../index.html">com.slack.circuitx.android</a><span class="delimiter">/</span><span class="current">IntentScreen</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Intent</span><wbr><span><span>Screen</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/main"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">IntentScreen</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>intent<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>options<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="../-android-screen/index.html">AndroidScreen</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/circuitx/android/src/main/kotlin/com/slack/circuitx/android/AndroidScreenAwareNavigator.kt#L37">source</a>)</span></span></div><p class="paragraph">A simple <a href="../../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Intent</a> that wraps an <a href="../../../../circuitx/android/com.slack.circuitx.android/-intent-screen/--root--.html">intent</a> and optional <a href="../../../../circuitx/android/com.slack.circuitx.android/-intent-screen/--root--.html">options</a> bundle. These are passed on to <a href="https://developer.android.com/reference/kotlin/android/content/Context.html#startactivity">Context.startActivity</a>.</p><p class="paragraph">For reuse in custom <a href="../-android-screen-starter/index.html">AndroidScreenStarter</a> implementations, you can call <a href="start-with.html">startWith</a> on instances of this.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">IntentScreen</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>intent<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>options<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="../-android-screen/index.html">AndroidScreen</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/slackhq/circuit//tree/main/circuitx/android/src/main/kotlin/com/slack/circuitx/android/AndroidScreenAwareNavigator.kt#L37">source</a>)</span></span></div><p class="paragraph">A simple <a href="../../../../circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">Intent</a> that wraps an <a href="../../../../circuitx/android/com.slack.circuitx.android/-intent-screen/--root--.html">intent</a> and optional <a href="../../../../circuitx/android/com.slack.circuitx.android/-intent-screen/--root--.html">options</a> bundle. These are passed on to <a href="https://developer.android.com/reference/kotlin/android/content/Context.html#startactivity">Context.startActivity</a>.</p><p class="paragraph">For reuse in custom <a href="../-android-screen-starter/index.html">AndroidScreenStarter</a> implementations, you can call <a href="start-with.html">startWith</a> on instances of this.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="tableheader">Constructors</h2>
-        <div class="table"><a data-name="1446781723%2FConstructors%2F-832126715" anchor-label="IntentScreen" id="1446781723%2FConstructors%2F-832126715" data-filterable-set=":circuitx:android/main"></a>
-          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":circuitx:android/main" data-filterable-set=":circuitx:android/main">
+        <div class="table"><a data-name="1446781723%2FConstructors%2F991245396" anchor-label="IntentScreen" id="1446781723%2FConstructors%2F991245396" data-filterable-set=":circuitx:android/release"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":circuitx:android/release" data-filterable-set=":circuitx:android/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-intent-screen.html"><span>Intent</span><wbr><span><span>Screen</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1446781723%2FConstructors%2F-832126715"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1446781723%2FConstructors%2F991245396"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/main"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">intent<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">intent<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a><span class="token punctuation">, </span></span><span class="parameter ">options<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -120,32 +119,32 @@
       </div>
       <div data-togglable="PROPERTY">
         <h2 class="tableheader">Properties</h2>
-        <div class="table"><a data-name="1804893070%2FProperties%2F-832126715" anchor-label="intent" id="1804893070%2FProperties%2F-832126715" data-filterable-set=":circuitx:android/main"></a>
-          <div class="table-row table-row_content" data-filterable-current=":circuitx:android/main" data-filterable-set=":circuitx:android/main">
+        <div class="table"><a data-name="1804893070%2FProperties%2F991245396" anchor-label="intent" id="1804893070%2FProperties%2F991245396" data-filterable-set=":circuitx:android/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuitx:android/release" data-filterable-set=":circuitx:android/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="intent.html"><span><span>intent</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1804893070%2FProperties%2F-832126715"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1804893070%2FProperties%2F991245396"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="intent.html">intent</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="intent.html">intent</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Intent.html">Intent</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-42770030%2FProperties%2F-832126715" anchor-label="options" id="-42770030%2FProperties%2F-832126715" data-filterable-set=":circuitx:android/main"></a>
-          <div class="table-row table-row_content" data-filterable-current=":circuitx:android/main" data-filterable-set=":circuitx:android/main">
+<a data-name="-42770030%2FProperties%2F991245396" anchor-label="options" id="-42770030%2FProperties%2F991245396" data-filterable-set=":circuitx:android/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuitx:android/release" data-filterable-set=":circuitx:android/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="options.html"><span><span>options</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-42770030%2FProperties%2F-832126715"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-42770030%2FProperties%2F991245396"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="options.html">options</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token operator">?</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="options.html">options</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Bundle.html">Bundle</a><span class="token operator">?</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -154,47 +153,47 @@
       </div>
       <div data-togglable="FUNCTION">
         <h2 class="tableheader">Functions</h2>
-        <div class="table"><a data-name="-1578325224%2FFunctions%2F-832126715" anchor-label="describeContents" id="-1578325224%2FFunctions%2F-832126715" data-filterable-set=":circuitx:android/main"></a>
-          <div class="table-row table-row_content" data-filterable-current=":circuitx:android/main" data-filterable-set=":circuitx:android/main">
+        <div class="table"><a data-name="-1578325224%2FFunctions%2F991245396" anchor-label="describeContents" id="-1578325224%2FFunctions%2F991245396" data-filterable-set=":circuitx:android/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuitx:android/release" data-filterable-set=":circuitx:android/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-1578325224%2FFunctions%2F-832126715"><span>describe</span><wbr><span><span>Contents</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1578325224%2FFunctions%2F-832126715"></span>
+                  <div><a href="index.html#-1578325224%2FFunctions%2F991245396"><span>describe</span><wbr><span><span>Contents</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1578325224%2FFunctions%2F991245396"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-1578325224%2FFunctions%2F-832126715"><span class="token function">describeContents</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-1578325224%2FFunctions%2F991245396"><span class="token function">describeContents</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-196112929%2FFunctions%2F-832126715" anchor-label="startWith" id="-196112929%2FFunctions%2F-832126715" data-filterable-set=":circuitx:android/main"></a>
-          <div class="table-row table-row_content" data-filterable-current=":circuitx:android/main" data-filterable-set=":circuitx:android/main">
+<a data-name="-196112929%2FFunctions%2F991245396" anchor-label="startWith" id="-196112929%2FFunctions%2F991245396" data-filterable-set=":circuitx:android/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuitx:android/release" data-filterable-set=":circuitx:android/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="start-with.html"><span>start</span><wbr><span><span>With</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-196112929%2FFunctions%2F-832126715"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-196112929%2FFunctions%2F991245396"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="start-with.html"><span class="token function">startWith</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="start-with.html"><span class="token function">startWith</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1754457655%2FFunctions%2F-832126715" anchor-label="writeToParcel" id="-1754457655%2FFunctions%2F-832126715" data-filterable-set=":circuitx:android/main"></a>
-          <div class="table-row table-row_content" data-filterable-current=":circuitx:android/main" data-filterable-set=":circuitx:android/main">
+<a data-name="-1754457655%2FFunctions%2F991245396" anchor-label="writeToParcel" id="-1754457655%2FFunctions%2F991245396" data-filterable-set=":circuitx:android/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":circuitx:android/release" data-filterable-set=":circuitx:android/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-1754457655%2FFunctions%2F-832126715"><span>write</span><wbr><span>To</span><wbr><span><span>Parcel</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1754457655%2FFunctions%2F-832126715"></span>
+                  <div><a href="index.html#-1754457655%2FFunctions%2F991245396"><span>write</span><wbr><span>To</span><wbr><span><span>Parcel</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1754457655%2FFunctions%2F991245396"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-1754457655%2FFunctions%2F-832126715"><span class="token function">writeToParcel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuitx:android/release"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-1754457655%2FFunctions%2F991245396"><span class="token function">writeToParcel</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/os/Parcel.html">Parcel</a><span class="token punctuation">, </span></span><span class="parameter ">p1<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>

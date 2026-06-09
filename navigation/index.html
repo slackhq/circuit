@@ -1033,6 +1033,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuitx/subcircuit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SubCircuit
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1250,10 +1273,10 @@
 <li>A <code>NavStack</code>, where we use a <code>SaveableNavStack</code> implementation that saves a stack of <code>Screen</code>s and the <code>ProvidedValues</code> for each record on that stack (allowing us to save and restore on configuration changes automatically).</li>
 <li>A <code>Navigator</code>, which is a simple interface that we can point at a <code>NavStack</code> and offers simple <code>goTo(&lt;screen&gt;)</code>/<code>pop()</code> semantics. These are offered to presenters to perform navigation as needed to other screens.</li>
 </ol>
-<p>A new navigable content surface is handled via the <code>NavigableCircuitContent</code> functions.</p>
+<p>A new navigable content surface is handled via the <code>NavigableCircuitContent</code> functions. If you want to have custom behavior for when back is pressed on the root screen (i.e. <code>navStack.isAtRoot</code>), perform this in the lambda passed to <code>rememberCircuitNavigator</code>&rsquo;s <code>onRootPop</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableNavStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">)</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">navStack</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">navStack</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* do something on root */</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">navStack</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -1268,15 +1291,6 @@
 <span class="w">      </span><span class="n">externalId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">uuidGenerator</span><span class="p">.</span><span class="na">generate</span><span class="p">()</span>
 <span class="w">    </span><span class="p">)</span>
 <span class="w">  </span><span class="p">)</span>
-<span class="p">}</span>
-</code></pre></div>
-<p>If you want to have custom behavior for when back is pressed on the root screen (i.e. <code>navStack.isAtRoot</code>), you should implement your own <code>BackHandler</code> and use it <em>before</em> creating the navstack.</p>
-<div class="highlight"><pre><span></span><code><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableNavStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">)</span>
-<span class="w">  </span><span class="n">BackHandler</span><span class="p">(</span><span class="n">onBack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* do something on root */</span><span class="w"> </span><span class="p">})</span>
-<span class="w">  </span><span class="c1">// The Navigator&#39;s internal BackHandler will take precedence until it is at the root screen.</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">navStack</span><span class="p">)</span>
-<span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">navStack</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 <h4 id="deep-linking">Deep Linking<a class="headerlink" href="#deep-linking" title="Permanent link">&para;</a></h4>

@@ -1225,6 +1225,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuitx/subcircuit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SubCircuit
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2033,6 +2056,10 @@
 <div class="admonition tip">
 <p class="admonition-title">Injecting Child Presenters</p>
 <p>How you get child presenters into the composite presenter is flexible: inject them directly, create them inline, or pull them from a Circuit instance. The key is that shared state should flow through the data layer when possible.</p>
+</div>
+<div class="admonition example">
+<p class="admonition-title">Runnable example: <code>samples/inbox</code></p>
+<p>The <a href="https://github.com/slackhq/circuit/tree/main/samples/inbox"><code>samples/inbox</code></a> sample is a runnable, multiplatform demo of this pattern. <code>InboxPresenter</code> injects the <code>@AssistedFactory</code>s for two real child Presenters (<code>InboxListPresenter</code> and <code>EmailDetailPresenter</code>) and calls <code>factory.create(screen, navigator).present()</code> on each, so the same children still work as standalone <code>@CircuitInject</code> screens.</p>
 </div>
 <h3 id="pattern-3-stateproducer">Pattern 3: StateProducer<a class="headerlink" href="#pattern-3-stateproducer" title="Permanent link">&para;</a></h3>
 <p><strong>StateProducers</strong> are reusable components that produce state but aren&rsquo;t used on their own. Unlike full presenters, they don&rsquo;t implement the <code>Presenter</code> interface and are always consumed by a parent presenter that coordinates their output.</p>

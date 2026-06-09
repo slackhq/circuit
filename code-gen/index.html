@@ -858,6 +858,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#qualifier-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Qualifier propagation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#function-based-injected-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Function-based injected dependencies
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1054,6 +1072,29 @@
   
   <span class="md-ellipsis">
     Overlays
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../circuitx/subcircuit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SubCircuit
     
   </span>
   
@@ -1289,6 +1330,24 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#qualifier-propagation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Qualifier propagation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#function-based-injected-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      Function-based injected dependencies
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1323,11 +1382,12 @@
 <p>Currently supported types are:
 - <a href="https://github.com/square/anvil">Anvil</a> and <a href="https://github.com/zacsweers/anvil">Anvil KSP</a>
 - <a href="https://dagger.dev/hilt/">Dagger/Hilt</a>
-- <a href="https://github.com/evant/kotlin-inject">kotlin-inject</a> + <a href="https://github.com/amzn/kotlin-inject-anvil">kotlin-inject-anvil</a></p>
+- <a href="https://github.com/evant/kotlin-inject">kotlin-inject</a> + <a href="https://github.com/amzn/kotlin-inject-anvil">kotlin-inject-anvil</a>
+- <a href="https://github.com/ZacSweers/metro">Metro</a></p>
 <p>Note that Dagger+Anvil is the default mode. </p>
 <p>If you are using another mode, you must specify the mode as a KSP arg.</p>
 <div class="highlight"><pre><span></span><code><span class="n">ksp</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;circuit.codegen.mode&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hilt&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// or &quot;kotlin_inject_anvil&quot;</span>
+<span class="w">  </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;circuit.codegen.mode&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hilt&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// or &quot;kotlin_inject_anvil&quot;, &quot;metro&quot;</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>If using Kotlin multiplatform with typealias annotations for Dagger annotations (i.e. expect 
@@ -1354,7 +1414,9 @@ annotated, the type&rsquo;s corresponding factory will be generated and keyed wi
 with the provided <code>scope</code> key.</p>
 <h2 id="classes">Classes<a class="headerlink" href="#classes" title="Permanent link">&para;</a></h2>
 <p><code>Presenter</code> and <code>Ui</code> classes can be annotated and have their corresponding <code>Presenter.Factory</code> or
-<code>Ui.Factory</code> classes generated for them.</p>
+<code>Ui.Factory</code> classes generated for them. The annotated class <em>must</em> be injectable — either
+annotate the class itself with <code>@Inject</code> (for kotlin-inject and Metro) or annotate a constructor
+with <code>@Inject</code> (Dagger/Anvil/Hilt). Otherwise, the processor will fail with an error.</p>
 <p><strong>Presenter</strong>
 <div class="highlight"><pre><span></span><code><span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
 <span class="kd">class</span><span class="w"> </span><span class="nc">HomePresenter</span><span class="w"> </span><span class="nd">@Inject</span><span class="w"> </span><span class="k">constructor</span><span class="p">(...)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">HomeState</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
@@ -1442,6 +1504,62 @@ injection to types using Dagger <code>AssistedInject</code>. For these cases, th
 <span class="w">  </span><span class="p">...</span>
 <span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">HomeState</span><span class="o">&gt;</span>
 </code></pre></div>
+<h2 id="qualifier-propagation">Qualifier propagation<a class="headerlink" href="#qualifier-propagation" title="Permanent link">&para;</a></h2>
+<p>Qualifier annotations (any annotation meta-annotated with <code>@Qualifier</code> like <code>javax.inject.Qualifier</code>,
+<code>dev.zacsweers.metro.Qualifier</code>, etc.) are propagated from the <code>@CircuitInject</code>-annotated 
+declaration to the generated factory class.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Named</span><span class="p">(</span><span class="s">&quot;home&quot;</span><span class="p">)</span>
+<span class="nd">@Inject</span>
+<span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">HomePresenter</span><span class="p">(...)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;</span><span class="n">HomeState</span><span class="o">&gt;</span>
+
+<span class="c1">// Generates</span>
+<span class="nd">@Inject</span>
+<span class="nd">@ContributesIntoSet</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="nd">@Named</span><span class="p">(</span><span class="s">&quot;home&quot;</span><span class="p">)</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">HomePresenterFactory</span><span class="p">(...)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="p">.</span><span class="na">Factory</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h2 id="function-based-injected-dependencies">Function-based injected dependencies<a class="headerlink" href="#function-based-injected-dependencies" title="Permanent link">&para;</a></h2>
+<p>Function-based presenters and UIs can accept any injected dependency directly as a parameter. Any
+parameter type that isn&rsquo;t one of the circuit-provided types (see <a href="#assisted-injection">Assisted
+injection</a>) is treated as a regular injected dependency and hoisted: the generated
+factory accepts it as a provider (<code>Provider&lt;T&gt;</code> for Dagger/Anvil/Hilt, <code>() -&gt; T</code> for
+kotlin-inject and Metro) and invokes it once at <code>create()</code> time <em>outside</em> the
+<code>presenterOf { }</code>/<code>ui { }</code> block (so the provider isn&rsquo;t re-invoked on every recomposition).</p>
+<p>Parameters that are already an indirect reference to a dependency (<code>Provider&lt;T&gt;</code> (any flavor)
+or <code>Lazy&lt;T&gt;</code> (Dagger or Kotlin)) are passed through to the factory constructor as-is rather
+than being re-wrapped in another provider. In <code>metro</code> and <code>kotlin_inject_anvil</code> modes, <code>() -&gt; T</code>
+is also treated as a provider and passed through; in Dagger/Anvil/Hilt modes it is treated as a
+regular dependency and wrapped in <code>Provider&lt;() -&gt; T&gt;</code> like any other type.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="nd">@Inject</span>
+<span class="nd">@Composable</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">HomePresenter</span><span class="p">(</span>
+<span class="w">  </span><span class="n">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span><span class="w">       </span><span class="c1">// circuit-provided</span>
+<span class="w">  </span><span class="n">repository</span><span class="p">:</span><span class="w"> </span><span class="n">UserRepository</span><span class="p">,</span><span class="w"> </span><span class="c1">// injected — not recognized as circuit-provided, so treated as a dependency</span>
+<span class="p">):</span><span class="w"> </span><span class="n">HomeState</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// Generates (metro mode shown)</span>
+<span class="nd">@Inject</span>
+<span class="nd">@ContributesIntoSet</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">HomePresenterFactory</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">repository</span><span class="p">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">UserRepository</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Presenter</span><span class="p">.</span><span class="na">Factory</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span>
+<span class="w">    </span><span class="n">screen</span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="p">,</span>
+<span class="w">    </span><span class="n">navigator</span><span class="p">:</span><span class="w"> </span><span class="n">Navigator</span><span class="p">,</span>
+<span class="w">    </span><span class="n">context</span><span class="p">:</span><span class="w"> </span><span class="n">CircuitContext</span><span class="p">,</span>
+<span class="w">  </span><span class="p">):</span><span class="w"> </span><span class="n">Presenter</span><span class="o">&lt;*&gt;?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">screen</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">HomeScreen</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">repository</span><span class="p">()</span>
+<span class="w">      </span><span class="n">presenterOf</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">HomePresenter</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">repository</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kc">null</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Class-based presenters and UIs don&rsquo;t need this special handling, since constructor parameters
+there are already unambiguously injected dependencies.</p>
 
 
 

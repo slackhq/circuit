@@ -1029,6 +1029,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="circuitx/subcircuit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SubCircuit
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1249,7 +1272,7 @@
 <p>Compose itself is essentially two libraries – Compose Compiler and Compose UI. Most folks usually think of Compose UI, but the compiler (and associated runtime) are actually not specific to UI at all and offer powerful state management APIs.</p>
 <p>Jake Wharton has an excellent post about this: <a href="https://jakewharton.com/a-jetpack-compose-by-any-other-name/">https://jakewharton.com/a-jetpack-compose-by-any-other-name/</a></p>
 </div>
-<p>It builds upon core principles we already know like Presenters and UDF, and adds native support in its framework for all the other requirements we set out for above. It’s heavily influenced by Cash App’s Broadway architecture (<a href="https://www.droidcon.com/2022/09/29/architecture-at-scale/">talked about at Droidcon NYC</a>, also very derived from our conversations with them).</p>
+<p>It builds upon core principles we already know like Presenters and UDF, and adds native support in its framework for all the other requirements we set out for above. It’s heavily influenced by Cash App’s Broadway architecture (<a href="https://youtu.be/NAWq8VWiK5g">talked about at Droidcon NYC</a>, also very derived from our conversations with them).</p>
 <p>Circuit’s core components are its <code>Presenter</code> and <code>Ui</code> interfaces.</p>
 <ol>
 <li>A <code>Presenter</code> and a <code>Ui</code> cannot directly access each other. They can only communicate through state and event emissions.</li>
@@ -1271,7 +1294,7 @@
 <li>etc etc.</li>
 </ul>
 </div>
-<p>Circuit’s repo (<a href="https://github.com/slackhq/circuit">https://github.com/slackhq/circuit</a>) is being actively developed in the open, which allows us to continue collaborating with external folks too. We have a trivial-but-not-too-trivial sample app that we have been developing in it to serve as a demo for a number of common patterns in Circuit use.</p>
+<p>Circuit’s repo (<a href="https://github.com/slackhq/circuit">https://github.com/slackhq/circuit</a>) is being actively developed in the open, which allows us to continue collaborating with external folks too. We have a trivial-but-not-too-trivial multiplatform sample app (the &ldquo;Star&rdquo; sample, targeting Android, Desktop, and iOS) that we have been developing in it to serve as a demo for a number of common patterns in Circuit use.</p>
 <h2 id="counter-example">Counter Example<a class="headerlink" href="#counter-example" title="Permanent link">&para;</a></h2>
 <p>This is a very simple case of a Counter screen that displays the count and has buttons to increment and decrement.</p>
 <p><img alt="image" src="https://user-images.githubusercontent.com/1361086/193662421-575dcaa9-4990-42e6-b265-9099a007296e.png" /></p>

@@ -1,7 +1,7 @@
 public final class com/slack/circuit/subcircuit/ComposableSingletons$SubCircuitContentKt {
 	public static final field INSTANCE Lcom/slack/circuit/subcircuit/ComposableSingletons$SubCircuitContentKt;
 	public fun <init> ()V
-	public final fun getLambda$1917787583$subcircuit ()Lkotlin/jvm/functions/Function5;
+	public final fun getLambda$1917787583$circuit_root_circuitx_subcircuit ()Lkotlin/jvm/functions/Function5;
 }
 
 public abstract interface annotation class com/slack/circuit/subcircuit/ExperimentalSubCircuitApi : java/lang/annotation/Annotation {

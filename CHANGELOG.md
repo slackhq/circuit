@@ -4,6 +4,23 @@ Changelog
 Unreleased
 ----------
 
+0.34.0
+------
+
+_2026-05-09_
+
+### New
+
+#### SubCircuit
+
+SubCircuit is a lightweight version of Circuit for rendering nested presenter/UI pairs that delegate events to an outer component rather than handling navigation themselves. Use it for nested, reusable UI components that don't need direct navigation access, and need to delegate cross-cutting concerns (navigation, dialogs) to a parent. See the [SubCircuit](https://slackhq.github.io/circuit/circuitx/subcircuit/) docs for more info!
+
+**Artifacts**
+
+- `circuitx-subcircuit` — core types (SubScreen, SubPresenter, SubUi, SubCircuitContent).
+- `circuitx-subcircuit-codegen` — KSP @SubCircuitInject to wire presenter and UI factories into the DI graph. Supports Anvil (default) and Metro.
+- `circuitx-subcircuit-test` — a .test {} extension for SubPresenters, built on Molecule and Turbine.
+
 ### Fixes
 
 - `SaveableNavStack` - `isRecordReachable()` off-by-one where depth of 0 didn't check the current record
@@ -13,18 +30,28 @@ Unreleased
 ### Changes
 
 - **Breaking**: Moved `NavDecoration` from `backstack` to `circuit-foundation` and added a `Navigator` parameter to `DecoratedContent`. `AnimatedNavDecorator` now has an `updateNavigator` method to receive the new `Navigator` parameter. This gives decorations direct access to the correct Navigator for handling back gestures.
-- Add `GestureNavigationEventListener` and an optional `listener` parameter to `GestureNavigationDecorationFactory`, for observing the back gesture lifecycle (e.g. analytics). It's observational only, the `Navigator` still drives the pop.
-- Update to Kotlin `2.3.20`.
-- Remove deprecated X64 Apple targets.
+- **Breaking**: Add `GestureNavigationEventListener` and an optional `listener` parameter to `GestureNavigationDecorationFactory`, for observing the back gesture lifecycle (e.g. analytics). It's observational only, the `Navigator` still drives the pop.
 - `SaveableNavStack` & `SaveableBackStack` - Made the `Saver`s public apis
 - [codegen] Function-based `@CircuitInject` declarations now treat any non-circuit-provided parameter as an injected dependency across all modes. The generated factory accepts it as a provider (`Provider<T>` for Dagger/Anvil/Hilt, `() -> T` for kotlin-inject and Metro) and invokes it once at `create()` time, hoisted above the composable `presenterOf { }` / `ui { }` block so it isn't re-invoked on every recomposition. Parameters already declared as `Provider<T>` or `Lazy<T>` are passed through as-is rather than re-wrapped. In metro and kotlin-inject modes, `() -> T` is also passed through; in Dagger/Anvil/Hilt modes it is treated as a regular dependency.
 - [codegen] `@CircuitInject`-annotated classes must now be injectable — annotate the class or a constructor with `@Inject`. Previously, classes without `@Inject` silently generated a direct constructor call that could fail to compile.
 - [codegen/metro] Generate function providers when Metro mode is enabled. Note this requires `enableFunctionProviders` to be set enabled, which will be the default in Metro 1.0.0.
 
+### Misc:
+
+- Kotlin `2.4.0`
+- Compose `1.11.0`
+- Migrate to AGP 9
+- Remove deprecated X64 Apple targets.
+- [samples] Added a composite presenter Inbox sample
+- [samples] Add iOS support to STAR sample
+
 ### Contributors
 
 Special thanks to the following contributors for contributing to this release!
 
+- [@WhosNickDoglio](https://github.com/WhosNickDoglio)
+- [@ryanbrookepayne](https://github.com/ryanbrookepayne)
+- [@SamThompson](https://github.com/SamThompson)
 - [@easternkite](https://github.com/easternkite)
 
 0.33.1

@@ -3,21 +3,19 @@
 **Problem:** the user taps something and a modal bottom sheet of options appears; picking one returns
 that value to the caller.
 
-CircuitX's `BottomSheetOverlay` takes a strongly-typed input model and returns a typed result, and
-`show()` suspends until the sheet finishes. Requires `circuitx-overlays` and a `ContentWithOverlays`
-above this UI.
+CircuitX's `BottomSheetOverlay` takes a strongly typed model and returns a typed result. `show()` suspends
+until the sheet finishes. Requires `circuitx-overlays` and a `ContentWithOverlays` above this UI.
 
 ## One-time setup: `ContentWithOverlays`
 
-Overlays render into an `OverlayHost` exposed by `ContentWithOverlays`. Wrap your navigable content
-in it **once**, at the root — every screen below then has `LocalOverlayHost` available. (If you use
-shared-element transitions, `SharedElementTransitionLayout` goes just outside `ContentWithOverlays` —
-shown here; drop that line if you don't.)
+Wrap your navigable content in `ContentWithOverlays` once at the composition root. Every screen within it can
+show overlays. If you use shared-element transitions, put `SharedElementTransitionLayout` just
+outside `ContentWithOverlays`; otherwise omit it.
 
 ```kotlin
 setContent {
   CircuitCompositionLocals(circuit) {
-    SharedElementTransitionLayout {            // optional — only if you use shared elements
+    SharedElementTransitionLayout {            // Optional: only if you use shared elements.
       ContentWithOverlays {
         NavigableCircuitContent(navigator = navigator, navStack = navStack)
       }
@@ -65,9 +63,8 @@ fun TaskEditor(state: TaskState, modifier: Modifier = Modifier) {
 }
 ```
 
-If the sheet should host a whole reusable component rather than inline content, render it with
-**SubCircuit** inside the sheet body — the component delegates its events (including "dismiss with this
-value") up to the host via its `outerEventSink`, which is exactly the embedded-component pattern. See
+If the sheet hosts a reusable component instead of inline content, render that component with
+**SubCircuit** and pass the selected value back through its `outerEventSink`. See
 [Embed a reusable component](reusable-component-subcircuit.md).
 
 **See also:** [CircuitX overlays](../circuitx/overlays.md) ·

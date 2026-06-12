@@ -1,9 +1,8 @@
 Recipes
 =======
 
-Task-focused, copy-pasteable solutions to common problems with Circuit. Each recipe states a problem,
-gives a complete snippet, and links to the reference docs for depth. Browse to the problem you have —
-there's no required reading order.
+Task-focused, copy-pasteable solutions to common Circuit patterns. Start with the problem you have;
+there is no required reading order.
 
 New to Circuit? Start with the [Tutorial](../tutorial.md) and [States and Events](../states-and-events.md)
 first; these recipes assume you know what a `Screen`, `Presenter`, and `Ui` are.

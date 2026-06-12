@@ -3,21 +3,19 @@
 **Problem:** before a destructive action (delete, discard), you need a yes/no confirmation and the
 answer back in the presenter.
 
-Use an overlay, shown with `OverlayEffect`. The effect suspends on the overlay's result and feeds it
-back as an event, so there's no `showDialog: Boolean` flag and no manual coroutine launching.
-Requires the `circuit-overlay` artifact and a `ContentWithOverlays` somewhere above this UI.
+Use an overlay with `OverlayEffect`. The effect suspends on the result and sends it back as an event.
+Requires the `circuit-overlay` artifact and a `ContentWithOverlays` above this UI.
 
 ## One-time setup: `ContentWithOverlays`
 
-Overlays render into an `OverlayHost` exposed by `ContentWithOverlays`. Wrap your navigable content
-in it **once**, at the root — every screen below then has `LocalOverlayHost` available, so individual
-recipes never set this up again. (If you use shared-element transitions, `SharedElementTransitionLayout`
-goes just outside `ContentWithOverlays` — shown here; drop that line if you don't.)
+Wrap your navigable content in `ContentWithOverlays` once at the composition root. Every screen within it can
+show overlays. If you use shared-element transitions, put `SharedElementTransitionLayout` just
+outside `ContentWithOverlays`; otherwise omit it.
 
 ```kotlin
 setContent {
   CircuitCompositionLocals(circuit) {
-    SharedElementTransitionLayout {            // optional — only if you use shared elements
+    SharedElementTransitionLayout {            // Optional: only if you use shared elements.
       ContentWithOverlays {
         NavigableCircuitContent(navigator = navigator, navStack = navStack)
       }
@@ -26,13 +24,11 @@ setContent {
 }
 ```
 
-## Gate the dialog on nullable state, run it with `OverlayEffect`
+## Show the dialog from nullable state
 
-Model "is the dialog showing?" as a nullable state property — `null` = hidden, non-null carries what
-to confirm. `OverlayEffect` runs whenever that property is non-null, `show()`s the overlay, and the
-result comes back as an ordinary event. `circuitx-overlays` ships `alertDialogOverlay`, a thin
-`Overlay` over Material 3's `AlertDialog`; it resolves to a `DialogResult`
-(`Confirm` / `Cancel` / `Dismiss`).
+Use a nullable state property for the pending confirmation. `null` means hidden; a non-null value
+carries what to confirm. `OverlayEffect` shows the overlay when that value is present, and
+`alertDialogOverlay` returns a `DialogResult` (`Confirm`, `Cancel`, or `Dismiss`).
 
 ```kotlin
 // State carries what to confirm, or null.
@@ -71,9 +67,8 @@ IconButton(onClick = { state.eventSink(ItemEvent.DeleteClicked(item.id)) }) {
 }
 ```
 
-This is the "boolean flag → nullable state" pattern: a non-null `pendingDelete` is the single source
-of truth for whether the dialog is up, and `OverlayEffect` — not an imperative `LocalOverlayHost.show`
-in an `onClick` — is what presents it.
+Keep the pending value in state. The presenter sets `pendingDelete`, the UI shows the dialog, and the
+answer returns through `DeleteAnswered`.
 
 **See also:** [Overlays](../overlays.md) · [CircuitX overlays](../circuitx/overlays.md) ·
 [Pick a value from a bottom sheet](bottom-sheet-picker.md)

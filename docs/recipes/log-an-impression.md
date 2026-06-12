@@ -3,8 +3,8 @@
 **Problem:** fire an analytics impression exactly once when a screen (or item) is shown — not on
 every recomposition, and not again after a configuration change.
 
-Use CircuitX's impression effects (`circuitx-effects`). They run once and won't run again until
-forgotten under the current retained-state registry — so they survive recomposition and rotation.
+Use CircuitX's impression effects (`circuitx-effects`). They run once for the current retained-state
+registry, so they survive recomposition and rotation.
 
 ```kotlin
 @Composable
@@ -15,8 +15,8 @@ override fun present(): ArticleState {
 }
 ```
 
-For suspending work (a network beacon, a suspend logging call), use `LaunchedImpressionEffect`, and
-pass a key so it re-fires when the thing you're tracking changes — and *only* then:
+For suspending work (a network beacon, a suspend logging call), use `LaunchedImpressionEffect`. Pass
+a key when the impression should run again for a different item:
 
 ```kotlin
 // Fires once per distinct article id.
@@ -40,10 +40,10 @@ val navigator = rememberImpressionNavigator(navigator = navigator) {
 }
 ```
 
-| Need | Use |
-|------|-----|
-| sync, once per composition/key | `ImpressionEffect` |
+| Need                              | Use                             |
+|-----------------------------------|---------------------------------|
+| sync, once per composition/key    | `ImpressionEffect`              |
 | suspend, once per composition/key | `LaunchedImpressionEffect(key)` |
-| re-fire when navigated back to | `rememberImpressionNavigator` |
+| re-fire when navigated back to    | `rememberImpressionNavigator`   |
 
 **See also:** [CircuitX effects](../circuitx/effects.md)

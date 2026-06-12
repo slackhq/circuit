@@ -3,8 +3,8 @@
 **Problem:** you navigate to a screen (a picker, an editor) and need the value it produces back on
 the calling screen — surviving process death.
 
-Use the *answering navigator*. The caller wraps its `Navigator` with `rememberAnsweringNavigator<R>`
-and a callback; the target screen pops a `PopResult`, and Circuit delivers it only to the caller that
+Use the **answering navigator**. The caller wraps its `Navigator` with `rememberAnsweringNavigator<R>`
+and a callback. The target screen pops a `PopResult`, and Circuit delivers it only to the caller that
 asked.
 
 ## 1. Define the result
@@ -61,9 +61,9 @@ treat that as "cancelled".
 
 ## Screen result vs. overlay
 
-If the thing you're asking for is an **ephemeral prompt** (confirm, pick from a sheet) rather than a
-full destination, an [overlay](confirmation-dialog.md) is usually a better fit — it's type-safe and
-suspends on the result, though it doesn't survive process death. Full comparison in the
+If the thing you're asking for is a prompt, such as confirm or pick from a sheet, an
+[overlay](confirmation-dialog.md) is usually a better fit. It's type-safe and suspends on the
+result, though it doesn't survive process death. Full comparison in the
 [Overlays doc](../overlays.md#overlay-vs-popresult).
 
 **See also:** [Navigation: results](../navigation.md#results) ·

@@ -29,9 +29,9 @@ override fun present(): SearchState {
 
 Key points:
 
-- **`snapshotFlow { query }`** turns the Compose state into a Flow, so `debounce` / `distinctUntilChanged`
-  operate on it without manual plumbing.
-- **`mapLatest`** cancels an in-flight search when a newer query arrives — you never show stale results.
+- **`snapshotFlow { query }`** turns the Compose state into a Flow, so `debounce` and
+  `distinctUntilChanged` can operate on it.
+- **`mapLatest`** cancels an in-flight search when a newer query arrives.
 - The whole pipeline is built **inside** `produceRetainedState`, so it isn't reallocated on
   recomposition (see [observing a Flow](observe-a-flow.md)).
 

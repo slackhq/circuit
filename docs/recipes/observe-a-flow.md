@@ -4,8 +4,8 @@
 Circuit state — without leaking the Flow or rebuilding it on every recomposition.
 
 Use `produceRetainedState` and **build the Flow inside the block**. The result is retained across
-recomposition, configuration changes, and the back stack; the Flow itself is scoped to the block and
-torn down correctly.
+recomposition, configuration changes, and the back stack. The Flow is collected only while the block
+is active.
 
 ```kotlin
 @Composable
@@ -22,8 +22,8 @@ re-runs when a key changes.
 
 ## Don't pass the Flow as an argument
 
-`collectAsRetainedState` works, but it takes the Flow as a parameter — so an inline
-`repository.messages()` expression (and its whole operator chain) gets rebuilt in composition on every
+`collectAsRetainedState` works, but it takes the Flow as a parameter. An inline
+`repository.messages()` expression and its operator chain are rebuilt in composition on every
 recomposition:
 
 ```kotlin
@@ -40,19 +40,18 @@ val messages by produceRetainedState<List<Message>>(emptyList(), screen.channelI
 }
 ```
 
-`collectAsRetainedState` is fine when the Flow is already a stable reference; `produceRetainedState`
-is the safer default because it makes it hard to allocate the chain in composition by accident.
+`collectAsRetainedState` is fine when the Flow is already a stable reference. `produceRetainedState`
+is the safer default for repository calls and operator chains.
 
 ## Never `rememberRetained` a raw Flow instance
 
 ```kotlin
-// 🚫 Retains the Flow itself — keeps everything it captures (repos, scopes) alive on the back stack.
+// Retains the Flow itself, including anything it captures.
 val messages by rememberRetained { messageRepository.messages(id) }.collectAsState(emptyList())
 ```
 
-Retain the *result*, not the Flow. (Building a full chain inside a `remember` block is fine — it runs
-once — but don't hold the Flow as retained state, and never `rememberRetained` a `Navigator` or
-`Context`.)
+Retain the *result*, not the Flow. Building a chain inside `remember` is fine because it runs once,
+but do not hold the Flow as retained state. The same applies to a `Navigator` or `Context`.
 
 **See also:** [Retention reference](../presenter.md#retention) ·
 [Keep UI state across config change](keep-state-across-config-change.md)

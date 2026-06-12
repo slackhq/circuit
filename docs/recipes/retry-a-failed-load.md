@@ -3,9 +3,8 @@
 **Problem:** a load failed and the user taps "Retry". You need to re-run the load and show the
 loading state again.
 
-Drive retries with a counter held in `rememberRetained`. Use it as a key to `produceRetainedState` —
-bumping it re-runs the producer. This keeps the retry trigger in the presenter and avoids exposing
-imperative "reload" methods.
+Drive retries with a counter held in `rememberRetained`. Use it as a key to `produceRetainedState`;
+incrementing it re-runs the producer.
 
 ```kotlin
 @Composable

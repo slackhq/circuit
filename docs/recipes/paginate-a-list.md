@@ -3,11 +3,16 @@
 **Problem:** a long list loads a page at a time; reaching the bottom should fetch the next page,
 without firing duplicate requests or losing accumulated items across recomposition.
 
-Pagination has several moving parts — accumulated items, the next cursor, an in-flight flag, an
-end-of-list flag. Rather than scatter four `rememberRetained` vars through `present()`, lift them into
-a small **presentation state holder** (the same idea as `EmailFieldState` in
-[Scaling Presenters](../presenter-patterns.md#use-cases-separating-business-logic)). The holder owns the Compose state; the
-presenter just creates it with `rememberRetained` and drives loading from an effect + events.
+Pagination has several moving parts:
+
+- accumulated items
+- the next cursor
+- an in-flight flag
+- an end-of-list flag
+
+Keep them in a small **presentation state holder** (the same idea as `EmailFieldState` in 
+[Scaling Presenters](../presenter-patterns.md#use-cases-separating-business-logic)). The presenter creates the holder with `rememberRetained` and drives 
+loading from an effect and events.
 
 ## The holder
 
@@ -28,13 +33,12 @@ class PagingState<T> {
   private var nextCursor: String? = null
   private val mutex = Mutex()
 
-  // The fetcher is passed *in* per call, not stored — so the retained holder never captures the
-  // repository. See the note under the presenter.
+  // Pass the fetcher per call so the retained holder only stores paging data.
   suspend fun loadNext(fetchPage: suspend (cursor: String?) -> Page<T>) {
-    // Fast best-effort bail so an overlapping call returns instead of queueing behind the load.
+    // Return early when another load is already running.
     if (endReached || isLoadingMore) return
     mutex.withLock {
-      if (endReached) return                 // re-check inside the lock: a queued caller may be past the end
+      if (endReached) return
       isLoadingMore = true
       try {
         val page = fetchPage(nextCursor)
@@ -49,18 +53,16 @@ class PagingState<T> {
 }
 ```
 
-The holder stores **only data** — items, cursor, flags. The fetcher is a `loadNext()` parameter, not
-a constructor-captured field, so the retained holder can never pull the repository (and whatever it
-references) onto the back stack.
+The holder stores only paging data: items, cursor, and flags. Pass the fetcher to `loadNext()` so the
+retained holder does not keep the repository on the back stack.
 
-The `Mutex.withLock` serializes loads so overlapping `LoadMore` events can't double-fetch; the
-pre-lock `isLoadingMore` check is just a fast bail to avoid queuing. `isLoadingMore` is observable
-state for the UI's loading spinner.
+`Mutex.withLock` serializes loads so overlapping `LoadMore` events cannot double-fetch.
+`isLoadingMore` is observable state for the UI's loading spinner.
 
 ## The presenter
 
 Create the holder with `rememberRetained` so accumulated pages survive rotation and the back stack.
-Load the first page from a `LaunchedImpressionEffect`; handle `LoadMore` events by launching
+Load the first page from `LaunchedImpressionEffect`; handle `LoadMore` events by launching
 `loadNext()`.
 
 ```kotlin
@@ -69,7 +71,7 @@ override fun present(): FeedState {
   val paging = rememberRetained { PagingState<FeedItem>() }
   val scope = rememberCoroutineScope()
 
-  // feedRepository comes from DI and is held by the presenter, not retained. Pass its fetcher in.
+  // feedRepository comes from DI. Pass its fetcher into the retained holder.
   LaunchedImpressionEffect(Unit) { paging.loadNext(feedRepository::page) }   // first page on open
 
   return FeedState(items = paging.items, isLoadingMore = paging.isLoadingMore) { event ->
@@ -90,8 +92,8 @@ override fun present(): FeedState {
 
 ## The UI
 
-The UI owns the `LazyListState`, so the "near the end" detection lives here. Derive the trigger with
-`derivedStateOf` so it only fires when the threshold is crossed, not on every scrolled pixel.
+The UI owns the `LazyListState`, so the "near the end" detection lives here. Use `derivedStateOf` so
+the trigger changes only when the threshold is crossed.
 
 ```kotlin
 @Composable
@@ -119,7 +121,7 @@ fun Feed(state: FeedState, modifier: Modifier = Modifier) {
 private const val PREFETCH_DISTANCE = 5
 ```
 
-**Heavier paging?** If you need cross-page placeholders, retries, and refresh out of the box,
+**Heavier paging?** If you need placeholders, retries, and refresh out of the box,
 [Jetpack Paging](https://developer.android.com/topic/libraries/architecture/paging/v3-overview)'s
 `Pager` exposes a `Flow<PagingData<T>>` you can collect with
 [`produceRetainedState`](observe-a-flow.md) instead of hand-rolling the holder above.

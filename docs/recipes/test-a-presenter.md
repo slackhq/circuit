@@ -3,9 +3,8 @@
 **Problem:** verify that a presenter emits the right states and navigates where you expect, in
 response to events.
 
-Use `Presenter.test {}` (from `circuit-test`) and a `FakeNavigator`. `test {}` bridges Compose +
-coroutines (Molecule + Turbine) and gives you a turbine whose `awaitItem()` is
-distinct-until-changed. Drive the presenter by invoking the `eventSink` on an emitted state.
+Use `Presenter.test {}` from `circuit-test` and a `FakeNavigator`. `test {}` gives you a `Turbine` for
+presenter states. Drive the presenter by invoking the `eventSink` on an emitted state.
 
 ```kotlin
 @Test
@@ -32,12 +31,12 @@ Common `FakeNavigator` assertions:
 - `awaitResetRoot()` — a `resetRoot()` happened
 - `assertGoToIsEmpty()` — assert *no* navigation occurred
 
-Two things that trip people up:
+Things to watch for:
 
 - **Consume `Loading` first.** A presenter that starts in `Loading` emits it before the loaded state.
   `assertIs<FeedState.Loaded>(awaitItem())` on the *first* item will fail — await the loading emission first.
 - **`awaitItem()` is distinct-until-changed.** Identical consecutive states collapse into one, so you
-  assert real transitions, not every recomposition. When you specifically want to assert a
+  assert state changes, not every recomposition. When you specifically want to assert a
   recomposition produced *no* change, use the escape hatch `awaitUnchanged()` — it awaits the next
   emission and fails if it differs from the previous one.
 

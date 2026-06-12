@@ -50,9 +50,9 @@ fun Feed(state: FeedState, modifier: Modifier = Modifier) {
 
 !!! note
     `feedRepository.refresh()` should be a quick trigger that causes the underlying Flow to re-emit.
-    If it kicks off genuinely long-running work, that work belongs in the data layer scoped to
-    something that outlives the screen — not launched from `rememberCoroutineScope()`, which is
-    cancelled when the presenter leaves composition. See
+    If it starts long-running work, that work belongs in the data layer, scoped to something that
+    outlives the screen. `rememberCoroutineScope()` is cancelled when the presenter leaves
+    composition. See
     [run a one-shot suspend action](run-suspend-from-event.md).
 
 **See also:** [Retry a failed load](retry-a-failed-load.md) · [Observe a Flow](observe-a-flow.md) ·

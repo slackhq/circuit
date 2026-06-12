@@ -4,9 +4,9 @@
 either let it through, block it, send it somewhere else, or hand it off to something outside Circuit
 (an Activity, an external URL).
 
-Use `circuitx-navigation`. A `NavigationInterceptor` sits in front of the real `Navigator`; each
-navigation call runs through your interceptors first, and each can **skip**, **consume**, **fail**,
-or **rewrite** the event. Wire them up with `rememberInterceptingNavigator`.
+Use `circuitx-navigation`. A `NavigationInterceptor` runs before the real `Navigator` and can
+**skip**, **consume**, **fail**, or **rewrite** a navigation event. Wire interceptors up with
+`rememberInterceptingNavigator`.
 
 ```kotlin
 dependencies {
@@ -38,19 +38,19 @@ fun App(circuit: Circuit) {
 }
 ```
 
-Interceptors run **in order** — the first one to consume or rewrite the event wins.
+Interceptors run **in order**. The first one to consume or rewrite the event wins.
 
 ## The four outcomes
 
 Each `NavigationInterceptor` method returns an `InterceptedResult`. All methods default to `Skipped`,
 so you only override the ones you care about (usually `goTo`).
 
-| Result | Effect |
-|--------|--------|
-| `InterceptedResult.Skipped` | not my event — pass to the next interceptor, then the real navigator |
-| `InterceptedResult.Success(consumed = true)` | handled it; stop here, don't navigate |
-| `InterceptedResult.Failure(consumed, reason)` | tried and failed; `consumed` decides whether to stop |
-| `InterceptedResult.Rewrite(newScreen)` | navigate somewhere else instead — re-runs all interceptors with the new event |
+| Result                                        | Effect                                                |
+|-----------------------------------------------|-------------------------------------------------------|
+| `InterceptedResult.Skipped`                   | pass to the next interceptor, then the real navigator |
+| `InterceptedResult.Success(consumed = true)`  | handled it; stop here                                 |
+| `InterceptedResult.Failure(consumed, reason)` | failed; `consumed` decides whether to stop            |
+| `InterceptedResult.Rewrite(newScreen)`        | navigate somewhere else instead                       |
 
 `NavigationInterceptor.Skipped` and `NavigationInterceptor.SuccessConsumed` are shorthands for the
 two most common ones.
@@ -95,10 +95,8 @@ rewritten screen too.
 
 ## Hand off to Android (Activities, URLs)
 
-This is what makes the difference between
-[navigating to an Android target](navigate-to-android.md) the simple way and doing it as an
-interceptor. CircuitX ships `AndroidScreenAwareNavigationInterceptor` — drop it in the list and any
-`AndroidScreen` (like `IntentScreen`) is consumed and started instead of pushed onto the back stack:
+CircuitX ships `AndroidScreenAwareNavigationInterceptor`. Add it to the list and any
+`AndroidScreen`, such as `IntentScreen`, is started instead of pushed onto the back stack:
 
 ```kotlin
 val navigator = rememberInterceptingNavigator(
@@ -112,7 +110,7 @@ val navigator = rememberInterceptingNavigator(
 
 ### Interceptor vs. `rememberAndroidScreenAwareNavigator`
 
-Both route `AndroidScreen`s out to Android. Pick by how much else you're doing:
+Both route `AndroidScreen`s out to Android. Pick based on what else your navigator needs to do:
 
 - **[`rememberAndroidScreenAwareNavigator`](navigate-to-android.md)** — a navigator decorator. Simplest
   when launching Intents is the *only* special handling you need.
@@ -122,9 +120,8 @@ Both route `AndroidScreen`s out to Android. Pick by how much else you're doing:
 
 ## Observe without changing — event listeners
 
-If you only want to *know* about navigation (analytics, logging) without altering it, pass
-`eventListeners` instead of interceptors — they're notified after navigation the interceptors didn't
-consume.
+If you only want to observe navigation for analytics or logging, pass `eventListeners` instead of
+interceptors. They are notified after navigation that interceptors did not consume.
 
 ```kotlin
 rememberInterceptingNavigator(

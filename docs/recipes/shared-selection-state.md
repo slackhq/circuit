@@ -1,12 +1,11 @@
 # [Recipe](index.md): Share selection state across list items
 
 **Problem:** long-pressing a list row enters Gmail-style bulk-selection. Every row must know
-selection mode is active — even though *another* row triggered it — and show a checkbox.
+selection mode is active (even though *another* row triggered it) and show a checkbox.
 
-This is the **coordinated** case: the rows aren't independent, they share live state. Don't try to
-sync that between sibling nested Circuits or SubCircuits — that state ping-pongs and never converges.
-Hoist it into **one parent presenter** and render rows as plain composables (or with a
-[StateProducer](../presenter-patterns.md#pattern-3-stateproducer) if the per-row logic is heavy).
+Rows in selection mode are not independent; they share live state. Keep that state in **one parent
+presenter** and render rows as plain composables. If per-row logic gets heavy, use a
+[StateProducer](../presenter-patterns.md#pattern-3-stateproducer).
 
 ```kotlin
 data class InboxState(
@@ -35,8 +34,7 @@ override fun present(): InboxState {
   }
   val selected = rememberRetained { mutableStateSetOf<MessageId>() }
 
-  // derivedStateOf so the rows list is only rebuilt when `messages` or `selected` actually change,
-  // not on every recomposition.
+  // Rebuild rows only when messages or selection changes.
   val rows by remember(messages) {
     derivedStateOf {
       messages.map { message ->
@@ -56,8 +54,7 @@ override fun present(): InboxState {
 }
 ```
 
-Rows are dumb composables that read their `selected` flag and report events upward — no per-row
-presenter, no cross-row messaging:
+Rows read their `selected` flag and report events upward:
 
 ```kotlin
 @Composable
@@ -74,8 +71,7 @@ private fun MessageRow(row: RowState, inSelectionMode: Boolean, eventSink: (Inbo
 }
 ```
 
-**Rule of thumb:** if you find yourself wanting to push shared state *into* each child's `Screen`, the
-children aren't really independent — model the shared state in the parent instead.
+**Rule of thumb:** if children need shared state, model that state in the parent.
 
 **See also:** [Presenter patterns: StateProducer](../presenter-patterns.md#pattern-3-stateproducer) ·
 [Embed a reusable component](reusable-component-subcircuit.md)

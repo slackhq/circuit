@@ -1,0 +1,71 @@
+# [Recipe](index.md): Navigate to an Android Activity or URL
+
+**Problem:** a presenter needs to launch something outside Circuit — another `Activity`, a browser,
+the share sheet, a custom tab.
+
+Use `circuitx-android`. Decorate your navigator once with `rememberAndroidScreenAwareNavigator`, then
+`goTo` an `AndroidScreen` from any presenter just like a normal screen.
+
+## Set up the decorated navigator
+
+```kotlin
+class MainActivity : ComponentActivity() {
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContent {
+      val navStack = rememberSaveableNavStack(HomeScreen)
+      val navigator = rememberAndroidScreenAwareNavigator(
+        rememberCircuitNavigator(navStack),   // the Circuit navigator it wraps
+        this@MainActivity,                     // Context used to start activities
+      )
+      CircuitCompositionLocals(circuit) {
+        NavigableCircuitContent(navigator, navStack)
+      }
+    }
+  }
+}
+```
+
+## Launch an Intent from a presenter
+
+`IntentScreen` is the built-in `AndroidScreen` — wrap any `Intent` and `goTo` it:
+
+```kotlin
+return DetailState(detail) { event ->
+  when (event) {
+    is DetailEvent.OpenInBrowser ->
+      navigator.goTo(IntentScreen(Intent(Intent.ACTION_VIEW, event.url.toUri())))
+    is DetailEvent.Share ->
+      navigator.goTo(IntentScreen(Intent.createChooser(shareIntent(event.text), null)))
+  }
+}
+```
+
+The decorated navigator intercepts `AndroidScreen`s and calls `startActivity`; everything else flows
+to the normal Circuit back stack.
+
+## Custom Android targets
+
+For non-Intent targets (a custom tab, a third-party SDK launcher), pass your own
+`AndroidScreenStarter` instead of a `Context`:
+
+```kotlin
+val starter = AndroidScreenStarter { screen ->
+  when (screen) {
+    is IntentScreen -> { context.startActivity(screen.intent, screen.options); true }
+    is CustomTabScreen -> { customTabs.launch(screen.url); true }
+    else -> false   // not handled — let Circuit treat it as a normal screen
+  }
+}
+val navigator = rememberAndroidScreenAwareNavigator(rememberCircuitNavigator(navStack), starter)
+```
+
+!!! tip "Doing more than launching Intents?"
+    `rememberAndroidScreenAwareNavigator` is the simple path when Android handoff is your *only*
+    special navigation handling. Once you're also gating navigation behind auth, feature flags, or
+    rewriting destinations, switch to the interceptor form — `AndroidScreenAwareNavigationInterceptor`
+    is the same behavior as one entry in an interceptor list. See
+    [Intercept, block, or rewrite navigation](intercept-navigation.md).
+
+**See also:** [CircuitX Android](../circuitx/android.md) · [Navigation](../navigation.md) ·
+[Intercept navigation](intercept-navigation.md)

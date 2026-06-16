@@ -1,5 +1,4 @@
-Deep-linking using Circuit
-==========================
+# [Recipe](index.md): Deep-linking using Circuit
 
 Deep linking to application is a vast topic and the implementation detail can vary based on your application needs.
 Deep linking strategy can be highly sophisticated or simple based on the use-case.
@@ -11,7 +10,7 @@ You can then extend the idea to other platforms as needed.
     Before you begin, we recommend having a basic understanding of deep linking. To get the most out of this guide, please review Android's official [training guide](https://developer.android.com/training/app-links/deep-linking), which provides valuable insights into deep linking for Android apps.
 
 ### Deep linking strategy
-Essentially, you need to define a strategy for you app to handle the incoming deep link. We will take a look at Circuit's [email app](https://slackhq.github.io/circuit/tutorial/) from the tutorial with following screens:
+Essentially, you need to define a strategy for you app to handle the incoming deep link. We will take a look at Circuit's [email app](../getting-started/tutorial.md) from the tutorial with following screens:
 
 * **Inbox Screen** - List all incoming emails
 * **Details Screen** - Show details of the email

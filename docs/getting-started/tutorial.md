@@ -37,7 +37,7 @@ dependencies {
 }
 ```
 
-See [setup docs](setup.md) for more information.
+See [setup docs](../getting-started/setup.md) for more information.
 
 ## Create a `Screen`
 
@@ -87,14 +87,14 @@ Conventionally, this is written as a nested `State` class inside your `Screen` a
     )
     ```
 
-See the [states and events](states-and-events.md) guide for more information.
+See the [states and events](../getting-started/states-and-events.md) guide for more information.
 
 ## Create your UI
 
 === "Inbox"
     <div class="result" markdown>
     
-    ![Preview](images/tutorial_inbox.png){ align=left width=300 }
+    ![Preview](../images/tutorial_inbox.png){ align=left width=300 }
     
     Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable function that 
     takes `State` and `Modifier` parameters.
@@ -317,7 +317,7 @@ CircuitCompositionLocals(circuit) {
 === "Detail"
     <div class="result" markdown>
 
-    ![Preview](images/tutorial_detail.png){ align=left width=300 }
+    ![Preview](../images/tutorial_detail.png){ align=left width=300 }
     
     Now that we have navigation set up, let's add a detail screen to our app to navigate to.
 
@@ -446,7 +446,7 @@ So far, we've covered _state_. State is produced by the presenter and consumed b
 
 Events in Circuit are a little unconventional in that Circuit doesn't provide structured APIs for pipelining events from the UI to presenters. Instead, we use an _event sink property_ pattern, where states contain a trailing `eventSink` function that receives events emitted from the UI.
 
-This provides many benefits, see the [events](states-and-events.md) guide for more information.
+This provides many benefits, see the [events](../getting-started/states-and-events.md) guide for more information.
 
 Let's add an event to our inbox screen for when the user clicks on an email.
 
@@ -572,8 +572,8 @@ On Android, `NavigableCircuitContent` automatically hooks into [BackHandler](htt
 
 ## Shared Elements
 
-You can continue this tutorial by seting up [shared element transitions](shared-elements-tutorial.md) between the Inbox and Detail screens.
+You can continue this tutorial by seting up [shared element transitions](../docs/shared-elements-tutorial.md) between the Inbox and Detail screens.
 
 ## Conclusion
 
-This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the [API reference](api/0.x/index.html), and check out other Circuit tools like [circuit-retained](https://slackhq.github.io/circuit/presenter/#retention), [CircuitX](https://slackhq.github.io/circuit/circuitx/), [factory code gen](https://slackhq.github.io/circuit/code-gen/), [overlays](https://slackhq.github.io/circuit/overlays/), [navigation with results](https://slackhq.github.io/circuit/navigation/#results), [testing](https://slackhq.github.io/circuit/testing/), [multiplatform](https://slackhq.github.io/circuit/setup/#platform-support), and more.
+This is just a brief introduction to Circuit. For more information see various docs on the site, samples in the repo, the [API reference](../api/0.x/index.html), and check out other Circuit tools like [circuit-retained](../docs/presenter.md#retention), [CircuitX](../circuitx.md), [factory code gen](../docs/code-gen.md), [overlays](../docs/overlays.md), [navigation with results](../docs/navigation.md#results), [testing](../docs/testing.md), [multiplatform](../getting-started/setup.md#platform-support), and more.

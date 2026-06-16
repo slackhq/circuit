@@ -70,5 +70,5 @@ IconButton(onClick = { state.eventSink(ItemEvent.DeleteClicked(item.id)) }) {
 Keep the pending value in state. The presenter sets `pendingDelete`, the UI shows the dialog, and the
 answer returns through `DeleteAnswered`.
 
-**See also:** [Overlays](../overlays.md) · [CircuitX overlays](../circuitx/overlays.md) ·
+**See also:** [Overlays](../docs/overlays.md) · [CircuitX overlays](../circuitx/overlays.md) ·
 [Pick a value from a bottom sheet](bottom-sheet-picker.md)

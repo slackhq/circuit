@@ -4,7 +4,7 @@ Recipes
 Task-focused, copy-pasteable solutions to common Circuit patterns. Start with the problem you have;
 there is no required reading order.
 
-New to Circuit? Start with the [Tutorial](../tutorial.md) and [States and Events](../states-and-events.md)
+New to Circuit? Start with the [Tutorial](../getting-started/tutorial.md) and [States and Events](../getting-started/states-and-events.md)
 first; these recipes assume you know what a `Screen`, `Presenter`, and `Ui` are.
 
 ## Loading data
@@ -24,6 +24,7 @@ first; these recipes assume you know what a `Screen`, `Presenter`, and `Ui` are.
 - [Tabs with independent back stacks](tabs-with-back-stacks.md)
 - [Navigate to an Android Activity or URL](navigate-to-android.md)
 - [Intercept, block, or rewrite navigation](intercept-navigation.md)
+- [Deep linking on Android](deep-linking-android.md)
 
 ## Composing & reusing UI
 

@@ -50,4 +50,4 @@ For primitives, use the boxing-free holders: `rememberRetained { mutableIntState
     can keep too much or leak across the back stack. To get data from a Flow into retained state 
     safely, see [observing a Flow](observe-a-flow.md).
 
-**See also:** [Retention reference](../presenter.md#retention) · [Observe a Flow](observe-a-flow.md)
+**See also:** [Retention reference](../docs/presenter.md#retention) · [Observe a Flow](observe-a-flow.md)

@@ -5,7 +5,7 @@ selection mode is active (even though *another* row triggered it) and show a che
 
 Rows in selection mode are not independent; they share live state. Keep that state in **one parent
 presenter** and render rows as plain composables. If per-row logic gets heavy, use a
-[StateProducer](../presenter-patterns.md#pattern-3-stateproducer).
+[StateProducer](../docs/presenter-patterns.md#pattern-3-stateproducer).
 
 ```kotlin
 data class InboxState(
@@ -73,5 +73,5 @@ private fun MessageRow(row: RowState, inSelectionMode: Boolean, eventSink: (Inbo
 
 **Rule of thumb:** if children need shared state, model that state in the parent.
 
-**See also:** [Presenter patterns: StateProducer](../presenter-patterns.md#pattern-3-stateproducer) ·
+**See also:** [Presenter patterns: StateProducer](../docs/presenter-patterns.md#pattern-3-stateproducer) ·
 [Embed a reusable component](reusable-component-subcircuit.md)

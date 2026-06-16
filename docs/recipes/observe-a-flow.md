@@ -53,5 +53,5 @@ val messages by rememberRetained { messageRepository.messages(id) }.collectAsSta
 Retain the *result*, not the Flow. Building a chain inside `remember` is fine because it runs once,
 but do not hold the Flow as retained state. The same applies to a `Navigator` or `Context`.
 
-**See also:** [Retention reference](../presenter.md#retention) ·
+**See also:** [Retention reference](../docs/presenter.md#retention) ·
 [Keep UI state across config change](keep-state-across-config-change.md)

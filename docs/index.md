@@ -1,7 +1,13 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
 ⚡️ Circuit
 ==========
 
-Circuit is used in production at Slack and ready for general use 🚀. The API is considered unstable as we continue to iterate on it.
+Circuit is used in production at Slack and ready for general use 🚀.
 
 ## Overview
 
@@ -41,7 +47,7 @@ This is a very simple case of a Counter screen that displays the count and has b
 
 ![image](https://user-images.githubusercontent.com/1361086/193662421-575dcaa9-4990-42e6-b265-9099a007296e.png)
 
-There’s some glue code missing from this example that's covered in the [Code Gen](https://slackhq.github.io/circuit/code-gen/) section later.
+There’s some glue code missing from this example that's covered in the [Code Gen](docs/code-gen.md) section later.
 
 ```kotlin
 @Parcelize

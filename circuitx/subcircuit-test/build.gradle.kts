@@ -16,12 +16,13 @@ kotlin {
   android {
     namespace = "com.slack.circuit.subcircuit.test"
     compileSdk = 36
+    withHostTest {}
   }
   jvm()
   iosArm64()
   iosSimulatorArm64()
   macosArm64()
-  js(IR) {
+  js {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
   }

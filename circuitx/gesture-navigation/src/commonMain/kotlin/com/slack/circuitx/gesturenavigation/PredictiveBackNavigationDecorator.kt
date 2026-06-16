@@ -17,6 +17,7 @@ import androidx.compose.ui.geometry.Offset
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
 import com.slack.circuit.runtime.InternalCircuitApi
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.navigation.navStackListOf
@@ -24,7 +25,7 @@ import kotlin.math.abs
 import kotlinx.coroutines.CancellationException
 
 internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
-  private val onBackInvoked: () -> Unit
+  private val eventListener: GestureNavigationEventListener = GestureNavigationEventListener.NoOp
 ) : AnimatedNavDecorator<T, GestureNavTransitionHolder<T>> {
 
   protected lateinit var seekableTransitionState:
@@ -42,6 +43,12 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
 
   protected var swipeOffset: Offset by mutableStateOf(Offset.Zero)
     private set
+
+  private var navigatorState by mutableStateOf<Navigator>(Navigator.NoOp)
+
+  override fun updateNavigator(navigator: Navigator) {
+    navigatorState = navigator
+  }
 
   override fun targetState(args: NavStackList<T>): GestureNavTransitionHolder<T> {
     return GestureNavTransitionHolder(args)
@@ -88,9 +95,18 @@ internal abstract class PredictiveBackNavigationDecorator<T : NavArgument>(
         showPrevious = progress != 0f
         swipeProgress = progress
         swipeOffset = offset
+        if (progress != 0f) {
+          eventListener.onBackProgress(progress)
+        }
       },
-      onBackCancelled = { resetTo(current) },
-      onBackCompleted = { onBackInvoked() },
+      onBackCancelled = {
+        resetTo(current)
+        eventListener.onBackCancelled()
+      },
+      onBackCompleted = {
+        navigatorState.pop()
+        eventListener.onBackCompleted()
+      },
     )
     return rememberTransition(seekableTransitionState, label = "PredictiveBackNavigationDecorator")
   }

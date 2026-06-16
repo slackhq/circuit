@@ -92,7 +92,7 @@ class GestureSaveableRestRootTest {
       createTestCircuit(rememberType = TestCountPresenter.RememberType.Saveable)
         .newBuilder()
         .setAnimatedNavDecoratorFactory(NavigatorDefaults.DefaultDecoratorFactory)
-        .setAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory {})
+        .setAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory())
         .build()
     setContent {
       PreviewSharedElementTransitionLayout { CircuitCompositionLocals(circuit) { content() } }

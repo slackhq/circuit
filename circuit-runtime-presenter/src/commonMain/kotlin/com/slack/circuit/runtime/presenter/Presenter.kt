@@ -33,7 +33,7 @@ public interface Presenter<UiState : CircuitUiState> {
    * ```kotlin
    * data class State(
    *   val favorites: List<Favorite>,
-   *   eventSink: (Event) -> Unit
+   *   val eventSink: (Event) -> Unit
    * ) : CircuitUiState
    *
    * class FavoritesPresenter(...) : Presenter<State, Event> {

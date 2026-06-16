@@ -34,7 +34,7 @@ kotlin {
   linuxArm64()
   linuxX64()
   mingwX64()
-  js(IR) {
+  js {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
   }

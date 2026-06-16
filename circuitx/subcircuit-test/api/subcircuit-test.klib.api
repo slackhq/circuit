@@ -1,0 +1,29 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, js, macosArm64, wasmJs]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root.circuitx:subcircuit-test>
+abstract interface <#A: com.slack.circuit.subcircuit/SubCircuitOuterEvent, #B: com.slack.circuit.subcircuit/SubCircuitUiState> com.slack.circuit.subcircuit.test/SubCircuitReceiveTurbine : app.cash.turbine/ReceiveTurbine<#B> { // com.slack.circuit.subcircuit.test/SubCircuitReceiveTurbine|null[0]
+    abstract val outerEvents // com.slack.circuit.subcircuit.test/SubCircuitReceiveTurbine.outerEvents|{}outerEvents[0]
+        abstract fun <get-outerEvents>(): com.slack.circuit.subcircuit.test/TestOuterEventSink<#A> // com.slack.circuit.subcircuit.test/SubCircuitReceiveTurbine.outerEvents.<get-outerEvents>|<get-outerEvents>(){}[0]
+
+    abstract suspend fun awaitUnchanged() // com.slack.circuit.subcircuit.test/SubCircuitReceiveTurbine.awaitUnchanged|awaitUnchanged(){}[0]
+}
+
+final class <#A: com.slack.circuit.subcircuit/SubCircuitOuterEvent> com.slack.circuit.subcircuit.test/TestOuterEventSink { // com.slack.circuit.subcircuit.test/TestOuterEventSink|null[0]
+    constructor <init>() // com.slack.circuit.subcircuit.test/TestOuterEventSink.<init>|<init>(){}[0]
+
+    final fun assertNoEvents() // com.slack.circuit.subcircuit.test/TestOuterEventSink.assertNoEvents|assertNoEvents(){}[0]
+    final fun invoke(#A) // com.slack.circuit.subcircuit.test/TestOuterEventSink.invoke|invoke(1:0){}[0]
+    final suspend fun awaitEvent(): #A // com.slack.circuit.subcircuit.test/TestOuterEventSink.awaitEvent|awaitEvent(){}[0]
+    final suspend fun cancelAndAssertEmpty() // com.slack.circuit.subcircuit.test/TestOuterEventSink.cancelAndAssertEmpty|cancelAndAssertEmpty(){}[0]
+}
+
+final val com.slack.circuit.subcircuit.test/com_slack_circuit_subcircuit_test_TestOuterEventSink$stableprop // com.slack.circuit.subcircuit.test/com_slack_circuit_subcircuit_test_TestOuterEventSink$stableprop|#static{}com_slack_circuit_subcircuit_test_TestOuterEventSink$stableprop[0]
+
+final fun com.slack.circuit.subcircuit.test/com_slack_circuit_subcircuit_test_TestOuterEventSink$stableprop_getter(): kotlin/Int // com.slack.circuit.subcircuit.test/com_slack_circuit_subcircuit_test_TestOuterEventSink$stableprop_getter|com_slack_circuit_subcircuit_test_TestOuterEventSink$stableprop_getter(){}[0]
+final suspend fun <#A: com.slack.circuit.subcircuit/SubCircuitOuterEvent, #B: com.slack.circuit.subcircuit/SubCircuitUiState> (com.slack.circuit.subcircuit/SubPresenter<#A, #B>).com.slack.circuit.subcircuit.test/test(com.slack.circuit.subcircuit.test/TestOuterEventSink<#A> = ..., kotlin.time/Duration? = ..., kotlin/String? = ..., androidx.compose.runtime/SnapshotMutationPolicy<#B> = ..., kotlin.coroutines/SuspendFunction1<com.slack.circuit.subcircuit.test/SubCircuitReceiveTurbine<#A, #B>, kotlin/Unit>) // com.slack.circuit.subcircuit.test/test|test@com.slack.circuit.subcircuit.SubPresenter<0:0,0:1>(com.slack.circuit.subcircuit.test.TestOuterEventSink<0:0>;kotlin.time.Duration?;kotlin.String?;androidx.compose.runtime.SnapshotMutationPolicy<0:1>;kotlin.coroutines.SuspendFunction1<com.slack.circuit.subcircuit.test.SubCircuitReceiveTurbine<0:0,0:1>,kotlin.Unit>){0§<com.slack.circuit.subcircuit.SubCircuitOuterEvent>;1§<com.slack.circuit.subcircuit.SubCircuitUiState>}[0]
+final suspend fun <#A: com.slack.circuit.subcircuit/SubCircuitOuterEvent, #B: com.slack.circuit.subcircuit/SubCircuitUiState> com.slack.circuit.subcircuit.test/subPresenterTestOf(kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, #B>, com.slack.circuit.subcircuit.test/TestOuterEventSink<#A> = ..., kotlin.time/Duration? = ..., kotlin/String? = ..., androidx.compose.runtime/SnapshotMutationPolicy<#B> = ..., kotlin.coroutines/SuspendFunction1<com.slack.circuit.subcircuit.test/SubCircuitReceiveTurbine<#A, #B>, kotlin/Unit>) // com.slack.circuit.subcircuit.test/subPresenterTestOf|subPresenterTestOf(kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,0:1>;com.slack.circuit.subcircuit.test.TestOuterEventSink<0:0>;kotlin.time.Duration?;kotlin.String?;androidx.compose.runtime.SnapshotMutationPolicy<0:1>;kotlin.coroutines.SuspendFunction1<com.slack.circuit.subcircuit.test.SubCircuitReceiveTurbine<0:0,0:1>,kotlin.Unit>){0§<com.slack.circuit.subcircuit.SubCircuitOuterEvent>;1§<com.slack.circuit.subcircuit.SubCircuitUiState>}[0]

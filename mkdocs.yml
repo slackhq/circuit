@@ -5,6 +5,7 @@
 site_name: Circuit
 repo_name: Circuit
 repo_url: https://github.com/slackhq/circuit
+edit_uri: edit/main/docs/
 site_description: "A Compose-driven architecture for Android apps"
 site_author: Slack
 remote_branch: gh-pages
@@ -16,6 +17,10 @@ theme:
   favicon: images/slack_logo_small.png
   logo: images/slack_logo.png
   palette:
+    - media: '(prefers-color-scheme)'
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
     - media: '(prefers-color-scheme: light)'
       scheme: default
       primary: 'white'
@@ -29,13 +34,50 @@ theme:
       accent: 'yellow'
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
+        name: Switch to system preference
   font:
     text: 'Lato'
     code: 'Fira Code'
   features:
     - content.code.copy
     - content.code.select
+    - content.action.edit
+    - content.action.view
+    - content.tabs.link
+    - navigation.tabs
+    - navigation.expand
+    - navigation.footer
+    - navigation.top
+    - search.highlight
+    - search.suggest
+
+plugins:
+  - search
+  - redirects:
+      redirect_maps:
+        setup.md: getting-started/setup.md
+        states-and-events.md: getting-started/states-and-events.md
+        tutorial.md: getting-started/tutorial.md
+        deep-linking-android.md: recipes/deep-linking-android.md
+        screen.md: docs/screen.md
+        circuit-content.md: docs/circuit-content.md
+        presenter.md: docs/presenter.md
+        presenter-patterns.md: docs/presenter-patterns.md
+        ui.md: docs/ui.md
+        navigation.md: docs/navigation.md
+        navigation-navstack-migration.md: docs/navigation-navstack-migration.md
+        overlays.md: docs/overlays.md
+        shared-elements.md: docs/shared-elements.md
+        shared-elements-tutorial.md: docs/shared-elements-tutorial.md
+        factories.md: docs/factories.md
+        code-gen.md: docs/code-gen.md
+        interop.md: docs/interop.md
+        testing.md: docs/testing.md
+
+validation:
+  links:
+    anchors: warn
+    unrecognized_links: warn
 
 markdown_extensions:
   - smarty
@@ -61,37 +103,41 @@ markdown_extensions:
   - md_in_html
 
 nav:
-  - 'Introduction': index.md
-  - 'Tutorial': tutorial.md
-  - 'Setting up Circuit': setup.md
-  - 'States and Events': states-and-events.md
-  - 'Screen': screen.md
-  - 'CircuitContent': circuit-content.md
-  - 'Navigation':
-      'Usage': navigation.md
-      'NavStack migration': navigation-navstack-migration.md
-  - 'Presenter':
-      'Overview': presenter.md
-      'Scaling Presenters': presenter-patterns.md
-  - 'Ui': ui.md
-  - 'Overlays': overlays.md
-  - 'Shared Elements':
-      'Usage': shared-elements.md
-      'Tutorial': shared-elements-tutorial.md
-  - 'Testing': testing.md
-  - 'Factories': factories.md
-  - 'Code Generation': code-gen.md
-  - 'Interop': interop.md
+  - 'Home': index.md
+  - 'Getting Started':
+      - 'Tutorial': getting-started/tutorial.md
+      - 'Setting up Circuit': getting-started/setup.md
+      - 'States and Events': getting-started/states-and-events.md
+      - 'Recipes': recipes/index.md
+  - 'Docs':
+      - 'Screen': docs/screen.md
+      - 'Presenter':
+          - 'Overview': docs/presenter.md
+          - 'Scaling Presenters': docs/presenter-patterns.md
+      - 'Ui': docs/ui.md
+      - 'CircuitContent': docs/circuit-content.md
+      - 'Factories': docs/factories.md
+      - 'Navigation':
+          - 'Usage': docs/navigation.md
+          - 'NavStack migration': docs/navigation-navstack-migration.md
+      - 'Overlays': docs/overlays.md
+      - 'Shared Elements':
+          - 'Usage': docs/shared-elements.md
+          - 'Tutorial': docs/shared-elements-tutorial.md
+      - 'Code Generation': docs/code-gen.md
+      - 'Interop': docs/interop.md
+      - 'Testing': docs/testing.md
   - 'CircuitX':
-      'About': circuitx.md
-      'Android': circuitx/android.md
-      'Effects': circuitx/effects.md
-      'Gesture Navigation': circuitx/gesture-navigation.md
-      'Navigation': circuitx/navigation.md
-      'Overlays': circuitx/overlays.md
-  - 'Deep Linking': deep-linking-android.md
-  - 'API': api/0.x/index.html
-  - 'Discussions ⏏': https://github.com/slackhq/circuit/discussions
+      - 'About': circuitx.md
+      - 'Android': circuitx/android.md
+      - 'Effects': circuitx/effects.md
+      - 'Gesture Navigation': circuitx/gesture-navigation.md
+      - 'Navigation': circuitx/navigation.md
+      - 'Overlays': circuitx/overlays.md
+      - 'SubCircuit': circuitx/subcircuit.md
   - 'Change Log': changelog.md
-  - 'Contributing': contributing.md
-  - 'CoC': code-of-conduct.md
+  - 'Contributing':
+      - 'Contributing': contributing.md
+      - 'Code of Conduct': code-of-conduct.md
+      - 'Discussions ⏏': https://github.com/slackhq/circuit/discussions
+  - 'API ⏏': api/0.x/index.html

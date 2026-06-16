@@ -60,6 +60,7 @@ apiValidation {
       "circuit-codegen",
       "coil-rule",
       "counter",
+      "inbox",
       "internal-runtime",
       "internal-test-utils",
       "interop",

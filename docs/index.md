@@ -1,7 +1,13 @@
+---
+hide:
+  - navigation
+  - toc
+---
+
 ⚡️ Circuit
 ==========
 
-Circuit is used in production at Slack and ready for general use 🚀. The API is considered unstable as we continue to iterate on it.
+Circuit is used in production at Slack and ready for general use 🚀.
 
 ## Overview
 
@@ -12,7 +18,7 @@ Circuit is a simple, lightweight, and extensible framework for building Kotlin a
     
     Jake Wharton has an excellent post about this: https://jakewharton.com/a-jetpack-compose-by-any-other-name/
 
-It builds upon core principles we already know like Presenters and UDF, and adds native support in its framework for all the other requirements we set out for above. It’s heavily influenced by Cash App’s Broadway architecture ([talked about at Droidcon NYC](https://www.droidcon.com/2022/09/29/architecture-at-scale/), also very derived from our conversations with them).
+It builds upon core principles we already know like Presenters and UDF, and adds native support in its framework for all the other requirements we set out for above. It’s heavily influenced by Cash App’s Broadway architecture ([talked about at Droidcon NYC](https://youtu.be/NAWq8VWiK5g), also very derived from our conversations with them).
 
 Circuit’s core components are its `Presenter` and `Ui` interfaces.
 
@@ -41,7 +47,7 @@ This is a very simple case of a Counter screen that displays the count and has b
 
 ![image](https://user-images.githubusercontent.com/1361086/193662421-575dcaa9-4990-42e6-b265-9099a007296e.png)
 
-There’s some glue code missing from this example that's covered in the [Code Gen](https://slackhq.github.io/circuit/code-gen/) section later.
+There’s some glue code missing from this example that's covered in the [Code Gen](docs/code-gen.md) section later.
 
 ```kotlin
 @Parcelize

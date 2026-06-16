@@ -27,10 +27,11 @@
     },
     {
       "matchDepPatterns": [
-        "^org\\.jetbrains\\.compose.*$"
+        "^org\\.jetbrains\\.compose.*$",
+        "^org\\.jetbrains\\.androidx\\.lifecycle.*$"
       ],
-      "description": "Ignore Jetbrains Compose versions with build identifiers",
-      "allowedVersions": "!/.*\\+[\\w\\d\\.]+$/"
+      "description": "Ignore Jetbrains versions with build identifiers",
+      "allowedVersions": "!/.*\\+[\\w\\d\\.\\-]+$/"
     },
     {
       "matchManagers": ["maven"],

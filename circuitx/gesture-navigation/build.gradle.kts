@@ -21,7 +21,7 @@ kotlin {
   jvm { testRuns["test"].executionTask.configure { enabled = false } }
   iosArm64()
   iosSimulatorArm64()
-  js(IR) {
+  js {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser { testTask { enabled = false } }
   }

@@ -9,7 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
@@ -18,7 +17,6 @@ import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.android.IntentScreen
-import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import com.slack.circuitx.navigation.intercepting.AndroidScreenAwareNavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.LogcatLogger
@@ -44,6 +42,7 @@ class MainActivity : AppCompatActivity() {
     val notifier = LoggingNavigatorFailureNotifier(LogcatLogger)
 
     val tabs = TabScreen.all
+    val circuit = buildCircuitForTabs(tabs)
     setContent {
       MaterialTheme {
         val navStack = rememberSaveableNavStack(tabs.first())
@@ -56,15 +55,6 @@ class MainActivity : AppCompatActivity() {
             eventListeners = eventListeners,
             notifier = notifier,
           )
-        val circuit =
-          remember(navigator) {
-            buildCircuitForTabs(tabs)
-              .newBuilder()
-              .setAnimatedNavDecoratorFactory(
-                GestureNavigationDecorationFactory(onBackInvoked = { interceptingNavigator.pop() })
-              )
-              .build()
-          }
         CircuitCompositionLocals(circuit) {
           ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
         }

@@ -1,0 +1,68 @@
+public final class com/slack/circuit/subcircuit/ComposableSingletons$SubCircuitContentKt {
+	public static final field INSTANCE Lcom/slack/circuit/subcircuit/ComposableSingletons$SubCircuitContentKt;
+	public fun <init> ()V
+	public final fun getLambda$1917787583$circuit_root_circuitx_subcircuit ()Lkotlin/jvm/functions/Function5;
+}
+
+public abstract interface annotation class com/slack/circuit/subcircuit/ExperimentalSubCircuitApi : java/lang/annotation/Annotation {
+}
+
+public final class com/slack/circuit/subcircuit/SubCircuit {
+	public static final field $stable I
+	public static final field Companion Lcom/slack/circuit/subcircuit/SubCircuit$Companion;
+	public synthetic fun <init> (Ljava/util/Set;Ljava/util/Set;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun presenter (Lcom/slack/circuit/subcircuit/SubScreen;)Lcom/slack/circuit/subcircuit/SubPresenter;
+	public final fun ui (Lcom/slack/circuit/subcircuit/SubScreen;)Lcom/slack/circuit/subcircuit/SubUi;
+}
+
+public final class com/slack/circuit/subcircuit/SubCircuit$Builder {
+	public static final field $stable I
+	public fun <init> ()V
+	public final fun addPresenterFactories (Ljava/util/Set;)Lcom/slack/circuit/subcircuit/SubCircuit$Builder;
+	public final fun addPresenterFactory (Lcom/slack/circuit/subcircuit/SubPresenterFactory;)Lcom/slack/circuit/subcircuit/SubCircuit$Builder;
+	public final fun addUiFactories (Ljava/util/Set;)Lcom/slack/circuit/subcircuit/SubCircuit$Builder;
+	public final fun addUiFactory (Lcom/slack/circuit/subcircuit/SubUiFactory;)Lcom/slack/circuit/subcircuit/SubCircuit$Builder;
+	public final fun build ()Lcom/slack/circuit/subcircuit/SubCircuit;
+}
+
+public final class com/slack/circuit/subcircuit/SubCircuit$Companion {
+	public final fun builder ()Lcom/slack/circuit/subcircuit/SubCircuit$Builder;
+}
+
+public final class com/slack/circuit/subcircuit/SubCircuitContentKt {
+	public static final fun SubCircuitContent (Lcom/slack/circuit/subcircuit/SubScreen;Lcom/slack/circuit/subcircuit/SubPresenter;Lcom/slack/circuit/subcircuit/SubUi;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Ljava/lang/Object;Landroidx/compose/runtime/Composer;II)V
+	public static final fun SubCircuitContent (Lcom/slack/circuit/subcircuit/SubScreen;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/Modifier;Lcom/slack/circuit/subcircuit/SubCircuit;Lkotlin/jvm/functions/Function5;Ljava/lang/Object;Landroidx/compose/runtime/Composer;II)V
+}
+
+public final class com/slack/circuit/subcircuit/SubCircuitKt {
+	public static final fun getLocalSubCircuit ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public abstract interface class com/slack/circuit/subcircuit/SubCircuitOuterEvent {
+}
+
+public abstract interface class com/slack/circuit/subcircuit/SubCircuitUiEvent {
+}
+
+public abstract interface class com/slack/circuit/subcircuit/SubCircuitUiState {
+}
+
+public abstract interface class com/slack/circuit/subcircuit/SubPresenter {
+	public abstract fun present (Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/subcircuit/SubCircuitUiState;
+}
+
+public abstract interface class com/slack/circuit/subcircuit/SubPresenterFactory {
+	public abstract fun create (Lcom/slack/circuit/subcircuit/SubScreen;)Lcom/slack/circuit/subcircuit/SubPresenter;
+}
+
+public abstract interface class com/slack/circuit/subcircuit/SubScreen {
+}
+
+public abstract interface class com/slack/circuit/subcircuit/SubUi {
+	public abstract fun Content (Lcom/slack/circuit/subcircuit/SubCircuitUiState;Landroidx/compose/ui/Modifier;Landroidx/compose/runtime/Composer;I)V
+}
+
+public abstract interface class com/slack/circuit/subcircuit/SubUiFactory {
+	public abstract fun create (Lcom/slack/circuit/subcircuit/SubScreen;)Lcom/slack/circuit/subcircuit/SubUi;
+}
+

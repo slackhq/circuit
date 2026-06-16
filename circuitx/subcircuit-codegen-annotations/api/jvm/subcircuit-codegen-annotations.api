@@ -1,0 +1,5 @@
+public abstract interface annotation class com/slack/circuit/subcircuit/SubCircuitInject : java/lang/annotation/Annotation {
+	public abstract fun scope ()Ljava/lang/Class;
+	public abstract fun screen ()Ljava/lang/Class;
+}
+

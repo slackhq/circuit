@@ -14,8 +14,9 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.slack.circuit.backstack.NavDecoration
+import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.runtime.ExperimentalCircuitApi
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
@@ -34,8 +35,8 @@ import kotlin.reflect.KClass
  * - The [DecoratedContent] method is called to render content by the Navigation system in Circuit,
  *   given the current navigation state.
  * - The [decoratorFactory] is called to obtain and remember an [AnimatedNavDecorator] instance.
- * - On the obtained decorator, [AnimatedNavDecorator.updateTransition] is called passing the
- *   current navigation arguments and back stack depth.
+ * - [AnimatedNavDecorator.updateNavigator] is called to provide the current [Navigator].
+ * - [AnimatedNavDecorator.updateTransition] is called passing the current navigation arguments.
  * - An [AnimatedContent] container is then created on the returned [Transition].
  * - Using the decorator and [animatedScreenTransforms], build the [AnimatedContent]
  *   `transitionSpec`. This will compare each of the available transforms and select the first one
@@ -99,13 +100,16 @@ public class AnimatedNavDecoration(
   @Composable
   public override fun <T : NavArgument> DecoratedContent(
     args: NavStackList<T>,
+    navigator: Navigator,
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {
-    val decorator = remember {
-      @Suppress("UNCHECKED_CAST")
-      decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedNavState>
-    }
+    val decorator =
+      remember {
+          @Suppress("UNCHECKED_CAST")
+          decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedNavState>
+        }
+        .apply { updateNavigator(navigator) }
     with(decorator) {
       val transition = updateTransition(args)
       transition.AnimatedContent(

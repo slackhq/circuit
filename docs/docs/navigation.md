@@ -19,7 +19,7 @@ setContent {
 !!! warning
     `SaveableNavStack` _must_ have a size of 1 or more after initialization. It's an error to have a navstack with zero items.
 
-Presenters are then given access to these navigator instances via `Presenter.Factory` (described in [Factories](https://slackhq.github.io/circuit/factories/)), which they can save if needed to perform navigation.
+Presenters are then given access to these navigator instances via `Presenter.Factory` (described in [Factories](factories.md)), which they can save if needed to perform navigation.
 
 ```kotlin
 fun showAddFavorites() {
@@ -35,7 +35,7 @@ fun showAddFavorites() {
 
 Circuit allows initializing a stack of screens in the navigator, which is useful for supporting deep linking into the application.
 
-For more details on handling deep links and manipulating the back stack, refer to the [deep linking guide](deep-linking-android.md) for Android.
+For more details on handling deep links and manipulating the back stack, refer to the [deep linking guide](../recipes/deep-linking-android.md) for Android.
 
 ## Results
 
@@ -73,7 +73,7 @@ class TakePhotoPresenter {
 Circuit automatically manages saving/restoring result states and ensuring that results are only delivered to the original receiver that requested it. If the target screen does not pop back a result, the previous screen's receiver will just never receive one.
 
 !!! note "When to use an `Overlay` vs navigating to a `Screen` with result?"
-    See this doc in [Overlays](https://slackhq.github.io/circuit/overlays/#overlay-vs-popresult)!
+    See this doc in [Overlays](overlays.md#overlay-vs-popresult)!
 
 ## Nested Navigation
 

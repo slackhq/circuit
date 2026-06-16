@@ -75,5 +75,5 @@ fun Profile(state: ProfileState, modifier: Modifier = Modifier) {
 }
 ```
 
-**See also:** [States and Events](../states-and-events.md) ·
+**See also:** [States and Events](../getting-started/states-and-events.md) ·
 [Retry a failed load](retry-a-failed-load.md) · [Pull to refresh](pull-to-refresh.md)

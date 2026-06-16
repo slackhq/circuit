@@ -61,7 +61,7 @@ fun Home(modifier: Modifier = Modifier) {
 }
 ```
 
-`HomeScreen` can be a [`StaticScreen`](../ui.md#static-ui) because the UI owns the nested navigation
+`HomeScreen` can be a [`StaticScreen`](../docs/ui.md#static-ui) because the UI owns the nested navigation
 state. A presenter returning a trivial state works too; the tab logic still stays in the UI.
 
 What this gives you:
@@ -96,6 +96,6 @@ Two presets cover the common cases:
 For anything else, construct one directly — e.g. save the outgoing stack but always start the new
 tab fresh: `StateOptions(save = true, restore = false)`.
 
-**See also:** [Navigation](../navigation.md) ·
+**See also:** [Navigation](../docs/navigation.md) ·
 [`StateOptions` API](https://slackhq.github.io/circuit/api/0.x/circuit-runtime/com.slack.circuit.runtime/-navigator/-state-options/) ·
 the [bottom-navigation sample](https://github.com/slackhq/circuit/tree/main/samples/bottom-navigation)

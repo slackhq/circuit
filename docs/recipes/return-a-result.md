@@ -64,7 +64,7 @@ treat that as "cancelled".
 If the thing you're asking for is a prompt, such as confirm or pick from a sheet, an
 [overlay](confirmation-dialog.md) is usually a better fit. It's type-safe and suspends on the
 result, though it doesn't survive process death. Full comparison in the
-[Overlays doc](../overlays.md#overlay-vs-popresult).
+[Overlays doc](../docs/overlays.md#overlay-vs-popresult).
 
-**See also:** [Navigation: results](../navigation.md#results) ·
+**See also:** [Navigation: results](../docs/navigation.md#results) ·
 [Ask for confirmation with a dialog](confirmation-dialog.md)

@@ -1,7 +1,7 @@
 Shared Elements
 ===============
 
-Circuit has an additional artifact for integrating [Compose Shared Elements Transitions](https://developer.android.com/develop/ui/compose/animation/shared-elements) with [Navigation](https://slackhq.github.io/circuit/navigation/) and [Overlays](https://slackhq.github.io/circuit/overlays/). Circuit Shared Elements are designed as a lightweight API to easily access the required `SharedTransitionScope` and `AnimatedVisibilityScope` directly in a Composable nested within a `Screen`. 
+Circuit has an additional artifact for integrating [Compose Shared Elements Transitions](https://developer.android.com/develop/ui/compose/animation/shared-elements) with [Navigation](navigation.md) and [Overlays](overlays.md). Circuit Shared Elements are designed as a lightweight API to easily access the required `SharedTransitionScope` and `AnimatedVisibilityScope` directly in a Composable nested within a `Screen`. 
 
 There are few core APIs for setting up and providing the required `SharedTransitionScope` in order use shared elements.
 
@@ -105,7 +105,7 @@ AnimatedContent(modifier = modifier, transitionSpec = transitionSpec()) { target
 }
 ```
 
-In Circuit the _Navigation_ `AnimatedScope` is setup using a `ProvideAnimatedTransitionScope`. This is done with an implementation of `NavDecoration`, `AnimatedNavDecoration`. It takes an `AnimatedNavDecorator` to customize the Screen animation without having to manually setup a `AnimatedContent` and `SharedElementTransitionScope`. An example of a custom `AnimatedNavDecorator` can be seen with the `AndroidPredictiveBackNavigationDecoration` in [`circuitx-gesture-navigation`](https://slackhq.github.io/circuit/circuitx/#gesture-navigation).
+In Circuit the _Navigation_ `AnimatedScope` is setup using a `ProvideAnimatedTransitionScope`. This is done with an implementation of `NavDecoration`, `AnimatedNavDecoration`. It takes an `AnimatedNavDecorator` to customize the Screen animation without having to manually setup a `AnimatedContent` and `SharedElementTransitionScope`. An example of a custom `AnimatedNavDecorator` can be seen with the `AndroidPredictiveBackNavigationDecoration` in [`circuitx-gesture-navigation`](../circuitx/gesture-navigation.md).
 
 
 ## Non-Circuit usage

@@ -11,7 +11,7 @@ Pagination has several moving parts:
 - an end-of-list flag
 
 Keep them in a small **presentation state holder** (the same idea as `EmailFieldState` in 
-[Scaling Presenters](../presenter-patterns.md#use-cases-separating-business-logic)). The presenter creates the holder with `rememberRetained` and drives 
+[Scaling Presenters](../docs/presenter-patterns.md#use-cases-separating-business-logic)). The presenter creates the holder with `rememberRetained` and drives 
 loading from an effect and events.
 
 ## The holder
@@ -127,5 +127,5 @@ private const val PREFETCH_DISTANCE = 5
 [`produceRetainedState`](observe-a-flow.md) instead of hand-rolling the holder above.
 
 **See also:** [Observe a Flow](observe-a-flow.md) ·
-[Scaling Presenters: state holders](../presenter-patterns.md#use-cases-separating-business-logic) ·
+[Scaling Presenters: state holders](../docs/presenter-patterns.md#use-cases-separating-business-logic) ·
 [Keep UI state across config change](keep-state-across-config-change.md)

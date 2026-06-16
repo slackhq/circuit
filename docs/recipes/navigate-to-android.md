@@ -66,5 +66,5 @@ val navigator = rememberAndroidScreenAwareNavigator(rememberCircuitNavigator(nav
     destination rewrites, use `AndroidScreenAwareNavigationInterceptor` instead. See
     [Intercept, block, or rewrite navigation](intercept-navigation.md).
 
-**See also:** [CircuitX Android](../circuitx/android.md) · [Navigation](../navigation.md) ·
+**See also:** [CircuitX Android](../circuitx/android.md) · [Navigation](../docs/navigation.md) ·
 [Intercept navigation](intercept-navigation.md)

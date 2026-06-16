@@ -4,7 +4,7 @@
 form is valid, and a submitting state.
 
 Put each field's value, error, and validation into a small **presentation state holder** (the same idea
-as `EmailFieldState` in [Scaling Presenters](../presenter-patterns.md#use-cases-separating-business-logic)).
+as `EmailFieldState` in [Scaling Presenters](../docs/presenter-patterns.md#use-cases-separating-business-logic)).
 The holder owns the Compose state and validates on every change; the presenter creates one per field
 with `rememberRetained` and reads from them.
 
@@ -124,6 +124,6 @@ The holder keeps validation close to the field value, and `canSubmit` is compute
 Adding another field is one more `rememberRetained { FieldState(...) }`. For more on where to launch
 suspend work, see [run a suspend action from an event](run-suspend-from-event.md).
 
-**See also:** [Scaling Presenters: state holders](../presenter-patterns.md#use-cases-separating-business-logic) ·
-[States and Events](../states-and-events.md) ·
+**See also:** [Scaling Presenters: state holders](../docs/presenter-patterns.md#use-cases-separating-business-logic) ·
+[States and Events](../getting-started/states-and-events.md) ·
 [Run a suspend action from an event](run-suspend-from-event.md)

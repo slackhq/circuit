@@ -86,5 +86,5 @@ fun Dashboard(state: DashboardState, modifier: Modifier = Modifier) {
 If you are reaching for `CircuitContent`'s `onNavEvent` overload to send child navigation up to the
 parent, use `SubCircuit` instead.
 
-**See also:** [SubCircuit](../circuitx/subcircuit.md) · [CircuitContent](../circuit-content.md) ·
+**See also:** [SubCircuit](../circuitx/subcircuit.md) · [CircuitContent](../docs/circuit-content.md) ·
 [Share selection state across list items](shared-selection-state.md)

@@ -11,7 +11,7 @@ interface Presenter<UiState : CircuitUiState> {
 }
 ```
 
-Presenters are solely intended to be business logic for your UI and a translation layer in front of your data layers. They are generally Dagger-injected types as the data layers they interpret are usually coming from the DI graph. In simple cases, they can be typed as a simple `@Composable` presenter function allowing Circuit [code gen](https://slackhq.github.io/circuit/code-gen/) to generate the corresponding interface and factory for you.
+Presenters are solely intended to be business logic for your UI and a translation layer in front of your data layers. They are generally Dagger-injected types as the data layers they interpret are usually coming from the DI graph. In simple cases, they can be typed as a simple `@Composable` presenter function allowing Circuit [code gen](code-gen.md) to generate the corresponding interface and factory for you.
 
 A very simple presenter can look like this:
 

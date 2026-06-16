@@ -41,6 +41,6 @@ Things to watch for:
   emission and fails if it differs from the previous one.
 
 For UI-level event assertions, render the composable with a `TestEventSink` and assert the events it
-emits — see the [testing doc](../testing.md#android-ui-instrumentation-tests).
+emits — see the [testing doc](../docs/testing.md#android-ui-instrumentation-tests).
 
-**See also:** [Testing](../testing.md) · [Test a presenter that shows an overlay](test-an-overlay.md)
+**See also:** [Testing](../docs/testing.md) · [Test a presenter that shows an overlay](test-an-overlay.md)

@@ -48,4 +48,4 @@ is ComposerEvent.Send -> uploadManager.enqueue(event.file)
 Rule of thumb: if the result still matters after the user leaves the screen, it doesn't belong on
 `rememberCoroutineScope()`.
 
-**See also:** [Pull to refresh](pull-to-refresh.md) · [Presenter](../presenter.md)
+**See also:** [Pull to refresh](pull-to-refresh.md) · [Presenter](../docs/presenter.md)

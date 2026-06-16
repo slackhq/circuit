@@ -18,7 +18,7 @@ plugins {
 kotlin {
   android {
     namespace = "com.slack.circuit.sample.inbox"
-    compileSdk = 36
+    compileSdk = 37
     withHostTest {
       isIncludeAndroidResources = true
       isReturnDefaultValues = true

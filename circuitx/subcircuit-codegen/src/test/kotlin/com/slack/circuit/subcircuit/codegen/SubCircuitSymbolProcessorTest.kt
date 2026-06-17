@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.subcircuit.codegen
 
-import com.google.common.truth.Truth.assertThat
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
@@ -11,6 +10,9 @@ import com.tschuchort.compiletesting.configureKsp
 import com.tschuchort.compiletesting.kspProcessorOptions
 import com.tschuchort.compiletesting.kspSourcesDir
 import java.io.File
+import kotlin.test.assertContains
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.intellij.lang.annotations.Language
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
@@ -25,6 +27,8 @@ class SubCircuitSymbolProcessorTest {
       """
       package com.slack.circuit.subcircuit
 
+      import androidx.compose.runtime.Composable
+      import androidx.compose.ui.Modifier
       import kotlin.reflect.KClass
 
       interface SubCircuitOuterEvent
@@ -34,15 +38,15 @@ class SubCircuitSymbolProcessorTest {
       interface SubScreen<OuterEvent : SubCircuitOuterEvent>
 
       interface SubPresenter<OuterEvent : SubCircuitOuterEvent, State : SubCircuitUiState> {
-        fun present(outerEventSink: (OuterEvent) -> Unit): State
+        @Composable fun present(outerEventSink: (OuterEvent) -> Unit): State
       }
 
       fun interface SubPresenterFactory {
         fun create(screen: SubScreen<*>): SubPresenter<*, *>?
       }
 
-      fun interface SubUi<State : SubCircuitUiState> {
-        fun Content(state: State, modifier: androidx.compose.ui.Modifier)
+      fun interface SubUi<in State : SubCircuitUiState> {
+        @Composable fun Content(state: State, modifier: Modifier)
       }
 
       fun interface SubUiFactory {
@@ -100,6 +104,155 @@ class SubCircuitSymbolProcessorTest {
         .trimIndent(),
     )
 
+  private val daggerStub =
+    kotlin(
+      "DaggerAnnotations.kt",
+      """
+      package dagger
+
+      annotation class Module
+      annotation class Binds
+      """
+        .trimIndent(),
+    )
+
+  private val daggerHiltStub =
+    kotlin(
+      "HiltAnnotations.kt",
+      """
+      package dagger.hilt
+
+      import kotlin.reflect.KClass
+
+      annotation class InstallIn(vararg val components: KClass<*>)
+      """
+        .trimIndent(),
+    )
+
+  private val daggerHiltCodegenStub =
+    kotlin(
+      "HiltCodegenAnnotations.kt",
+      """
+      package dagger.hilt.codegen
+
+      import kotlin.reflect.KClass
+
+      annotation class OriginatingElement(val topLevelClass: KClass<*>)
+      """
+        .trimIndent(),
+    )
+
+  private val daggerMultibindingsStub =
+    kotlin(
+      "MultibindingsAnnotations.kt",
+      """
+      package dagger.multibindings
+
+      annotation class IntoSet
+      """
+        .trimIndent(),
+    )
+
+  private val jakartaStub =
+    kotlin(
+      "JakartaInject.kt",
+      """
+      package jakarta.inject
+
+      annotation class Inject
+      annotation class Qualifier
+
+      interface Provider<T> {
+        fun get(): T
+      }
+      """
+        .trimIndent(),
+    )
+
+  private val javaxStub =
+    kotlin(
+      "JavaxInject.kt",
+      """
+      package javax.inject
+
+      annotation class Inject
+
+      interface Provider<T> {
+        fun get(): T
+      }
+      """
+        .trimIndent(),
+    )
+
+  private val metroStub =
+    kotlin(
+      "Metro.kt",
+      """
+      package dev.zacsweers.metro
+
+      import kotlin.reflect.KClass
+
+      annotation class Inject
+      annotation class Assisted
+      annotation class AssistedFactory
+      annotation class Origin(val value: KClass<*>)
+      annotation class ContributesIntoSet(val scope: KClass<*>)
+      """
+        .trimIndent(),
+    )
+
+  private val kotlinInjectStub =
+    kotlin(
+      "KotlinInject.kt",
+      """
+      package me.tatarka.inject.annotations
+
+      annotation class Inject
+      annotation class Assisted
+      """
+        .trimIndent(),
+    )
+
+  private val kotlinInjectAnvilStub =
+    kotlin(
+      "KotlinInjectAnvil.kt",
+      """
+      package software.amazon.lastmile.kotlin.inject.anvil
+
+      import kotlin.reflect.KClass
+
+      annotation class ContributesBinding(val scope: KClass<*>, val multibinding: Boolean = false)
+      """
+        .trimIndent(),
+    )
+
+  private val kotlinInjectAnvilOriginStub =
+    kotlin(
+      "KotlinInjectAnvilOrigin.kt",
+      """
+      package software.amazon.lastmile.kotlin.inject.anvil.internal
+
+      import kotlin.reflect.KClass
+
+      annotation class Origin(val value: KClass<*>)
+      """
+        .trimIndent(),
+    )
+
+  private val qualifierStub =
+    kotlin(
+      "Named.kt",
+      """
+      package test
+
+      import jakarta.inject.Qualifier
+
+      @Qualifier
+      annotation class MyQualifier
+      """
+        .trimIndent(),
+    )
+
   private val scopeStub =
     kotlin(
       "AppScope.kt",
@@ -119,32 +272,6 @@ class SubCircuitSymbolProcessorTest {
       import kotlin.reflect.KClass
 
       annotation class ContributesMultibinding(val scope: KClass<*>)
-      """
-        .trimIndent(),
-    )
-
-  private val metroAnnotations =
-    kotlin(
-      "MetroAnnotations.kt",
-      """
-      package dev.zacsweers.metro
-
-      annotation class Assisted
-      annotation class AssistedInject
-      annotation class AssistedFactory
-      annotation class Inject
-      """
-        .trimIndent(),
-    )
-
-  private val metroContributesAnnotations =
-    kotlin(
-      "MetroContributesAnnotations.kt",
-      """
-      package dev.zacsweers.metro
-      import kotlin.reflect.KClass
-
-      annotation class ContributesIntoSet(val scope: KClass<*>)
       """
         .trimIndent(),
     )
@@ -195,20 +322,128 @@ class SubCircuitSymbolProcessorTest {
       generatedFilePath = "test/TestPresenter_Factory_SubPresenterFactory.kt",
       expectedContent =
         """
-        // Generated by SubCircuitSymbolProcessor
         package test
 
         import com.slack.circuit.subcircuit.SubPresenter
         import com.slack.circuit.subcircuit.SubPresenterFactory
         import com.slack.circuit.subcircuit.SubScreen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class TestPresenter_Factory_SubPresenterFactory @Inject constructor(
           private val factory: TestPresenter.Factory,
         ) : SubPresenterFactory {
-          override fun create(screen: SubScreen<*>): SubPresenter<*, *>? = if (screen is TestScreen) factory.create(screen) else null
+          override fun create(screen: SubScreen<*>): SubPresenter<*, *>? = when (screen) {
+            is TestScreen -> factory.create(screen = screen)
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun presenterFactory_metro() {
+    assertGeneratedContains(
+      sourceFile =
+        kotlin(
+          "MetroPresenter.kt",
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import dev.zacsweers.metro.Inject
+          import com.slack.circuit.subcircuit.SubCircuitInject
+          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
+          import com.slack.circuit.subcircuit.SubPresenter
+          import com.slack.circuit.subcircuit.SubScreen
+
+          sealed interface TestEvent : SubCircuitOuterEvent
+
+          data class TestState(val data: String) : SubCircuitUiState
+
+          data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+          @SubCircuitInject(TestScreen::class, AppScope::class)
+          @Inject
+          class MetroPresenter : SubPresenter<TestEvent, TestState> {
+            @Composable
+            override fun present(outerEventSink: (TestEvent) -> Unit): TestState {
+              return TestState("test")
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/MetroPresenter_SubPresenterFactory.kt",
+      mode = SubCircuitCodegenMode.METRO,
+      expectedSubstrings =
+        listOf(
+          "import dev.zacsweers.metro.ContributesIntoSet",
+          "import dev.zacsweers.metro.Inject",
+          "@Inject",
+          "@ContributesIntoSet(AppScope::class)",
+          "is TestScreen -> provider()",
+        ),
+    )
+  }
+
+  @Test
+  fun presenterProviderFactory_anvil() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "PlainPresenter.kt",
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import jakarta.inject.Inject
+          import com.slack.circuit.subcircuit.SubCircuitInject
+          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
+          import com.slack.circuit.subcircuit.SubPresenter
+          import com.slack.circuit.subcircuit.SubScreen
+
+          sealed interface TestEvent : SubCircuitOuterEvent
+
+          data class TestState(val data: String) : SubCircuitUiState
+
+          data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+          @SubCircuitInject(TestScreen::class, AppScope::class)
+          class PlainPresenter @Inject constructor() : SubPresenter<TestEvent, TestState> {
+            @Composable
+            override fun present(outerEventSink: (TestEvent) -> Unit): TestState {
+              return TestState("test")
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/PlainPresenter_SubPresenterFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.subcircuit.SubPresenter
+        import com.slack.circuit.subcircuit.SubPresenterFactory
+        import com.slack.circuit.subcircuit.SubScreen
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        public class PlainPresenter_SubPresenterFactory @Inject constructor(
+          private val provider: Provider<PlainPresenter>,
+        ) : SubPresenterFactory {
+          override fun create(screen: SubScreen<*>): SubPresenter<*, *>? = when (screen) {
+            is TestScreen -> provider.get()
+            else -> null
+          }
         }
         """
           .trimIndent(),
@@ -248,90 +483,20 @@ class SubCircuitSymbolProcessorTest {
       generatedFilePath = "test/TestUi_SubUiFactory.kt",
       expectedContent =
         """
-        // Generated by SubCircuitSymbolProcessor
         package test
 
         import com.slack.circuit.subcircuit.SubScreen
         import com.slack.circuit.subcircuit.SubUi
         import com.slack.circuit.subcircuit.SubUiFactory
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class TestUi_SubUiFactory @Inject constructor() : SubUiFactory {
-          override fun create(screen: SubScreen<*>): SubUi<*>? = if (screen is TestScreen) {
-            SubUi<TestState> { state, modifier -> TestUi(state, modifier) }
-          } else {
-            null
+          override fun create(screen: SubScreen<*>): SubUi<*>? = when (screen) {
+            is TestScreen -> SubUi<TestState> { state, modifier -> TestUi(state = state, modifier = modifier) }
+            else -> null
           }
-        }
-        """
-          .trimIndent(),
-    )
-  }
-
-  @Test
-  fun presenterFactory_metro() {
-    assertGeneratedFile(
-      codegenMode = CodegenMode.METRO,
-      sourceFile =
-        kotlin(
-          "TestPresenter.kt",
-          """
-          package test
-
-          import androidx.compose.runtime.Composable
-          import dev.zacsweers.metro.Assisted
-          import dev.zacsweers.metro.AssistedFactory
-          import dev.zacsweers.metro.AssistedInject
-          import com.slack.circuit.subcircuit.SubCircuitInject
-          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
-          import com.slack.circuit.subcircuit.SubCircuitUiState
-          import com.slack.circuit.subcircuit.SubPresenter
-          import com.slack.circuit.subcircuit.SubScreen
-
-          sealed interface TestEvent : SubCircuitOuterEvent
-
-          data class TestState(val data: String) : SubCircuitUiState
-
-          data class TestScreen(val id: String) : SubScreen<TestEvent>
-
-          class TestPresenter @AssistedInject constructor(
-            @Assisted val screen: TestScreen
-          ) : SubPresenter<TestEvent, TestState> {
-
-            @Composable
-            override fun present(outerEventSink: (TestEvent) -> Unit): TestState {
-              return TestState("test")
-            }
-
-            @SubCircuitInject(TestScreen::class, AppScope::class)
-            @AssistedFactory
-            interface Factory {
-              fun create(screen: TestScreen): TestPresenter
-            }
-          }
-          """
-            .trimIndent(),
-        ),
-      generatedFilePath = "test/TestPresenter_Factory_SubPresenterFactory.kt",
-      expectedContent =
-        """
-        // Generated by SubCircuitSymbolProcessor
-        package test
-
-        import com.slack.circuit.subcircuit.SubPresenter
-        import com.slack.circuit.subcircuit.SubPresenterFactory
-        import com.slack.circuit.subcircuit.SubScreen
-        import dev.zacsweers.metro.ContributesIntoSet
-        import dev.zacsweers.metro.Inject
-
-        @Inject
-        @ContributesIntoSet(AppScope::class)
-        public class TestPresenter_Factory_SubPresenterFactory(
-          private val factory: TestPresenter.Factory,
-        ) : SubPresenterFactory {
-          override fun create(screen: SubScreen<*>): SubPresenter<*, *>? = if (screen is TestScreen) factory.create(screen) else null
         }
         """
           .trimIndent(),
@@ -341,7 +506,6 @@ class SubCircuitSymbolProcessorTest {
   @Test
   fun uiFactory_metro() {
     assertGeneratedFile(
-      codegenMode = CodegenMode.METRO,
       sourceFile =
         kotlin(
           "TestUi.kt",
@@ -370,9 +534,9 @@ class SubCircuitSymbolProcessorTest {
             .trimIndent(),
         ),
       generatedFilePath = "test/TestUi_SubUiFactory.kt",
+      mode = SubCircuitCodegenMode.METRO,
       expectedContent =
         """
-        // Generated by SubCircuitSymbolProcessor
         package test
 
         import com.slack.circuit.subcircuit.SubScreen
@@ -383,11 +547,70 @@ class SubCircuitSymbolProcessorTest {
 
         @Inject
         @ContributesIntoSet(AppScope::class)
-        public class TestUi_SubUiFactory() : SubUiFactory {
-          override fun create(screen: SubScreen<*>): SubUi<*>? = if (screen is TestScreen) {
-            SubUi<TestState> { state, modifier -> TestUi(state, modifier) }
-          } else {
-            null
+        public class TestUi_SubUiFactory : SubUiFactory {
+          override fun create(screen: SubScreen<*>): SubUi<*>? = when (screen) {
+            is TestScreen -> SubUi<TestState> { state, modifier -> TestUi(state = state, modifier = modifier) }
+            else -> null
+          }
+        }
+        """
+          .trimIndent(),
+    )
+  }
+
+  @Test
+  fun uiClassFactory_anvil() {
+    assertGeneratedFile(
+      sourceFile =
+        kotlin(
+          "TestUiClass.kt",
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import jakarta.inject.Inject
+          import com.slack.circuit.subcircuit.SubCircuitInject
+          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
+          import com.slack.circuit.subcircuit.SubScreen
+          import com.slack.circuit.subcircuit.SubUi
+
+          sealed interface TestEvent : SubCircuitOuterEvent
+
+          data class TestState(val data: String) : SubCircuitUiState
+
+          data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+          @SubCircuitInject(TestScreen::class, AppScope::class)
+          class TestUiClass @Inject constructor() : SubUi<TestState> {
+            @Composable
+            override fun Content(state: TestState, modifier: Modifier) {
+              // UI implementation
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/TestUiClass_SubUiFactory.kt",
+      expectedContent =
+        """
+        package test
+
+        import com.slack.circuit.subcircuit.SubScreen
+        import com.slack.circuit.subcircuit.SubUi
+        import com.slack.circuit.subcircuit.SubUiFactory
+        import com.squareup.anvil.annotations.ContributesMultibinding
+        import jakarta.inject.Inject
+        import jakarta.inject.Provider
+
+        @ContributesMultibinding(AppScope::class)
+        public class TestUiClass_SubUiFactory @Inject constructor(
+          private val provider: Provider<TestUiClass>,
+        ) : SubUiFactory {
+          override fun create(screen: SubScreen<*>): SubUi<*>? = when (screen) {
+            is TestScreen -> provider.get()
+            else -> null
           }
         }
         """
@@ -441,20 +664,22 @@ class SubCircuitSymbolProcessorTest {
       generatedFilePath = "test/TopLevelPresenterFactory_SubPresenterFactory.kt",
       expectedContent =
         """
-        // Generated by SubCircuitSymbolProcessor
         package test
 
         import com.slack.circuit.subcircuit.SubPresenter
         import com.slack.circuit.subcircuit.SubPresenterFactory
         import com.slack.circuit.subcircuit.SubScreen
         import com.squareup.anvil.annotations.ContributesMultibinding
-        import javax.inject.Inject
+        import jakarta.inject.Inject
 
         @ContributesMultibinding(AppScope::class)
         public class TopLevelPresenterFactory_SubPresenterFactory @Inject constructor(
           private val factory: TopLevelPresenterFactory,
         ) : SubPresenterFactory {
-          override fun create(screen: SubScreen<*>): SubPresenter<*, *>? = if (screen is TestScreen) factory.create(screen) else null
+          override fun create(screen: SubScreen<*>): SubPresenter<*, *>? = when (screen) {
+            is TestScreen -> factory.create(screen = screen)
+            else -> null
+          }
         }
         """
           .trimIndent(),
@@ -462,61 +687,257 @@ class SubCircuitSymbolProcessorTest {
   }
 
   @Test
-  fun error_nonInterface() {
-    assertProcessingError(
+  fun objectScreen_anvil() {
+    assertGeneratedContains(
       sourceFile =
         kotlin(
-          "NotAnInterface.kt",
+          "ObjectScreenUi.kt",
           """
           package test
 
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
           import com.slack.circuit.subcircuit.SubCircuitInject
           import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
           import com.slack.circuit.subcircuit.SubScreen
 
           sealed interface TestEvent : SubCircuitOuterEvent
 
-          data class TestScreen(val id: String) : SubScreen<TestEvent>
+          data class TestState(val data: String) : SubCircuitUiState
+
+          object TestScreen : SubScreen<TestEvent>
 
           @SubCircuitInject(TestScreen::class, AppScope::class)
-          class NotAnInterface
-          """
-            .trimIndent(),
-        )
-    ) { messages ->
-      assertThat(messages)
-        .contains("@SubCircuitInject on classes is only valid for @AssistedFactory interfaces")
-    }
-  }
-
-  @Test
-  fun error_missingAssistedFactory() {
-    assertProcessingError(
-      sourceFile =
-        kotlin(
-          "NotAssistedFactory.kt",
-          """
-          package test
-
-          import com.slack.circuit.subcircuit.SubCircuitInject
-          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
-          import com.slack.circuit.subcircuit.SubScreen
-
-          sealed interface TestEvent : SubCircuitOuterEvent
-
-          data class TestScreen(val id: String) : SubScreen<TestEvent>
-
-          @SubCircuitInject(TestScreen::class, AppScope::class)
-          interface NotAssistedFactory {
-            fun create(): String
+          @Composable
+          fun ObjectScreenUi(state: TestState, modifier: Modifier = Modifier) {
+            // UI implementation
           }
           """
             .trimIndent(),
-        )
-    ) { messages ->
-      assertThat(messages)
-        .contains("@SubCircuitInject must be combined with @AssistedFactory on factory interfaces")
-    }
+        ),
+      generatedFilePath = "test/ObjectScreenUi_SubUiFactory.kt",
+      mode = SubCircuitCodegenMode.ANVIL,
+      expectedSubstrings = listOf("TestScreen -> SubUi<TestState>"),
+      unexpectedSubstrings = listOf("is TestScreen ->"),
+    )
+  }
+
+  @Test
+  fun useJavaxOnly_anvil() {
+    assertGeneratedContains(
+      sourceFile =
+        kotlin(
+          "JavaxUi.kt",
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import androidx.compose.ui.Modifier
+          import com.slack.circuit.subcircuit.SubCircuitInject
+          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
+          import com.slack.circuit.subcircuit.SubScreen
+
+          sealed interface TestEvent : SubCircuitOuterEvent
+
+          data class TestState(val data: String) : SubCircuitUiState
+
+          data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+          @SubCircuitInject(TestScreen::class, AppScope::class)
+          @Composable
+          fun JavaxUi(state: TestState, modifier: Modifier = Modifier) {
+            // UI implementation
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/JavaxUi_SubUiFactory.kt",
+      mode = SubCircuitCodegenMode.ANVIL,
+      processorOptions = mapOf(SubCircuitOptions.USE_JAVAX_ONLY to "true"),
+      expectedSubstrings = listOf("import javax.inject.Inject"),
+      unexpectedSubstrings = listOf("import jakarta.inject.Inject"),
+    )
+  }
+
+  @Test
+  fun lenient_matchesBySimpleName() {
+    // With lenient matching on, the dagger.assisted.AssistedFactory annotation is matched purely by
+    // simple name, so an unrelated AssistedFactory annotation still triggers generation.
+    assertGeneratedContains(
+      sourceFile =
+        kotlin(
+          "LenientPresenter.kt",
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import dagger.assisted.AssistedFactory
+          import com.slack.circuit.subcircuit.SubCircuitInject
+          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
+          import com.slack.circuit.subcircuit.SubPresenter
+          import com.slack.circuit.subcircuit.SubScreen
+
+          sealed interface TestEvent : SubCircuitOuterEvent
+
+          data class TestState(val data: String) : SubCircuitUiState
+
+          data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+          class LenientPresenter : SubPresenter<TestEvent, TestState> {
+            @Composable
+            override fun present(outerEventSink: (TestEvent) -> Unit): TestState {
+              return TestState("test")
+            }
+
+            @SubCircuitInject(TestScreen::class, AppScope::class)
+            @AssistedFactory
+            interface Factory {
+              fun create(screen: TestScreen): LenientPresenter
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/LenientPresenter_Factory_SubPresenterFactory.kt",
+      mode = SubCircuitCodegenMode.ANVIL,
+      processorOptions = mapOf(SubCircuitOptions.LENIENT to "true"),
+      expectedSubstrings = listOf("is TestScreen -> factory.create(screen = screen)"),
+    )
+  }
+
+  @Test
+  fun qualifierPropagation_anvil() {
+    assertGeneratedContains(
+      sourceFile =
+        kotlin(
+          "QualifiedPresenter.kt",
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import jakarta.inject.Inject
+          import com.slack.circuit.subcircuit.SubCircuitInject
+          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
+          import com.slack.circuit.subcircuit.SubPresenter
+          import com.slack.circuit.subcircuit.SubScreen
+
+          sealed interface TestEvent : SubCircuitOuterEvent
+
+          data class TestState(val data: String) : SubCircuitUiState
+
+          data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+          @MyQualifier
+          @SubCircuitInject(TestScreen::class, AppScope::class)
+          class QualifiedPresenter @Inject constructor() : SubPresenter<TestEvent, TestState> {
+            @Composable
+            override fun present(outerEventSink: (TestEvent) -> Unit): TestState {
+              return TestState("test")
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/QualifiedPresenter_SubPresenterFactory.kt",
+      mode = SubCircuitCodegenMode.ANVIL,
+      expectedSubstrings = listOf("@MyQualifier"),
+    )
+  }
+
+  @Test
+  fun hiltModule_presenter() {
+    assertGeneratedContains(
+      sourceFile =
+        kotlin(
+          "HiltPresenter.kt",
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import jakarta.inject.Inject
+          import com.slack.circuit.subcircuit.SubCircuitInject
+          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
+          import com.slack.circuit.subcircuit.SubPresenter
+          import com.slack.circuit.subcircuit.SubScreen
+
+          sealed interface TestEvent : SubCircuitOuterEvent
+
+          data class TestState(val data: String) : SubCircuitUiState
+
+          data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+          @SubCircuitInject(TestScreen::class, AppScope::class)
+          class HiltPresenter @Inject constructor() : SubPresenter<TestEvent, TestState> {
+            @Composable
+            override fun present(outerEventSink: (TestEvent) -> Unit): TestState {
+              return TestState("test")
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/HiltPresenter_SubPresenterFactoryModule.kt",
+      mode = SubCircuitCodegenMode.HILT,
+      expectedSubstrings =
+        listOf(
+          "@Module",
+          "@InstallIn(AppScope::class)",
+          "@Binds",
+          "@IntoSet",
+          ": SubPresenterFactory",
+        ),
+    )
+  }
+
+  @Test
+  fun kotlinInjectAnvil_presenter() {
+    assertGeneratedContains(
+      sourceFile =
+        kotlin(
+          "KiPresenter.kt",
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import me.tatarka.inject.annotations.Inject
+          import com.slack.circuit.subcircuit.SubCircuitInject
+          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
+          import com.slack.circuit.subcircuit.SubPresenter
+          import com.slack.circuit.subcircuit.SubScreen
+
+          sealed interface TestEvent : SubCircuitOuterEvent
+
+          data class TestState(val data: String) : SubCircuitUiState
+
+          data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+          @SubCircuitInject(TestScreen::class, AppScope::class)
+          @Inject
+          class KiPresenter : SubPresenter<TestEvent, TestState> {
+            @Composable
+            override fun present(outerEventSink: (TestEvent) -> Unit): TestState {
+              return TestState("test")
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/KiPresenter_SubPresenterFactory.kt",
+      mode = SubCircuitCodegenMode.KOTLIN_INJECT_ANVIL,
+      expectedSubstrings =
+        listOf(
+          "import me.tatarka.inject.annotations.Inject",
+          "multibinding = true",
+          "() -> KiPresenter",
+          "is TestScreen -> provider()",
+        ),
+    )
   }
 
   @Test
@@ -547,40 +968,41 @@ class SubCircuitSymbolProcessorTest {
             .trimIndent(),
         )
     ) { messages ->
-      assertThat(messages)
-        .contains("@SubCircuitInject on functions is only valid for @Composable functions")
+      assertContains(messages, "SubUi composable functions must have a Modifier parameter!")
     }
   }
 
   @Test
-  fun error_missingStateParameter() {
+  fun error_missingModifierParameter() {
     assertProcessingError(
       sourceFile =
         kotlin(
-          "NoStateParameter.kt",
+          "NoModifier.kt",
           """
           package test
 
           import androidx.compose.runtime.Composable
           import com.slack.circuit.subcircuit.SubCircuitInject
           import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
           import com.slack.circuit.subcircuit.SubScreen
 
           sealed interface TestEvent : SubCircuitOuterEvent
+
+          data class TestState(val data: String) : SubCircuitUiState
 
           data class TestScreen(val id: String) : SubScreen<TestEvent>
 
           @SubCircuitInject(TestScreen::class, AppScope::class)
           @Composable
-          fun NoStateParameter() {
-            // Missing state parameter
+          fun NoModifier(state: TestState) {
+            // Missing modifier parameter
           }
           """
             .trimIndent(),
         )
     ) { messages ->
-      assertThat(messages)
-        .contains("@SubCircuitInject UI functions must have at least a state parameter")
+      assertContains(messages, "SubUi composable functions must have a Modifier parameter!")
     }
   }
 
@@ -613,7 +1035,48 @@ class SubCircuitSymbolProcessorTest {
             .trimIndent(),
         )
     ) { messages ->
-      assertThat(messages).contains("must implement SubPresenter")
+      assertContains(messages, "Factory must be for a SubUi or SubPresenter class")
+    }
+  }
+
+  @Test
+  fun error_privateClass() {
+    assertProcessingError(
+      sourceFile =
+        kotlin(
+          "PrivatePresenter.kt",
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import jakarta.inject.Inject
+          import com.slack.circuit.subcircuit.SubCircuitInject
+          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
+          import com.slack.circuit.subcircuit.SubPresenter
+          import com.slack.circuit.subcircuit.SubScreen
+
+          sealed interface TestEvent : SubCircuitOuterEvent
+
+          data class TestState(val data: String) : SubCircuitUiState
+
+          data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+          @SubCircuitInject(TestScreen::class, AppScope::class)
+          private class PrivatePresenter @Inject constructor() : SubPresenter<TestEvent, TestState> {
+            @Composable
+            override fun present(outerEventSink: (TestEvent) -> Unit): TestState {
+              return TestState("test")
+            }
+          }
+          """
+            .trimIndent(),
+        )
+    ) { messages ->
+      assertContains(
+        messages,
+        "SubCircuitInject is not applicable to private or local functions and classes.",
+      )
     }
   }
 
@@ -621,49 +1084,96 @@ class SubCircuitSymbolProcessorTest {
     sourceFile: SourceFile,
     generatedFilePath: String,
     @Language("kotlin") expectedContent: String,
-    codegenMode: CodegenMode = CodegenMode.ANVIL,
+    mode: SubCircuitCodegenMode = SubCircuitCodegenMode.ANVIL,
   ) {
-    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
+    val compilation = prepareCompilation(sourceFile, mode = mode)
     val result = compilation.compile()
-    assertThat(result.exitCode).isEqualTo(ExitCode.OK)
+    assertEquals(ExitCode.OK, result.exitCode, result.messages)
+    val generatedFile = generatedFile(compilation, generatedFilePath, result.messages)
+    assertEquals(expectedContent, generatedFile.readText().trim())
+  }
+
+  private fun assertGeneratedContains(
+    sourceFile: SourceFile,
+    generatedFilePath: String,
+    mode: SubCircuitCodegenMode,
+    expectedSubstrings: List<String>,
+    unexpectedSubstrings: List<String> = emptyList(),
+    processorOptions: Map<String, String> = emptyMap(),
+  ) {
+    val compilation =
+      prepareCompilation(sourceFile, mode = mode, processorOptions = processorOptions)
+    val result = compilation.compile()
+    assertEquals(ExitCode.OK, result.exitCode, result.messages)
+    val content = generatedFile(compilation, generatedFilePath, result.messages).readText()
+    for (substring in expectedSubstrings) {
+      assertContains(
+        content,
+        substring,
+        message = "Expected generated file to contain:\n$substring\n\n$content",
+      )
+    }
+    for (substring in unexpectedSubstrings) {
+      assertTrue(
+        !content.contains(substring),
+        "Expected generated file NOT to contain:\n$substring\n\n$content",
+      )
+    }
+  }
+
+  private fun generatedFile(
+    compilation: KotlinCompilation,
+    generatedFilePath: String,
+    messages: String,
+  ): File {
     val generatedSourcesDir = compilation.kspSourcesDir
     val generatedFile = File(generatedSourcesDir, "kotlin/$generatedFilePath")
     if (!generatedFile.exists()) {
-      throw AssertionError("No generated file found at path $generatedFilePath\n${result.messages}")
+      throw AssertionError("No generated file found at path $generatedFilePath\n$messages")
     }
-    assertThat(generatedFile.readText().trim()).isEqualTo(expectedContent)
+    return generatedFile
   }
 
-  private fun assertProcessingError(
-    sourceFile: SourceFile,
-    codegenMode: CodegenMode = CodegenMode.ANVIL,
-    body: (messages: String) -> Unit,
-  ) {
-    val compilation = prepareCompilation(sourceFile, codegenMode = codegenMode)
+  private fun assertProcessingError(sourceFile: SourceFile, body: (messages: String) -> Unit) {
+    val compilation = prepareCompilation(sourceFile)
     val result = compilation.compile()
-    assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
+    assertEquals(ExitCode.COMPILATION_ERROR, result.exitCode, result.messages)
     body(result.messages)
   }
 
   private fun prepareCompilation(
     vararg sourceFiles: SourceFile,
-    codegenMode: CodegenMode = CodegenMode.ANVIL,
+    mode: SubCircuitCodegenMode = SubCircuitCodegenMode.ANVIL,
+    processorOptions: Map<String, String> = emptyMap(),
   ): KotlinCompilation =
     KotlinCompilation().apply {
       jvmTarget = "11"
-      val diStubs =
-        when (codegenMode) {
-          CodegenMode.ANVIL -> listOf(assistedAnnotationsStub, anvilAnnotations)
-          CodegenMode.METRO -> listOf(metroAnnotations, metroContributesAnnotations)
-        }
       sources =
         sourceFiles.toList() +
-          listOf(subCircuitStubs, composableStub, modifierStub, scopeStub) +
-          diStubs
+          listOf(
+            subCircuitStubs,
+            composableStub,
+            modifierStub,
+            assistedAnnotationsStub,
+            daggerStub,
+            daggerHiltStub,
+            daggerHiltCodegenStub,
+            daggerMultibindingsStub,
+            jakartaStub,
+            javaxStub,
+            metroStub,
+            kotlinInjectStub,
+            kotlinInjectAnvilStub,
+            kotlinInjectAnvilOriginStub,
+            qualifierStub,
+            scopeStub,
+            anvilAnnotations,
+          )
       inheritClassPath = true
       configureKsp {
-        kspProcessorOptions += "subcircuit.codegen.mode" to codegenMode.name
-        symbolProcessorProviders += SubCircuitSymbolProcessor.Provider()
+        kspProcessorOptions += SubCircuitOptions.MODE to mode.name
+        kspProcessorOptions += processorOptions
+        symbolProcessorProviders += SubCircuitSymbolProcessorProvider()
       }
     }
 }

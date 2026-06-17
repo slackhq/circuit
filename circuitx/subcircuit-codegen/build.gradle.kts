@@ -10,6 +10,8 @@ plugins {
 dependencies {
   compileOnly(libs.ksp.api)
   compileOnly(libs.anvil.annotations)
+  compileOnly(libs.kotlinInject.runtime)
+  compileOnly(libs.kotlinInject.anvil.runtime)
   ksp(libs.autoService.ksp)
   implementation(libs.autoService.annotations)
   implementation(libs.dagger)
@@ -20,9 +22,10 @@ dependencies {
   testImplementation(libs.kct)
   testImplementation(libs.kct.ksp)
   testImplementation(libs.kotlin.compilerEmbeddable)
+  testImplementation(libs.kotlin.test)
   testImplementation(libs.ksp)
   testImplementation(libs.ksp.api)
-  testImplementation(libs.truth)
+  testImplementation(libs.metro)
   testImplementation(projects.circuitx.subcircuitCodegenAnnotations)
   testImplementation(projects.circuitx.subcircuit)
 }

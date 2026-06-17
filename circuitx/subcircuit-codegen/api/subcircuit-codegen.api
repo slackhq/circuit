@@ -1,17 +1,4 @@
-public final class com/slack/circuit/subcircuit/codegen/CodegenMode : java/lang/Enum {
-	public static final field ANVIL Lcom/slack/circuit/subcircuit/codegen/CodegenMode;
-	public static final field METRO Lcom/slack/circuit/subcircuit/codegen/CodegenMode;
-	public static fun getEntries ()Lkotlin/enums/EnumEntries;
-	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuit/subcircuit/codegen/CodegenMode;
-	public static fun values ()[Lcom/slack/circuit/subcircuit/codegen/CodegenMode;
-}
-
-public final class com/slack/circuit/subcircuit/codegen/SubCircuitSymbolProcessor : com/google/devtools/ksp/processing/SymbolProcessor {
-	public fun <init> (Lcom/google/devtools/ksp/processing/SymbolProcessorEnvironment;)V
-	public fun process (Lcom/google/devtools/ksp/processing/Resolver;)Ljava/util/List;
-}
-
-public final class com/slack/circuit/subcircuit/codegen/SubCircuitSymbolProcessor$Provider : com/google/devtools/ksp/processing/SymbolProcessorProvider {
+public final class com/slack/circuit/subcircuit/codegen/SubCircuitSymbolProcessorProvider : com/google/devtools/ksp/processing/SymbolProcessorProvider {
 	public fun <init> ()V
 	public fun create (Lcom/google/devtools/ksp/processing/SymbolProcessorEnvironment;)Lcom/google/devtools/ksp/processing/SymbolProcessor;
 }

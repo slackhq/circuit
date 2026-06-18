@@ -4,6 +4,7 @@ package com.slack.circuit.sample.navigation
 
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
+import com.slack.circuitx.gesturenavigation.SlideOverNavDecoratorFactory
 
 fun buildCircuitForTabs(tabs: Collection<TabScreen>): Circuit {
   return Circuit.Builder()
@@ -13,6 +14,6 @@ fun buildCircuitForTabs(tabs: Collection<TabScreen>): Circuit {
         addUiFactory(TabUiFactory(tab::class))
       }
     }
-    .setAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory())
+    .setAnimatedNavDecoratorFactory(SlideOverNavDecoratorFactory())
     .build()
 }

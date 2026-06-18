@@ -77,7 +77,7 @@ private val CancelSpec = tween<Float>(durationMillis = 80, easing = LinearEasing
  *
  * @param scrimColor The color to use for the scrim overlay during gestures
  */
-class SlideOverNavDecoratorFactory(private val scrimColor: Color = Color.Black) :
+public class SlideOverNavDecoratorFactory(private val scrimColor: Color = Color.Black) :
   AnimatedNavDecorator.Factory {
   override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> =
     SlideOverNavDecorator(scrimColor = scrimColor)
@@ -91,7 +91,7 @@ class SlideOverNavDecoratorFactory(private val scrimColor: Color = Color.Black) 
  * modifying the real stack.
  */
 @Immutable
-class SlideOverTransitionState<T : NavArgument>(
+private class SlideOverTransitionState<T : NavArgument>(
   override val navStack: NavStackList<T>,
   val previous: SlideOverTransitionState<T>? = null,
   val next: SlideOverTransitionState<T>? = null,

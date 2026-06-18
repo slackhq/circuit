@@ -4,6 +4,14 @@ Changelog
 Unreleased
 ----------
 
+### Fixed
+
+- **SubCircuit:** Fix `subcircuit-codegen` Metro mode (`subcircuit.codegen.mode=metro`). It previously
+  required Dagger's `@AssistedFactory` even in Metro mode, generated `@javax.inject.Inject` instead of
+  Metro's `@Inject`, and referenced `dev.zacsweers.metro.annotations.ContributesIntoSet` (wrong package).
+  Metro mode now accepts `dev.zacsweers.metro.AssistedFactory` and emits `dev.zacsweers.metro.Inject` +
+  `dev.zacsweers.metro.ContributesIntoSet`, so generated factories compile against Metro.
+
 0.34.0
 ------
 

@@ -30,6 +30,7 @@ import com.squareup.kotlinpoet.ksp.writeTo
 
 private const val SUB_CIRCUIT_INJECT_FQNAME = "com.slack.circuit.subcircuit.SubCircuitInject"
 private const val ASSISTED_FACTORY_FQNAME = "dagger.assisted.AssistedFactory"
+private const val METRO_ASSISTED_FACTORY_FQNAME = "dev.zacsweers.metro.AssistedFactory"
 private const val OPTION_CODEGEN_MODE = "subcircuit.codegen.mode"
 
 private val SUB_PRESENTER_FACTORY_CN =
@@ -43,10 +44,10 @@ private val COMPOSABLE_CN = ClassName("androidx.compose.runtime", "Composable")
 private val CONTRIBUTES_MULTIBINDING_CN =
   ClassName("com.squareup.anvil.annotations", "ContributesMultibinding")
 
-private val METRO_CONTRIBUTES_INTO_SET_CN =
-  ClassName("dev.zacsweers.metro.annotations", "ContributesIntoSet")
+private val METRO_CONTRIBUTES_INTO_SET_CN = ClassName("dev.zacsweers.metro", "ContributesIntoSet")
 
 private val INJECT_CN = ClassName("javax.inject", "Inject")
+private val METRO_INJECT_CN = ClassName("dev.zacsweers.metro", "Inject")
 
 /** Codegen mode for dependency injection framework support. */
 public enum class CodegenMode {
@@ -134,7 +135,12 @@ public class SubCircuitSymbolProcessor(private val env: SymbolProcessorEnvironme
       return
     }
 
-    if (!classDecl.hasAnnotation(ASSISTED_FACTORY_FQNAME)) {
+    val assistedFactoryFqName =
+      when (codegenMode) {
+        CodegenMode.ANVIL -> ASSISTED_FACTORY_FQNAME
+        CodegenMode.METRO -> METRO_ASSISTED_FACTORY_FQNAME
+      }
+    if (!classDecl.hasAnnotation(assistedFactoryFqName)) {
       env.logger.error(
         "@SubCircuitInject must be combined with @AssistedFactory on factory interfaces",
         classDecl,
@@ -266,7 +272,7 @@ public class SubCircuitSymbolProcessor(private val env: SymbolProcessorEnvironme
     scopeClassName: ClassName,
   ): TypeSpec.Builder =
     TypeSpec.classBuilder(generatedClassName)
-      .addAnnotation(INJECT_CN)
+      .addAnnotation(METRO_INJECT_CN)
       .addAnnotation(
         AnnotationSpec.builder(METRO_CONTRIBUTES_INTO_SET_CN)
           .addMember("%T::class", scopeClassName)
@@ -389,7 +395,7 @@ public class SubCircuitSymbolProcessor(private val env: SymbolProcessorEnvironme
     scopeClassName: ClassName,
   ): TypeSpec.Builder =
     TypeSpec.classBuilder(generatedClassName)
-      .addAnnotation(INJECT_CN)
+      .addAnnotation(METRO_INJECT_CN)
       .addAnnotation(
         AnnotationSpec.builder(METRO_CONTRIBUTES_INTO_SET_CN)
           .addMember("%T::class", scopeClassName)

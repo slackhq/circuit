@@ -37,7 +37,11 @@ class MainActivity : AppCompatActivity() {
 
     // CircuitX Navigation
     val interceptors =
-      listOf(AndroidScreenAwareNavigationInterceptor(this), InfoScreenRewriteInterceptor, SlideOverNavigationInterceptor)
+      listOf(
+        AndroidScreenAwareNavigationInterceptor(this),
+        InfoScreenRewriteInterceptor,
+        SlideOverNavigationInterceptor(),
+      )
     val eventListeners = listOf(LoggingNavigationEventListener(LogcatLogger))
     val notifier = LoggingNavigatorFailureNotifier(LogcatLogger)
 

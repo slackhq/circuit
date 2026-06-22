@@ -57,17 +57,26 @@ import kotlin.math.abs
 
 // Fraction of the screen that the background screen is offset during transitions.
 private const val EnterOffsetFraction = 0.25f
-// Duration for child animations. Uses LinearEasing so seekTo() maps 1:1.
-// The parent animateTo() spec provides easing for programmatic navigation.
+// Duration for child animations. Uses LinearEasing so a gesture's seekTo() fraction maps 1:1 to
+// the visual offset. Programmatic navigation animates via animateTo() with no spec, which traverses
+// the transition linearly over this same duration.
 private const val TransitionDurationMs = 300
 // Maximum alpha for the scrim overlay (0.32 = 32% opacity black)
 private const val ScrimMaxAlpha = 0.32f
 private val TransitionSpec = tween<Float>(TransitionDurationMs, easing = LinearEasing)
 
 /**
- * iOS-style slide-over navigation decorator with a unified animation system.
+ * iOS-style slide-over navigation decorator.
  *
- * All visual effects (slide offset, scrim) are driven by [SeekableTransitionState]
+ * The top screen slides in over a dimmed background screen. All visual effects (slide offset,
+ * scrim) are driven by a single [SeekableTransitionState]: gestures seek it directly via an
+ * [AnchoredDraggableState], while programmatic navigation animates it. Adjacent screens are
+ * precomposed ahead of time so swipes stay smooth (see [PreloadTargetStateLayout]).
+ *
+ * @param canGoForward whether a forward swipe is allowed for the given stack. Defaults to true when
+ *   forward history exists.
+ * @param canGoBackward whether a backward swipe is allowed for the given stack. Defaults to true
+ *   when backward history exists.
  */
 public class SlideOverNavDecoration(
   private val canGoForward: (NavStackList<out NavArgument>) -> Boolean = { it.forwardItems.any() },
@@ -88,8 +97,9 @@ public class SlideOverNavDecoration(
     val transition = rememberTransition(seekableTransitionState, label = "SlideOverNavDecoration")
     val anchoredState = remember(args) { AnchoredDraggableState(SlideOverAnchor.Center) }
 
-    val canGoBackward = canGoBackward(args)
-    val canGoForward = canGoForward(args)
+    // NavStack states
+    val canGoBackward = remember(args) { canGoBackward(args) }
+    val canGoForward = remember(args) { canGoForward(args) }
     val previousNavStackList = rememberPrevious(args)
     val nextNavStackList = rememberNext(args)
 
@@ -101,9 +111,12 @@ public class SlideOverNavDecoration(
     // Reset for the current active screen
     LaunchedEffect(args) {
       seekableTransitionState.animateTo(args)
+    }
+
+    LaunchedEffect(args) {
       snapshotFlow { anchoredState.settledValue }
-        .collect {
-          when (it) {
+        .collect { anchor ->
+          when (anchor) {
             SlideOverAnchor.Start -> navigator.forward()
             SlideOverAnchor.Center -> Unit
             SlideOverAnchor.End -> navigator.backward()
@@ -116,7 +129,7 @@ public class SlideOverNavDecoration(
           anchoredState.progress(SlideOverAnchor.Center, SlideOverAnchor.End)
         }
         .collect { progress ->
-          if (progress != 0f) {
+          if (progress != 0f && !anchoredState.offset.isNaN()) {
             seekableTransitionState.seekToNav(progress, previousNavStackList)
           }
         }
@@ -127,7 +140,7 @@ public class SlideOverNavDecoration(
           anchoredState.progress(SlideOverAnchor.Center, SlideOverAnchor.Start)
         }
         .collect { progress ->
-          if (progress != 0f) {
+          if (progress != 0f && !anchoredState.offset.isNaN()) {
             seekableTransitionState.seekToNav(progress, nextNavStackList)
           }
         }
@@ -253,7 +266,7 @@ private fun <T : NavArgument> Transition<NavStackList<T>>.SlideContent(
   val slideOffset =
     animateFloat(
       label = "slideOffset",
-      transitionSpec = { tween(TransitionDurationMs, easing = LinearEasing) },
+      transitionSpec = { TransitionSpec },
     ) { state ->
       if (state.active == topScreen) 0f else 1f
     }

@@ -95,7 +95,7 @@ androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.4.1"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.7.0"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.3.0"
 androidx-test-monitor = "androidx.test:monitor:1.8.0"
-androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.3.0"
+androidx-test-uiautomator = "androidx.test.uiautomator:uiautomator:2.4.0"
 
 anvil-annotations = { module = "dev.zacsweers.anvil:annotations", version.ref = "anvil" }
 anvil-annotations-optional = { module = "dev.zacsweers.anvil:annotations-optional", version.ref = "anvil" }

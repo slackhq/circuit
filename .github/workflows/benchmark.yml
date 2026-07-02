@@ -24,7 +24,7 @@ jobs:
       AVD_ARCH: 'x86'
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           lfs: 'true'
 
@@ -45,7 +45,7 @@ jobs:
         run: ./gradlew :samples:star:apk:assembleBenchmarkRelease :samples:star:benchmark:compileBenchmarkReleaseSources
 
       - name: AVD cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: avd-cache
         with:
           path: |

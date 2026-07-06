@@ -29,7 +29,7 @@ import androidx.compose.runtime.Immutable
  * }
  * ```
  */
-@Immutable public expect interface Screen
+@Immutable public expect interface Screen : CircuitSaveable
 
 /**
  * A marker interface that indicates that this [Screen] only ever has static content and does not

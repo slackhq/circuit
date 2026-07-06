@@ -177,11 +177,78 @@ fun TeamMembersUi(state: TeamMembersState, modifier: Modifier = Modifier) {
 
 ## Code Generation
 
-SubCircuit uses KSP to generate factory classes that wire presenters and UIs into the DI graph.
+SubCircuit uses KSP to generate factory classes that wire presenters and UIs into the DI graph. It mirrors [Circuit's code gen](../docs/code-gen.md), adapted to SubCircuit's contracts (screen-only factory `create`, no `presenterOf`).
+
+Currently supported types are:
+
+- [Anvil](https://github.com/square/anvil) and [Anvil KSP](https://github.com/zacsweers/anvil)
+- [Dagger/Hilt](https://dagger.dev/hilt/)
+- [kotlin-inject](https://github.com/evant/kotlin-inject) + [kotlin-inject-anvil](https://github.com/amzn/kotlin-inject-anvil)
+- [Metro](https://github.com/ZacSweers/metro)
+
+Note that Dagger+Anvil is the default mode.
+
+If you are using another mode, you must specify the mode as a KSP arg.
+
+```kotlin
+ksp {
+  arg("subcircuit.codegen.mode", "hilt") // or "kotlin_inject_anvil", "metro"
+}
+```
+
+If using Kotlin multiplatform with typealias annotations for Dagger annotations (i.e. expect
+annotations in common with actual typealias declarations in JVM source sets), you can match on just
+annotation short names alone to support this case via `subcircuit.codegen.lenient` mode.
+
+```kotlin
+ksp {
+  arg("subcircuit.codegen.lenient", "true")
+}
+```
+
+If you need to generate `javax.inject` annotations instead of `jakarta.inject`, set
+`subcircuit.codegen.useJavaxOnly`.
+
+```kotlin
+ksp {
+  arg("subcircuit.codegen.useJavaxOnly", "true")
+}
+```
+
+If using anvil-ksp or kotlin-inject-anvil, you also need to indicate `@SubCircuitInject` as a
+contributing annotation.
+
+```kotlin
+ksp {
+  // Anvil-KSP
+  arg("anvil-ksp-extraContributingAnnotations", "com.slack.circuit.subcircuit.SubCircuitInject")
+  // kotlin-inject-anvil (requires 0.0.3+)
+  arg("kotlin-inject-anvil-contributing-annotations", "com.slack.circuit.subcircuit.SubCircuitInject")
+}
+```
 
 ### Presenter Factories
 
-Annotate your `@AssistedFactory` interface with `@SubCircuitInject`:
+`SubPresenter` classes must be injectable — either annotate the class itself with `@Inject` (for
+kotlin-inject and Metro) or annotate a constructor with `@Inject` (Dagger/Anvil/Hilt).
+
+```kotlin
+@SubCircuitInject(ProfileCardScreen::class, AppScope::class)
+class ProfileCardPresenter @Inject constructor(
+  private val userRepository: UserRepository
+) : SubPresenter<ProfileCardEvent, ProfileCardState> {
+
+  @Composable
+  override fun present(outerEventSink: (ProfileCardEvent) -> Unit): ProfileCardState {
+    // ...
+  }
+}
+```
+
+This generates a `SubPresenterFactory` implementation contributed to the DI graph via multibinding.
+
+For assisted injection (e.g. injecting the `screen`), annotate the `@AssistedFactory` interface with
+`@SubCircuitInject` instead of the enclosing class:
 
 ```kotlin
 class ProfileCardPresenter @AssistedInject constructor(
@@ -202,11 +269,35 @@ class ProfileCardPresenter @AssistedInject constructor(
 }
 ```
 
-This generates a `SubPresenterFactory` implementation contributed to the DI graph via multibinding.
+The only assisted type SubCircuit provides is the `screen`. Unlike Circuit, there's no `Navigator`
+or `CircuitContext` (navigation is delegated via `outerEventSink`).
+
+In kotlin-inject, there's no `@AssistedFactory`, so continue to annotate the class directly:
+
+```kotlin
+@Inject
+@SubCircuitInject(ProfileCardScreen::class, AppScope::class)
+class ProfileCardPresenter(
+  @Assisted val screen: ProfileCardScreen,
+  private val userRepository: UserRepository,
+) : SubPresenter<ProfileCardEvent, ProfileCardState>
+```
 
 ### UI Factories
 
-Annotate `@Composable` UI functions directly:
+`SubUi` classes can be annotated the same way as presenters — annotate an injectable class:
+
+```kotlin
+@SubCircuitInject(ProfileCardScreen::class, AppScope::class)
+class ProfileCardUi @Inject constructor() : SubUi<ProfileCardState> {
+  @Composable
+  override fun Content(state: ProfileCardState, modifier: Modifier) {
+    // ...
+  }
+}
+```
+
+Or annotate `@Composable` UI functions directly:
 
 ```kotlin
 @SubCircuitInject(ProfileCardScreen::class, AppScope::class)
@@ -216,23 +307,52 @@ fun ProfileCardUi(state: ProfileCardState, modifier: Modifier = Modifier) {
 }
 ```
 
-Requirements:
+Requirements for UI functions:
 
 - Function must be `@Composable`
-- First parameter must implement `SubCircuitUiState`
-- Second parameter should be `modifier: Modifier`
+- A `SubCircuitUiState` parameter is optional (omit it for static UI)
+- A `modifier: Modifier` parameter is required
+
+Unlike Circuit, function-based `SubPresenter`s are not supported. There's no `presenterOf` equivalent
+in the runtime and `SubPresenter` isn't a `fun interface`, so presenters must be classes.
+
+### Function-based injected dependencies
+
+UI functions can accept injected dependencies directly as parameters. Any parameter that isn't a
+SubCircuit-provided type (the state or `Modifier`) is treated as an injected dependency: the
+generated factory accepts it as a provider (`Provider<T>` for Dagger/Anvil/Hilt, `() -> T` for
+kotlin-inject and Metro) and invokes it once at `create()` time _outside_ the `SubUi { }` block (so
+the provider isn't re-invoked on every recomposition).
+
+Parameters that are already an indirect reference (`Provider<T>` (any flavor) or `Lazy<T>` (Dagger or
+Kotlin)) are passed through as-is. In `metro` and `kotlin_inject_anvil` modes, `() -> T` is also
+passed through; in Dagger/Anvil/Hilt modes it's wrapped in `Provider<() -> T>` like any other type.
+
+### Qualifier propagation
+
+Qualifier annotations (any annotation meta-annotated with `@Qualifier` like `javax.inject.Qualifier`,
+`dev.zacsweers.metro.Qualifier`, etc.) are propagated from the `@SubCircuitInject`-annotated
+declaration to the generated factory class.
 
 ### DI Modes
 
-The code generator supports two DI frameworks:
+The generated annotations differ per mode:
 
 === "Anvil (default)"
 
     Generates `@ContributesMultibinding(Scope::class)` + `@Inject`.
 
+=== "Hilt"
+
+    Set `subcircuit.codegen.mode=hilt`. Generates a `@Module`/`@InstallIn` with a `@Binds @IntoSet` provider for the factory.
+
+=== "kotlin-inject-anvil"
+
+    Set `subcircuit.codegen.mode=kotlin_inject_anvil`. Generates `@Inject` + `@ContributesBinding(Scope::class, multibinding = true)`.
+
 === "Metro"
 
-    Set `subcircuit.codegen.mode=metro` as a KSP argument. Generates `@ContributesIntoSet(Scope::class)` + `@Inject`.
+    Set `subcircuit.codegen.mode=metro`. Generates `@Inject` + `@ContributesIntoSet(Scope::class)`.
 
 ### Wiring
 

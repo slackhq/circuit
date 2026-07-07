@@ -17,6 +17,9 @@ public final class com/slack/circuit/retained/CollectRetainedKt {
 public abstract interface annotation class com/slack/circuit/retained/DelicateCircuitRetainedApi : java/lang/annotation/Annotation {
 }
 
+public abstract interface annotation class com/slack/circuit/retained/ExperimentalCircuitRetainedApi : java/lang/annotation/Annotation {
+}
+
 public final class com/slack/circuit/retained/LifecycleRetainedStateRegistry {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/slack/circuit/retained/LifecycleRetainedStateRegistry;

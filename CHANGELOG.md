@@ -4,6 +4,16 @@ Changelog
 Unreleased
 ----------
 
+### New
+
+- **circuit-retained:** Experimental opt-in interop with Compose's first-party
+  [retain](https://developer.android.com/develop/ui/compose/state-lifespans#retain) API.
+  - Setting `CircuitRetainedSettings.useFirstParty = true` (before the first composition) backs `lifecycleRetainedStateRegistry()` with a root-level `retain` call instead of a Circuit-managed `ViewModel`, delegating configuration-change survival to the `RetainedValuesStore` installed in the composition.
+  - All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged.
+  - First-party `retain {}` calls also compose correctly alongside Circuit's retention.
+  - See the [circuit-retained README](https://github.com/slackhq/circuit/tree/main/circuit-retained) for more details.
+  - **NOTE:** This is phase one of a multi-phase migration to the first-party API.
+
 ### Fixed
 
 - **SubCircuit:** Fix `subcircuit-codegen` Metro mode (`subcircuit.codegen.mode=metro`). It previously

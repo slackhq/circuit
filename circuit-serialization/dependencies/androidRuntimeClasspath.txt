@@ -27,7 +27,6 @@ androidx.versionedparcelable:versionedparcelable
 com.google.guava:listenablefuture
 org.jetbrains.androidx.savedstate:savedstate
 org.jetbrains.kotlin:kotlin-bom
-org.jetbrains.kotlin:kotlin-parcelize-runtime
 org.jetbrains.kotlin:kotlin-stdlib
 org.jetbrains.kotlinx:kotlinx-coroutines-android
 org.jetbrains.kotlinx:kotlinx-coroutines-bom

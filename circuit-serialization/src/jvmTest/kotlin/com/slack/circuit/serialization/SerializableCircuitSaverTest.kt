@@ -3,7 +3,6 @@
 package com.slack.circuit.serialization
 
 import androidx.savedstate.serialization.SavedStateConfiguration
-import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -17,15 +16,14 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-@Parcelize @Serializable data class StringScreen(val value: String) : Screen
+@Serializable data class StringScreen(val value: String) : Screen
 
-@Parcelize @Serializable data object ObjectScreen : Screen
+@Serializable data object ObjectScreen : Screen
 
-@Parcelize @Serializable data class IntPopResult(val value: Int) : PopResult
+@Serializable data class IntPopResult(val value: Int) : PopResult
 
-@Parcelize data class UnregisteredScreen(val value: String) : Screen
+data class UnregisteredScreen(val value: String) : Screen
 
-@RunWith(SavedStateTestRunner::class)
 class SerializableCircuitSaverTest {
 
   private val saver =

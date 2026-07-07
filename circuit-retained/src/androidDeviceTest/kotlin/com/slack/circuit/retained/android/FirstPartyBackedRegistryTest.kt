@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.autoSaver
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.test.core.app.ActivityScenario
@@ -17,6 +18,7 @@ import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.lifecycleRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.rememberRetainedSaveable
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.After
 import org.junit.Rule
@@ -96,6 +98,52 @@ class FirstPartyBackedRegistryTest {
     composeTestRule.runOnIdle {
       assertThat(retainedValues["value"]).isNotSameInstanceAs(original)
     }
+  }
+
+  private val counts = mutableMapOf<String, Int>()
+  private val countSetters = mutableMapOf<String, (Int) -> Unit>()
+
+  @Composable
+  private fun SaveableRetainingContent() {
+    CompositionLocalProvider(LocalRetainedStateRegistry provides lifecycleRetainedStateRegistry()) {
+      var count by
+        rememberRetainedSaveable(stateSaver = autoSaver()) {
+          androidx.compose.runtime.mutableIntStateOf(0)
+        }
+      counts["count"] = count
+      countSetters["count"] = { count = it }
+    }
+  }
+
+  /** The retained+saveable hybrid keeps working with the first-party backing. */
+  @Test
+  fun retainedSaveableSurvivesRecreation() {
+    runRetainedSaveableRecreation()
+  }
+
+  /** Control: same content under the ViewModel backing. */
+  @Test
+  fun retainedSaveableSurvivesRecreationWithViewModelBacking() {
+    CircuitRetainedSettings.useFirstParty = false
+    runRetainedSaveableRecreation()
+  }
+
+  private fun runRetainedSaveableRecreation() {
+    // Content must be set from a single source location; positional retained/saveable keys are
+    // derived from the content lambda's source position.
+    fun setSaveableContent() {
+      scenario.onActivity { activity -> activity.setContent { SaveableRetainingContent() } }
+    }
+
+    setSaveableContent()
+    composeTestRule.runOnIdle { countSetters.getValue("count").invoke(42) }
+    composeTestRule.runOnIdle { assertThat(counts["count"]).isEqualTo(42) }
+
+    scenario.recreate()
+    setSaveableContent()
+    composeTestRule.waitForIdle()
+
+    composeTestRule.runOnIdle { assertThat(counts["count"]).isEqualTo(42) }
   }
 
   @Test

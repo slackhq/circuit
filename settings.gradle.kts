@@ -222,6 +222,7 @@ include(
   ":circuit-runtime-presenter",
   ":circuit-runtime-screen",
   ":circuit-runtime-ui",
+  ":circuit-serialization",
   ":circuit-shared-elements",
   ":circuit-test",
   ":circuitx:android",

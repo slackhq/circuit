@@ -15,6 +15,20 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.reflect.KClass
 
+/**
+ * Shared implementation for [lifecycleRetainedStateRegistry] on targets that support the
+ * ViewModel-backed registry. Branches to the first-party retain backing when
+ * [CircuitRetainedSettings.useFirstParty] is set.
+ */
+@OptIn(ExperimentalCircuitRetainedApi::class)
+@Composable
+internal fun defaultLifecycleRetainedStateRegistry(key: String): RetainedStateRegistry =
+  if (CircuitRetainedSettings.useFirstParty) {
+    retainBackedRetainedStateRegistry(key)
+  } else {
+    viewModelRetainedStateRegistry(key, RetainedStateRegistryViewModel.Factory)
+  }
+
 @Composable
 internal fun viewModelRetainedStateRegistry(
   key: String,

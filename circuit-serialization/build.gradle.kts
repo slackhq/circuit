@@ -18,6 +18,9 @@ kotlin {
   android {
     namespace = "com.slack.circuit.serialization"
     compileSdk = 36
+    withHostTest {
+      isIncludeAndroidResources = true
+    }
   }
   jvm()
   iosArm64()
@@ -63,6 +66,13 @@ kotlin {
     commonTest {
       dependencies {
         implementation(libs.kotlin.test)
+      }
+    }
+    getByName("androidHostTest") {
+      dependencies {
+        implementation(libs.robolectric)
+        implementation(libs.compose.ui.testing.junit)
+        implementation(libs.androidx.compose.ui.testing.manifest)
       }
     }
   }

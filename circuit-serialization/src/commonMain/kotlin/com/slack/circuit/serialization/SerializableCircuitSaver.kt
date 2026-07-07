@@ -6,11 +6,11 @@ import androidx.savedstate.SavedState
 import androidx.savedstate.serialization.SavedStateConfiguration
 import androidx.savedstate.serialization.decodeFromSavedState
 import androidx.savedstate.serialization.encodeToSavedState
+import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.CircuitSaver
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SerializationException
-import com.slack.circuit.runtime.screen.CircuitSaveable
 
 /**
  * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx-serialization,
@@ -54,6 +54,7 @@ private class SavedStateCircuitSaver(private val configuration: SavedStateConfig
     @Suppress("UNCHECKED_CAST")
     return decode(circuitSaveableSerializer, saved) as? T?
   }
+
   private fun <T : Any> encode(serializer: KSerializer<T>, value: T): SavedState =
     try {
       encodeToSavedState(serializer, value, configuration)

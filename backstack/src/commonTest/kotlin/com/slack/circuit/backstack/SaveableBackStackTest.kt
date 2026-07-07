@@ -11,9 +11,8 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.screen.CircuitSaveable
-import com.slack.circuit.runtime.screen.DefaultCircuitSaver
-import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.screen.CircuitSaver
+import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertNull

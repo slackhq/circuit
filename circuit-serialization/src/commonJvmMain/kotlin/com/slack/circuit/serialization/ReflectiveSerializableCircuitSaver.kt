@@ -9,9 +9,9 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import androidx.savedstate.serialization.decodeFromSavedState
 import androidx.savedstate.serialization.encodeToSavedState
 import com.slack.circuit.runtime.screen.CircuitSaveable
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.runtime.screen.CircuitSaver
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.serializer
 

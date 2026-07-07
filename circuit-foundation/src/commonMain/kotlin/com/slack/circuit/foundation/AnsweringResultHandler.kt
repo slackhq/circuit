@@ -8,10 +8,10 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.slack.circuit.runtime.ExperimentalCircuitApi
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.PopResult
-import com.slack.circuit.runtime.screen.CircuitSaver
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.iterator
@@ -148,7 +148,9 @@ public class AnsweringResultHandler {
               val (resultKey, pendingResult) = value as List<Any?>
               // NOTE order matters here, prepareForResult() clears the buffer
               resultKey?.let { prepareForResult(recordKey, it as String) }
-              pendingResult?.let { circuitSaver.restore<PopResult>(it) }?.let { sendResult(recordKey, it) }
+              pendingResult
+                ?.let { circuitSaver.restore<PopResult>(it) }
+                ?.let { sendResult(recordKey, it) }
             }
           }
         },

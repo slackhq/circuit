@@ -6,9 +6,8 @@ import androidx.compose.runtime.saveable.SaverScope
 import com.slack.circuit.foundation.navstack.SaveableNavStack.Record
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.screen.CircuitSaveable
-import com.slack.circuit.runtime.screen.DefaultCircuitSaver
-import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.screen.CircuitSaver
+import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

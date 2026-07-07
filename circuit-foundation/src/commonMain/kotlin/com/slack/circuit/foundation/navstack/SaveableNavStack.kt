@@ -16,10 +16,10 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.slack.circuit.foundation.navstack.SaveableNavStack.Record
 import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.navigation.NavStackList
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.Screen
-import com.slack.circuit.runtime.screen.CircuitSaver
 import kotlin.collections.set
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -283,7 +283,8 @@ internal constructor(
             }
           },
           restore = { map ->
-            val screen = map["screen"]?.let { circuitSaver.restore<Screen>(it) } ?: return@mapSaver null
+            val screen =
+              map["screen"]?.let { circuitSaver.restore<Screen>(it) } ?: return@mapSaver null
             Record(screen = screen, key = map["key"] as String)
           },
         )

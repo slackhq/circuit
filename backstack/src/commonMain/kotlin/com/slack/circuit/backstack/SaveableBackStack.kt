@@ -24,7 +24,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.slack.circuit.backstack.SaveableBackStack.Record
+import com.slack.circuit.runtime.screen.DefaultCircuitSaver
+import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.CircuitSaver
 import kotlin.math.min
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -34,24 +37,33 @@ import kotlin.uuid.Uuid
  *
  * If [root] changes, a new backstack will be created.
  *
+ * @param circuitSaver the [CircuitSaver] used to persist screens, defaulting to [LocalCircuitSaver].
  * @param init optional initializer callback to perform extra initialization logic.
  */
 @Composable
 public fun rememberSaveableBackStack(
   root: Screen,
+  circuitSaver: CircuitSaver = LocalCircuitSaver.current,
   init: SaveableBackStack.() -> Unit = {},
 ): SaveableBackStack =
-  rememberSaveable(root, saver = SaveableBackStack.Saver) { SaveableBackStack(root).apply(init) }
+  rememberSaveable(root, saver = SaveableBackStack.Saver(circuitSaver)) {
+    SaveableBackStack(root).apply(init)
+  }
 
 /**
  * Creates and remembers a [SaveableBackStack] filled with the given [initialScreens].
  *
  * [initialScreens] must not be empty. If [initialScreens] changes, a new backstack will be created.
+ *
+ * @param circuitSaver the [CircuitSaver] used to persist screens, defaulting to [LocalCircuitSaver].
  */
 @Composable
-public fun rememberSaveableBackStack(initialScreens: List<Screen>): SaveableBackStack {
+public fun rememberSaveableBackStack(
+  initialScreens: List<Screen>,
+  circuitSaver: CircuitSaver = LocalCircuitSaver.current,
+): SaveableBackStack {
   require(initialScreens.isNotEmpty()) { "Initial input screens cannot be empty!" }
-  return rememberSaveable(initialScreens, saver = SaveableBackStack.Saver) {
+  return rememberSaveable(initialScreens, saver = SaveableBackStack.Saver(circuitSaver)) {
     SaveableBackStack().apply {
       for (screen in initialScreens) {
         push(screen)
@@ -89,13 +101,17 @@ internal constructor(
     get() = entryList.lastOrNull()
 
   public override fun push(screen: Screen): Boolean {
-    return push(screen, emptyMap())
+    return push(Record(screen))
   }
 
+  @Deprecated(
+    "Pass data through the Screen itself instead. args will be removed in a future release."
+  )
   public fun push(screen: Screen, args: Map<String, Any?>): Boolean {
     return push(Record(screen, args))
   }
 
+  @Suppress("DEPRECATION")
   public override fun push(record: Record): Boolean {
     val topRecord = Snapshot.withoutReadObservation { topRecord }
     // Guard pushing the exact same record value to the top, records.key is always unique so verify
@@ -177,24 +193,39 @@ internal constructor(
 
   public data class Record(
     override val screen: Screen,
+    @property:Deprecated(
+      "Pass data through the Screen itself instead. args will be removed in a future release."
+    )
     val args: Map<String, Any?> = emptyMap(),
     @OptIn(ExperimentalUuidApi::class) override val key: String = Uuid.random().toString(),
   ) : BackStack.Record {
 
     public companion object {
-      public val Saver: Saver<Record, Any> =
+      @Deprecated(
+        "Use Saver(CircuitSaver) instead.",
+        ReplaceWith(
+          "Record.Saver(DefaultCircuitSaver)",
+          "com.slack.circuit.runtime.screen.DefaultCircuitSaver",
+        ),
+      )
+      public val Saver: Saver<Record, Any> = Saver(DefaultCircuitSaver)
+
+      /** Returns a [Saver] that persists [Record]s with the given [circuitSaver]. */
+      @Suppress("DEPRECATION")
+      public fun Saver(circuitSaver: CircuitSaver): Saver<Record, Any> =
         mapSaver(
           save = { value ->
             buildMap {
-              put("screen", value.screen)
+              circuitSaver.save(value.screen)?.let { put("screen", it) }
               put("args", value.args)
               put("key", value.key)
             }
           },
           restore = { map ->
+            val screen = map["screen"]?.let { circuitSaver.restore<Screen>(it) } ?: return@mapSaver null
             @Suppress("UNCHECKED_CAST")
             Record(
-              screen = map["screen"] as Screen,
+              screen = screen,
               args = map["args"] as Map<String, Any?>,
               key = map["key"] as String,
             )
@@ -204,12 +235,23 @@ internal constructor(
   }
 
   public companion object {
+    @Deprecated(
+      "Use Saver(CircuitSaver) instead.",
+      ReplaceWith(
+        "SaveableBackStack.Saver(DefaultCircuitSaver)",
+        "com.slack.circuit.runtime.screen.DefaultCircuitSaver",
+      ),
+    )
+    public val Saver: Saver<SaveableBackStack, Any> = Saver(DefaultCircuitSaver)
+
+    /** Returns a [Saver] that persists [SaveableBackStack]s with the given [circuitSaver]. */
     @Suppress("UNCHECKED_CAST")
-    public val Saver: Saver<SaveableBackStack, Any> =
-      listSaver<SaveableBackStack, List<Any?>>(
+    public fun Saver(circuitSaver: CircuitSaver): Saver<SaveableBackStack, Any> {
+      val recordSaver = Record.Saver(circuitSaver)
+      return listSaver<SaveableBackStack, List<Any?>>(
         save = { value ->
           buildList {
-            with(Record.Saver) {
+            with(recordSaver) {
               // First list is the entry list
               add(value.entryList.mapNotNull { save(it) })
               // Now add any stacks from the state store
@@ -218,25 +260,28 @@ internal constructor(
           }
         },
         restore = { value ->
-          SaveableBackStack().also { backStack ->
-            value.forEachIndexed { index, list ->
-              if (index == 0) {
-                // The first list is the entry list
-                list.mapNotNullTo(backStack.entryList) { Record.Saver.restore(it as List<Any>) }
-              } else {
-                // Any list after that is from the state store
-                list
-                  .filterIsInstance<List<Any>>()
-                  .mapNotNull { Record.Saver.restore(it) }
-                  .takeIf { it.isNotEmpty() }
-                  ?.let { records ->
-                    // The key is always the root screen (i.e. last item)
-                    backStack.stateStore[records.last().screen] = records
-                  }
-              }
+          val backStack = SaveableBackStack()
+          value.forEachIndexed { index, list ->
+            if (index == 0) {
+              // The first list is the entry list
+              list.mapNotNullTo(backStack.entryList) { recordSaver.restore(it as List<Any>) }
+            } else {
+              // Any list after that is from the state store
+              list
+                .filterIsInstance<List<Any>>()
+                .mapNotNull { recordSaver.restore(it) }
+                .takeIf { it.isNotEmpty() }
+                ?.let { records ->
+                  // The key is always the root screen (i.e. last item)
+                  backStack.stateStore[records.last().screen] = records
+                }
             }
           }
+          // If every record was dropped, return null so rememberSaveable falls back to its
+          // factory instead of restoring an empty, unusable stack.
+          backStack.takeIf { it.entryList.isNotEmpty() }
         },
       )
+    }
   }
 }

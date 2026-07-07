@@ -16,7 +16,10 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.slack.circuit.foundation.navstack.SaveableNavStack.Record
 import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.navigation.NavStackList
+import com.slack.circuit.runtime.screen.DefaultCircuitSaver
+import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.CircuitSaver
 import kotlin.collections.set
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -31,9 +34,12 @@ import kotlin.uuid.Uuid
 @Composable
 public fun rememberSaveableNavStack(
   root: Screen,
+  circuitSaver: CircuitSaver = LocalCircuitSaver.current,
   init: SaveableNavStack.() -> Unit = {},
 ): NavStack<out NavStack.Record> =
-  rememberSaveable(root, saver = SaveableNavStack.Saver) { SaveableNavStack(root).apply(init) }
+  rememberSaveable(root, saver = SaveableNavStack.Saver(circuitSaver)) {
+    SaveableNavStack(root).apply(init)
+  }
 
 /**
  * Creates and remembers a [SaveableNavStack] filled with the given [initialScreens].
@@ -41,9 +47,12 @@ public fun rememberSaveableNavStack(
  * [initialScreens] must not be empty. If [initialScreens] changes, a new nav stack will be created.
  */
 @Composable
-public fun rememberSaveableNavStack(initialScreens: List<Screen>): NavStack<out NavStack.Record> {
+public fun rememberSaveableNavStack(
+  initialScreens: List<Screen>,
+  circuitSaver: CircuitSaver = LocalCircuitSaver.current,
+): NavStack<out NavStack.Record> {
   require(initialScreens.isNotEmpty()) { "Initial input screens cannot be empty!" }
-  return rememberSaveable(initialScreens, saver = SaveableNavStack.Saver) {
+  return rememberSaveable(initialScreens, saver = SaveableNavStack.Saver(circuitSaver)) {
     SaveableNavStack().apply {
       for (screen in initialScreens) {
         push(screen)
@@ -59,9 +68,10 @@ public fun rememberSaveableNavStack(initialScreens: List<Screen>): NavStack<out 
  */
 @Composable
 public fun rememberSaveableNavStack(
-  navStackList: NavStackList<Screen>
+  navStackList: NavStackList<Screen>,
+  circuitSaver: CircuitSaver = LocalCircuitSaver.current,
 ): NavStack<out NavStack.Record> {
-  return rememberSaveable(navStackList, saver = SaveableNavStack.Saver) {
+  return rememberSaveable(navStackList, saver = SaveableNavStack.Saver(circuitSaver)) {
     SaveableNavStack().apply {
       navStackList.toList().asReversed().forEach { push(it) }
       repeat(navStackList.forwardItems.count()) { backward() }
@@ -254,17 +264,27 @@ internal constructor(
   ) : NavStack.Record {
 
     public companion object {
-      public val Saver: Saver<Record, Any> =
+      @Deprecated(
+        "Use Saver(CircuitSaver) instead.",
+        ReplaceWith(
+          "Record.Saver(DefaultCircuitSaver)",
+          "com.slack.circuit.runtime.screen.DefaultCircuitSaver",
+        ),
+      )
+      public val Saver: Saver<Record, Any> = Saver(DefaultCircuitSaver)
+
+      /** Returns a [Saver] that persists [Record]s with the given [circuitSaver]. */
+      public fun Saver(circuitSaver: CircuitSaver): Saver<Record, Any> =
         mapSaver(
           save = { value ->
             buildMap {
-              put("screen", value.screen)
+              circuitSaver.save(value.screen)?.let { put("screen", it) }
               put("key", value.key)
             }
           },
           restore = { map ->
-            @Suppress("UNCHECKED_CAST")
-            Record(screen = map["screen"] as Screen, key = map["key"] as String)
+            val screen = map["screen"]?.let { circuitSaver.restore<Screen>(it) } ?: return@mapSaver null
+            Record(screen = screen, key = map["key"] as String)
           },
         )
     }
@@ -293,70 +313,102 @@ internal constructor(
     }
 
     public companion object {
-      public val Saver: Saver<SaveableNavStackList, Any> =
-        mapSaver(
+      @Deprecated(
+        "Use Saver(CircuitSaver) instead.",
+        ReplaceWith(
+          "SaveableNavStackList.Saver(DefaultCircuitSaver)",
+          "com.slack.circuit.runtime.screen.DefaultCircuitSaver",
+        ),
+      )
+      public val Saver: Saver<SaveableNavStackList, Any> = Saver(DefaultCircuitSaver)
+
+      /** Returns a [Saver] that persists [SaveableNavStackList]s with the given [circuitSaver]. */
+      public fun Saver(circuitSaver: CircuitSaver): Saver<SaveableNavStackList, Any> {
+        val recordSaver = Record.Saver(circuitSaver)
+        return mapSaver(
           save = { value ->
             buildMap {
-              with(Record.Saver) { put("entries", value.entries.mapNotNull { save(it) }) }
+              with(recordSaver) { put("entries", value.entries.mapNotNull { save(it) }) }
               put("currentIndex", value.currentIndex)
             }
           },
           restore = { map ->
             @Suppress("UNCHECKED_CAST")
+            val entries = (map["entries"] as List<List<Any>>).mapNotNull { recordSaver.restore(it) }
+            if (entries.isEmpty()) return@mapSaver null
             SaveableNavStackList(
-              entries = (map["entries"] as List<List<Any>>).mapNotNull { Record.Saver.restore(it) },
-              currentIndex = map["currentIndex"] as Int,
+              entries = entries,
+              // Records may have been dropped on restore, so clamp the index into bounds.
+              currentIndex = (map["currentIndex"] as Int).coerceIn(0, entries.lastIndex),
             )
           },
         )
+      }
     }
   }
 
   public companion object {
+    @Deprecated(
+      "Use Saver(CircuitSaver) instead.",
+      ReplaceWith(
+        "SaveableNavStack.Saver(DefaultCircuitSaver)",
+        "com.slack.circuit.runtime.screen.DefaultCircuitSaver",
+      ),
+    )
+    public val Saver: Saver<SaveableNavStack, Any> = Saver(DefaultCircuitSaver)
+
+    /** Returns a [Saver] that persists [SaveableNavStack]s with the given [circuitSaver]. */
     @Suppress("UNCHECKED_CAST")
-    public val Saver: Saver<SaveableNavStack, Any> =
-      listSaver<SaveableNavStack, List<Any?>>(
+    public fun Saver(circuitSaver: CircuitSaver): Saver<SaveableNavStack, Any> {
+      val recordSaver = Record.Saver(circuitSaver)
+      val snapshotSaver = SaveableNavStackList.Saver(circuitSaver)
+      return listSaver<SaveableNavStack, List<Any?>>(
         save = { value ->
           buildList {
             // Add the current index
             add(listOf(value.currentIndex))
             // Save the entry list
-            with(Record.Saver) { add(value.entryList.mapNotNull { save(it) }) }
+            with(recordSaver) { add(value.entryList.mapNotNull { save(it) }) }
             // Now add any snapshots from the state store
-            with(SaveableNavStackList.Saver) { add(value.stateStore.values.map { save(it) }) }
+            with(snapshotSaver) { add(value.stateStore.values.map { save(it) }) }
           }
         },
         restore = { value ->
           var currentIndex = -1
-          SaveableNavStack().also { navStack ->
-            value.forEachIndexed { index, item ->
-              when (index) {
-                0 -> {
-                  // The first list is the current index
-                  currentIndex = item.first() as Int
-                }
+          val navStack = SaveableNavStack()
+          value.forEachIndexed { index, item ->
+            when (index) {
+              0 -> {
+                // The first list is the current index
+                currentIndex = item.first() as Int
+              }
 
-                1 -> {
-                  // The second list is the entry list
-                  item.mapNotNullTo(navStack.entryList) { Record.Saver.restore(it as List<Any>) }
-                }
+              1 -> {
+                // The second list is the entry list
+                item.mapNotNullTo(navStack.entryList) { recordSaver.restore(it as List<Any>) }
+              }
 
-                else -> {
-                  // Any list after that is from the state store (as snapshots)
-                  item
-                    .filterIsInstance<List<Any>>()
-                    .mapNotNull { SaveableNavStackList.Saver.restore(it) }
-                    .filter { it.entries.isNotEmpty() }
-                    .forEach { snapshot ->
-                      // The key is always the root screen (i.e. last item)
-                      navStack.stateStore[snapshot.root.screen] = snapshot
-                    }
-                }
+              else -> {
+                // Any list after that is from the state store (as snapshots)
+                item
+                  .filterIsInstance<List<Any>>()
+                  .mapNotNull { snapshotSaver.restore(it) }
+                  .filter { it.entries.isNotEmpty() }
+                  .forEach { snapshot ->
+                    // The key is always the root screen (i.e. last item)
+                    navStack.stateStore[snapshot.root.screen] = snapshot
+                  }
               }
             }
-            navStack.currentIndex = currentIndex
           }
+          // If every record was dropped, return null so rememberSaveable falls back to its
+          // factory instead of restoring an empty, unusable stack.
+          if (navStack.entryList.isEmpty()) return@listSaver null
+          // Records may have been dropped on restore, so clamp the index into bounds.
+          navStack.currentIndex = currentIndex.coerceIn(0, navStack.entryList.lastIndex)
+          navStack
         },
       )
+    }
   }
 }

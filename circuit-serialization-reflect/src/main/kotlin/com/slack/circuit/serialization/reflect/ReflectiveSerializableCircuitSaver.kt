@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit.serialization
+package com.slack.circuit.serialization.reflect
 
 import androidx.savedstate.SavedState
 import androidx.savedstate.read
@@ -19,13 +19,19 @@ import kotlinx.serialization.serializer
  * Returns a [CircuitSaver] that persists `@Serializable` [Screen]s and [PopResult]s with
  * kotlinx-serialization, resolving serializers reflectively from the saved class name.
  *
- * Unlike [SerializableCircuitSaver], this requires no polymorphic registration in [configuration]'s
- * `serializersModule`. It relies on JVM reflection (`Class.forName`), so it is only available on
- * JVM and Android, and screen classes plus their generated serializers must be kept when minifying
- * with R8/ProGuard.
+ * Unlike `SerializableCircuitSaver`, this requires no polymorphic registration in
+ * [configuration]'s `serializersModule`. It relies on JVM reflection (`Class.forName`), so it is
+ * only available on JVM and Android.
  *
- * Restoring a class that no longer resolves, such as after an app update removed a screen, drops
- * that record instead of failing.
+ * ## R8/ProGuard
+ *
+ * This artifact embeds the keep rules that reflective lookup needs, so minified Android apps work
+ * without additional configuration. The embedded rules keep the names of all [CircuitSaveable]
+ * implementations and their generated serializers.
+ *
+ * Because restore matches on class names, renaming or moving a screen class invalidates its
+ * previously saved records. Restoring a class that no longer resolves, such as after an app update
+ * removed a screen, drops that record instead of failing.
  */
 public fun ReflectiveSerializableCircuitSaver(
   configuration: SavedStateConfiguration = SavedStateConfiguration.DEFAULT

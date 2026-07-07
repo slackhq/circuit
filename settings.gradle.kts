@@ -223,6 +223,7 @@ include(
   ":circuit-runtime-screen",
   ":circuit-runtime-ui",
   ":circuit-serialization",
+  ":circuit-serialization-reflect",
   ":circuit-shared-elements",
   ":circuit-test",
   ":circuitx:android",

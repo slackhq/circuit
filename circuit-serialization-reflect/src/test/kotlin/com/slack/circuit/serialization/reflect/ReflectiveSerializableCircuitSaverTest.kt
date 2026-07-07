@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit.serialization
+package com.slack.circuit.serialization.reflect
 
 import androidx.savedstate.savedState
 import com.slack.circuit.runtime.screen.PopResult
@@ -25,20 +25,20 @@ class ReflectiveSerializableCircuitSaverTest {
   @Test
   fun screen_round_trip() {
     val screen = ReflectiveScreen("hello")
-    val saved = assertNotNull(saver.saveScreen(screen))
-    assertEquals(screen, saver.restoreScreen(saved))
+    val saved = assertNotNull(saver.save(screen))
+    assertEquals(screen, saver.restore<Screen>(saved))
   }
 
   @Test
   fun pop_result_round_trip() {
     val result = ReflectivePopResult(42)
-    val saved = assertNotNull(saver.savePopResult(result))
-    assertEquals(result, saver.restorePopResult(saved))
+    val saved = assertNotNull(saver.save(result))
+    assertEquals(result, saver.restore<PopResult>(saved))
   }
 
   @Test
   fun save_non_serializable_screen_fails() {
-    assertFailsWith<IllegalArgumentException> { saver.saveScreen(NotSerializableScreen("nope")) }
+    assertFailsWith<IllegalArgumentException> { saver.save(NotSerializableScreen("nope")) }
   }
 
   @Test
@@ -47,11 +47,11 @@ class ReflectiveSerializableCircuitSaverTest {
       putString("type", "com.example.DoesNotExist")
       putSavedState("value", savedState {})
     }
-    assertNull(saver.restoreScreen(saved))
+    assertNull(saver.restore<Screen>(saved))
   }
 
   @Test
   fun restore_unexpected_value_returns_null() {
-    assertNull(saver.restoreScreen("garbage"))
+    assertNull(saver.restore<Screen>("garbage"))
   }
 }

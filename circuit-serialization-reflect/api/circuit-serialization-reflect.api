@@ -1,0 +1,5 @@
+public final class com/slack/circuit/serialization/reflect/ReflectiveSerializableCircuitSaverKt {
+	public static final fun ReflectiveSerializableCircuitSaver (Landroidx/savedstate/serialization/SavedStateConfiguration;)Lcom/slack/circuit/runtime/screen/CircuitSaver;
+	public static synthetic fun ReflectiveSerializableCircuitSaver$default (Landroidx/savedstate/serialization/SavedStateConfiguration;ILjava/lang/Object;)Lcom/slack/circuit/runtime/screen/CircuitSaver;
+}
+

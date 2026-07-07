@@ -1,0 +1,9 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, js, linuxArm64, linuxX64, macosArm64, mingwX64, tvosArm64, tvosSimulatorArm64, wasmJs, watchosArm32, watchosArm64, watchosSimulatorArm64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <circuit-root:circuit-serialization>
+final fun com.slack.circuit.serialization/SerializableCircuitSaver(androidx.savedstate.serialization/SavedStateConfiguration = ...): com.slack.circuit.runtime.screen/CircuitSaver // com.slack.circuit.serialization/SerializableCircuitSaver|SerializableCircuitSaver(androidx.savedstate.serialization.SavedStateConfiguration){}[0]

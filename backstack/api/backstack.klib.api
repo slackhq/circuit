@@ -61,12 +61,16 @@ final class com.slack.circuit.backstack/SaveableBackStack : com.slack.circuit.ba
         final object Companion { // com.slack.circuit.backstack/SaveableBackStack.Record.Companion|null[0]
             final val Saver // com.slack.circuit.backstack/SaveableBackStack.Record.Companion.Saver|{}Saver[0]
                 final fun <get-Saver>(): androidx.compose.runtime.saveable/Saver<com.slack.circuit.backstack/SaveableBackStack.Record, kotlin/Any> // com.slack.circuit.backstack/SaveableBackStack.Record.Companion.Saver.<get-Saver>|<get-Saver>(){}[0]
+
+            final fun Saver(com.slack.circuit.runtime.screen/CircuitSaver): androidx.compose.runtime.saveable/Saver<com.slack.circuit.backstack/SaveableBackStack.Record, kotlin/Any> // com.slack.circuit.backstack/SaveableBackStack.Record.Companion.Saver|Saver(com.slack.circuit.runtime.screen.CircuitSaver){}[0]
         }
     }
 
     final object Companion { // com.slack.circuit.backstack/SaveableBackStack.Companion|null[0]
         final val Saver // com.slack.circuit.backstack/SaveableBackStack.Companion.Saver|{}Saver[0]
             final fun <get-Saver>(): androidx.compose.runtime.saveable/Saver<com.slack.circuit.backstack/SaveableBackStack, kotlin/Any> // com.slack.circuit.backstack/SaveableBackStack.Companion.Saver.<get-Saver>|<get-Saver>(){}[0]
+
+        final fun Saver(com.slack.circuit.runtime.screen/CircuitSaver): androidx.compose.runtime.saveable/Saver<com.slack.circuit.backstack/SaveableBackStack, kotlin/Any> // com.slack.circuit.backstack/SaveableBackStack.Companion.Saver|Saver(com.slack.circuit.runtime.screen.CircuitSaver){}[0]
     }
 }
 
@@ -80,5 +84,5 @@ final val com.slack.circuit.backstack/isEmpty // com.slack.circuit.backstack/isE
 final fun (com.slack.circuit.backstack/BackStack<out com.slack.circuit.backstack/BackStack.Record>).com.slack.circuit.backstack/clearState() // com.slack.circuit.backstack/clearState|clearState@com.slack.circuit.backstack.BackStack<out|com.slack.circuit.backstack.BackStack.Record>(){}[0]
 final fun com.slack.circuit.backstack/com_slack_circuit_backstack_SaveableBackStack$stableprop_getter(): kotlin/Int // com.slack.circuit.backstack/com_slack_circuit_backstack_SaveableBackStack$stableprop_getter|com_slack_circuit_backstack_SaveableBackStack$stableprop_getter(){}[0]
 final fun com.slack.circuit.backstack/com_slack_circuit_backstack_SaveableBackStack_Record$stableprop_getter(): kotlin/Int // com.slack.circuit.backstack/com_slack_circuit_backstack_SaveableBackStack_Record$stableprop_getter|com_slack_circuit_backstack_SaveableBackStack_Record$stableprop_getter(){}[0]
-final fun com.slack.circuit.backstack/rememberSaveableBackStack(com.slack.circuit.runtime.screen/Screen, kotlin/Function1<com.slack.circuit.backstack/SaveableBackStack, kotlin/Unit>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.slack.circuit.backstack/SaveableBackStack // com.slack.circuit.backstack/rememberSaveableBackStack|rememberSaveableBackStack(com.slack.circuit.runtime.screen.Screen;kotlin.Function1<com.slack.circuit.backstack.SaveableBackStack,kotlin.Unit>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
-final fun com.slack.circuit.backstack/rememberSaveableBackStack(kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>, androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuit.backstack/SaveableBackStack // com.slack.circuit.backstack/rememberSaveableBackStack|rememberSaveableBackStack(kotlin.collections.List<com.slack.circuit.runtime.screen.Screen>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun com.slack.circuit.backstack/rememberSaveableBackStack(com.slack.circuit.runtime.screen/Screen, com.slack.circuit.runtime.screen/CircuitSaver?, kotlin/Function1<com.slack.circuit.backstack/SaveableBackStack, kotlin/Unit>?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.slack.circuit.backstack/SaveableBackStack // com.slack.circuit.backstack/rememberSaveableBackStack|rememberSaveableBackStack(com.slack.circuit.runtime.screen.Screen;com.slack.circuit.runtime.screen.CircuitSaver?;kotlin.Function1<com.slack.circuit.backstack.SaveableBackStack,kotlin.Unit>?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]
+final fun com.slack.circuit.backstack/rememberSaveableBackStack(kotlin.collections/List<com.slack.circuit.runtime.screen/Screen>, com.slack.circuit.runtime.screen/CircuitSaver?, androidx.compose.runtime/Composer?, kotlin/Int, kotlin/Int): com.slack.circuit.backstack/SaveableBackStack // com.slack.circuit.backstack/rememberSaveableBackStack|rememberSaveableBackStack(kotlin.collections.List<com.slack.circuit.runtime.screen.Screen>;com.slack.circuit.runtime.screen.CircuitSaver?;androidx.compose.runtime.Composer?;kotlin.Int;kotlin.Int){}[0]

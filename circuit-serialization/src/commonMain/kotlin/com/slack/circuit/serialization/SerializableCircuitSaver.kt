@@ -16,17 +16,17 @@ import kotlinx.serialization.SerializationException
  * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx-serialization,
  * encoding them to `SavedState` via `androidx.savedstate`.
  *
- * Screens and results must be `@Serializable` and registered for polymorphic serialization in
- * [configuration]'s `serializersModule`:
+ * Screens and results must be `@Serializable` and registered for polymorphic serialization against
+ * the [CircuitSaveable] base class in [configuration]'s `serializersModule`:
  * ```
  * val saver = SerializableCircuitSaver(
  *   SavedStateConfiguration {
  *     serializersModule = SerializersModule {
- *       polymorphic(Screen::class) {
+ *       polymorphic(CircuitSaveable::class) {
  *         subclass(HomeScreen::class)
  *         subclass(DetailScreen::class)
+ *         subclass(DetailResult::class)
  *       }
- *       polymorphic(PopResult::class) { subclass(DetailResult::class) }
  *     }
  *   }
  * )
@@ -35,8 +35,8 @@ import kotlinx.serialization.SerializationException
  * Saving an unregistered type fails with a descriptive error. Restoring an unregistered type, such
  * as after an app update removed a screen, drops that record instead of failing.
  *
- * On JVM and Android, `ReflectiveSerializableCircuitSaver` can be used instead to avoid the
- * registration requirement.
+ * On JVM and Android, `ReflectiveSerializableCircuitSaver` from the `circuit-serialization-reflect`
+ * artifact can be used instead to avoid the registration requirement.
  */
 public fun SerializableCircuitSaver(
   configuration: SavedStateConfiguration = SavedStateConfiguration.DEFAULT
@@ -46,7 +46,7 @@ private class SavedStateCircuitSaver(private val configuration: SavedStateConfig
   CircuitSaver {
   private val circuitSaveableSerializer = PolymorphicSerializer(CircuitSaveable::class)
 
-  override fun save(value: CircuitSaveable): Any? {
+  override fun save(value: CircuitSaveable): Any {
     return encode(circuitSaveableSerializer, value)
   }
 

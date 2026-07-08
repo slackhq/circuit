@@ -1,6 +1,5 @@
 // Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-import com.android.build.api.withAndroid
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 
@@ -8,7 +7,6 @@ plugins {
   alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.plugin.serialization)
-  alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.compose)
   id("circuit.base")
   id("circuit.publish")
@@ -46,15 +44,7 @@ kotlin {
   }
   // endregion
 
-  @OptIn(ExperimentalKotlinGradlePluginApi::class)
-  applyDefaultHierarchyTemplate {
-    common {
-      group("commonJvm") {
-        withAndroid()
-        withJvm()
-      }
-    }
-  }
+  @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
 
   sourceSets {
     commonMain {
@@ -67,31 +57,13 @@ kotlin {
     commonTest {
       dependencies {
         implementation(libs.kotlin.test)
-        implementation(projects.internalRuntime)
       }
     }
-    maybeCreate("commonJvmTest").apply { dependencies { implementation(libs.junit) } }
     getByName("androidHostTest") {
       dependencies {
         implementation(libs.robolectric)
         implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
-      }
-    }
-  }
-
-  targets.configureEach {
-    compilations.configureEach {
-      compileTaskProvider.configure {
-        compilerOptions {
-          freeCompilerArgs.add("-Xexpect-actual-classes")
-          if (name == "compileAndroidHostTest") {
-            freeCompilerArgs.addAll(
-              "-P",
-              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",
-            )
-          }
-        }
       }
     }
   }

@@ -31,17 +31,21 @@ import kotlinx.serialization.serializer
  *
  * Because restore matches on class names, renaming or moving a screen class invalidates its
  * previously saved records. Restoring a class that no longer resolves, such as after an app update
- * removed a screen, drops that record instead of failing.
+ * removed a screen, drops that record instead of failing. Pass [onRestoreError] to observe dropped
+ * records, such as for logging.
  */
 public fun ReflectiveSerializableCircuitSaver(
-  configuration: SavedStateConfiguration = SavedStateConfiguration.DEFAULT
-): CircuitSaver = ReflectiveCircuitSaver(configuration)
+  configuration: SavedStateConfiguration = SavedStateConfiguration.DEFAULT,
+  onRestoreError: (Throwable) -> Unit = {},
+): CircuitSaver = ReflectiveCircuitSaver(configuration, onRestoreError)
 
 private const val TYPE_KEY = "type"
 private const val VALUE_KEY = "value"
 
-private class ReflectiveCircuitSaver(private val configuration: SavedStateConfiguration) :
-  CircuitSaver {
+private class ReflectiveCircuitSaver(
+  private val configuration: SavedStateConfiguration,
+  private val onRestoreError: (Throwable) -> Unit,
+) : CircuitSaver {
 
   override fun save(value: CircuitSaveable): Any? = encode(value)
 
@@ -74,16 +78,16 @@ private class ReflectiveCircuitSaver(private val configuration: SavedStateConfig
       val serializer = serializer(Class.forName(className))
       decodeFromSavedState(serializer, value, configuration)
     } catch (e: ClassNotFoundException) {
-      // TODO better error
+      onRestoreError(e)
       null
     } catch (e: SerializationException) {
-      // TODO better error
+      onRestoreError(e)
       null
     } catch (e: IllegalArgumentException) {
-      // TODO better error
+      onRestoreError(e)
       null
     } catch (e: IllegalStateException) {
-      // TODO better error
+      onRestoreError(e)
       null
     }
   }

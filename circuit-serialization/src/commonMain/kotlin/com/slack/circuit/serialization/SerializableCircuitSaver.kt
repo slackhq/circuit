@@ -33,17 +33,21 @@ import kotlinx.serialization.SerializationException
  * ```
  *
  * Saving an unregistered type fails with a descriptive error. Restoring an unregistered type, such
- * as after an app update removed a screen, drops that record instead of failing.
+ * as after an app update removed a screen, drops that record instead of failing. Pass
+ * [onRestoreError] to observe dropped records, such as for logging.
  *
  * On JVM and Android, `ReflectiveSerializableCircuitSaver` from the `circuit-serialization-reflect`
  * artifact can be used instead to avoid the registration requirement.
  */
 public fun SerializableCircuitSaver(
-  configuration: SavedStateConfiguration = SavedStateConfiguration.DEFAULT
-): CircuitSaver = SavedStateCircuitSaver(configuration)
+  configuration: SavedStateConfiguration = SavedStateConfiguration.DEFAULT,
+  onRestoreError: (Throwable) -> Unit = {},
+): CircuitSaver = SavedStateCircuitSaver(configuration, onRestoreError)
 
-private class SavedStateCircuitSaver(private val configuration: SavedStateConfiguration) :
-  CircuitSaver {
+private class SavedStateCircuitSaver(
+  private val configuration: SavedStateConfiguration,
+  private val onRestoreError: (Throwable) -> Unit,
+) : CircuitSaver {
   private val circuitSaveableSerializer = PolymorphicSerializer(CircuitSaveable::class)
 
   override fun save(value: CircuitSaveable): Any {
@@ -71,10 +75,10 @@ private class SavedStateCircuitSaver(private val configuration: SavedStateConfig
     return try {
       decodeFromSavedState(serializer, savedState, configuration)
     } catch (e: SerializationException) {
-      // TODO report
+      onRestoreError(e)
       null
     } catch (e: IllegalArgumentException) {
-      // TODO report
+      onRestoreError(e)
       null
     }
   }

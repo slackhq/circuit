@@ -51,6 +51,18 @@ class ReflectiveSerializableCircuitSaverTest {
   }
 
   @Test
+  fun restore_error_reports_to_callback() {
+    val saved = savedState {
+      putString("type", "com.example.DoesNotExist")
+      putSavedState("value", savedState {})
+    }
+    var reported: Throwable? = null
+    val reportingSaver = ReflectiveSerializableCircuitSaver(onRestoreError = { reported = it })
+    assertNull(reportingSaver.restore<Screen>(saved))
+    assertNotNull(reported)
+  }
+
+  @Test
   fun restore_unexpected_value_returns_null() {
     assertNull(saver.restore<Screen>("garbage"))
   }

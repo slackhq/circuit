@@ -72,6 +72,15 @@ class SerializableCircuitSaverTest {
   }
 
   @Test
+  fun restore_error_reports_to_callback() {
+    val saved = assertNotNull(saver.save(StringScreen("hello")))
+    var reported: Throwable? = null
+    val unconfiguredSaver = SerializableCircuitSaver(onRestoreError = { reported = it })
+    assertNull(unconfiguredSaver.restore<Screen>(saved))
+    assertNotNull(reported)
+  }
+
+  @Test
   fun restore_unexpected_value_returns_null() {
     assertNull(saver.restore<Screen>("garbage"))
   }

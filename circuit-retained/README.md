@@ -35,7 +35,7 @@ The current, opt-in phase runs Circuit's retention on top of the first-party sto
 CircuitRetainedSettings.useFirstParty = true
 ```
 
-With the flag enabled, `lifecycleRetainedStateRegistry()` is backed by a single root-level `retain` call instead of a Circuit-managed `ViewModel`. Survival across configuration changes is then driven by the `RetainedValuesStore` installed in the composition, such as the lifecycle-aware store Compose UI installs on Android. All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged. 
+With the flag enabled, `lifecycleRetainedStateRegistry()` is backed by a single root-level `retain` call instead of a Circuit-managed `ViewModel`. Survival across configuration changes is then driven by the `RetainedValuesStore` installed in the composition, such as the lifecycle-aware store Compose UI installs on Android. All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged.
 
 The flag is experimental (`@ExperimentalCircuitRetainedApi`) and currently affects the targets that have the ViewModel-backed registry (Android, JVM, iOS, macOS, web).
 

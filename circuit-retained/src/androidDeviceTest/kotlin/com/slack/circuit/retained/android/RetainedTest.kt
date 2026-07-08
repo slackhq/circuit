@@ -48,10 +48,10 @@ import kotlin.reflect.KClass
 import kotlinx.coroutines.flow.MutableStateFlow
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
-import org.junit.runner.RunWith
-import org.junit.runners.Parameterized
 import org.junit.Test
 import org.junit.rules.RuleChain
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
 internal const val TAG_REMEMBER = "remember"
 internal const val TAG_RETAINED_1 = "retained1"

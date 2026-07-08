@@ -14,7 +14,6 @@ import androidx.compose.runtime.retain.RetainObserver
  * `retain` only supports positional identity, so a single call site cannot retain values for a
  * dynamic set of logical entities the way `rememberRetained(key = ...)` can. A [RetainedStore]
  * moves that keying into user space:
- *
  * ```kotlin
  * val store = retain { RetainedStore<ChatId, ChatController>() }
  * val controller = store.getOrCreate(chatId) { ChatController(it) }
@@ -26,9 +25,10 @@ import androidx.compose.runtime.retain.RetainObserver
  * Values implementing [AutoCloseable] are closed on retirement.
  *
  * Entries created with [getOrCreate] live until removed or the store is retired, so unbounded key
- * spaces must be pruned manually with [remove] or [clear]. Alternatively, [rememberRetainedEntry] tracks
- * how many active compositions reference a key and evicts entries that are no longer referenced,
- * approximating the unclaimed-value GC that `RetainedStateRegistry` performs at frame end.
+ * spaces must be pruned manually with [remove] or [clear]. Alternatively, [rememberRetainedEntry]
+ * tracks how many active compositions reference a key and evicts entries that are no longer
+ * referenced, approximating the unclaimed-value GC that `RetainedStateRegistry` performs at frame
+ * end.
  */
 // This is a reference implementation kept in tests rather than shipped API. It exists to document
 // the migration path for keyed `rememberRetained` usages if circuit-retained is ever deprecated in

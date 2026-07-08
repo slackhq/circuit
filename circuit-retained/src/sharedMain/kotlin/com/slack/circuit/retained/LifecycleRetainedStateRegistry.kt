@@ -69,6 +69,13 @@ internal interface UpdatableRetainedStateRegistry : RetainedStateRegistry {
   fun update(canRetainChecker: CanRetainChecker)
 }
 
+/** Inspection hooks for tests to assert on registry internals across backings. */
+internal interface InspectableRetainedStateRegistry : RetainedStateRegistry {
+  fun peekRetained(): Map<String, List<Any?>>
+
+  fun peekProviders(): Map<String, MutableList<RetainedValueProvider>>
+}
+
 /**
  * A factory for creating a [ViewModel] that implements [UpdatableRetainedStateRegistry] for
  * [lifecycleRetainedStateRegistry].
@@ -79,7 +86,7 @@ internal interface ViewModelRetainedStateRegistryFactory<T>
 }
 
 internal class RetainedStateRegistryViewModel :
-  ViewModel(), UpdatableRetainedStateRegistry, CanRetainChecker {
+  ViewModel(), UpdatableRetainedStateRegistry, InspectableRetainedStateRegistry, CanRetainChecker {
   private val delegate = RetainedStateRegistryImpl(this, null)
   private var canRetainChecker: CanRetainChecker = CanRetainChecker.Never
 
@@ -119,10 +126,11 @@ internal class RetainedStateRegistryViewModel :
     delegate.valueProviders.clear()
   }
 
-  @VisibleForTesting fun peekRetained(): Map<String, List<Any?>> = delegate.retained.toMap()
+  @VisibleForTesting
+  override fun peekRetained(): Map<String, List<Any?>> = delegate.retained.toMap()
 
   @VisibleForTesting
-  fun peekProviders(): Map<String, MutableList<RetainedValueProvider>> =
+  override fun peekProviders(): Map<String, MutableList<RetainedValueProvider>> =
     delegate.valueProviders.toMap()
 
   internal object Factory : ViewModelRetainedStateRegistryFactory<RetainedStateRegistryViewModel> {

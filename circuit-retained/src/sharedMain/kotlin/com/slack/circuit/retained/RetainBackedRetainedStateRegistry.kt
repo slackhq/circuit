@@ -50,6 +50,7 @@ private class RetainBackedRetainedStateRegistry(
     RetainedStateRegistryImpl(CanRetainChecker.Never, null)
 ) :
   UpdatableRetainedStateRegistry,
+  InspectableRetainedStateRegistry,
   RetainedStateRegistry by delegate,
   RetainObserver,
   CanRetainChecker {
@@ -81,9 +82,10 @@ private class RetainBackedRetainedStateRegistry(
     delegate.valueProviders.clear()
   }
 
-  @VisibleForTesting fun peekRetained(): Map<String, List<Any?>> = delegate.retained.toMap()
+  @VisibleForTesting
+  override fun peekRetained(): Map<String, List<Any?>> = delegate.retained.toMap()
 
   @VisibleForTesting
-  fun peekProviders(): Map<String, MutableList<RetainedValueProvider>> =
+  override fun peekProviders(): Map<String, MutableList<RetainedValueProvider>> =
     delegate.valueProviders.toMap()
 }

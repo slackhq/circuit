@@ -14,6 +14,13 @@ Unreleased
   - See the [circuit-retained README](https://github.com/slackhq/circuit/tree/main/circuit-retained) for more details.
   - **NOTE:** This is phase one of a multi-phase migration to the first-party API.
 
+### Changed
+
+- **SubCircuit:** `@SubCircuitInject` is now handled by the main `circuit-codegen` processor.
+  `circuitx-subcircuit-codegen` is now a relocation pointer to `circuit-codegen`, but prefer
+  depending on `circuit-codegen` directly. Prefer the `circuit.codegen.*` KSP options; the
+  `subcircuit.codegen.*` keys still work as fallbacks. Generated output is unchanged.
+
 ### Fixed
 
 - **SubCircuit:** Fix `subcircuit-codegen` Metro mode (`subcircuit.codegen.mode=metro`). It previously

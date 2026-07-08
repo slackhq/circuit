@@ -4,20 +4,51 @@ package com.slack.circuit.codegen
 
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSType
+import com.squareup.kotlinpoet.ClassName
 
+/**
+ * Runtime [KSType]s the processor matches parameters against.
+ *
+ * Circuit and SubCircuit runtimes are independent, so a consumer may have only one on its
+ * classpath. Each type is loaded lazily and only accessed by its own [CodegenTarget]; accessing an
+ * absent type is an [error], since the matching annotation guarantees its runtime is present.
+ */
 internal class CircuitSymbols private constructor(resolver: Resolver) {
-  val modifier = resolver.loadKSType(CircuitNames.MODIFIER.canonicalName)
-  val circuitUiState = resolver.loadKSType(CircuitNames.CIRCUIT_UI_STATE.canonicalName)
-  val screen = resolver.loadKSType(CircuitNames.SCREEN.canonicalName)
-  val navigator = resolver.loadKSType(CircuitNames.NAVIGATOR.canonicalName)
-  val circuitContext = resolver.loadKSType(CircuitNames.CIRCUIT_CONTEXT.canonicalName)
+  val modifier = resolver.requireKSType(CircuitNames.MODIFIER)
 
-  private fun Resolver.loadKSType(name: String): KSType =
-    loadOptionalKSType(name) ?: error("Could not find $name in classpath")
+  // Circuit runtime types.
+  private val circuitUiStateOrNull = resolver.loadOptionalKSType(CircuitNames.CIRCUIT_UI_STATE)
+  private val screenOrNull = resolver.loadOptionalKSType(CircuitNames.SCREEN)
+  private val navigatorOrNull = resolver.loadOptionalKSType(CircuitNames.NAVIGATOR)
+  private val circuitContextOrNull = resolver.loadOptionalKSType(CircuitNames.CIRCUIT_CONTEXT)
 
-  private fun Resolver.loadOptionalKSType(name: String?): KSType? {
-    if (name == null) return null
-    return getClassDeclarationByName(getKSNameFromString(name))?.asType(emptyList())
+  // SubCircuit runtime types.
+  private val subCircuitUiStateOrNull =
+    resolver.loadOptionalKSType(CircuitNames.SUB_CIRCUIT_UI_STATE)
+
+  val circuitUiState: KSType
+    get() = circuitUiStateOrNull.require(CircuitNames.CIRCUIT_UI_STATE)
+
+  val screen: KSType
+    get() = screenOrNull.require(CircuitNames.SCREEN)
+
+  val navigator: KSType
+    get() = navigatorOrNull.require(CircuitNames.NAVIGATOR)
+
+  val circuitContext: KSType
+    get() = circuitContextOrNull.require(CircuitNames.CIRCUIT_CONTEXT)
+
+  val subCircuitUiState: KSType
+    get() = subCircuitUiStateOrNull.require(CircuitNames.SUB_CIRCUIT_UI_STATE)
+
+  private fun KSType?.require(name: ClassName): KSType =
+    this ?: error("Could not find ${name.canonicalName} in classpath")
+
+  private fun Resolver.requireKSType(name: ClassName): KSType =
+    loadOptionalKSType(name) ?: error("Could not find ${name.canonicalName} in classpath")
+
+  private fun Resolver.loadOptionalKSType(name: ClassName): KSType? {
+    return getClassDeclarationByName(getKSNameFromString(name.canonicalName))?.asType(emptyList())
   }
 
   companion object {

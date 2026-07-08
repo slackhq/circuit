@@ -31,6 +31,21 @@ internal object CircuitNames {
   val SCREEN = ClassName(CIRCUIT_RUNTIME_SCREEN_PACKAGE, "Screen")
   val NAVIGATOR = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "Navigator")
   val CIRCUIT_CONTEXT = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitContext")
+
+  // SubCircuit dialect. Referenced by string only so circuit-codegen keeps no compile dependency on
+  // the circuitx-subcircuit runtime; these types are resolved from the consumer's classpath when a
+  // `@SubCircuitInject` is present.
+  const val SUB_CIRCUIT_PACKAGE = "com.slack.circuit.subcircuit"
+  val SUB_CIRCUIT_INJECT_ANNOTATION = ClassName(SUB_CIRCUIT_PACKAGE, "SubCircuitInject")
+  val SUB_PRESENTER = ClassName(SUB_CIRCUIT_PACKAGE, "SubPresenter")
+  val SUB_PRESENTER_FACTORY = ClassName(SUB_CIRCUIT_PACKAGE, "SubPresenterFactory")
+  val SUB_UI = ClassName(SUB_CIRCUIT_PACKAGE, "SubUi")
+  val SUB_UI_FACTORY = ClassName(SUB_CIRCUIT_PACKAGE, "SubUiFactory")
+  val SUB_CIRCUIT_UI_STATE = ClassName(SUB_CIRCUIT_PACKAGE, "SubCircuitUiState")
+  val SUB_SCREEN = ClassName(SUB_CIRCUIT_PACKAGE, "SubScreen")
+  const val SUB_PRESENTER_FACTORY_SUFFIX = "_SubPresenterFactory"
+  const val SUB_UI_FACTORY_SUFFIX = "_SubUiFactory"
+
   val DAGGER_MODULE = ClassName(DAGGER_PACKAGE, "Module")
   val DAGGER_BINDS = ClassName(DAGGER_PACKAGE, "Binds")
   val DAGGER_INSTALL_IN = ClassName(DAGGER_HILT_PACKAGE, "InstallIn")

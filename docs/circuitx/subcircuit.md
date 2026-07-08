@@ -6,8 +6,8 @@ SubCircuit is a lightweight framework for rendering nested presenter/UI pairs th
 ```kotlin
 dependencies {
   implementation("com.slack.circuit:circuitx-subcircuit:<version>")
-  // For code generation
-  ksp("com.slack.circuit:circuitx-subcircuit-codegen:<version>")
+  // For code generation. `@SubCircuitInject` is handled by the same processor as `@CircuitInject`.
+  ksp("com.slack.circuit:circuit-codegen:<version>")
   // For testing
   testImplementation("com.slack.circuit:circuitx-subcircuit-test:<version>")
 }
@@ -177,7 +177,10 @@ fun TeamMembersUi(state: TeamMembersState, modifier: Modifier = Modifier) {
 
 ## Code Generation
 
-SubCircuit uses KSP to generate factory classes that wire presenters and UIs into the DI graph. It mirrors [Circuit's code gen](../docs/code-gen.md), adapted to SubCircuit's contracts (screen-only factory `create`, no `presenterOf`).
+SubCircuit uses KSP to generate factory classes that wire presenters and UIs into the DI graph. `@SubCircuitInject` is handled by the same `circuit-codegen` processor as `@CircuitInject`, adapted to SubCircuit's contracts (screen-only factory `create`, no `presenterOf`). See [Circuit's code gen](../docs/code-gen.md) for the shared options.
+
+!!! note "Migrating from `circuitx-subcircuit-codegen`"
+    The old `circuitx-subcircuit-codegen` artifact is now a relocation pointer to `circuit-codegen`, so existing dependencies keep resolving, but you should depend on `circuit-codegen` directly. The `subcircuit.codegen.*` KSP options still work as fallbacks; prefer the `circuit.codegen.*` equivalents.
 
 Currently supported types are:
 
@@ -192,26 +195,26 @@ If you are using another mode, you must specify the mode as a KSP arg.
 
 ```kotlin
 ksp {
-  arg("subcircuit.codegen.mode", "hilt") // or "kotlin_inject_anvil", "metro"
+  arg("circuit.codegen.mode", "hilt") // or "kotlin_inject_anvil", "metro"
 }
 ```
 
 If using Kotlin multiplatform with typealias annotations for Dagger annotations (i.e. expect
 annotations in common with actual typealias declarations in JVM source sets), you can match on just
-annotation short names alone to support this case via `subcircuit.codegen.lenient` mode.
+annotation short names alone to support this case via `circuit.codegen.lenient` mode.
 
 ```kotlin
 ksp {
-  arg("subcircuit.codegen.lenient", "true")
+  arg("circuit.codegen.lenient", "true")
 }
 ```
 
 If you need to generate `javax.inject` annotations instead of `jakarta.inject`, set
-`subcircuit.codegen.useJavaxOnly`.
+`circuit.codegen.useJavaxOnly`.
 
 ```kotlin
 ksp {
-  arg("subcircuit.codegen.useJavaxOnly", "true")
+  arg("circuit.codegen.useJavaxOnly", "true")
 }
 ```
 
@@ -344,15 +347,15 @@ The generated annotations differ per mode:
 
 === "Hilt"
 
-    Set `subcircuit.codegen.mode=hilt`. Generates a `@Module`/`@InstallIn` with a `@Binds @IntoSet` provider for the factory.
+    Set `circuit.codegen.mode=hilt`. Generates a `@Module`/`@InstallIn` with a `@Binds @IntoSet` provider for the factory.
 
 === "kotlin-inject-anvil"
 
-    Set `subcircuit.codegen.mode=kotlin_inject_anvil`. Generates `@Inject` + `@ContributesBinding(Scope::class, multibinding = true)`.
+    Set `circuit.codegen.mode=kotlin_inject_anvil`. Generates `@Inject` + `@ContributesBinding(Scope::class, multibinding = true)`.
 
 === "Metro"
 
-    Set `subcircuit.codegen.mode=metro`. Generates `@Inject` + `@ContributesIntoSet(Scope::class)`.
+    Set `circuit.codegen.mode=metro`. Generates `@Inject` + `@ContributesIntoSet(Scope::class)`.
 
 ### Wiring
 

@@ -7,7 +7,6 @@ import com.google.devtools.ksp.processing.PlatformInfo
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.slack.circuit.codegen.FactoryType.UI
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
@@ -103,6 +102,7 @@ internal enum class CodegenMode {
       factoryType: FactoryType,
       scope: TypeName,
       topLevelClass: ClassName?,
+      dialect: Dialect,
     ): TypeSpec {
       val moduleAnnotations =
         listOfNotNull(
@@ -125,12 +125,7 @@ internal enum class CodegenMode {
           AnnotationSpec.builder(CircuitNames.DAGGER_INTO_SET).build(),
         )
 
-      val providerReturns =
-        if (factoryType == UI) {
-          CircuitNames.CIRCUIT_UI_FACTORY
-        } else {
-          CircuitNames.CIRCUIT_PRESENTER_FACTORY
-        }
+      val providerReturns = dialect.factorySuperinterface(factoryType)
 
       val factoryName = factory.simpleName
 
@@ -263,6 +258,7 @@ internal enum class CodegenMode {
     factoryType: FactoryType,
     scope: TypeName,
     topLevelClass: ClassName?,
+    dialect: Dialect,
   ): TypeSpec? {
     return null
   }

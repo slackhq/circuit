@@ -1,6 +1,6 @@
 // Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
-package com.slack.circuit.subcircuit.codegen
+package com.slack.circuit.codegen
 
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
@@ -19,7 +19,7 @@ import org.junit.Test
 
 @Suppress("LargeClass")
 @OptIn(ExperimentalCompilerApi::class)
-class SubCircuitSymbolProcessorTest {
+class SubCircuitDialectProcessorTest {
 
   private val subCircuitStubs =
     kotlin(
@@ -379,7 +379,7 @@ class SubCircuitSymbolProcessorTest {
             .trimIndent(),
         ),
       generatedFilePath = "test/MetroPresenter_SubPresenterFactory.kt",
-      mode = SubCircuitCodegenMode.METRO,
+      mode = CodegenMode.METRO,
       expectedSubstrings =
         listOf(
           "import dev.zacsweers.metro.ContributesIntoSet",
@@ -534,7 +534,7 @@ class SubCircuitSymbolProcessorTest {
             .trimIndent(),
         ),
       generatedFilePath = "test/TestUi_SubUiFactory.kt",
-      mode = SubCircuitCodegenMode.METRO,
+      mode = CodegenMode.METRO,
       expectedContent =
         """
         package test
@@ -717,7 +717,7 @@ class SubCircuitSymbolProcessorTest {
             .trimIndent(),
         ),
       generatedFilePath = "test/ObjectScreenUi_SubUiFactory.kt",
-      mode = SubCircuitCodegenMode.ANVIL,
+      mode = CodegenMode.ANVIL,
       expectedSubstrings = listOf("TestScreen -> SubUi<TestState>"),
       unexpectedSubstrings = listOf("is TestScreen ->"),
     )
@@ -754,11 +754,82 @@ class SubCircuitSymbolProcessorTest {
             .trimIndent(),
         ),
       generatedFilePath = "test/JavaxUi_SubUiFactory.kt",
-      mode = SubCircuitCodegenMode.ANVIL,
-      processorOptions = mapOf(SubCircuitOptions.USE_JAVAX_ONLY to "true"),
+      mode = CodegenMode.ANVIL,
+      processorOptions = mapOf(CircuitOptions.USE_JAVAX_ONLY to "true"),
       expectedSubstrings = listOf("import javax.inject.Inject"),
       unexpectedSubstrings = listOf("import jakarta.inject.Inject"),
     )
+  }
+
+  @Test
+  fun legacySubCircuitModeOption_stillHonored() {
+    // The old subcircuit-codegen artifact used `subcircuit.codegen.mode`. That artifact now
+    // relocates to circuit-codegen, so the legacy key must still select the mode when the new
+    // `circuit.codegen.mode` key is absent.
+    val sourceFile =
+      kotlin(
+        "LegacyModeUi.kt",
+        """
+        package test
+
+        import androidx.compose.runtime.Composable
+        import androidx.compose.ui.Modifier
+        import com.slack.circuit.subcircuit.SubCircuitInject
+        import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+        import com.slack.circuit.subcircuit.SubCircuitUiState
+        import com.slack.circuit.subcircuit.SubScreen
+
+        sealed interface TestEvent : SubCircuitOuterEvent
+
+        data class TestState(val data: String) : SubCircuitUiState
+
+        data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+        @SubCircuitInject(TestScreen::class, AppScope::class)
+        @Composable
+        fun LegacyModeUi(state: TestState, modifier: Modifier = Modifier) {
+          // UI implementation
+        }
+        """
+          .trimIndent(),
+      )
+    val compilation =
+      KotlinCompilation().apply {
+        jvmTarget = "11"
+        sources =
+          listOf(
+            sourceFile,
+            subCircuitStubs,
+            composableStub,
+            modifierStub,
+            assistedAnnotationsStub,
+            daggerStub,
+            daggerHiltStub,
+            daggerHiltCodegenStub,
+            daggerMultibindingsStub,
+            jakartaStub,
+            javaxStub,
+            metroStub,
+            kotlinInjectStub,
+            kotlinInjectAnvilStub,
+            kotlinInjectAnvilOriginStub,
+            qualifierStub,
+            scopeStub,
+            anvilAnnotations,
+          )
+        inheritClassPath = true
+        configureKsp {
+          // Only the legacy key is set; the new `circuit.codegen.mode` is intentionally omitted.
+          kspProcessorOptions += "subcircuit.codegen.mode" to "metro"
+          symbolProcessorProviders += CircuitSymbolProcessorProvider()
+        }
+      }
+    val result = compilation.compile()
+    assertEquals(ExitCode.OK, result.exitCode, result.messages)
+    val content =
+      generatedFile(compilation, "test/LegacyModeUi_SubUiFactory.kt", result.messages).readText()
+    assertContains(content, "import dev.zacsweers.metro.ContributesIntoSet")
+    assertContains(content, "@ContributesIntoSet(AppScope::class)")
   }
 
   @Test
@@ -802,8 +873,8 @@ class SubCircuitSymbolProcessorTest {
             .trimIndent(),
         ),
       generatedFilePath = "test/LenientPresenter_Factory_SubPresenterFactory.kt",
-      mode = SubCircuitCodegenMode.ANVIL,
-      processorOptions = mapOf(SubCircuitOptions.LENIENT to "true"),
+      mode = CodegenMode.ANVIL,
+      processorOptions = mapOf(CircuitOptions.LENIENT to "true"),
       expectedSubstrings = listOf("is TestScreen -> factory.create(screen = screen)"),
     )
   }
@@ -843,7 +914,7 @@ class SubCircuitSymbolProcessorTest {
             .trimIndent(),
         ),
       generatedFilePath = "test/QualifiedPresenter_SubPresenterFactory.kt",
-      mode = SubCircuitCodegenMode.ANVIL,
+      mode = CodegenMode.ANVIL,
       expectedSubstrings = listOf("@MyQualifier"),
     )
   }
@@ -882,7 +953,7 @@ class SubCircuitSymbolProcessorTest {
             .trimIndent(),
         ),
       generatedFilePath = "test/HiltPresenter_SubPresenterFactoryModule.kt",
-      mode = SubCircuitCodegenMode.HILT,
+      mode = CodegenMode.HILT,
       expectedSubstrings =
         listOf(
           "@Module",
@@ -929,7 +1000,7 @@ class SubCircuitSymbolProcessorTest {
             .trimIndent(),
         ),
       generatedFilePath = "test/KiPresenter_SubPresenterFactory.kt",
-      mode = SubCircuitCodegenMode.KOTLIN_INJECT_ANVIL,
+      mode = CodegenMode.KOTLIN_INJECT_ANVIL,
       expectedSubstrings =
         listOf(
           "import me.tatarka.inject.annotations.Inject",
@@ -1084,7 +1155,7 @@ class SubCircuitSymbolProcessorTest {
     sourceFile: SourceFile,
     generatedFilePath: String,
     @Language("kotlin") expectedContent: String,
-    mode: SubCircuitCodegenMode = SubCircuitCodegenMode.ANVIL,
+    mode: CodegenMode = CodegenMode.ANVIL,
   ) {
     val compilation = prepareCompilation(sourceFile, mode = mode)
     val result = compilation.compile()
@@ -1096,7 +1167,7 @@ class SubCircuitSymbolProcessorTest {
   private fun assertGeneratedContains(
     sourceFile: SourceFile,
     generatedFilePath: String,
-    mode: SubCircuitCodegenMode,
+    mode: CodegenMode,
     expectedSubstrings: List<String>,
     unexpectedSubstrings: List<String> = emptyList(),
     processorOptions: Map<String, String> = emptyMap(),
@@ -1143,7 +1214,7 @@ class SubCircuitSymbolProcessorTest {
 
   private fun prepareCompilation(
     vararg sourceFiles: SourceFile,
-    mode: SubCircuitCodegenMode = SubCircuitCodegenMode.ANVIL,
+    mode: CodegenMode = CodegenMode.ANVIL,
     processorOptions: Map<String, String> = emptyMap(),
   ): KotlinCompilation =
     KotlinCompilation().apply {
@@ -1171,9 +1242,9 @@ class SubCircuitSymbolProcessorTest {
           )
       inheritClassPath = true
       configureKsp {
-        kspProcessorOptions += SubCircuitOptions.MODE to mode.name
+        kspProcessorOptions += CircuitOptions.MODE to mode.name
         kspProcessorOptions += processorOptions
-        symbolProcessorProviders += SubCircuitSymbolProcessorProvider()
+        symbolProcessorProviders += CircuitSymbolProcessorProvider()
       }
     }
 }

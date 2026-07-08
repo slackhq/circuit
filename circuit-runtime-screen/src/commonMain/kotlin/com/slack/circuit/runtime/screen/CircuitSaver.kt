@@ -24,9 +24,10 @@ import com.slack.circuit.runtime.screen.CircuitSaver.Companion.NoOp
  *
  * Returned values must be storable in the platform's `SaveableStateRegistry`. On Android that means
  * Bundle-supported types like `Parcelable` or `SavedState`. Other platforms hold saved state in
- * memory and accept any value.
+ * memory and accept any value, so a saver only matters there if the host app wires its
+ * `SaveableStateRegistry` to durable storage. Apps that do should use a serializing saver like
+ * `SerializableCircuitSaver` so the stored values are actually encodable.
  */
-// TODO we should have a better recommendation for other platforms
 @Stable
 public interface CircuitSaver {
   /** Returns a saveable representation of [value], or null to skip persisting it. */

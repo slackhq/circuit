@@ -26,14 +26,24 @@ import com.slack.circuit.retained.NoOpRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistryViewModel
 import com.slack.circuit.retained.ViewModelRetainedStateRegistryFactory
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.retainBackedRetainedStateRegistry
 import com.slack.circuit.retained.viewModelRetainedStateRegistry
 import kotlin.reflect.KClass
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
-class RetainedSaveableTest {
+@RunWith(Parameterized::class)
+class RetainedSaveableTest(private val useFirstParty: Boolean) {
+  companion object {
+    @JvmStatic
+    @Parameterized.Parameters(name = "useFirstParty={0}")
+    fun parameters() = listOf(false, true)
+  }
+
   private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
   @get:Rule
@@ -171,14 +181,20 @@ class RetainedSaveableTest {
   private fun setActivityContent(content: @Composable () -> Unit) {
     scenario.onActivity { activity ->
       activity.setContent {
-        CompositionLocalProvider(
-          LocalRetainedStateRegistry provides
-            viewModelRetainedStateRegistry(LifecycleRetainedStateRegistry.KEY, vmFactory) {
-              canRetainOverride ?: CanRetainChecker.Always.canRetain()
-            }
-        ) {
-          content()
+        val canRetainChecker = CanRetainChecker {
+          canRetainOverride ?: CanRetainChecker.Always.canRetain()
         }
+        val registry =
+          if (useFirstParty) {
+            retainBackedRetainedStateRegistry(LifecycleRetainedStateRegistry.KEY, canRetainChecker)
+          } else {
+            viewModelRetainedStateRegistry(
+              LifecycleRetainedStateRegistry.KEY,
+              vmFactory,
+              canRetainChecker,
+            )
+          }
+        CompositionLocalProvider(LocalRetainedStateRegistry provides registry) { content() }
       }
     }
   }

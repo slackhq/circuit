@@ -22,6 +22,7 @@ import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.produceAndCollectAsRetainedState
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.retainBackedRetainedStateRegistry
 import com.slack.circuit.retained.viewModelRetainedStateRegistry
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,10 +33,19 @@ import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSucc
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
 internal const val TAG_PRODUCED_STATE = "produced_state"
 
-class ProduceAndCollectAsRetainedStateTest {
+@RunWith(Parameterized::class)
+class ProduceAndCollectAsRetainedStateTest(private val useFirstParty: Boolean) {
+  companion object {
+    @JvmStatic
+    @Parameterized.Parameters(name = "useFirstParty={0}")
+    fun parameters() = listOf(false, true)
+  }
+
   private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
   @get:Rule
@@ -308,12 +318,13 @@ class ProduceAndCollectAsRetainedStateTest {
   private fun setActivityContent(content: @Composable () -> Unit) {
     scenario.onActivity { activity ->
       activity.setContent {
-        CompositionLocalProvider(
-          LocalRetainedStateRegistry provides
+        val registry =
+          if (useFirstParty) {
+            retainBackedRetainedStateRegistry(LifecycleRetainedStateRegistry.KEY)
+          } else {
             viewModelRetainedStateRegistry(LifecycleRetainedStateRegistry.KEY)
-        ) {
-          content()
-        }
+          }
+        CompositionLocalProvider(LocalRetainedStateRegistry provides registry) { content() }
       }
     }
   }

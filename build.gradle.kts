@@ -45,6 +45,7 @@ apiValidation {
     setOf(
       "com.slack.circuit.runtime.InternalCircuitApi",
       "com.slack.circuit.runtime.ExperimentalCircuitApi",
+      "com.slack.circuit.retained.ExperimentalCircuitRetainedApi",
       "com.slack.circuit.test.ExperimentalForInheritanceCircuitTestApi",
     )
   ignoredPackages +=

@@ -38,7 +38,6 @@ Also new:
   - See the [circuit-retained README](https://github.com/slackhq/circuit/tree/main/circuit-retained) for more details.
   - **NOTE:** This is phase one of a multi-phase migration to the first-party API.
 
-
 ### Deprecated
 
 - `SaveableBackStack.Record.args` and `SaveableBackStack.push(screen, args)`. Pass data through the `Screen` itself instead; `args` will be removed in a future release. This matches what the new `SaveableNavStack` already does.

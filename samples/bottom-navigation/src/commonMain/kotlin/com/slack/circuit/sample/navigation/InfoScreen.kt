@@ -9,8 +9,10 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.NavigationContext
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 object InfoScreen : Screen {
   @IgnoreOnParcel const val url = "https://slackhq.github.io/circuit/"
 }

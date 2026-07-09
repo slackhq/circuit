@@ -43,9 +43,10 @@ class MainActivity : AppCompatActivity() {
 
     val tabs = TabScreen.all
     val circuit = buildCircuitForTabs(tabs)
+    val circuitSaver = buildCircuitSaver()
     setContent {
       MaterialTheme {
-        val navStack = rememberSaveableNavStack(tabs.first())
+        val navStack = rememberSaveableNavStack(tabs.first(), circuitSaver)
         val navigator = rememberCircuitNavigator(navStack = navStack)
         // Build the delegate Navigator.
         val interceptingNavigator =

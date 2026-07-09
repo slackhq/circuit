@@ -6,6 +6,30 @@ Unreleased
 
 ### New
 
+#### Pluggable Screen persistence with `CircuitSaver`
+
+Circuit's saveable back stacks no longer hardwire how `Screen`s and `PopResult`s are persisted. A new `CircuitSaver` interface in `circuit-runtime-screen` converts them to and from saveable representations. Everything that saves navigation state (`rememberSaveableBackStack`, `rememberSaveableNavStack`, answering results) now accepts one.
+
+This is the first step toward removing the `Parcelable` supertype from `Screen`'s Android `actual` in a future release. Until then, defaults preserve today's behavior exactly: screens pass through unchanged and persist via `Parcelable` on Android. To prepare for the removal, implement `ParcelableScreen` on screens that should keep using Parcelable, or adopt a serializing saver. The `circuit-serialization` README details the roadmap.
+
+Configure a saver by passing it explicitly, providing `LocalCircuitSaver` at your app root via `ProvideCircuitSaver`, or with `Circuit.Builder.setCircuitSaver` (reaches only content inside `CircuitCompositionLocals`).
+
+**New artifacts: `circuit-serialization` and `circuit-serialization-reflect`**
+
+For kotlinx-serialization users, the new `circuit-serialization` artifact persists `@Serializable` screens to `SavedState` via `androidx.savedstate`:
+
+- `SerializableCircuitSaver(configuration)`: KMP-friendly, register screens for polymorphic serialization in the `SavedStateConfiguration`'s `serializersModule`.
+- `ReflectiveSerializableCircuitSaver(configuration)` (in the JVM/Android-only `circuit-serialization-reflect` artifact): resolves serializers reflectively from the saved class name with no registration needed. Embeds its required R8/ProGuard rules, so minified apps need no extra setup.
+
+Both savers restore leniently: records that no longer decode, such as after an app update removed a screen, are dropped rather than crashing. Pass an `onRestoreError` callback to observe drops. The bottom-navigation sample demonstrates the kotlinx setup end to end.
+
+Also new:
+
+- `ParcelableScreen`/`ParcelablePopResult`: common interfaces that add `Parcelable` on Android. Migrate common-code screens to these to keep using the Parcelable strategy once `Screen` drops its `Parcelable` supertype.
+- `CircuitSaver.NoOp`: disables navigation state persistence entirely.
+
+#### circuit-retained is migrating to upstream `retained` APIs
+
 - **circuit-retained:** Experimental opt-in interop with Compose's first-party
   [retain](https://developer.android.com/develop/ui/compose/state-lifespans#retain) API.
   - Setting `CircuitRetainedSettings.useFirstParty = true` (before the first composition) backs `lifecycleRetainedStateRegistry()` with a root-level `retain` call instead of a Circuit-managed `ViewModel`, delegating configuration-change survival to the `RetainedValuesStore` installed in the composition.
@@ -14,8 +38,14 @@ Unreleased
   - See the [circuit-retained README](https://github.com/slackhq/circuit/tree/main/circuit-retained) for more details.
   - **NOTE:** This is phase one of a multi-phase migration to the first-party API.
 
+### Deprecated
+
+- `SaveableBackStack.Record.args` and `SaveableBackStack.push(screen, args)`. Pass data through the `Screen` itself instead; `args` will be removed in a future release. This matches what the new `SaveableNavStack` already does.
+- The `Saver` vals on `SaveableBackStack`, `SaveableNavStack`, and `AnsweringResultHandler` companions. Use the `Saver(CircuitSaver)` functions instead.
+
 ### Fixed
 
+- Restoring a saveable back stack or nav stack whose records were all dropped now falls back to a fresh stack instead of restoring an empty one, and `SaveableNavStack` clamps its current index into bounds when some records drop on restore.
 - **SubCircuit:** Fix `subcircuit-codegen` Metro mode (`subcircuit.codegen.mode=metro`). It previously
   required Dagger's `@AssistedFactory` even in Metro mode, generated `@javax.inject.Inject` instead of
   Metro's `@Inject`, and referenced `dev.zacsweers.metro.annotations.ContributesIntoSet` (wrong package).

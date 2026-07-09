@@ -10,8 +10,12 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.slack.circuit.internal.test.TestScreen
+import com.slack.circuit.runtime.screen.CircuitSaveable
+import com.slack.circuit.runtime.screen.CircuitSaver
+import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import kotlin.test.Test
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SaveableBackStackTest {
@@ -70,7 +74,7 @@ class SaveableBackStackTest {
     assertThat(saved).isNotNull()
     saved!!
 
-    val restored = SaveableBackStack.Saver.restore(saved)
+    val restored = SaveableBackStack.Saver(DefaultCircuitSaver).restore(saved)
     assertThat(restored).isNotNull()
     restored!!
 
@@ -95,12 +99,47 @@ class SaveableBackStackTest {
     assertThat(saved).isNotNull()
     saved!!
 
-    val restored = SaveableBackStack.Saver.restore(saved)
+    val restored = SaveableBackStack.Saver(DefaultCircuitSaver).restore(saved)
     assertThat(restored).isNotNull()
     restored!!
 
     assertThat(backStack.entryList.toList()).isEqualTo(restored.entryList.toList())
     assertThat(backStack.stateStore.toMap()).isEqualTo(restored.stateStore.toMap())
+  }
+
+  @Test
+  fun test_saveable_restore_with_noop_saver_returns_null() {
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
+    backStack.push(TestScreen.ScreenA)
+
+    val saved = save(backStack, CircuitSaver.NoOp)
+    assertThat(saved).isNotNull()
+    saved!!
+
+    assertNull(SaveableBackStack.Saver(CircuitSaver.NoOp).restore(saved))
+  }
+
+  @Test
+  fun test_saveable_restore_drops_unrestorable_records() {
+    // Drops one screen on save, the rest of the stack should restore without it.
+    val droppingSaver =
+      object : CircuitSaver by DefaultCircuitSaver {
+        override fun save(value: CircuitSaveable): Any? =
+          if (value == TestScreen.ScreenA) null else value
+      }
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
+    backStack.push(TestScreen.ScreenA)
+    backStack.push(TestScreen.ScreenB)
+
+    val saved = save(backStack, droppingSaver)
+    assertThat(saved).isNotNull()
+    saved!!
+
+    val restored = SaveableBackStack.Saver(droppingSaver).restore(saved)
+    assertThat(restored).isNotNull()
+    restored!!
+    assertThat(restored.entryList.map { it.screen })
+      .isEqualTo(listOf(TestScreen.ScreenB, TestScreen.RootAlpha))
   }
 
   @Test
@@ -128,8 +167,11 @@ class SaveableBackStackTest {
   }
 }
 
-private fun save(backStack: SaveableBackStack) =
-  with(SaveableBackStack.Saver) {
+private fun save(
+  backStack: SaveableBackStack,
+  circuitSaver: CircuitSaver = DefaultCircuitSaver,
+) =
+  with(SaveableBackStack.Saver(circuitSaver)) {
     val scope = SaverScope { true }
     scope.save(backStack)
   }

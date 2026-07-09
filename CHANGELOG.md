@@ -28,6 +28,17 @@ Also new:
 - `ParcelableScreen`/`ParcelablePopResult`: common interfaces that add `Parcelable` on Android. Migrate common-code screens to these to keep using the Parcelable strategy once `Screen` drops its `Parcelable` supertype.
 - `CircuitSaver.NoOp`: disables navigation state persistence entirely.
 
+#### circuit-retained is migrating to upstream `retained` APIs
+
+- **circuit-retained:** Experimental opt-in interop with Compose's first-party
+  [retain](https://developer.android.com/develop/ui/compose/state-lifespans#retain) API.
+  - Setting `CircuitRetainedSettings.useFirstParty = true` (before the first composition) backs `lifecycleRetainedStateRegistry()` with a root-level `retain` call instead of a Circuit-managed `ViewModel`, delegating configuration-change survival to the `RetainedValuesStore` installed in the composition.
+  - All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged.
+  - First-party `retain {}` calls also compose correctly alongside Circuit's retention.
+  - See the [circuit-retained README](https://github.com/slackhq/circuit/tree/main/circuit-retained) for more details.
+  - **NOTE:** This is phase one of a multi-phase migration to the first-party API.
+
+
 ### Deprecated
 
 - `SaveableBackStack.Record.args` and `SaveableBackStack.push(screen, args)`. Pass data through the `Screen` itself instead; `args` will be removed in a future release. This matches what the new `SaveableNavStack` already does.

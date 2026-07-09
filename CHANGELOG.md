@@ -18,8 +18,7 @@ Unreleased
 
 - **SubCircuit:** `@SubCircuitInject` is now handled by the main `circuit-codegen` processor.
   `circuitx-subcircuit-codegen` is now a relocation pointer to `circuit-codegen`, but prefer
-  depending on `circuit-codegen` directly. Prefer the `circuit.codegen.*` KSP options; the
-  `subcircuit.codegen.*` keys still work as fallbacks. Generated output is unchanged.
+  depending on `circuit-codegen` directly.
 
 ### Fixed
 

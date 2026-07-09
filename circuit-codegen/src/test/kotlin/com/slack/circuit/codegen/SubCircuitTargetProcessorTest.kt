@@ -392,6 +392,66 @@ class SubCircuitTargetProcessorTest {
   }
 
   @Test
+  fun presenterAssistedFactory_metro() {
+    // The provider-path Metro presenter is covered by presenterFactory_metro; this pins the
+    // @AssistedFactory path in Metro mode (Metro's @AssistedFactory + @Assisted, factory.create()).
+    assertGeneratedContains(
+      sourceFile =
+        kotlin(
+          "MetroAssistedPresenter.kt",
+          """
+          package test
+
+          import androidx.compose.runtime.Composable
+          import dev.zacsweers.metro.Assisted
+          import dev.zacsweers.metro.AssistedFactory
+          import dev.zacsweers.metro.Inject
+          import com.slack.circuit.subcircuit.SubCircuitInject
+          import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+          import com.slack.circuit.subcircuit.SubCircuitUiState
+          import com.slack.circuit.subcircuit.SubPresenter
+          import com.slack.circuit.subcircuit.SubScreen
+
+          sealed interface TestEvent : SubCircuitOuterEvent
+
+          data class TestState(val data: String) : SubCircuitUiState
+
+          data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+          class MetroAssistedPresenter @Inject constructor(
+            @Assisted val screen: TestScreen
+          ) : SubPresenter<TestEvent, TestState> {
+
+            @Composable
+            override fun present(outerEventSink: (TestEvent) -> Unit): TestState {
+              return TestState("test")
+            }
+
+            @SubCircuitInject(TestScreen::class, AppScope::class)
+            @AssistedFactory
+            interface Factory {
+              fun create(screen: TestScreen): MetroAssistedPresenter
+            }
+          }
+          """
+            .trimIndent(),
+        ),
+      generatedFilePath = "test/MetroAssistedPresenter_Factory_SubPresenterFactory.kt",
+      mode = CodegenMode.METRO,
+      expectedSubstrings =
+        listOf(
+          "import dev.zacsweers.metro.ContributesIntoSet",
+          "import dev.zacsweers.metro.Inject",
+          "@Inject",
+          "@ContributesIntoSet(AppScope::class)",
+          "public class MetroAssistedPresenter_Factory_SubPresenterFactory",
+          "private val factory: MetroAssistedPresenter.Factory,",
+          "is TestScreen -> factory.create(screen = screen)",
+        ),
+    )
+  }
+
+  @Test
   fun presenterProviderFactory_anvil() {
     assertGeneratedFile(
       sourceFile =
@@ -830,6 +890,80 @@ class SubCircuitTargetProcessorTest {
       generatedFile(compilation, "test/LegacyModeUi_SubUiFactory.kt", result.messages).readText()
     assertContains(content, "import dev.zacsweers.metro.ContributesIntoSet")
     assertContains(content, "@ContributesIntoSet(AppScope::class)")
+  }
+
+  @Test
+  fun subCircuitOnly_withoutCircuitRuntimeOnClasspath() {
+    // The whole point of CircuitSymbols loading each runtime type lazily is that a SubCircuit-only
+    // consumer need not have circuit-runtime on its classpath. Every other test inherits the host
+    // classpath (which includes circuit-runtime), so this one compiles WITHOUT it: only the
+    // SubCircuit stubs + Compose/DI stubs are on the classpath, no com.slack.circuit.runtime.*.
+    // If the SubCircuit path ever touched a circuit-only symbol (screen/navigator/context/state),
+    // its lazy getter would throw "Could not find ... in classpath" and fail this compilation.
+    val sourceFile =
+      kotlin(
+        "SubOnlyUi.kt",
+        """
+        package test
+
+        import androidx.compose.runtime.Composable
+        import androidx.compose.ui.Modifier
+        import com.slack.circuit.subcircuit.SubCircuitInject
+        import com.slack.circuit.subcircuit.SubCircuitOuterEvent
+        import com.slack.circuit.subcircuit.SubCircuitUiState
+        import com.slack.circuit.subcircuit.SubScreen
+
+        sealed interface TestEvent : SubCircuitOuterEvent
+
+        data class TestState(val data: String) : SubCircuitUiState
+
+        data class TestScreen(val id: String) : SubScreen<TestEvent>
+
+        @SubCircuitInject(TestScreen::class, AppScope::class)
+        @Composable
+        fun SubOnlyUi(state: TestState, modifier: Modifier = Modifier) {
+          // UI implementation
+        }
+        """
+          .trimIndent(),
+      )
+    val compilation =
+      KotlinCompilation().apply {
+        jvmTarget = "11"
+        sources =
+          listOf(
+            sourceFile,
+            subCircuitStubs,
+            composableStub,
+            modifierStub,
+            assistedAnnotationsStub,
+            daggerStub,
+            daggerHiltStub,
+            daggerHiltCodegenStub,
+            daggerMultibindingsStub,
+            jakartaStub,
+            javaxStub,
+            metroStub,
+            kotlinInjectStub,
+            kotlinInjectAnvilStub,
+            kotlinInjectAnvilOriginStub,
+            qualifierStub,
+            scopeStub,
+            anvilAnnotations,
+          )
+        // Deliberately do NOT inherit the host classpath, so circuit-runtime is genuinely absent.
+        inheritClassPath = false
+        configureKsp {
+          kspProcessorOptions += CircuitOptions.MODE to CodegenMode.ANVIL.name
+          symbolProcessorProviders += CircuitSymbolProcessorProvider()
+        }
+      }
+    val result = compilation.compile()
+    assertEquals(ExitCode.OK, result.exitCode, result.messages)
+    val content =
+      generatedFile(compilation, "test/SubOnlyUi_SubUiFactory.kt", result.messages).readText()
+    assertContains(content, ": SubUiFactory")
+    assertContains(content, "is TestScreen -> SubUi<TestState>")
   }
 
   @Test

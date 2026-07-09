@@ -180,7 +180,7 @@ fun TeamMembersUi(state: TeamMembersState, modifier: Modifier = Modifier) {
 SubCircuit uses KSP to generate factory classes that wire presenters and UIs into the DI graph. `@SubCircuitInject` is handled by the same `circuit-codegen` processor as `@CircuitInject`, so it shares the same setup and options — see [Circuit's code gen](../docs/code-gen.md).
 
 !!! note "Migrating from `circuitx-subcircuit-codegen`"
-    The old `circuitx-subcircuit-codegen` artifact is now a relocation pointer to `circuit-codegen`, so existing dependencies keep resolving, but you should depend on `circuit-codegen` directly. The `subcircuit.codegen.*` KSP options still work as fallbacks; prefer the `circuit.codegen.*` equivalents.
+    The old `circuitx-subcircuit-codegen` artifact is now a relocation pointer to `circuit-codegen`, so existing dependencies keep resolving, but you should depend on `circuit-codegen` directly. The `subcircuit.codegen.*` KSP options still work as fallbacks; prefer the `circuit.codegen.*` equivalents. Generated factories are behaviorally equivalent, though the exact source formatting now matches `@CircuitInject` output (named arguments, a `when (screen)` branch, and a `jakarta.inject.Inject` default — override with `circuit.codegen.useJavaxOnly`).
 
 ### Presenter Factories
 

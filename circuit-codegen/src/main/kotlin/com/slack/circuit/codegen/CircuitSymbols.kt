@@ -53,12 +53,14 @@ internal class CircuitSymbols private constructor(resolver: Resolver) {
 
   companion object {
     fun create(resolver: Resolver): CircuitSymbols? {
-      @Suppress("SwallowedException")
-      return try {
-        CircuitSymbols(resolver)
-      } catch (e: IllegalStateException) {
-        null
-      }
+      // Modifier (from compose-ui) is the one type both the Circuit and SubCircuit runtimes share,
+      // so it's the minimal precondition for generating anything. Bail cleanly if it's absent.
+      // Runtime-specific types load lazily and are required only by their own CodegenTarget.
+      val hasModifier =
+        resolver.getClassDeclarationByName(
+          resolver.getKSNameFromString(CircuitNames.MODIFIER.canonicalName)
+        ) != null
+      return if (hasModifier) CircuitSymbols(resolver) else null
     }
   }
 }

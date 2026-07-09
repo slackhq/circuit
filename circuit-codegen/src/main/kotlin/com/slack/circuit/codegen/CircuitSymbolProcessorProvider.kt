@@ -542,9 +542,29 @@ private class CircuitSymbolProcessor(
         creatorOrConstructor = injectableConstructor
         targetClass = declaration
       } else {
-        val creatorFunction = declaration.getAllFunctions().filter { it.isAbstract }.single()
+        val abstractFunctions = declaration.getAllFunctions().filter { it.isAbstract }.toList()
+        val creatorFunction =
+          abstractFunctions.singleOrNull()
+            ?: run {
+              logger.error(
+                "@${target.annotationSimpleName} on an @AssistedFactory requires exactly one " +
+                  "abstract create function, but ${declaration.qualifiedName?.asString()} has " +
+                  "${abstractFunctions.size}.",
+                declaration,
+              )
+              return null
+            }
         creatorOrConstructor = creatorFunction
-        targetClass = creatorFunction.returnType!!.resolve().declaration as KSClassDeclaration
+        targetClass =
+          creatorFunction.returnType?.resolve()?.declaration as? KSClassDeclaration
+            ?: run {
+              logger.error(
+                "Could not resolve the return type of " +
+                  "${creatorFunction.simpleName.getShortName()}.",
+                creatorFunction,
+              )
+              return null
+            }
         targetClass.checkVisibility(target) {
           return null
         }

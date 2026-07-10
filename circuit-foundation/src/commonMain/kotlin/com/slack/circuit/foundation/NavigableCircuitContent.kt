@@ -34,6 +34,8 @@ import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.retain.LocalRetainedValuesStoreProvider
+import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -50,6 +52,10 @@ import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.foundation.navstack.ProvidedValues
 import com.slack.circuit.foundation.navstack.providedValuesForNavStack
 import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
+import com.slack.circuit.foundation.internal.RecordRetainedValuesStores
+import com.slack.circuit.foundation.internal.RecordRetainedValuesStoresHolder
+import com.slack.circuit.retained.CircuitRetainedSettings
+import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateHolder
 import com.slack.circuit.retained.rememberRetained
@@ -258,6 +264,17 @@ public fun <R : Record> NavigableCircuitContent(
   val outerKey = "_navigable_registry_${currentCompositeKeyHashCode.toString(MaxSupportedRadix)}"
   val outerRegistry = rememberRetainedStateRegistry(key = outerKey)
 
+  // When first-party retain is enabled, scope a RetainedValuesStore to each record so that
+  // retain {} calls inside record content get per-record lifetimes. Hosted here, outside any
+  // movableContentOf, so the registry's own retain slot has a stable position.
+  @OptIn(ExperimentalCircuitRetainedApi::class)
+  val recordRetainedValuesStores =
+    if (CircuitRetainedSettings.useFirstParty) {
+      retain { RecordRetainedValuesStoresHolder() }.stores
+    } else {
+      null
+    }
+
   val navDecoration =
     remember(decoration, decoratorFactory) {
       // User specified decorator takes precedence over a default decoration.
@@ -275,7 +292,7 @@ public fun <R : Record> NavigableCircuitContent(
     val saveableStateHolder = rememberSaveableStateHolder()
     val retainedStateHolder = rememberRetainedStateHolder()
     val contentProviderState =
-      remember(saveableStateHolder, retainedStateHolder) {
+      remember(saveableStateHolder, retainedStateHolder, recordRetainedValuesStores) {
           ContentProviderState(
             saveableStateHolder = saveableStateHolder,
             retainedStateHolder = retainedStateHolder,
@@ -288,6 +305,7 @@ public fun <R : Record> NavigableCircuitContent(
           lastNavigator = navigator
           lastCircuit = circuit
           lastUnavailableRoute = unavailableRoute
+          recordRetainedStores = recordRetainedValuesStores
         }
     val activeContentProviders =
       buildCircuitContentProviders(navStack = navigator.navStack) ?: return@CompositionLocalProvider
@@ -461,6 +479,7 @@ public class ContentProviderState<R : Record>(
   internal var lastNavigator by mutableStateOf(navigator)
   internal var lastCircuit by mutableStateOf(circuit)
   internal var lastUnavailableRoute by mutableStateOf(unavailableRoute)
+  internal var recordRetainedStores: RecordRetainedValuesStores? = null
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -483,6 +502,38 @@ public class ContentProviderState<R : Record>(
 private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: () -> Unit) =
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     with(contentProviderState) {
+      val stores = recordRetainedStores
+      if (stores != null) {
+        // Clear the record's first-party store once the record permanently leaves the nav stack.
+        // Registered before the store provider below so its onDispose runs after the record
+        // content has torn down.
+        DisposableEffect(record.registryKey) {
+          onDispose {
+            if (!lastNavigator.navStack.containsRecord(record, includeSaved = true)) {
+              stores.clear(record.registryKey)
+            }
+          }
+        }
+      }
+      val body: @Composable () -> Unit = { RecordContent(record, contentProviderState) }
+      if (stores != null) {
+        // Scope retain {} calls within the record's content to the record itself.
+        LocalRetainedValuesStoreProvider(stores.storeFor(record.registryKey), body)
+      } else {
+        body()
+      }
+    }
+    // Track if the movableContent is still active to correctly reuse it and not create a new one.
+    DisposableEffect(Unit) {
+      onActive()
+      onDispose { onDispose() }
+    }
+  }
+
+@OptIn(ExperimentalCircuitApi::class)
+@Composable
+private fun <R : Record> RecordContent(record: R, contentProviderState: ContentProviderState<R>) {
+  with(contentProviderState) {
       saveableStateHolder.SaveableStateProvider(record.registryKey) {
         // Provides a RetainedStateRegistry that is maintained independently for each record while
         // the record exists in the back stack.
@@ -521,13 +572,8 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
           }
         }
       }
-    }
-    // Track if the movableContent is still active to correctly reuse it and not create a new one.
-    DisposableEffect(Unit) {
-      onActive()
-      onDispose { onDispose() }
-    }
   }
+}
 
 /** The maximum radix available for conversion to and from strings. */
 private const val MaxSupportedRadix = 36

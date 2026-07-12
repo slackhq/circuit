@@ -52,7 +52,8 @@ private class ReflectiveCircuitSaver(
 
   override fun save(value: CircuitSaveable): Any? = encode(value)
 
-  protected override fun restore(saved: Any): CircuitSaveable? = decode(saved) as? CircuitSaveable
+  protected override fun restore(saved: Any): CircuitSaveable? =
+    saved as? CircuitSaveable ?: decode(saved) as? CircuitSaveable
 
   private fun encode(value: Any): SavedState {
     val serializer =

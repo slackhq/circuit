@@ -66,6 +66,18 @@ class SerializableCircuitSaverTest {
   }
 
   @Test
+  fun raw_values_restore_without_reporting_an_error() {
+    var reported: Throwable? = null
+    val reportingSaver = SerializableCircuitSaver(onRestoreError = { reported = it })
+    val screen = StringScreen("legacy")
+    val result = IntPopResult(42)
+
+    assertEquals(screen, reportingSaver.restoreScreen<StringScreen>(screen))
+    assertEquals(result, reportingSaver.restorePopResult<IntPopResult>(result))
+    assertNull(reported)
+  }
+
+  @Test
   fun screen_cannot_restore_as_pop_result() {
     val screen = StringScreen("hello")
     val saved = assertNotNull(saver.save(screen))

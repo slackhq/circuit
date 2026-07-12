@@ -122,13 +122,7 @@ class SaveableBackStackTest {
   @Test
   fun test_saveable_restore_drops_unrestorable_records() {
     // Drops one screen on save, the rest of the stack should restore without it.
-    val droppingSaver =
-      object : CircuitSaver() {
-        override fun save(value: CircuitSaveable): Any? =
-          if (value == TestScreen.ScreenA) null else value
-
-        override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
-      }
+    val droppingSaver = droppingSaver(TestScreen.ScreenA)
     val backStack = SaveableBackStack(TestScreen.RootAlpha)
     backStack.push(TestScreen.ScreenA)
     backStack.push(TestScreen.ScreenB)
@@ -142,6 +136,42 @@ class SaveableBackStackTest {
     restored!!
     assertThat(restored.entryList.map { it.screen })
       .isEqualTo(listOf(TestScreen.ScreenB, TestScreen.RootAlpha))
+  }
+
+  @Test
+  fun test_saveable_restore_allows_current_stack_root_to_drop() {
+    val circuitSaver = droppingSaver(TestScreen.RootAlpha)
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
+    backStack.push(TestScreen.ScreenA)
+    backStack.push(TestScreen.ScreenB)
+
+    val saved = save(backStack, circuitSaver)
+    assertThat(saved).isNotNull()
+    val restored = SaveableBackStack.Saver(circuitSaver).restore(saved!!)
+    assertThat(restored).isNotNull()
+    restored!!
+    assertThat(restored.entryList.map { it.screen })
+      .isEqualTo(listOf(TestScreen.ScreenB, TestScreen.ScreenA))
+  }
+
+  @Test
+  fun test_saveable_restore_discards_snapshot_when_its_root_drops() {
+    val circuitSaver = droppingSaver(TestScreen.RootAlpha)
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
+    backStack.push(TestScreen.ScreenA)
+    backStack.saveState()
+    backStack.popUntil { false }
+    backStack.push(TestScreen.RootBeta)
+    backStack.push(TestScreen.ScreenC)
+
+    val saved = save(backStack, circuitSaver)
+    assertThat(saved).isNotNull()
+    val restored = SaveableBackStack.Saver(circuitSaver).restore(saved!!)
+    assertThat(restored).isNotNull()
+    restored!!
+    assertThat(restored.entryList.map { it.screen })
+      .isEqualTo(listOf(TestScreen.ScreenC, TestScreen.RootBeta))
+    assertThat(restored.stateStore).isEmpty()
   }
 
   @Test
@@ -176,4 +206,11 @@ private fun save(
   with(SaveableBackStack.Saver(circuitSaver)) {
     val scope = SaverScope { true }
     scope.save(backStack)
+  }
+
+private fun droppingSaver(vararg dropped: CircuitSaveable): CircuitSaver =
+  object : CircuitSaver() {
+    override fun save(value: CircuitSaveable): Any? = value.takeUnless { it in dropped }
+
+    override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
   }

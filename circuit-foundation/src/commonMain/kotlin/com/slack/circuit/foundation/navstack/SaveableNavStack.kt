@@ -345,12 +345,17 @@ internal constructor(
           },
           restore = { map ->
             @Suppress("UNCHECKED_CAST")
-            val entries = (map["entries"] as List<List<Any>>).mapNotNull { recordSaver.restore(it) }
-            if (entries.isEmpty()) return@mapSaver null
+            val savedEntries = map["entries"] as List<List<Any>>
+            val restored =
+              restoreRecords(
+                savedEntries = savedEntries,
+                savedCurrentIndex = map["currentIndex"] as Int,
+                recordSaver = recordSaver,
+                requireRoot = true,
+              ) ?: return@mapSaver null
             SaveableNavStackList(
-              entries = entries,
-              // Records may have been dropped on restore, so clamp the index into bounds.
-              currentIndex = (map["currentIndex"] as Int).coerceIn(0, entries.lastIndex),
+              entries = restored.entries,
+              currentIndex = restored.currentIndex,
             )
           },
         )
@@ -385,18 +390,29 @@ internal constructor(
           }
         },
         restore = { value ->
-          var currentIndex = -1
+          var savedCurrentIndex = -1
+          var restoredCurrentIndex = -1
           val navStack = SaveableNavStack()
           value.forEachIndexed { index, item ->
             when (index) {
               0 -> {
                 // The first list is the current index
-                currentIndex = item.first() as Int
+                savedCurrentIndex = item.first() as Int
               }
 
               1 -> {
                 // The second list is the entry list
-                item.mapNotNullTo(navStack.entryList) { recordSaver.restore(it as List<Any>) }
+                val restored =
+                  restoreRecords(
+                    savedEntries = item,
+                    savedCurrentIndex = savedCurrentIndex,
+                    recordSaver = recordSaver,
+                    requireRoot = false,
+                  )
+                if (restored != null) {
+                  navStack.entryList.addAll(restored.entries)
+                  restoredCurrentIndex = restored.currentIndex
+                }
               }
 
               else -> {
@@ -415,11 +431,36 @@ internal constructor(
           // If every record was dropped, return null so rememberSaveable falls back to its
           // factory instead of restoring an empty, unusable stack.
           if (navStack.entryList.isEmpty()) return@listSaver null
-          // Records may have been dropped on restore, so clamp the index into bounds.
-          navStack.currentIndex = currentIndex.coerceIn(0, navStack.entryList.lastIndex)
+          navStack.currentIndex = restoredCurrentIndex
           navStack
         },
       )
     }
   }
+}
+
+private data class RestoredRecords(
+  val entries: List<Record>,
+  val currentIndex: Int,
+)
+
+private fun restoreRecords(
+  savedEntries: List<*>,
+  savedCurrentIndex: Int,
+  recordSaver: Saver<Record, Any>,
+  requireRoot: Boolean,
+): RestoredRecords? {
+  val restored =
+    savedEntries.mapIndexedNotNull { originalIndex, savedRecord ->
+      @Suppress("UNCHECKED_CAST")
+      recordSaver.restore(savedRecord as List<Any>)?.let { IndexedValue(originalIndex, it) }
+    }
+  if (restored.isEmpty()) return null
+  if (requireRoot && restored.last().index != savedEntries.lastIndex) return null
+
+  // Prefer the exact or nearest rootward record, then fall back to the topward survivor.
+  val currentIndex =
+    restored.indexOfFirst { it.index >= savedCurrentIndex }.takeIf { it >= 0 }
+      ?: restored.lastIndex
+  return RestoredRecords(restored.map { it.value }, currentIndex)
 }

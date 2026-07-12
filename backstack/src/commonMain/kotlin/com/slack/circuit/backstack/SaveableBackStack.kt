@@ -273,10 +273,16 @@ internal constructor(
             } else {
               // Any list after that is from the state store
               list
-                .filterIsInstance<List<Any>>()
-                .mapNotNull { recordSaver.restore(it) }
-                .takeIf { it.isNotEmpty() }
-                ?.let { records ->
+                .mapIndexedNotNull { originalIndex, savedRecord ->
+                  (savedRecord as? List<Any>)
+                    ?.let(recordSaver::restore)
+                    ?.let { IndexedValue(originalIndex, it) }
+                }
+                .takeIf { restored ->
+                  restored.lastOrNull()?.index == list.lastIndex
+                }
+                ?.let { restored ->
+                  val records = restored.map { it.value }
                   // The key is always the root screen (i.e. last item)
                   backStack.stateStore[records.last().screen] = records
                 }

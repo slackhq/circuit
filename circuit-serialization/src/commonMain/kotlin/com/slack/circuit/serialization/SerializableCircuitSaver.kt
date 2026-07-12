@@ -61,7 +61,7 @@ private class SavedStateCircuitSaver(
   }
 
   protected override fun restore(saved: Any): CircuitSaveable? =
-    decode(circuitSaveableSerializer, saved)
+    saved as? CircuitSaveable ?: decode(circuitSaveableSerializer, saved)
 
   private fun <T : Any> encode(serializer: KSerializer<T>, value: T): SavedState =
     try {

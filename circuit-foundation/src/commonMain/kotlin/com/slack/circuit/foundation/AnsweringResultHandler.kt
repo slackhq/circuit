@@ -141,20 +141,32 @@ public class AnsweringResultHandler {
           buildMap {
             for ((recordKey, state) in handler.recordStates) {
               // Peek the result so checking save isn't destructive.
-              val pendingResult = state.peekResult()?.let(circuitSaver::save)
-              put(recordKey, listOf(state.resultKey, pendingResult))
+              val pendingResult = state.peekResult()
+              val savedPendingResult = pendingResult?.let(circuitSaver::save)
+              put(recordKey, listOf(state.resultKey, savedPendingResult, pendingResult != null))
             }
           }
         },
         restore = { map ->
           AnsweringResultHandler().apply {
             for ((recordKey, value) in map) {
-              val (resultKey, pendingResult) = value as List<Any?>
-              // NOTE order matters here, prepareForResult() clears the buffer
-              resultKey?.let { prepareForResult(recordKey, it as String) }
-              pendingResult?.let { circuitSaver.restorePopResult<PopResult>(it) }?.let {
-                sendResult(recordKey, it)
+              val values = value as List<Any?>
+              val resultKey = values.getOrNull(0) as? String ?: continue
+              val savedPendingResult = values.getOrNull(1)
+              // The legacy two-element form could only distinguish pending results by payload.
+              val hadPendingResult =
+                if (values.size >= 3) values[2] as Boolean else savedPendingResult != null
+
+              if (!hadPendingResult) {
+                prepareForResult(recordKey, resultKey)
+                continue
               }
+
+              val pendingResult =
+                savedPendingResult?.let { circuitSaver.restorePopResult<PopResult>(it) } ?: continue
+              // NOTE order matters here, prepareForResult() clears the buffer
+              prepareForResult(recordKey, resultKey)
+              sendResult(recordKey, pendingResult)
             }
           }
         },

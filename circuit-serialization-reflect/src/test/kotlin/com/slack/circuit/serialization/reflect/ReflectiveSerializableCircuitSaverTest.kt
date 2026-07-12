@@ -40,6 +40,19 @@ class ReflectiveSerializableCircuitSaverTest {
   }
 
   @Test
+  fun raw_values_restore_without_reporting_an_error() {
+    var reported: Throwable? = null
+    val reportingSaver =
+      ReflectiveSerializableCircuitSaver(onRestoreError = { reported = it })
+    val screen = ReflectiveScreen("legacy")
+    val result = ReflectivePopResult(42)
+
+    assertEquals(screen, reportingSaver.restoreScreen<ReflectiveScreen>(screen))
+    assertEquals(result, reportingSaver.restorePopResult<ReflectivePopResult>(result))
+    assertNull(reported)
+  }
+
+  @Test
   fun screen_cannot_restore_as_pop_result() {
     val screen = ReflectiveScreen("hello")
     val saved = assertNotNull(saver.save(screen))

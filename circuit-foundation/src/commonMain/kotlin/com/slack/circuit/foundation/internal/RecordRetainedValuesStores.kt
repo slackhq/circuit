@@ -6,22 +6,6 @@ import androidx.compose.runtime.retain.ForgetfulRetainedValuesStore
 import androidx.compose.runtime.retain.RetainObserver
 import androidx.compose.runtime.retain.RetainedValuesStore
 
-/**
- * A registry of per-record [RetainedValuesStore]s backing first-party `retain {}` calls inside
- * navigation record content.
- *
- * This intentionally does not use `RetainedValuesStoreRegistry`/`ManagedRetainedValuesStore`. Those
- * gate saving exited values on the content-presence indicator having already flipped the store out
- * of its composed state, and that ordering inverts when record content leaves composition through
- * an animated decorator's `AnimatedContent` pane: the record's retained value holders are forgotten
- * before the indicator runs, so values are retired instead of saved.
- *
- * A record store instead keeps every exiting value unconditionally. Record content only leaves
- * composition when the record goes off-screen or the composition is torn down, and both cases want
- * retention. Unclaimed values are retired when the record's content next settles back into
- * composition, and everything is retired when the record leaves the nav stack ([clear]) or the
- * registry itself is retired ([dispose]).
- */
 /** Retainable holder that disposes the registry when the retain system retires it. */
 internal class RecordRetainedValuesStoresHolder : RetainObserver {
   val stores = RecordRetainedValuesStores()
@@ -37,6 +21,23 @@ internal class RecordRetainedValuesStoresHolder : RetainObserver {
   override fun onUnused() = stores.dispose()
 }
 
+/**
+ * A registry of per-record [RetainedValuesStore]s backing first-party `retain {}` calls inside
+ * navigation record content.
+ *
+ * This intentionally does not use `RetainedValuesStoreRegistry`/`ManagedRetainedValuesStore`. Those
+ * gate saving exited values on the content-presence indicator having already flipped the store out
+ * of its composed state, and that ordering inverts when record content leaves composition through
+ * an animated decorator's `AnimatedContent` pane: the record's retained value holders are forgotten
+ * before the indicator runs, so values are retired instead of saved. See
+ * [Compose issue 533778695](https://issuetracker.google.com/issues/533778695).
+ *
+ * A record store instead keeps every exiting value unconditionally. Record content only leaves
+ * composition when the record goes off-screen or the composition is torn down, and both cases want
+ * retention. Unclaimed values are retired when the record's content next settles back into
+ * composition, and everything is retired when the record leaves the nav stack ([clear]) or the
+ * registry itself is retired ([dispose]).
+ */
 internal class RecordRetainedValuesStores {
   private val stores = mutableMapOf<String, RecordRetainedValuesStore>()
   private var isDisposed = false

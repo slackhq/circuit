@@ -11,17 +11,21 @@ import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.junit4.ComposeContentTestRule
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.slack.circuit.backstack.BackStack
-import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
+import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavStack
+import com.slack.circuit.runtime.navigation.NavStackList
+import com.slack.circuit.runtime.navigation.transform
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,12 +43,14 @@ class NavigationTest {
   fun `Test savable, fast multi-root reset`() {
     with(composeTestRule) {
       val tabs = TabScreen.all
-      lateinit var backStack: BackStack<*>
+      val stateRestorationTester = StateRestorationTester(this)
+      val circuitSaver = buildCircuitSaver()
+      lateinit var navStack: NavStack<out NavStack.Record>
       lateinit var navigator: Navigator
-      setTestContent(tabs) {
-        backStack = rememberSaveableBackStack(tabs.first())
-        navigator = rememberCircuitNavigator(backStack)
-        ContentScaffold(backStack, navigator, tabs, Modifier.fillMaxSize())
+      stateRestorationTester.setTestContent(tabs) {
+        navStack = rememberSaveableNavStack(tabs.first(), circuitSaver)
+        navigator = rememberCircuitNavigator(navStack)
+        ContentScaffold(navStack, navigator, tabs, Modifier.fillMaxSize())
       }
       val tabNodes = onAllNodesWithTag(ContentTags.TAG_TAB)
       val tabRootNode = tabNodes.filterToOne(hasText(TabScreen.root.label))
@@ -57,6 +63,7 @@ class NavigationTest {
       // Root backstack
       repeat(6) { onNodeWithTag(ContentTags.TAG_CONTENT).performClick() }
       onNodeWithTag(ContentTags.TAG_LABEL).assertTextEquals(TabScreen.screen2.label)
+      val rootSnapshot = navStack.screenSnapshot()
       // Tab 1 backstack
       tab1Node.performClick()
       repeat(30) { onNodeWithTag(ContentTags.TAG_CONTENT).performClick() }
@@ -113,12 +120,24 @@ class NavigationTest {
       }
       mainClock.autoAdvance = true
       onNodeWithTag(ContentTags.TAG_LABEL).assertTextEquals(TabScreen.screen2.label)
+
+      val currentSnapshot = navStack.screenSnapshot()
+      stateRestorationTester.emulateSavedInstanceStateRestore()
+
+      assertEquals(currentSnapshot, navStack.screenSnapshot())
+      onNodeWithTag(ContentTags.TAG_LABEL).assertTextEquals(TabScreen.screen2.label)
+      tab3Node.assertIsSelected()
+
+      tabRootNode.performClick()
+      assertEquals(rootSnapshot, navStack.screenSnapshot())
+      onNodeWithTag(ContentTags.TAG_LABEL).assertTextEquals(TabScreen.screen2.label)
+      tabRootNode.assertIsSelected()
     }
   }
 
   @SuppressLint("NewApi")
   @OptIn(ExperimentalSharedTransitionApi::class)
-  private fun ComposeContentTestRule.setTestContent(
+  private fun StateRestorationTester.setTestContent(
     tabs: List<TabScreen>,
     content: @Composable () -> Unit,
   ) {
@@ -132,3 +151,6 @@ class NavigationTest {
     }
   }
 }
+
+private fun NavStack<out NavStack.Record>.screenSnapshot(): NavStackList<Screen> =
+  checkNotNull(snapshot()).transform { it.screen }

@@ -49,11 +49,11 @@ import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
+import com.slack.circuit.foundation.internal.RecordRetainedValuesStores
+import com.slack.circuit.foundation.internal.RecordRetainedValuesStoresHolder
 import com.slack.circuit.foundation.navstack.ProvidedValues
 import com.slack.circuit.foundation.navstack.providedValuesForNavStack
 import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
-import com.slack.circuit.foundation.internal.RecordRetainedValuesStores
-import com.slack.circuit.foundation.internal.RecordRetainedValuesStoresHolder
 import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.retained.LocalRetainedStateRegistry
@@ -534,44 +534,44 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
 @Composable
 private fun <R : Record> RecordContent(record: R, contentProviderState: ContentProviderState<R>) {
   with(contentProviderState) {
-      saveableStateHolder.SaveableStateProvider(record.registryKey) {
-        // Provides a RetainedStateRegistry that is maintained independently for each record while
-        // the record exists in the back stack.
-        retainedStateHolder.RetainedStateProvider(record.registryKey) {
-          val lifecycle =
-            when (LocalRecordLifecycleState.current) {
-              RecordLifecycleState.Set -> LocalRecordLifecycle.current
-              RecordLifecycleState.Unset -> {
-                val isActive = lastNavigator.navStack.currentRecord == record
-                rememberUpdatedRecordLifecycle(isActive)
-              }
+    saveableStateHolder.SaveableStateProvider(record.registryKey) {
+      // Provides a RetainedStateRegistry that is maintained independently for each record while
+      // the record exists in the back stack.
+      retainedStateHolder.RetainedStateProvider(record.registryKey) {
+        val lifecycle =
+          when (LocalRecordLifecycleState.current) {
+            RecordLifecycleState.Set -> LocalRecordLifecycle.current
+            RecordLifecycleState.Unset -> {
+              val isActive = lastNavigator.navStack.currentRecord == record
+              rememberUpdatedRecordLifecycle(isActive)
             }
-          CompositionLocalProvider(
-            LocalRecordLifecycle provides lifecycle,
-            LocalRecordLifecycleState provides RecordLifecycleState.Set,
-          ) {
-            CircuitContent(
-              screen = record.screen,
-              navigator = lastNavigator,
-              circuit = lastCircuit,
-              unavailableContent = lastUnavailableRoute,
-              key = record.key,
-            )
           }
+        CompositionLocalProvider(
+          LocalRecordLifecycle provides lifecycle,
+          LocalRecordLifecycleState provides RecordLifecycleState.Set,
+        ) {
+          CircuitContent(
+            screen = record.screen,
+            navigator = lastNavigator,
+            circuit = lastCircuit,
+            unavailableContent = lastUnavailableRoute,
+            key = record.key,
+          )
         }
-        // Remove saved states for records that are no longer in the back stack.
-        // Keep this inside SaveableStateProvider so the active registry's state is saved and the
-        // registry is unregistered before this effect calls removeState().
-        // Otherwise a popped record could remain in the saved state map.
-        DisposableEffect(record.registryKey) {
-          onDispose {
-            if (!lastNavigator.navStack.containsRecord(record, includeSaved = true)) {
-              retainedStateHolder.removeState(record.registryKey)
-              saveableStateHolder.removeState(record.registryKey)
-            }
+      }
+      // Remove saved states for records that are no longer in the back stack.
+      // Keep this inside SaveableStateProvider so the active registry's state is saved and the
+      // registry is unregistered before this effect calls removeState().
+      // Otherwise a popped record could remain in the saved state map.
+      DisposableEffect(record.registryKey) {
+        onDispose {
+          if (!lastNavigator.navStack.containsRecord(record, includeSaved = true)) {
+            retainedStateHolder.removeState(record.registryKey)
+            saveableStateHolder.removeState(record.registryKey)
           }
         }
       }
+    }
   }
 }
 

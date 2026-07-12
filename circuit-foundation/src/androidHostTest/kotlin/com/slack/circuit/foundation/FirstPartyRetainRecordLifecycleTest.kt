@@ -2,8 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.retain.RetainObserver
 import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -19,6 +22,8 @@ import com.slack.circuit.internal.test.TestState
 import com.slack.circuit.internal.test.createTestCircuit
 import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
+import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.presenterOf
 import org.junit.After
 import org.junit.Rule
@@ -75,6 +80,57 @@ class FirstPartyRetainRecordLifecycleTest {
   @Test
   fun perRecordRetentionLifecycleWithEmptyDecoration() {
     runScenario(useEmptyDecoration = true)
+  }
+
+  @Test
+  fun savedRecordsSurviveUntilHostRetires() {
+    CircuitRetainedSettings.useFirstParty = true
+    lateinit var navigator: Navigator
+    val circuit =
+      createTestCircuit(
+        presenter = { screen, _ ->
+          val label = (screen as TestScreen).label
+          presenterOf {
+            retain {
+              events += "$label:create"
+              Tracked(label)
+            }
+            TestState(0, label) {}
+          }
+        }
+      )
+    var showHost by mutableStateOf(true)
+
+    composeTestRule.setContent {
+      if (showHost) {
+        CircuitCompositionLocals(circuit) {
+          val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
+          navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+          NavigableCircuitContent(navigator = navigator, backStack = backStack)
+        }
+      }
+    }
+
+    composeTestRule.onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+    composeTestRule.runOnIdle {
+      navigator.resetRoot(TestScreen.ScreenB, StateOptions.SaveAndRestore)
+    }
+    composeTestRule.onNodeWithTag(TAG_LABEL).assertTextEquals("B")
+    composeTestRule.waitForIdle()
+    assertThat(events).doesNotContain("A:retired")
+
+    composeTestRule.runOnIdle {
+      navigator.resetRoot(TestScreen.ScreenA, StateOptions.SaveAndRestore)
+    }
+    composeTestRule.onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+    composeTestRule.waitForIdle()
+    assertThat(events.count { it == "A:create" }).isEqualTo(1)
+    assertThat(events).doesNotContain("A:retired")
+
+    composeTestRule.runOnIdle { showHost = false }
+    composeTestRule.waitForIdle()
+    assertThat(events.count { it == "A:retired" }).isEqualTo(1)
+    assertThat(events.count { it == "B:retired" }).isEqualTo(1)
   }
 
   private fun runScenario(useEmptyDecoration: Boolean) {

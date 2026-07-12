@@ -115,8 +115,8 @@ default saver persists them. For common-code screens, implement `ParcelableScree
 `Parcelable` on Android and is just a `Screen` elsewhere.
 
 To persist `SavedState` encoded with kotlinx-serialization, use the `circuit-serialization`
-artifact. In 0.35, Android screens still need `@Parcelize` in addition to `@Serializable`, even
-though the saver stores `SavedState` rather than the Parcelable value:
+artifact. In 0.35, Android screens and pop results still need to be Parcelable in addition to being
+`@Serializable`, even though the saver stores `SavedState` rather than the Parcelable value:
 
 ```kotlin
 @Parcelize
@@ -140,10 +140,18 @@ artifact skips the registration requirement by resolving serializers reflectivel
 class name. The artifact embeds the R8/ProGuard rules it needs, so minified apps work without
 additional configuration.
 
+Both serializing savers can restore navigation state saved by Circuit 0.34's default saver, so
+adopting serialization in 0.35 does not by itself reset existing navigation state. If a saved
+record can no longer be restored, Circuit drops it. The active record remains selected when
+possible; otherwise Circuit chooses the nearest surviving record toward the root, then toward the
+top. A stored snapshot is discarded if its root cannot be restored. If a pending pop result cannot
+be restored, its expectation is cleared instead of leaving `awaitResult` suspended indefinitely.
+
 See the `circuit-serialization` README for the full setup.
 
 To disable persistence entirely, use `CircuitSaver.NoOp`. Stacks saved with it restore to their
-initial state.
+initial state. This changes persistence behavior only: Android `Screen` and `PopResult`
+implementations still need to be Parcelable in 0.35.
 
 ### Wiring
 
@@ -169,7 +177,7 @@ any back stack created inside it.
 
 ### Roadmap
 
-`Screen`'s Android `actual` still extends `Parcelable`. A future release removes that supertype,
-making `Screen` a plain marker interface on every platform. To prepare, implement
-`ParcelableScreen` on screens that should keep using Parcelable, or adopt a serializing
-`CircuitSaver`. The `circuit-serialization` README has the full roadmap.
+`Screen` and `PopResult` still extend `Parcelable` on Android in 0.35. A future release removes
+those supertypes. To prepare, implement `ParcelableScreen` or `ParcelablePopResult` on values that
+should keep using Parcelable, or adopt a serializing `CircuitSaver`. The `circuit-serialization`
+README has the full roadmap.

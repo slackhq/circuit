@@ -54,6 +54,13 @@ Saving an unregistered type fails with a descriptive error. Restoring an unregis
 after an app update removed a screen, drops that record instead of failing. Pass an
 `onRestoreError` callback to observe dropped records, such as for logging.
 
+Use `restoreScreen<T>` and `restorePopResult<T>` to restore a specific type. They return null when
+the saver cannot restore a value and reject a different concrete Screen or PopResult type by
+default.
+
+Both serializing savers can restore navigation state saved by Circuit 0.34's default saver. This
+allows an app to adopt serialization in 0.35 without resetting existing navigation state.
+
 ## Skipping registration on JVM/Android
 
 The `circuit-serialization-reflect` artifact provides `ReflectiveSerializableCircuitSaver`, which
@@ -81,18 +88,27 @@ ProvideCircuitSaver(saver) {
 this only reaches back stacks created inside `CircuitCompositionLocals`. A back stack created
 above it needs one of the other two options.
 
+## Lenient restoration
+
+When a screen can no longer be restored, Circuit drops its record. If the active record survives,
+it remains active. Otherwise, Circuit selects the nearest surviving record toward the root, then
+falls back toward the top. Saved stack snapshots are discarded when their original root cannot be
+restored, rather than being associated with a surviving child. If a pending pop result existed but
+cannot be restored, Circuit clears the expectation so `awaitResult` returns null rather than
+suspending indefinitely.
+
 ## Roadmap
 
-`Screen`'s Android `actual` currently extends `Parcelable`, so Android screens must still be
-parcelable even when a serializing saver handles persistence. A future release removes that
-supertype and completes the migration:
+`Screen` and `PopResult` currently extend `Parcelable` on Android, so Android implementations must
+still be Parcelable even when a serializing saver or `CircuitSaver.NoOp` handles persistence. A
+future release removes those supertypes and completes the migration:
 
-- `Screen` becomes a plain marker interface on all platforms, and `@Parcelize` becomes optional
-  for apps that use a saver from this artifact.
-- The default Android saver keeps working for screens that implement `Parcelable` and fails with
-  a descriptive error for screens that don't when no saver is configured.
-- Common-code screens that should keep the Parcelable strategy migrate to `ParcelableScreen`,
-  which adds `Parcelable` on Android only.
+- `Screen` and `PopResult` become plain marker interfaces on all platforms, and `@Parcelize`
+  becomes optional for apps that use a saver from this artifact.
+- The default Android saver keeps working for screens and results that implement `Parcelable` and
+  fails with a descriptive error for values that do not when no saver is configured.
+- Common-code values that should keep the Parcelable strategy migrate to `ParcelableScreen` or
+  `ParcelablePopResult`, which add `Parcelable` on Android only.
 
 Planned follow-ups after that:
 

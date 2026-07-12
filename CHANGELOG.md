@@ -8,24 +8,44 @@ Unreleased
 
 #### Pluggable Screen persistence with `CircuitSaver`
 
-Circuit's saveable back stacks no longer mandate how `Screen`s and `PopResult`s are persisted. A new `CircuitSaver` abstraction in `circuit-runtime-screen` converts them to and from saveable representations. Everything that saves navigation state (`rememberSaveableBackStack`, `rememberSaveableNavStack`, answering results) now accepts one.
+Circuit's saveable back stacks no longer mandate how `Screen`s and `PopResult`s are persisted. A new
+`CircuitSaver` abstraction in `circuit-runtime-screen` converts them to and from saveable
+representations. Everything that saves navigation state (`rememberSaveableBackStack`,
+`rememberSaveableNavStack`, and answering results) now accepts one.
 
-This is the first step toward removing the `Parcelable` supertype from `Screen`'s Android `actual` in a future release. Until then, defaults preserve today's behavior exactly: screens pass through unchanged and persist via `Parcelable` on Android. To prepare for the removal, implement `ParcelableScreen` on screens that should keep using Parcelable, or adopt a serializing saver. The `circuit-serialization` README details the roadmap.
+This is the first step toward removing the `Parcelable` supertypes from `Screen` and `PopResult` on
+Android in a future release. In 0.35, both types still need to be Parcelable even when using a
+serializing saver or `CircuitSaver.NoOp`. The default saver preserves the current Parcelable
+behavior. To prepare for the later removal, implement `ParcelableScreen` or `ParcelablePopResult`
+on types that should remain Parcelable, or adopt a serializing saver.
 
-Configure a saver by passing it explicitly, providing `LocalCircuitSaver` at your app root via `ProvideCircuitSaver`, or with `Circuit.Builder.setCircuitSaver` (reaches only content inside `CircuitCompositionLocals`).
+Configure a saver by passing it explicitly, providing `LocalCircuitSaver` at your app root via
+`ProvideCircuitSaver`, or with `Circuit.Builder.setCircuitSaver` (reaches only content inside
+`CircuitCompositionLocals`).
 
 **New artifacts: `circuit-serialization` and `circuit-serialization-reflect`**
 
-For kotlinx-serialization users, the new `circuit-serialization` artifact persists `@Serializable` screens to `SavedState` via `androidx.savedstate`:
+For kotlinx-serialization users, the new `circuit-serialization` artifact persists `@Serializable`
+screens and pop results to `SavedState` via `androidx.savedstate`:
 
-- `SerializableCircuitSaver(configuration)`: KMP-friendly, register screens for polymorphic serialization in the `SavedStateConfiguration`'s `serializersModule`.
-- `ReflectiveSerializableCircuitSaver(configuration)` (in the JVM/Android-only `circuit-serialization-reflect` artifact): resolves serializers reflectively from the saved class name with no registration needed. Embeds its required R8/ProGuard rules, so minified apps need no extra setup.
+- `SerializableCircuitSaver(configuration)`: KMP-friendly; register screens and results for
+  polymorphic serialization against `CircuitSaveable` in the `SavedStateConfiguration`'s
+  `serializersModule`.
+- `ReflectiveSerializableCircuitSaver(configuration)` (in the JVM/Android-only
+  `circuit-serialization-reflect` artifact): resolves serializers reflectively with no registration
+  needed. It embeds the R8/ProGuard rules it needs, so minified apps need no additional
+  Circuit-specific rules.
 
-Both savers restore leniently: records that no longer decode, such as after an app update removed a screen, are dropped rather than crashing. Pass an `onRestoreError` callback to observe drops. The bottom-navigation sample demonstrates the kotlinx setup end to end.
+Both savers can restore navigation state saved by Circuit 0.34's default saver. They restore
+leniently: records that no longer decode, such as after an app update removed a screen, are dropped
+rather than crashing. Pass an `onRestoreError` callback to observe drops. The bottom-navigation
+sample demonstrates the kotlinx setup end to end.
 
 Also new:
 
-- `ParcelableScreen`/`ParcelablePopResult`: common interfaces that add `Parcelable` on Android. Migrate common-code screens to these to keep using the Parcelable strategy once `Screen` drops its `Parcelable` supertype.
+- `ParcelableScreen`/`ParcelablePopResult`: common interfaces that add `Parcelable` on Android.
+  Migrate common-code values to these to keep using the Parcelable strategy once `Screen` and
+  `PopResult` drop their `Parcelable` supertypes.
 - `CircuitSaver.NoOp`: disables navigation state persistence entirely.
 
 #### circuit-retained is migrating to upstream `retained` APIs
@@ -45,7 +65,11 @@ Also new:
 
 ### Fixed
 
-- Restoring a saveable back stack or nav stack whose records were all dropped now falls back to a fresh stack instead of restoring an empty one, and `SaveableNavStack` clamps its current index into bounds when some records drop on restore.
+- Fixed saveable stacks restoring empty when every record is dropped, or selecting the wrong active
+  screen when only some records can be restored.
+- Fixed saved navigation history being associated with the wrong screen when its original root
+  cannot be restored.
+- Fixed `awaitResult` suspending indefinitely when a pending pop result cannot be saved or restored.
 - **SubCircuit:** Fix `subcircuit-codegen` Metro mode (`subcircuit.codegen.mode=metro`). It previously
   required Dagger's `@AssistedFactory` even in Metro mode, generated `@javax.inject.Inject` instead of
   Metro's `@Inject`, and referenced `dev.zacsweers.metro.annotations.ContributesIntoSet` (wrong package).

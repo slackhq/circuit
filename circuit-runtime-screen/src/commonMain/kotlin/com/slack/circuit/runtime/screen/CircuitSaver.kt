@@ -33,8 +33,8 @@ public interface CircuitSaver {
   /** Returns a saveable representation of [value], or null to skip persisting it. */
   public fun save(value: CircuitSaveable): Any?
 
-  /** Restores a [Screen] previously returned by [save], or null if it cannot be restored. */
-  public fun <T : CircuitSaveable> restore(saved: Any): T?
+  /** Restores a [CircuitSaveable] previously returned by [save], or null if it cannot be restored. */
+  public fun restore(saved: Any): CircuitSaveable?
 
   public companion object {
     /**
@@ -43,6 +43,58 @@ public interface CircuitSaver {
      */
     public val NoOp: CircuitSaver = NoOpCircuitSaver
   }
+}
+
+/**
+ * Restores [saved] as a [Screen].
+ *
+ * If [restore] returns null, [onAbsent] is invoked and this returns null. If it restores another
+ * kind of [CircuitSaveable], [onTypeMismatch] is invoked and this returns null if the callback
+ * completes normally. By default, [onAbsent] does nothing and [onTypeMismatch] throws.
+ */
+public inline fun CircuitSaver.restoreAsScreen(
+  saved: Any,
+  onAbsent: () -> Unit = {},
+  onTypeMismatch: (CircuitSaveable) -> Unit = {
+    error("Expected a Screen, but CircuitSaver restored ${it::class}.")
+  },
+): Screen? {
+  val restored = restore(saved)
+  if (restored == null) {
+    onAbsent()
+    return null
+  }
+  if (restored !is Screen) {
+    onTypeMismatch(restored)
+    return null
+  }
+  return restored
+}
+
+/**
+ * Restores [saved] as a [PopResult].
+ *
+ * If [restore] returns null, [onAbsent] is invoked and this returns null. If it restores another
+ * kind of [CircuitSaveable], [onTypeMismatch] is invoked and this returns null if the callback
+ * completes normally. By default, [onAbsent] does nothing and [onTypeMismatch] throws.
+ */
+public inline fun CircuitSaver.restoreAsPopResult(
+  saved: Any,
+  onAbsent: () -> Unit = {},
+  onTypeMismatch: (CircuitSaveable) -> Unit = {
+    error("Expected a PopResult, but CircuitSaver restored ${it::class}.")
+  },
+): PopResult? {
+  val restored = restore(saved)
+  if (restored == null) {
+    onAbsent()
+    return null
+  }
+  if (restored !is PopResult) {
+    onTypeMismatch(restored)
+    return null
+  }
+  return restored
 }
 
 /**
@@ -75,14 +127,11 @@ public fun ProvideCircuitSaver(circuitSaver: CircuitSaver, content: @Composable 
 internal object PassThroughCircuitSaver : CircuitSaver {
   override fun save(value: CircuitSaveable): Any = value
 
-  override fun <T : CircuitSaveable> restore(saved: Any): T? {
-    @Suppress("UNCHECKED_CAST")
-    return saved as? T
-  }
+  override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
 }
 
 private object NoOpCircuitSaver : CircuitSaver {
   override fun save(value: CircuitSaveable): Any? = null
 
-  override fun <T : CircuitSaveable> restore(saved: Any): T? = null
+  override fun restore(saved: Any): CircuitSaveable? = null
 }

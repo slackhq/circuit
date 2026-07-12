@@ -118,9 +118,11 @@ class SaveableNavStackTest {
   fun test_saveable_restore_clamps_current_index_when_records_drop() {
     // Drops the root screen on save, so the restored list is shorter than the saved index.
     val droppingSaver =
-      object : CircuitSaver by DefaultCircuitSaver {
+      object : CircuitSaver() {
         override fun save(value: CircuitSaveable): Any? =
           if (value == TestScreen.RootAlpha) null else value
+
+        override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
       }
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
     navStack.push(TestScreen.ScreenA)

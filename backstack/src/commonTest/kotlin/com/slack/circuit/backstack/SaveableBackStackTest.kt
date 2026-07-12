@@ -123,9 +123,11 @@ class SaveableBackStackTest {
   fun test_saveable_restore_drops_unrestorable_records() {
     // Drops one screen on save, the rest of the stack should restore without it.
     val droppingSaver =
-      object : CircuitSaver by DefaultCircuitSaver {
+      object : CircuitSaver() {
         override fun save(value: CircuitSaveable): Any? =
           if (value == TestScreen.ScreenA) null else value
+
+        override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
       }
     val backStack = SaveableBackStack(TestScreen.RootAlpha)
     backStack.push(TestScreen.ScreenA)

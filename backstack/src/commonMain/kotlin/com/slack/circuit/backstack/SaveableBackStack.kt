@@ -28,6 +28,7 @@ import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.restoreScreen
 import kotlin.math.min
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -225,7 +226,8 @@ internal constructor(
           },
           restore = { map ->
             val screen =
-              map["screen"]?.let { circuitSaver.restore<Screen>(it) } ?: return@mapSaver null
+              map["screen"]?.let { circuitSaver.restoreScreen<Screen>(it) }
+                ?: return@mapSaver null
             @Suppress("UNCHECKED_CAST")
             Record(
               screen = screen,

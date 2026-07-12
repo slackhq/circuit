@@ -14,13 +14,17 @@ dependencies {
 
 ## Usage
 
+Android screens must still be Parcelable in 0.35, typically via `@Parcelize`, even though this
+saver stores serialized `SavedState`. JVM-only screens do not need `@Parcelize`.
+
 ```kotlin
+@Parcelize // Omit in JVM-only projects
 @Serializable
 data class DetailScreen(val itemId: Long) : Screen
 
 val saver = ReflectiveSerializableCircuitSaver()
 
-val backStack = rememberSaveableBackStack(root = HomeScreen, circuitSaver = saver)
+val backStack = rememberSaveableBackStack(root = DetailScreen(itemId = 1), circuitSaver = saver)
 ```
 
 No `SerializersModule` setup is needed. See the `circuit-serialization` README for the other ways

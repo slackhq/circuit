@@ -3,7 +3,8 @@
 kotlinx-serialization support for persisting Circuit navigation state. This artifact provides
 `CircuitSaver` implementations that encode `Screen`s and `PopResult`s to `SavedState` via
 `androidx.savedstate`, so saveable back stacks survive configuration changes and process death
-without requiring `Parcelable`.
+without using Parcelable as the persisted representation. In 0.35, Android screens and results
+must still be Parcelable; that type requirement is removed in a future release.
 
 ## Installation
 
@@ -14,11 +15,12 @@ dependencies {
 ```
 
 Screens must be annotated with `@Serializable`, which requires the kotlinx-serialization compiler
-plugin:
+plugin. Android screens must also remain Parcelable in 0.35, typically via `@Parcelize`:
 
 ```kotlin
 plugins {
   kotlin("plugin.serialization")
+  kotlin("plugin.parcelize") // Android projects in 0.35
 }
 ```
 
@@ -28,9 +30,11 @@ plugins {
 polymorphic serialization against the `CircuitSaveable` base class in a `SavedStateConfiguration`:
 
 ```kotlin
+@Parcelize
 @Serializable
 data object HomeScreen : Screen
 
+@Parcelize
 @Serializable
 data class DetailScreen(val itemId: Long) : Screen
 

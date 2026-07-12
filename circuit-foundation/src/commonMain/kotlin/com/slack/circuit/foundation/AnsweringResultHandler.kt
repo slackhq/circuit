@@ -12,6 +12,7 @@ import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.PopResult
+import com.slack.circuit.runtime.screen.restorePopResult
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.iterator
@@ -24,6 +25,9 @@ import kotlinx.coroutines.channels.Channel
  *
  * This manages the state needed for records to send and receive [PopResult]s when navigating
  * between screens with [rememberAnsweringNavigator].
+ *
+ * @param circuitSaver the [CircuitSaver] used to persist results, defaulting to
+ *   [LocalCircuitSaver].
  */
 @ExperimentalCircuitApi
 @Composable
@@ -148,9 +152,9 @@ public class AnsweringResultHandler {
               val (resultKey, pendingResult) = value as List<Any?>
               // NOTE order matters here, prepareForResult() clears the buffer
               resultKey?.let { prepareForResult(recordKey, it as String) }
-              pendingResult
-                ?.let { circuitSaver.restore<PopResult>(it) }
-                ?.let { sendResult(recordKey, it) }
+              pendingResult?.let { circuitSaver.restorePopResult<PopResult>(it) }?.let {
+                sendResult(recordKey, it)
+              }
             }
           }
         },

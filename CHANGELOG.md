@@ -8,7 +8,7 @@ Unreleased
 
 #### Pluggable Screen persistence with `CircuitSaver`
 
-Circuit's saveable back stacks no longer hardwire how `Screen`s and `PopResult`s are persisted. A new `CircuitSaver` interface in `circuit-runtime-screen` converts them to and from saveable representations. Everything that saves navigation state (`rememberSaveableBackStack`, `rememberSaveableNavStack`, answering results) now accepts one.
+Circuit's saveable back stacks no longer mandate how `Screen`s and `PopResult`s are persisted. A new `CircuitSaver` abstraction in `circuit-runtime-screen` converts them to and from saveable representations. Everything that saves navigation state (`rememberSaveableBackStack`, `rememberSaveableNavStack`, answering results) now accepts one.
 
 This is the first step toward removing the `Parcelable` supertype from `Screen`'s Android `actual` in a future release. Until then, defaults preserve today's behavior exactly: screens pass through unchanged and persist via `Parcelable` on Android. To prepare for the removal, implement `ParcelableScreen` on screens that should keep using Parcelable, or adopt a serializing saver. The `circuit-serialization` README details the roadmap.
 

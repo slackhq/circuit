@@ -19,6 +19,9 @@ import kotlinx.serialization.serializer
  * Returns a [CircuitSaver] that persists `@Serializable` [Screen]s and [PopResult]s with
  * kotlinx-serialization, resolving serializers reflectively from the saved class name.
  *
+ * In 0.35, Android screens and results must still be `Parcelable`, even though this saver stores
+ * serialized `SavedState`. That Android supertype requirement will be removed in a future release.
+ *
  * Unlike `SerializableCircuitSaver`, this requires no polymorphic registration in [configuration]'s
  * `serializersModule`. It relies on JVM reflection (`Class.forName`), so it is only available on
  * JVM and Android.
@@ -45,14 +48,11 @@ private const val VALUE_KEY = "value"
 private class ReflectiveCircuitSaver(
   private val configuration: SavedStateConfiguration,
   private val onRestoreError: (Throwable) -> Unit,
-) : CircuitSaver {
+) : CircuitSaver() {
 
   override fun save(value: CircuitSaveable): Any? = encode(value)
 
-  override fun <T : CircuitSaveable> restore(saved: Any): T? {
-    @Suppress("UNCHECKED_CAST")
-    return decode(saved) as? T
-  }
+  protected override fun restore(saved: Any): CircuitSaveable? = decode(saved) as? CircuitSaveable
 
   private fun encode(value: Any): SavedState {
     val serializer =

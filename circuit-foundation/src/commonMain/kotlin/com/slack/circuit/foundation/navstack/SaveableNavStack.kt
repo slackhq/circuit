@@ -20,6 +20,7 @@ import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.restoreScreen
 import kotlin.collections.set
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -29,6 +30,8 @@ import kotlin.uuid.Uuid
  *
  * If [root] changes, a new nav stack will be created.
  *
+ * @param circuitSaver the [CircuitSaver] used to persist screens, defaulting to
+ *   [LocalCircuitSaver].
  * @param init optional initializer callback to perform extra initialization logic.
  */
 @Composable
@@ -45,6 +48,9 @@ public fun rememberSaveableNavStack(
  * Creates and remembers a [SaveableNavStack] filled with the given [initialScreens].
  *
  * [initialScreens] must not be empty. If [initialScreens] changes, a new nav stack will be created.
+ *
+ * @param circuitSaver the [CircuitSaver] used to persist screens, defaulting to
+ *   [LocalCircuitSaver].
  */
 @Composable
 public fun rememberSaveableNavStack(
@@ -65,6 +71,9 @@ public fun rememberSaveableNavStack(
  * Creates and remembers a [SaveableNavStack] filled with the given [navStackList].
  *
  * If [navStackList] changes, a new nav stack will be created.
+ *
+ * @param circuitSaver the [CircuitSaver] used to persist screens, defaulting to
+ *   [LocalCircuitSaver].
  */
 @Composable
 public fun rememberSaveableNavStack(
@@ -284,7 +293,8 @@ internal constructor(
           },
           restore = { map ->
             val screen =
-              map["screen"]?.let { circuitSaver.restore<Screen>(it) } ?: return@mapSaver null
+              map["screen"]?.let { circuitSaver.restoreScreen<Screen>(it) }
+                ?: return@mapSaver null
             Record(screen = screen, key = map["key"] as String)
           },
         )

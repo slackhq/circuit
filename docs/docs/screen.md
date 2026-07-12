@@ -67,16 +67,42 @@ val ui: Ui<*>? = circuit.ui(addFavoritesScreen)
 
 Circuit's saveable back stacks (`rememberSaveableBackStack` and `rememberSaveableNavStack`) persist
 navigation state across configuration changes and process death. How screens are converted to a
-saveable form is pluggable via the `CircuitSaver` interface. `Screen` and `PopResult` both extend
-the `CircuitSaveable` marker, and a `CircuitSaver` converts those values to and from
+saveable form is pluggable via `CircuitSaver`. Both `Screen` and `PopResult` extend the
+`CircuitSaveable` marker, and a `CircuitSaver` converts those values to and from
 representations that Compose's `SaveableStateRegistry` can store.
 
 ```kotlin
-interface CircuitSaver {
-  fun save(value: CircuitSaveable): Any?
-  fun <T : CircuitSaveable> restore(saved: Any): T?
+abstract class CircuitSaver protected constructor() {
+  abstract fun save(value: CircuitSaveable): Any?
+
+  protected abstract fun restore(saved: Any): CircuitSaveable?
 }
+
+inline fun <reified T : Screen> CircuitSaver.restoreScreen(
+  saved: Any,
+  onAbsent: () -> Unit = {},
+  onTypeMismatch: (CircuitSaveable) -> Unit = {
+    error("Expected ${T::class}, but CircuitSaver restored ${it::class}.")
+  },
+): T?
+
+inline fun <reified T : PopResult> CircuitSaver.restorePopResult(
+  saved: Any,
+  onAbsent: () -> Unit = {},
+  onTypeMismatch: (CircuitSaveable) -> Unit = {
+    error("Expected ${T::class}, but CircuitSaver restored ${it::class}.")
+  },
+): T?
 ```
+
+`restore` is a protected implementation hook for `CircuitSaver` authors. Application code uses the
+reified helpers instead.
+
+The reified type parameter is the concrete expected type: `restoreScreen<HomeScreen>(saved)`
+rejects another `Screen` subtype. When the saver returns null, the helper invokes `onAbsent` and
+returns null. When the restored value is not the requested type, the helper passes it to
+`onTypeMismatch`. That callback throws by default; if a custom callback completes normally, the
+helper returns null. `restorePopResult` has the same behavior for `PopResult` subtypes.
 
 The default (`DefaultCircuitSaver`) passes values through unchanged. On Android that means screens
 persist via their `Parcelable` implementations, matching Circuit's historical behavior. Other
@@ -88,10 +114,12 @@ Parcelable is the Android default and needs no setup. Annotate screens with `@Pa
 default saver persists them. For common-code screens, implement `ParcelableScreen`, which adds
 `Parcelable` on Android and is just a `Screen` elsewhere.
 
-To use kotlinx-serialization instead, the `circuit-serialization` artifact persists `@Serializable`
-screens to `SavedState` on any platform:
+To persist `SavedState` encoded with kotlinx-serialization, use the `circuit-serialization`
+artifact. In 0.35, Android screens still need `@Parcelize` in addition to `@Serializable`, even
+though the saver stores `SavedState` rather than the Parcelable value:
 
 ```kotlin
+@Parcelize
 @Serializable
 data object HomeScreen : Screen
 

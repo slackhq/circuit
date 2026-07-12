@@ -41,6 +41,7 @@ molecule = "2.2.0"
 okhttp = "5.4.0"
 okio = "3.17.0"
 picnic = "0.7.0"
+r8 = "9.1.31"
 robolectric = "4.16.1"
 roborazzi = "1.68.0"
 spotless = "8.0.0"
@@ -208,6 +209,7 @@ okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 picnic = { module = "com.jakewharton.picnic:picnic", version.ref = "picnic" }
+r8 = { module = "com.android.tools:r8", version.ref = "r8" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }

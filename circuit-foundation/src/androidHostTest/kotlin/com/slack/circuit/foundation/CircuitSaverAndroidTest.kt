@@ -32,10 +32,13 @@ class CircuitSaverAndroidTest {
     val screen = TestParcelableScreen("screen")
     val result = TestParcelablePopResult(42)
 
-    val restored = roundTrip(Bundle().apply {
-      putParcelable("screen", screen)
-      putParcelable("result", result)
-    })
+    val restored =
+      roundTrip(
+        Bundle().apply {
+          putParcelable("screen", screen)
+          putParcelable("result", result)
+        }
+      )
 
     assertEquals(screen, restored.parcelable<TestParcelableScreen>("screen"))
     assertEquals(result, restored.parcelable<TestParcelablePopResult>("result"))

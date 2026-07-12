@@ -83,9 +83,7 @@ class SerializableCircuitSaverTest {
     val saved = assertNotNull(saver.save(screen))
     assertFailsWith<IllegalStateException> { saver.restorePopResult<IntPopResult>(saved) }
     var mismatched: CircuitSaveable? = null
-    assertNull(
-      saver.restorePopResult<IntPopResult>(saved, onTypeMismatch = { mismatched = it })
-    )
+    assertNull(saver.restorePopResult<IntPopResult>(saved, onTypeMismatch = { mismatched = it }))
     assertEquals(screen, mismatched)
   }
 
@@ -115,9 +113,7 @@ class SerializableCircuitSaverTest {
     val saved = assertNotNull(saver.save(result))
     assertFailsWith<IllegalStateException> { saver.restorePopResult<IntPopResult>(saved) }
     var mismatched: CircuitSaveable? = null
-    assertNull(
-      saver.restorePopResult<IntPopResult>(saved, onTypeMismatch = { mismatched = it })
-    )
+    assertNull(saver.restorePopResult<IntPopResult>(saved, onTypeMismatch = { mismatched = it }))
     assertEquals(result, mismatched)
   }
 

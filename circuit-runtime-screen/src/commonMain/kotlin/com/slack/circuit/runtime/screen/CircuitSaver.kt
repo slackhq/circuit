@@ -34,7 +34,9 @@ public abstract class CircuitSaver protected constructor() {
   /** Returns a saveable representation of [value], or null to skip persisting it. */
   public abstract fun save(value: CircuitSaveable): Any?
 
-  /** Restores a [CircuitSaveable] previously returned by [save], or null if it cannot be restored. */
+  /**
+   * Restores a [CircuitSaveable] previously returned by [save], or null if it cannot be restored.
+   */
   protected abstract fun restore(saved: Any): CircuitSaveable?
 
   public companion object {

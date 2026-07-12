@@ -42,8 +42,7 @@ class ReflectiveSerializableCircuitSaverTest {
   @Test
   fun raw_values_restore_without_reporting_an_error() {
     var reported: Throwable? = null
-    val reportingSaver =
-      ReflectiveSerializableCircuitSaver(onRestoreError = { reported = it })
+    val reportingSaver = ReflectiveSerializableCircuitSaver(onRestoreError = { reported = it })
     val screen = ReflectiveScreen("legacy")
     val result = ReflectivePopResult(42)
 
@@ -75,9 +74,7 @@ class ReflectiveSerializableCircuitSaverTest {
     val saved = assertNotNull(saver.save(result))
     assertFailsWith<IllegalStateException> { saver.restoreScreen<ReflectiveScreen>(saved) }
     var mismatched: CircuitSaveable? = null
-    assertNull(
-      saver.restoreScreen<ReflectiveScreen>(saved, onTypeMismatch = { mismatched = it })
-    )
+    assertNull(saver.restoreScreen<ReflectiveScreen>(saved, onTypeMismatch = { mismatched = it }))
     assertEquals(result, mismatched)
   }
 

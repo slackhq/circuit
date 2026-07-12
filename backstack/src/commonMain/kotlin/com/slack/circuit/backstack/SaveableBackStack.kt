@@ -226,8 +226,7 @@ internal constructor(
           },
           restore = { map ->
             val screen =
-              map["screen"]?.let { circuitSaver.restoreScreen<Screen>(it) }
-                ?: return@mapSaver null
+              map["screen"]?.let { circuitSaver.restoreScreen<Screen>(it) } ?: return@mapSaver null
             @Suppress("UNCHECKED_CAST")
             Record(
               screen = screen,
@@ -274,9 +273,9 @@ internal constructor(
               // Any list after that is from the state store
               list
                 .mapIndexedNotNull { originalIndex, savedRecord ->
-                  (savedRecord as? List<Any>)
-                    ?.let(recordSaver::restore)
-                    ?.let { IndexedValue(originalIndex, it) }
+                  (savedRecord as? List<Any>)?.let(recordSaver::restore)?.let {
+                    IndexedValue(originalIndex, it)
+                  }
                 }
                 .takeIf { restored ->
                   restored.lastOrNull()?.index == list.lastIndex

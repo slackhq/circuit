@@ -293,8 +293,7 @@ internal constructor(
           },
           restore = { map ->
             val screen =
-              map["screen"]?.let { circuitSaver.restoreScreen<Screen>(it) }
-                ?: return@mapSaver null
+              map["screen"]?.let { circuitSaver.restoreScreen<Screen>(it) } ?: return@mapSaver null
             Record(screen = screen, key = map["key"] as String)
           },
         )
@@ -344,8 +343,7 @@ internal constructor(
             }
           },
           restore = { map ->
-            @Suppress("UNCHECKED_CAST")
-            val savedEntries = map["entries"] as List<List<Any>>
+            @Suppress("UNCHECKED_CAST") val savedEntries = map["entries"] as List<List<Any>>
             val restored =
               restoreRecords(
                 savedEntries = savedEntries,
@@ -450,17 +448,15 @@ private fun restoreRecords(
   recordSaver: Saver<Record, Any>,
   requireRoot: Boolean,
 ): RestoredRecords? {
-  val restored =
-    savedEntries.mapIndexedNotNull { originalIndex, savedRecord ->
-      @Suppress("UNCHECKED_CAST")
-      recordSaver.restore(savedRecord as List<Any>)?.let { IndexedValue(originalIndex, it) }
-    }
+  val restored = savedEntries.mapIndexedNotNull { originalIndex, savedRecord ->
+    @Suppress("UNCHECKED_CAST")
+    recordSaver.restore(savedRecord as List<Any>)?.let { IndexedValue(originalIndex, it) }
+  }
   if (restored.isEmpty()) return null
   if (requireRoot && restored.last().index != savedEntries.lastIndex) return null
 
   // Prefer the exact or nearest rootward record, then fall back to the topward survivor.
   val currentIndex =
-    restored.indexOfFirst { it.index >= savedCurrentIndex }.takeIf { it >= 0 }
-      ?: restored.lastIndex
+    restored.indexOfFirst { it.index >= savedCurrentIndex }.takeIf { it >= 0 } ?: restored.lastIndex
   return RestoredRecords(restored.map { it.value }, currentIndex)
 }

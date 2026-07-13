@@ -1,6 +1,6 @@
 [versions]
 agp = "9.2.1"
-android-compileSdk = "36"
+android-compileSdk = "37"
 androidx-activity = "1.13.0"
 androidx-annotation = "1.10.0"
 androidx-appcompat = "1.7.1"

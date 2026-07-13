@@ -43,6 +43,12 @@ Also new:
 - `SaveableBackStack.Record.args` and `SaveableBackStack.push(screen, args)`. Pass data through the `Screen` itself instead; `args` will be removed in a future release. This matches what the new `SaveableNavStack` already does.
 - The `Saver` vals on `SaveableBackStack`, `SaveableNavStack`, and `AnsweringResultHandler` companions. Use the `Saver(CircuitSaver)` functions instead.
 
+### Changed
+
+- **SubCircuit:** `@SubCircuitInject` is now handled by the main `circuit-codegen` processor.
+  `circuitx-subcircuit-codegen` is now a relocation pointer to `circuit-codegen`, but prefer
+  depending on `circuit-codegen` directly.
+
 ### Fixed
 
 - Restoring a saveable back stack or nav stack whose records were all dropped now falls back to a fresh stack instead of restoring an empty one, and `SaveableNavStack` clamps its current index into bounds when some records drop on restore.

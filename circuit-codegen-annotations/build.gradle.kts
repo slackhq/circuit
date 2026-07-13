@@ -15,7 +15,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.codegen.annotations"
-    compileSdk = 36
     optimization.consumerKeepRules.apply {
       publish = true
       file(

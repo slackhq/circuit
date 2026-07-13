@@ -571,12 +571,11 @@ private fun PetListGridItem(
           LocalContentColor provides LocalContentColor.current.copy(alpha = 0.75f)
         ) {
           // Gender, age
-          val genderAge =
-            buildList {
-                animal.gender?.let { add(it.displayName) }
-                add(animal.age)
-              }
-              .joinToString(" – ")
+          val genderAge = buildList {
+            animal.gender?.let { add(it.displayName) }
+            add(animal.age)
+          }
+            .joinToString(" – ")
           Text(
             modifier = Modifier.testTag(AGE_AND_BREED_TAG),
             text = genderAge,

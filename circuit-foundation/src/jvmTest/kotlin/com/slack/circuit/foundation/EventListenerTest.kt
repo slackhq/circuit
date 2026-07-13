@@ -174,9 +174,9 @@ private class RecordingEventListener(private val onDispose: () -> Unit) : EventL
         ?: run {
           log("Creating new RecordingEventListener for $screen")
           RecordingEventListener {
-              log("Removing RecordingEventListener for $screen")
-              listeners.remove(screen)
-            }
+            log("Removing RecordingEventListener for $screen")
+            listeners.remove(screen)
+          }
             .also { listeners[screen] = it }
         }
 

@@ -43,6 +43,7 @@ public final class com/slack/circuit/backstack/SaveableBackStack : com/slack/cir
 }
 
 public final class com/slack/circuit/backstack/SaveableBackStack$Companion {
+	public final fun Saver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Landroidx/compose/runtime/saveable/Saver;
 	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
@@ -65,11 +66,12 @@ public final class com/slack/circuit/backstack/SaveableBackStack$Record : com/sl
 }
 
 public final class com/slack/circuit/backstack/SaveableBackStack$Record$Companion {
+	public final fun Saver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Landroidx/compose/runtime/saveable/Saver;
 	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
 public final class com/slack/circuit/backstack/SaveableBackStackKt {
-	public static final fun rememberSaveableBackStack (Lcom/slack/circuit/runtime/screen/Screen;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/backstack/SaveableBackStack;
-	public static final fun rememberSaveableBackStack (Ljava/util/List;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/backstack/SaveableBackStack;
+	public static final fun rememberSaveableBackStack (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/CircuitSaver;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/backstack/SaveableBackStack;
+	public static final fun rememberSaveableBackStack (Ljava/util/List;Lcom/slack/circuit/runtime/screen/CircuitSaver;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/backstack/SaveableBackStack;
 }
 

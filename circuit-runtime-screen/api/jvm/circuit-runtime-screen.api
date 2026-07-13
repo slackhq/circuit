@@ -1,7 +1,35 @@
-public abstract interface class com/slack/circuit/runtime/screen/PopResult {
+public abstract interface class com/slack/circuit/runtime/screen/CircuitSaveable {
 }
 
-public abstract interface class com/slack/circuit/runtime/screen/Screen {
+public abstract interface class com/slack/circuit/runtime/screen/CircuitSaver {
+	public static final field Companion Lcom/slack/circuit/runtime/screen/CircuitSaver$Companion;
+	public abstract fun restore (Ljava/lang/Object;)Lcom/slack/circuit/runtime/screen/CircuitSaveable;
+	public abstract fun save (Lcom/slack/circuit/runtime/screen/CircuitSaveable;)Ljava/lang/Object;
+}
+
+public final class com/slack/circuit/runtime/screen/CircuitSaver$Companion {
+	public final fun getNoOp ()Lcom/slack/circuit/runtime/screen/CircuitSaver;
+}
+
+public final class com/slack/circuit/runtime/screen/CircuitSaverKt {
+	public static final fun ProvideCircuitSaver (Lcom/slack/circuit/runtime/screen/CircuitSaver;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
+	public static final fun getLocalCircuitSaver ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+}
+
+public final class com/slack/circuit/runtime/screen/CircuitSaver_jvmKt {
+	public static final fun getDefaultCircuitSaver ()Lcom/slack/circuit/runtime/screen/CircuitSaver;
+}
+
+public abstract interface class com/slack/circuit/runtime/screen/ParcelablePopResult : com/slack/circuit/runtime/screen/PopResult {
+}
+
+public abstract interface class com/slack/circuit/runtime/screen/ParcelableScreen : com/slack/circuit/runtime/screen/Screen {
+}
+
+public abstract interface class com/slack/circuit/runtime/screen/PopResult : com/slack/circuit/runtime/screen/CircuitSaveable {
+}
+
+public abstract interface class com/slack/circuit/runtime/screen/Screen : com/slack/circuit/runtime/screen/CircuitSaveable {
 }
 
 public abstract interface class com/slack/circuit/runtime/screen/StaticScreen : com/slack/circuit/runtime/screen/Screen {

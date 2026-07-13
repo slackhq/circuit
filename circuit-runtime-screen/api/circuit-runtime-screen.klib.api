@@ -6,8 +6,31 @@
 // - Show declarations: true
 
 // Library unique name: <circuit-root:circuit-runtime-screen>
-abstract interface com.slack.circuit.runtime.screen/PopResult // com.slack.circuit.runtime.screen/PopResult|null[0]
+abstract interface com.slack.circuit.runtime.screen/CircuitSaveable // com.slack.circuit.runtime.screen/CircuitSaveable|null[0]
 
-abstract interface com.slack.circuit.runtime.screen/Screen // com.slack.circuit.runtime.screen/Screen|null[0]
+abstract interface com.slack.circuit.runtime.screen/CircuitSaver { // com.slack.circuit.runtime.screen/CircuitSaver|null[0]
+    abstract fun <#A1: com.slack.circuit.runtime.screen/CircuitSaveable> restore(kotlin/Any): #A1? // com.slack.circuit.runtime.screen/CircuitSaver.restore|restore(kotlin.Any){0§<com.slack.circuit.runtime.screen.CircuitSaveable>}[0]
+    abstract fun save(com.slack.circuit.runtime.screen/CircuitSaveable): kotlin/Any? // com.slack.circuit.runtime.screen/CircuitSaver.save|save(com.slack.circuit.runtime.screen.CircuitSaveable){}[0]
+
+    final object Companion { // com.slack.circuit.runtime.screen/CircuitSaver.Companion|null[0]
+        final val NoOp // com.slack.circuit.runtime.screen/CircuitSaver.Companion.NoOp|{}NoOp[0]
+            final fun <get-NoOp>(): com.slack.circuit.runtime.screen/CircuitSaver // com.slack.circuit.runtime.screen/CircuitSaver.Companion.NoOp.<get-NoOp>|<get-NoOp>(){}[0]
+    }
+}
+
+abstract interface com.slack.circuit.runtime.screen/ParcelablePopResult : com.slack.circuit.runtime.screen/PopResult // com.slack.circuit.runtime.screen/ParcelablePopResult|null[0]
+
+abstract interface com.slack.circuit.runtime.screen/ParcelableScreen : com.slack.circuit.runtime.screen/Screen // com.slack.circuit.runtime.screen/ParcelableScreen|null[0]
+
+abstract interface com.slack.circuit.runtime.screen/PopResult : com.slack.circuit.runtime.screen/CircuitSaveable // com.slack.circuit.runtime.screen/PopResult|null[0]
+
+abstract interface com.slack.circuit.runtime.screen/Screen : com.slack.circuit.runtime.screen/CircuitSaveable // com.slack.circuit.runtime.screen/Screen|null[0]
 
 abstract interface com.slack.circuit.runtime.screen/StaticScreen : com.slack.circuit.runtime.screen/Screen // com.slack.circuit.runtime.screen/StaticScreen|null[0]
+
+final val com.slack.circuit.runtime.screen/DefaultCircuitSaver // com.slack.circuit.runtime.screen/DefaultCircuitSaver|{}DefaultCircuitSaver[0]
+    final fun <get-DefaultCircuitSaver>(): com.slack.circuit.runtime.screen/CircuitSaver // com.slack.circuit.runtime.screen/DefaultCircuitSaver.<get-DefaultCircuitSaver>|<get-DefaultCircuitSaver>(){}[0]
+final val com.slack.circuit.runtime.screen/LocalCircuitSaver // com.slack.circuit.runtime.screen/LocalCircuitSaver|{}LocalCircuitSaver[0]
+    final fun <get-LocalCircuitSaver>(): androidx.compose.runtime/ProvidableCompositionLocal<com.slack.circuit.runtime.screen/CircuitSaver> // com.slack.circuit.runtime.screen/LocalCircuitSaver.<get-LocalCircuitSaver>|<get-LocalCircuitSaver>(){}[0]
+
+final fun com.slack.circuit.runtime.screen/ProvideCircuitSaver(com.slack.circuit.runtime.screen/CircuitSaver, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.runtime.screen/ProvideCircuitSaver|ProvideCircuitSaver(com.slack.circuit.runtime.screen.CircuitSaver;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]

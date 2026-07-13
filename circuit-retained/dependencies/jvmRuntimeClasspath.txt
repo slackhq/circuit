@@ -27,12 +27,16 @@ androidx.savedstate:savedstate-compose-desktop
 androidx.savedstate:savedstate-compose
 androidx.savedstate:savedstate-desktop
 androidx.savedstate:savedstate
+org.jetbrains.androidx.lifecycle:lifecycle-common-jvm
 org.jetbrains.androidx.lifecycle:lifecycle-common
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose-desktop
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose
+org.jetbrains.androidx.lifecycle:lifecycle-runtime-desktop
 org.jetbrains.androidx.lifecycle:lifecycle-runtime
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose-desktop
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose
+org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-desktop
+org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate-desktop
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
 org.jetbrains.androidx.savedstate:savedstate-compose-desktop

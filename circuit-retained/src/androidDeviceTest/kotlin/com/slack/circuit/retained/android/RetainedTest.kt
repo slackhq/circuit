@@ -34,6 +34,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ActivityScenario
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.retained.CanRetainChecker
+import com.slack.circuit.retained.InspectableRetainedStateRegistry
 import com.slack.circuit.retained.LifecycleRetainedStateRegistry
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
@@ -41,6 +42,7 @@ import com.slack.circuit.retained.RetainedStateRegistryViewModel
 import com.slack.circuit.retained.ViewModelRetainedStateRegistryFactory
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
+import com.slack.circuit.retained.retainBackedRetainedStateRegistry
 import com.slack.circuit.retained.viewModelRetainedStateRegistry
 import kotlin.reflect.KClass
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,6 +50,8 @@ import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSucc
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
 internal const val TAG_REMEMBER = "remember"
 internal const val TAG_RETAINED_1 = "retained1"
@@ -57,7 +61,14 @@ internal const val TAG_BUTTON_SHOW = "btn_show"
 internal const val TAG_BUTTON_HIDE = "btn_hide"
 internal const val TAG_BUTTON_INC = "btn_inc"
 
-class RetainedTest {
+@RunWith(Parameterized::class)
+class RetainedTest(private val useFirstParty: Boolean) {
+  companion object {
+    @JvmStatic
+    @Parameterized.Parameters(name = "useFirstParty={0}")
+    fun parameters() = listOf(false, true)
+  }
+
   private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
   @get:Rule
@@ -82,6 +93,7 @@ class RetainedTest {
   }
 
   private val vmFactory = RecordingContinuityVmFactory()
+  private var inspectableRegistry: InspectableRetainedStateRegistry? = null
 
   @Test
   fun singleWithKey() {
@@ -122,8 +134,8 @@ class RetainedTest {
       }
     }
 
-    // Hold on to our Continuity instance
-    val continuity = vmFactory.continuity!!
+    // Hold on to our registry instance, which survives recreation under both backings
+    val continuity = checkNotNull(inspectableRegistry)
 
     // We now have three groups with three retained values
     // - text2Enabled
@@ -657,12 +669,14 @@ class RetainedTest {
   private fun setActivityContent(content: @Composable () -> Unit) {
     scenario.onActivity { activity ->
       activity.setContent {
-        CompositionLocalProvider(
-          LocalRetainedStateRegistry provides
+        val registry =
+          if (useFirstParty) {
+            retainBackedRetainedStateRegistry(LifecycleRetainedStateRegistry.KEY)
+          } else {
             viewModelRetainedStateRegistry(LifecycleRetainedStateRegistry.KEY, vmFactory)
-        ) {
-          content()
-        }
+          }
+        inspectableRegistry = registry as InspectableRetainedStateRegistry
+        CompositionLocalProvider(LocalRetainedStateRegistry provides registry) { content() }
       }
     }
   }

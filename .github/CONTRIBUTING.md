@@ -10,11 +10,20 @@ accordingly: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatfo
 
 This project is written in Kotlin and should only use Kotlin.
 
-Code formatting is checked via [Spotless](https://github.com/diffplug/spotless). To run the
-formatter, use the `spotlessApply` command.
+Code formatting is handled by [Kempt](https://github.com/ZacSweers/kempt). Install it with
+Homebrew, then install its pre-commit hook:
 
 ```bash
-./gradlew spotlessApply
+brew install ZacSweers/tap/kempt-fmt
+kempt install-hook
+```
+
+The hook runs Kempt on staged files before each commit. To format or check the whole project
+manually, use:
+
+```bash
+kempt format
+kempt check
 ```
 
 You can build and run the CI checks (aside from instrumentation tests) with:

@@ -4,6 +4,7 @@ public final class com/slack/circuit/foundation/AnsweringNavigatorKt {
 }
 
 public final class com/slack/circuit/foundation/AnsweringResultHandler$Companion {
+	public final fun Saver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Landroidx/compose/runtime/saveable/Saver;
 	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
@@ -11,6 +12,7 @@ public final class com/slack/circuit/foundation/Circuit {
 	public static final field $stable I
 	public synthetic fun <init> (Lcom/slack/circuit/foundation/Circuit$Builder;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getAnimatedNavDecoratorFactory ()Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
+	public final fun getCircuitSaver ()Lcom/slack/circuit/runtime/screen/CircuitSaver;
 	public final fun getDefaultNavDecoration ()Lcom/slack/circuit/foundation/NavDecoration;
 	public final fun getLenientNavigationEventDispatcherOwner ()Z
 	public final fun getNavStackLocalProviders ()Ljava/util/List;
@@ -41,6 +43,7 @@ public final class com/slack/circuit/foundation/Circuit$Builder {
 	public final fun clearNavStackRecordLocalProviders ()Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun eventListenerFactory (Lcom/slack/circuit/foundation/EventListener$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun getAnimatedNavDecoratorFactory ()Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;
+	public final fun getCircuitSaver ()Lcom/slack/circuit/runtime/screen/CircuitSaver;
 	public final fun getDefaultNavDecoration ()Lcom/slack/circuit/foundation/NavDecoration;
 	public final fun getEventListenerFactory ()Lcom/slack/circuit/foundation/EventListener$Factory;
 	public final fun getLenientNavigationEventDispatcherOwner ()Z
@@ -54,6 +57,7 @@ public final class com/slack/circuit/foundation/Circuit$Builder {
 	public final fun presentWithLifecycle (Z)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public static synthetic fun presentWithLifecycle$default (Lcom/slack/circuit/foundation/Circuit$Builder;ZILjava/lang/Object;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun setAnimatedNavDecoratorFactory (Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;
+	public final fun setCircuitSaver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun setDefaultNavDecoration (Lcom/slack/circuit/foundation/NavDecoration;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun setOnUnavailableContent (Lkotlin/jvm/functions/Function4;)Lcom/slack/circuit/foundation/Circuit$Builder;
 }
@@ -388,6 +392,7 @@ public final class com/slack/circuit/foundation/navstack/SaveableNavStack : com/
 }
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStack$Companion {
+	public final fun Saver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Landroidx/compose/runtime/saveable/Saver;
 	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
@@ -408,6 +413,7 @@ public final class com/slack/circuit/foundation/navstack/SaveableNavStack$Record
 }
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStack$Record$Companion {
+	public final fun Saver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Landroidx/compose/runtime/saveable/Saver;
 	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
@@ -436,12 +442,13 @@ public final class com/slack/circuit/foundation/navstack/SaveableNavStack$Saveab
 }
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStack$SaveableNavStackList$Companion {
+	public final fun Saver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Landroidx/compose/runtime/saveable/Saver;
 	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStackKt {
-	public static final fun rememberSaveableNavStack (Lcom/slack/circuit/runtime/navigation/NavStackList;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/navigation/NavStack;
-	public static final fun rememberSaveableNavStack (Lcom/slack/circuit/runtime/screen/Screen;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/navigation/NavStack;
-	public static final fun rememberSaveableNavStack (Ljava/util/List;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/navigation/NavStack;
+	public static final fun rememberSaveableNavStack (Lcom/slack/circuit/runtime/navigation/NavStackList;Lcom/slack/circuit/runtime/screen/CircuitSaver;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/navigation/NavStack;
+	public static final fun rememberSaveableNavStack (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuit/runtime/screen/CircuitSaver;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/navigation/NavStack;
+	public static final fun rememberSaveableNavStack (Ljava/util/List;Lcom/slack/circuit/runtime/screen/CircuitSaver;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuit/runtime/navigation/NavStack;
 }
 

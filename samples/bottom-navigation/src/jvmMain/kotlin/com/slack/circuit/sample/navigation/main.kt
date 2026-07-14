@@ -21,10 +21,11 @@ fun main() {
 
   val tabs = TabScreen.all
   val circuit = buildCircuitForTabs(tabs)
+  val circuitSaver = buildCircuitSaver()
   application {
     Window(title = "Navigation Sample", onCloseRequest = ::exitApplication) {
       MaterialTheme {
-        val navStack = rememberSaveableNavStack(tabs.first())
+        val navStack = rememberSaveableNavStack(tabs.first(), circuitSaver)
         val navigator = rememberCircuitNavigator(navStack) { exitApplication() }
         // CircuitX Navigation
         val uriHandler = LocalUriHandler.current

@@ -5,10 +5,14 @@ package com.slack.circuit.foundation.navstack
 import androidx.compose.runtime.saveable.SaverScope
 import com.slack.circuit.foundation.navstack.SaveableNavStack.Record
 import com.slack.circuit.internal.test.TestScreen
+import com.slack.circuit.runtime.screen.CircuitSaveable
+import com.slack.circuit.runtime.screen.CircuitSaver
+import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SaveableNavStackTest {
@@ -67,7 +71,7 @@ class SaveableNavStackTest {
     val saved = save(navStack)
     assertNotNull(saved)
 
-    val restored = SaveableNavStack.Saver.restore(saved)
+    val restored = SaveableNavStack.Saver(DefaultCircuitSaver).restore(saved)
     assertNotNull(restored)
 
     assertEquals(navStack.entryList.toList(), restored.entryList.toList())
@@ -92,11 +96,48 @@ class SaveableNavStackTest {
     val saved = save(navStack)
     assertNotNull(saved)
 
-    val restored = SaveableNavStack.Saver.restore(saved)
+    val restored = SaveableNavStack.Saver(DefaultCircuitSaver).restore(saved)
     assertNotNull(restored)
 
     assertEquals(navStack.entryList.toList(), restored.entryList.toList())
     assertEquals(navStack.stateStore.toMap(), restored.stateStore.toMap())
+  }
+
+  @Test
+  fun test_saveable_restore_with_noop_saver_returns_null() {
+    val navStack = SaveableNavStack(TestScreen.RootAlpha)
+    navStack.push(TestScreen.ScreenA)
+
+    val saved = save(navStack, CircuitSaver.NoOp)
+    assertNotNull(saved)
+
+    assertNull(SaveableNavStack.Saver(CircuitSaver.NoOp).restore(saved))
+  }
+
+  @Test
+  fun test_saveable_restore_clamps_current_index_when_records_drop() {
+    // Drops the root screen on save, so the restored list is shorter than the saved index.
+    val droppingSaver =
+      object : CircuitSaver by DefaultCircuitSaver {
+        override fun save(value: CircuitSaveable): Any? =
+          if (value == TestScreen.RootAlpha) null else value
+      }
+    val navStack = SaveableNavStack(TestScreen.RootAlpha)
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
+    // Move the current record back to the root (index 2)
+    navStack.backward()
+    navStack.backward()
+    assertEquals(TestScreen.RootAlpha, navStack.currentRecord?.screen)
+
+    val saved = save(navStack, droppingSaver)
+    assertNotNull(saved)
+
+    val restored = SaveableNavStack.Saver(droppingSaver).restore(saved)
+    assertNotNull(restored)
+    assertEquals(2, restored.entryList.size)
+    // Saved index (2) is out of bounds for the restored list, so it clamps to the last entry.
+    assertEquals(TestScreen.ScreenA, restored.currentRecord?.screen)
   }
 
   @Test
@@ -302,8 +343,8 @@ class SaveableNavStackTest {
   }
 }
 
-private fun save(navStack: SaveableNavStack) =
-  with(SaveableNavStack.Saver) {
+private fun save(navStack: SaveableNavStack, circuitSaver: CircuitSaver = DefaultCircuitSaver) =
+  with(SaveableNavStack.Saver(circuitSaver)) {
     val scope = SaverScope { true }
     scope.save(navStack)
   }

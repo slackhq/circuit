@@ -22,6 +22,7 @@ import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.screen.StaticScreen
 import com.slack.circuit.runtime.ui.Ui
@@ -115,6 +116,15 @@ public class Circuit private constructor(builder: Builder) {
   public val navStackLocalProviders: List<NavStackRecordLocalProvider<NavStack.Record>> =
     builder.navStackLocalProviders.toList()
 
+  /**
+   * An optional [CircuitSaver] provided as `LocalCircuitSaver` by [CircuitCompositionLocals].
+   *
+   * Note this only reaches saveable back stacks created inside [CircuitCompositionLocals]. For back
+   * stacks created above it, pass the saver explicitly or provide it at the app root via
+   * `ProvideCircuitSaver`.
+   */
+  public val circuitSaver: CircuitSaver? = builder.circuitSaver
+
   @OptIn(InternalCircuitApi::class)
   public fun presenter(
     screen: Screen,
@@ -197,6 +207,9 @@ public class Circuit private constructor(builder: Builder) {
     public var lenientNavigationEventDispatcherOwner: Boolean = true
       private set
 
+    public var circuitSaver: CircuitSaver? = null
+      private set
+
     public val navStackLocalProviders: MutableList<NavStackRecordLocalProvider<NavStack.Record>> =
       mutableListOf(ViewModelNavStackRecordLocalProvider)
 
@@ -209,6 +222,7 @@ public class Circuit private constructor(builder: Builder) {
       eventListenerFactory = circuit.eventListenerFactory
       presentWithLifecycle = circuit.presentWithLifecycle
       lenientNavigationEventDispatcherOwner = circuit.lenientNavigationEventDispatcherOwner
+      circuitSaver = circuit.circuitSaver
       navStackLocalProviders.clear()
       navStackLocalProviders.addAll(circuit.navStackLocalProviders)
       // Carry over a custom NavDecoration if one was provided, otherwise use AnimatedNavDecoration
@@ -358,6 +372,13 @@ public class Circuit private constructor(builder: Builder) {
 
     public fun lenientNavigationEventDispatcherOwner(lenient: Boolean = true): Builder = apply {
       lenientNavigationEventDispatcherOwner = lenient
+    }
+
+    /**
+     * Sets the [CircuitSaver] that [CircuitCompositionLocals] provides. See [Circuit.circuitSaver].
+     */
+    public fun setCircuitSaver(circuitSaver: CircuitSaver?): Builder = apply {
+      this.circuitSaver = circuitSaver
     }
 
     public fun build(): Circuit {

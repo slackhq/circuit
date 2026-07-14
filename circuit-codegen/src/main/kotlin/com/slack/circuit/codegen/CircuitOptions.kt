@@ -14,12 +14,17 @@ internal data class CircuitOptions(
     const val LENIENT = "circuit.codegen.lenient"
     const val USE_JAVAX_ONLY = "circuit.codegen.useJavaxOnly"
 
+    // `subcircuit.codegen.*` fallbacks for the SubCircuit target; the keys above take precedence.
+    private const val LEGACY_MODE = "subcircuit.codegen.mode"
+    private const val LEGACY_LENIENT = "subcircuit.codegen.lenient"
+    private const val LEGACY_USE_JAVAX_ONLY = "subcircuit.codegen.useJavaxOnly"
+
     internal val UNKNOWN =
       CircuitOptions(CodegenMode.UNKNOWN, lenient = false, useJavaxOnly = false)
 
     fun load(options: Map<String, String>, logger: KSPLogger): CircuitOptions {
       val mode =
-        options[MODE].let { mode ->
+        (options[MODE] ?: options[LEGACY_MODE]).let { mode ->
           if (mode == null) {
             CodegenMode.ANVIL
           } else {
@@ -36,8 +41,9 @@ internal data class CircuitOptions(
         return UNKNOWN
       }
 
-      val lenient = options[LENIENT]?.toBoolean() ?: false
-      val useJavaxOnly = options[USE_JAVAX_ONLY]?.toBoolean() ?: false
+      val lenient = (options[LENIENT] ?: options[LEGACY_LENIENT])?.toBoolean() ?: false
+      val useJavaxOnly =
+        (options[USE_JAVAX_ONLY] ?: options[LEGACY_USE_JAVAX_ONLY])?.toBoolean() ?: false
       return CircuitOptions(mode = mode, lenient = lenient, useJavaxOnly = useJavaxOnly)
     }
   }

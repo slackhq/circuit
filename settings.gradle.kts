@@ -165,7 +165,6 @@ pluginManagement {
         )
         includeModule("com.gradle", "develocity-gradle-plugin")
         includeModule("com.gradle.develocity", "com.gradle.develocity.gradle.plugin")
-        includeModule("com.diffplug.spotless", "com.diffplug.spotless.gradle.plugin")
         includeModule("org.gradle.kotlin.kotlin-dsl", "org.gradle.kotlin.kotlin-dsl.gradle.plugin")
         includeModule("org.gradle.kotlin", "gradle-kotlin-dsl-plugins")
       }
@@ -222,6 +221,8 @@ include(
   ":circuit-runtime-presenter",
   ":circuit-runtime-screen",
   ":circuit-runtime-ui",
+  ":circuit-serialization",
+  ":circuit-serialization-reflect",
   ":circuit-shared-elements",
   ":circuit-test",
   ":circuitx:android",

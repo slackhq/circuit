@@ -4,4 +4,4 @@ package com.slack.circuit.runtime.screen
 
 import androidx.compose.runtime.Immutable
 
-@Immutable public expect interface PopResult
+@Immutable public expect interface PopResult : CircuitSaveable

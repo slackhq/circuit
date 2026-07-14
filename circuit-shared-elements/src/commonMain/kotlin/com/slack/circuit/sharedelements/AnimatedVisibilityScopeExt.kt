@@ -11,20 +11,20 @@ import androidx.compose.runtime.derivedStateOf
 /** Current progress fraction of the animation, between 0f and 1f. */
 public fun AnimatedVisibilityScope.progress(): FloatState {
   return derivedStateOf {
-      with(transition) {
-        when {
-          isRunning || isSeeking -> {
-            val fraction = playTimeNanos * 1f / totalDurationNanos
-            if (fraction.isNaN()) {
-              0f
-            } else {
-              fraction.coerceIn(0f, 1f)
-            }
+    with(transition) {
+      when {
+        isRunning || isSeeking -> {
+          val fraction = playTimeNanos * 1f / totalDurationNanos
+          if (fraction.isNaN()) {
+            0f
+          } else {
+            fraction.coerceIn(0f, 1f)
           }
-          currentState == EnterExitState.Visible -> 1f
-          else -> 0f
         }
+        currentState == EnterExitState.Visible -> 1f
+        else -> 0f
       }
     }
+  }
     .asFloatState()
 }

@@ -8,6 +8,7 @@ plugins {
   alias(libs.plugins.agp.kmp)
   alias(libs.plugins.compose)
   alias(libs.plugins.kotlin.plugin.parcelize)
+  alias(libs.plugins.kotlin.plugin.serialization)
   id("circuit.base")
 }
 
@@ -36,6 +37,7 @@ kotlin {
         implementation(libs.compose.material.icons)
         implementation(libs.compose.material.material3)
         implementation(projects.circuitFoundation)
+        implementation(projects.circuitSerialization)
         implementation(projects.circuitx.gestureNavigation)
         implementation(projects.circuitx.navigation)
         implementation(projects.internalRuntime)

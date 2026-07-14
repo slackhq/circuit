@@ -13,6 +13,11 @@ public object CircuitRetainedSettings {
    * Circuit-managed `ViewModel`. Retention is then driven by the `RetainedValuesStore` installed in
    * the composition, such as the lifecycle-aware store Compose UI installs on Android.
    *
+   * This also enables per-record scoping of first-party `retain {}` calls inside
+   * `NavigableCircuitContent`: values retained by a record's content survive while the record is in
+   * the nav stack (including across configuration changes) and are retired when the record is
+   * popped.
+   *
    * Set this before the first composition. It is not a runtime toggle, registries created under one
    * backing do not migrate their state to the other.
    *

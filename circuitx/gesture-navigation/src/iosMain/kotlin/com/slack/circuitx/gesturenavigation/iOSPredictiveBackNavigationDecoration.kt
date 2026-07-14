@@ -216,14 +216,14 @@ private class GestureTranslationNode(
     coroutineScope.launch {
       animatable.snapTo(0f)
       snapshotFlow {
-          val offset = swipeOffset()
-          when {
-            !offset.isValid() -> 0f
-            isSeeking() -> offset.x
-            showPrevious() -> maxWidth
-            else -> 0f
-          }
+        val offset = swipeOffset()
+        when {
+          !offset.isValid() -> 0f
+          isSeeking() -> offset.x
+          showPrevious() -> maxWidth
+          else -> 0f
         }
+      }
         .collectLatest {
           try {
             animatable.animateTo(it)

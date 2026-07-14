@@ -104,12 +104,11 @@ public class AnimatedNavDecoration(
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {
-    val decorator =
-      remember {
-          @Suppress("UNCHECKED_CAST")
-          decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedNavState>
-        }
-        .apply { updateNavigator(navigator) }
+    val decorator = remember {
+      @Suppress("UNCHECKED_CAST")
+      decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedNavState>
+    }
+      .apply { updateNavigator(navigator) }
     with(decorator) {
       val transition = updateTransition(args)
       transition.AnimatedContent(

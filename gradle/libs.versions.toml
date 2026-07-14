@@ -31,7 +31,6 @@ kotlinpoet = "2.3.0"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.11.0"
 ksp = "2.3.10"
-ktfmt = "0.63"
 ktor = "3.5.1"
 leakcanary = "2.14"
 mavenPublish = "0.36.0"
@@ -43,7 +42,6 @@ okio = "3.17.0"
 picnic = "0.7.0"
 robolectric = "4.16.1"
 roborazzi = "1.68.0"
-spotless = "8.0.0"
 sqldelight = "2.3.2"
 telephoto = "0.19.0"
 testParameterInjector = "1.22"
@@ -73,7 +71,6 @@ mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublis
 metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.2-kotlin-2.4.0-Beta1" }
 roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
-spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 [libraries]
@@ -172,9 +169,6 @@ ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.2.0"
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
-# Only present to trigger automatic renovate updates
-ktfmt = { module = "com.facebook:ktfmt", version.ref = "ktfmt" }
-
 ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }

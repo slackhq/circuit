@@ -6,8 +6,8 @@ SubCircuit is a lightweight framework for rendering nested presenter/UI pairs th
 ```kotlin
 dependencies {
   implementation("com.slack.circuit:circuitx-subcircuit:<version>")
-  // For code generation
-  ksp("com.slack.circuit:circuitx-subcircuit-codegen:<version>")
+  // For code generation. `@SubCircuitInject` is handled by the same processor as `@CircuitInject`.
+  ksp("com.slack.circuit:circuit-codegen:<version>")
   // For testing
   testImplementation("com.slack.circuit:circuitx-subcircuit-test:<version>")
 }
@@ -177,7 +177,10 @@ fun TeamMembersUi(state: TeamMembersState, modifier: Modifier = Modifier) {
 
 ## Code Generation
 
-SubCircuit uses KSP to generate factory classes that wire presenters and UIs into the DI graph.
+SubCircuit uses KSP to generate factory classes that wire presenters and UIs into the DI graph. `@SubCircuitInject` is handled by the same `circuit-codegen` processor as `@CircuitInject`, so it shares the same setup and options — see [Circuit's code gen](../docs/code-gen.md).
+
+!!! note "Migrating from `circuitx-subcircuit-codegen`"
+    The old `circuitx-subcircuit-codegen` artifact is now a relocation pointer to `circuit-codegen`, so existing dependencies keep resolving, but you should depend on `circuit-codegen` directly. The `subcircuit.codegen.*` KSP options still work as fallbacks; prefer the `circuit.codegen.*` equivalents. Generated factories are behaviorally equivalent, though the exact source formatting now matches `@CircuitInject` output (named arguments, a `when (screen)` branch, and a `jakarta.inject.Inject` default — override with `circuit.codegen.useJavaxOnly`).
 
 ### Presenter Factories
 
@@ -224,15 +227,23 @@ Requirements:
 
 ### DI Modes
 
-The code generator supports two DI frameworks:
+The code generator supports four DI frameworks via the `circuit.codegen.mode` KSP option:
 
 === "Anvil (default)"
 
     Generates `@ContributesMultibinding(Scope::class)` + `@Inject`.
 
+=== "Hilt"
+
+    Set `circuit.codegen.mode=hilt`. Generates a `@Module`/`@InstallIn` with a `@Binds @IntoSet` provider for the factory.
+
+=== "kotlin-inject-anvil"
+
+    Set `circuit.codegen.mode=kotlin_inject_anvil`. Generates `@Inject` + `@ContributesBinding(Scope::class, multibinding = true)`.
+
 === "Metro"
 
-    Set `subcircuit.codegen.mode=metro` as a KSP argument. Generates `@ContributesIntoSet(Scope::class)` + `@Inject`.
+    Set `circuit.codegen.mode=metro`. Generates `@Inject` + `@ContributesIntoSet(Scope::class)`.
 
 ### Wiring
 

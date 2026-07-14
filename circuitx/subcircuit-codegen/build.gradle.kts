@@ -1,28 +1,30 @@
 // Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
+
+// Maven relocation pointer to circuit-codegen, which handles @SubCircuitInject. Ships no code.
 plugins {
-  kotlin("jvm")
-  alias(libs.plugins.ksp)
-  id("circuit.base")
-  id("circuit.publish")
+  `java-library`
+  alias(libs.plugins.mavenPublish)
 }
 
-dependencies {
-  compileOnly(libs.ksp.api)
-  compileOnly(libs.anvil.annotations)
-  ksp(libs.autoService.ksp)
-  implementation(libs.autoService.annotations)
-  implementation(libs.dagger)
-  implementation(libs.kotlinpoet)
-  implementation(libs.kotlinpoet.ksp)
-
-  testImplementation(libs.junit)
-  testImplementation(libs.kct)
-  testImplementation(libs.kct.ksp)
-  testImplementation(libs.kotlin.compilerEmbeddable)
-  testImplementation(libs.ksp)
-  testImplementation(libs.ksp.api)
-  testImplementation(libs.truth)
-  testImplementation(projects.circuitx.subcircuitCodegenAnnotations)
-  testImplementation(projects.circuitx.subcircuit)
+configure<MavenPublishBaseExtension> {
+  publishToMavenCentral(automaticRelease = true)
+  signAllPublications()
+  pom {
+    distributionManagement {
+      relocation {
+        groupId.set("com.slack.circuit")
+        artifactId.set("circuit-codegen")
+        message.set(
+          "circuitx-subcircuit-codegen has been merged into circuit-codegen. " +
+            "@SubCircuitInject is handled by the main Circuit KSP processor."
+        )
+      }
+    }
+  }
 }
+
+// Gradle module metadata does not honor Maven <relocation>, and consumers prefer it over the POM.
+// Disable it so both Gradle and Maven consumers read the POM and follow the relocation.
+tasks.withType<GenerateModuleMetadata>().configureEach { enabled = false }

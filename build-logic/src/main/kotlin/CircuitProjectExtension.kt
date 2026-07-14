@@ -8,12 +8,21 @@ import org.gradle.api.provider.ProviderFactory
 import org.gradle.kotlin.dsl.property
 
 /** Extension for configuring Circuit project conventions. */
-abstract class CircuitProjectExtension @Inject constructor(private val project: Project, objects: ObjectFactory, providers: ProviderFactory) {
-  /** Whether Compose is enabled for this project. Defaults to true unless `circuit.noCompose` is set. */
-  val hasCompose: Property<Boolean> = objects.property<Boolean>().convention(
-    providers.provider {
-      // project-local property, which providers.gradleProperty doesn't cover
-      // TODO replace this with DSL calls in the project
-      !project.hasProperty("circuit.noCompose") }
-  )
+abstract class CircuitProjectExtension
+@Inject
+constructor(private val project: Project, objects: ObjectFactory, providers: ProviderFactory) {
+  /**
+   * Whether Compose is enabled for this project. Defaults to true unless `circuit.noCompose` is
+   * set.
+   */
+  val hasCompose: Property<Boolean> =
+    objects
+      .property<Boolean>()
+      .convention(
+        providers.provider {
+          // project-local property, which providers.gradleProperty doesn't cover
+          // TODO replace this with DSL calls in the project
+          !project.hasProperty("circuit.noCompose")
+        }
+      )
 }

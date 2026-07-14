@@ -271,20 +271,12 @@ internal constructor(
               list.mapNotNullTo(backStack.entryList) { recordSaver.restore(it as List<Any>) }
             } else {
               // Any list after that is from the state store
-              list
-                .mapIndexedNotNull { originalIndex, savedRecord ->
-                  (savedRecord as? List<Any>)?.let(recordSaver::restore)?.let {
-                    IndexedValue(originalIndex, it)
-                  }
-                }
-                .takeIf { restored ->
-                  restored.lastOrNull()?.index == list.lastIndex
-                }
-                ?.let { restored ->
-                  val records = restored.map { it.value }
-                  // The key is always the root screen (i.e. last item)
-                  backStack.stateStore[records.last().screen] = records
-                }
+              val records = list.map { savedRecord ->
+                (savedRecord as? List<Any>)?.let(recordSaver::restore) ?: return@forEachIndexed
+              }
+              // The key is always the root screen (i.e. last item)
+              val root = records.lastOrNull()?.screen ?: return@forEachIndexed
+              backStack.stateStore[root] = records
             }
           }
           // If every record was dropped, return null so rememberSaveable falls back to its

@@ -141,11 +141,15 @@ class name. The artifact embeds the R8/ProGuard rules it needs, so minified apps
 additional configuration.
 
 Both serializing savers can restore navigation state saved by Circuit 0.34's default saver, so
-adopting serialization in 0.35 does not by itself reset existing navigation state. If a saved
-record can no longer be restored, Circuit drops it. The active record remains selected when
-possible; otherwise Circuit chooses the nearest surviving record toward the root, then toward the
-top. A stored snapshot is discarded if its root cannot be restored. If a pending pop result cannot
-be restored, its expectation is cleared instead of leaving `awaitResult` suspended indefinitely.
+adopting serialization in 0.35 does not by itself reset existing navigation state.
+
+When a saved value can no longer be restored:
+
+- `SaveableBackStack` drops the affected record. If none survive, it starts from its initial value.
+- `SaveableNavStack` discards incomplete forward history. If the active screen or its back history
+  is missing, it starts from its initial value.
+- Stored back-stack snapshots are discarded if any record is missing.
+- An unrestorable pending pop result clears its expectation, so `awaitResult` returns null.
 
 See the `circuit-serialization` README for the full setup.
 

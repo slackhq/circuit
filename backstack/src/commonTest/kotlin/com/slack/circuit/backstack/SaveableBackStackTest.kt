@@ -175,6 +175,27 @@ class SaveableBackStackTest {
   }
 
   @Test
+  fun test_saveable_restore_discards_snapshot_when_non_root_record_drops() {
+    val circuitSaver = droppingSaver(TestScreen.ScreenA)
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
+    backStack.push(TestScreen.ScreenA)
+    backStack.push(TestScreen.ScreenB)
+    backStack.saveState()
+    backStack.popUntil { false }
+    backStack.push(TestScreen.RootBeta)
+    backStack.push(TestScreen.ScreenC)
+
+    val saved = save(backStack, circuitSaver)
+    assertThat(saved).isNotNull()
+    val restored = SaveableBackStack.Saver(circuitSaver).restore(saved!!)
+    assertThat(restored).isNotNull()
+    restored!!
+    assertThat(restored.entryList.map { it.screen })
+      .isEqualTo(listOf(TestScreen.ScreenC, TestScreen.RootBeta))
+    assertThat(restored.stateStore).isEmpty()
+  }
+
+  @Test
   fun test_guard_pushing_same_top_record() {
     val backStack = SaveableBackStack(TestScreen.RootAlpha)
     assertTrue(backStack.push(TestScreen.ScreenA))

@@ -349,7 +349,6 @@ internal constructor(
                 savedEntries = savedEntries,
                 savedCurrentIndex = map["currentIndex"] as Int,
                 recordSaver = recordSaver,
-                requireRoot = true,
               ) ?: return@mapSaver null
             SaveableNavStackList(
               entries = restored.entries,
@@ -405,7 +404,6 @@ internal constructor(
                     savedEntries = item,
                     savedCurrentIndex = savedCurrentIndex,
                     recordSaver = recordSaver,
-                    requireRoot = false,
                   )
                 if (restored != null) {
                   navStack.entryList.addAll(restored.entries)
@@ -446,17 +444,19 @@ private fun restoreRecords(
   savedEntries: List<*>,
   savedCurrentIndex: Int,
   recordSaver: Saver<Record, Any>,
-  requireRoot: Boolean,
 ): RestoredRecords? {
-  val restored = savedEntries.mapIndexedNotNull { originalIndex, savedRecord ->
-    @Suppress("UNCHECKED_CAST")
-    recordSaver.restore(savedRecord as List<Any>)?.let { IndexedValue(originalIndex, it) }
-  }
-  if (restored.isEmpty()) return null
-  if (requireRoot && restored.last().index != savedEntries.lastIndex) return null
+  if (savedCurrentIndex !in savedEntries.indices) return null
 
-  // Prefer the exact or nearest rootward record, then fall back to the topward survivor.
-  val currentIndex =
-    restored.indexOfFirst { it.index >= savedCurrentIndex }.takeIf { it >= 0 } ?: restored.lastIndex
-  return RestoredRecords(restored.map { it.value }, currentIndex)
+  val restored = savedEntries.map { savedRecord ->
+    @Suppress("UNCHECKED_CAST") recordSaver.restore(savedRecord as List<Any>)
+  }
+  val currentToRoot = restored.drop(savedCurrentIndex)
+  if (currentToRoot.any { it == null }) return null
+
+  val forward = restored.take(savedCurrentIndex)
+  return if (forward.any { it == null }) {
+    RestoredRecords(currentToRoot.filterNotNull(), currentIndex = 0)
+  } else {
+    RestoredRecords(restored.filterNotNull(), currentIndex = savedCurrentIndex)
+  }
 }

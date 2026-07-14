@@ -71,10 +71,11 @@ Also new:
 
 ### Fixed
 
-- Fixed saveable stacks restoring empty when every record is dropped, or selecting the wrong active
-  screen when only some records can be restored.
-- Fixed saved navigation history being associated with the wrong screen when its original root
-  cannot be restored.
+- Fixed saveable stacks restoring empty when every record is dropped. Saveable nav stacks now
+  discard incomplete forward history and fall back to their initial value if the active screen or
+  its back history cannot be restored.
+- Fixed stored back-stack snapshots being partially restored or associated with a different root
+  when one of their records cannot be restored.
 - Fixed `awaitResult` suspending indefinitely when a pending pop result cannot be saved or restored.
 - **SubCircuit:** Fix `subcircuit-codegen` Metro mode (`subcircuit.codegen.mode=metro`). It previously
   required Dagger's `@AssistedFactory` even in Metro mode, generated `@javax.inject.Inject` instead of

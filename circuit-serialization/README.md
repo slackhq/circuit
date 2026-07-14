@@ -90,12 +90,13 @@ above it needs one of the other two options.
 
 ## Lenient restoration
 
-When a screen can no longer be restored, Circuit drops its record. If the active record survives,
-it remains active. Otherwise, Circuit selects the nearest surviving record toward the root, then
-falls back toward the top. Saved stack snapshots are discarded when their original root cannot be
-restored, rather than being associated with a surviving child. If a pending pop result existed but
-cannot be restored, Circuit clears the expectation so `awaitResult` returns null rather than
-suspending indefinitely.
+When a saved value can no longer be restored:
+
+- `SaveableBackStack` drops the affected record. If none survive, it starts from its initial value.
+- `SaveableNavStack` discards incomplete forward history. If the active screen or its back history
+  is missing, it starts from its initial value.
+- Stored back-stack snapshots are discarded if any record is missing.
+- An unrestorable pending pop result clears its expectation, so `awaitResult` returns null.
 
 ## Roadmap
 

@@ -10,6 +10,7 @@ import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -158,6 +159,9 @@ class TestCountPresenter(
         RememberType.ViewModel -> {
           rememberViewModel("count".takeIf { useKeys })
         }
+        RememberType.FirstPartyRetain -> {
+          retain { mutableIntStateOf(0) }
+        }
       }
 
     return TestState(count, screen.label) { event ->
@@ -202,6 +206,7 @@ class TestCountPresenter(
     Retained,
     Saveable,
     ViewModel,
+    FirstPartyRetain,
   }
 }
 

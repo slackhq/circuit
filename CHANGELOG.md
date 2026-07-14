@@ -54,14 +54,20 @@ Also new:
   [retain](https://developer.android.com/develop/ui/compose/state-lifespans#retain) API.
   - Setting `CircuitRetainedSettings.useFirstParty = true` (before the first composition) backs `lifecycleRetainedStateRegistry()` with a root-level `retain` call instead of a Circuit-managed `ViewModel`, delegating configuration-change survival to the `RetainedValuesStore` installed in the composition.
   - All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged.
-  - First-party `retain {}` calls also compose correctly alongside Circuit's retention.
+  - First-party `retain {}` can be used directly in presenters and UIs alongside `rememberRetained`. In navigated content, retained values follow their record's lifetime.
   - See the [circuit-retained README](https://github.com/slackhq/circuit/tree/main/circuit-retained) for more details.
-  - **NOTE:** This is phase one of a multi-phase migration to the first-party API.
+  - **NOTE:** This is part of a multi-phase migration to the first-party API.
 
 ### Deprecated
 
 - `SaveableBackStack.Record.args` and `SaveableBackStack.push(screen, args)`. Pass data through the `Screen` itself instead; `args` will be removed in a future release. This matches what the new `SaveableNavStack` already does.
 - The `Saver` vals on `SaveableBackStack`, `SaveableNavStack`, and `AnsweringResultHandler` companions. Use the `Saver(CircuitSaver)` functions instead.
+
+### Changed
+
+- **SubCircuit:** `@SubCircuitInject` is now handled by the main `circuit-codegen` processor.
+  `circuitx-subcircuit-codegen` is now a relocation pointer to `circuit-codegen`, but prefer
+  depending on `circuit-codegen` directly.
 
 ### Fixed
 

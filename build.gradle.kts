@@ -25,7 +25,6 @@ plugins {
   alias(libs.plugins.emulatorWtf) apply false
   alias(libs.plugins.binaryCompatibilityValidator)
   id("circuit.base") apply false
-  id("circuit.spotless")
 }
 
 dokka {

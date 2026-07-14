@@ -49,11 +49,7 @@ configure<DokkaExtension> {
 
 // Dependency guard configuration
 configure<DependencyGuardPluginExtension> {
-  if (
-    project.name == "circuit-codegen" ||
-      project.name == "subcircuit-codegen" ||
-      project.name == "circuit-serialization-reflect"
-  ) {
+  if (project.name == "circuit-codegen" || project.name == "circuit-serialization-reflect") {
     configuration("runtimeClasspath") {
       baselineMap = {
         // Remove the version

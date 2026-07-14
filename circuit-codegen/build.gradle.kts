@@ -23,6 +23,7 @@ dependencies {
   testImplementation(libs.kct)
   testImplementation(libs.kct.ksp)
   testImplementation(libs.kotlin.compilerEmbeddable)
+  testImplementation(libs.kotlin.test)
   testImplementation(libs.ksp)
   testImplementation(libs.ksp.api)
   testImplementation(libs.metro)

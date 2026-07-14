@@ -220,40 +220,39 @@ class NavResultTest {
       appendLine("  top: ${backStack.topRecord?.key}")
       appendLine("  records:")
       // Append the string as a square diagram
-      val tableString =
-        table {
-            cellStyle {
-              // These options affect the style of all cells contained within the table.
-              border = true
-              alignment = TextAlignment.MiddleLeft
-            }
-            header {
-              row {
-                cellStyle { alignment = TextAlignment.MiddleCenter }
-                for ((i, record) in backStack.iterator().withIndex()) {
-                  if (i == 0) {
-                    cell("${record.key.take(8)} (top)")
-                  } else {
-                    cell(record.key.take(8))
-                  }
-                }
+      val tableString = table {
+        cellStyle {
+          // These options affect the style of all cells contained within the table.
+          border = true
+          alignment = TextAlignment.MiddleLeft
+        }
+        header {
+          row {
+            cellStyle { alignment = TextAlignment.MiddleCenter }
+            for ((i, record) in backStack.iterator().withIndex()) {
+              if (i == 0) {
+                cell("${record.key.take(8)} (top)")
+              } else {
+                cell(record.key.take(8))
               }
             }
-            row {
-              for ((i, record) in backStack.iterator().withIndex()) {
-                val stateString =
-                  """
+          }
+        }
+        row {
+          for ((i, record) in backStack.iterator().withIndex()) {
+            val stateString =
+              """
                     ${record.screen::class.simpleName}
                     input=${(record.screen as? TestResultScreen)?.input}
                     ⬅ expectingResult=${resultHandler.expectingResult(record.key)}
                     value=${if (i == 0) getCurrentText() else "undefined"}
                   """
-                    .trimIndent()
-                cell(stateString)
-              }
-            }
+                .trimIndent()
+            cell(stateString)
           }
-          .toString()
+        }
+      }
+        .toString()
       appendLine(tableString.prependIndent("    "))
     }
     println(state)

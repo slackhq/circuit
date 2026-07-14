@@ -13,8 +13,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 import wtf.emulator.DeviceModel
 import wtf.emulator.EwExtension
 
-apply(plugin = "circuit.spotless")
-
 val catalog = rootProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
 val jvmTargetVersion = catalog.findVersion("jvmTarget").get().requiredVersion
 val jdkVersion = catalog.findVersion("jdk").get().requiredVersion.removeSuffix("-ea").toInt()

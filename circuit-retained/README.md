@@ -39,11 +39,11 @@ With the flag enabled, `lifecycleRetainedStateRegistry()` is backed by a single 
 
 The flag is experimental (`@ExperimentalCircuitRetainedApi`) and currently affects the targets that have the ViewModel-backed registry (Android, JVM, iOS, macOS, web).
 
-First-party `retain {}` calls also work correctly inside Circuit content today and can be used side by side with `rememberRetained`.
+With the flag enabled, `NavigableCircuitContent` also scopes a `RetainedValuesStore` to each nav record, so first-party `retain {}` calls inside presenters and UIs get per-record lifetimes side by side with `rememberRetained`: values survive while their record is in the nav stack (including across configuration changes) and are retired when the record is popped.
 
 ### Migration Plan
 
-The opt-in backing above is the current phase and swaps only the retention transport, with no API changes. The next phase scopes first-party stores per record in `NavigableCircuitContent` so `retain {}` gets correct per-record lifetimes, and steers new unkeyed, non-saveable usages toward `retain {}`.
+The opt-in flag above swaps the retention transport and scopes `retain {}` per record, with no API changes. From here, new unkeyed, non-saveable usages can prefer `retain {}` directly.
 
 Once the backing has soaked, APIs with direct first-party equivalents will be deprecated with replacements, like plain `rememberRetained {}` → `retain {}` and `rememberRetainedStateRegistry` → `retainManagedRetainedValuesStore`.
 
@@ -65,3 +65,5 @@ A reference implementation with retention-lifecycle forwarding and composition-r
 val store = retain { RetainedStore<ChatId, ChatController>() }
 val controller = store.rememberRetainedEntry(chatId) { ChatController(it) }
 ```
+
+Despite the similar name, this is unrelated to the per-record `RetainedValuesStore` scoping in `NavigableCircuitContent`. That is an internal implementation of the retain runtime's store interface for scoping, while `RetainedStore` is a user-facing container for keying your own values within whatever scope you retain it in.

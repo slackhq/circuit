@@ -34,9 +34,9 @@ Also new:
   [retain](https://developer.android.com/develop/ui/compose/state-lifespans#retain) API.
   - Setting `CircuitRetainedSettings.useFirstParty = true` (before the first composition) backs `lifecycleRetainedStateRegistry()` with a root-level `retain` call instead of a Circuit-managed `ViewModel`, delegating configuration-change survival to the `RetainedValuesStore` installed in the composition.
   - All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged.
-  - First-party `retain {}` calls also compose correctly alongside Circuit's retention.
+  - First-party `retain {}` can be used directly in presenters and UIs alongside `rememberRetained`. In navigated content, retained values follow their record's lifetime.
   - See the [circuit-retained README](https://github.com/slackhq/circuit/tree/main/circuit-retained) for more details.
-  - **NOTE:** This is phase one of a multi-phase migration to the first-party API.
+  - **NOTE:** This is part of a multi-phase migration to the first-party API.
 
 ### Deprecated
 

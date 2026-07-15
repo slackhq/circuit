@@ -45,7 +45,7 @@ With the flag enabled, `NavigableCircuitContent` also scopes a `RetainedValuesSt
 
 The opt-in flag above swaps the retention transport and scopes `retain {}` per record, with no API changes. From here, new unkeyed, non-saveable usages can prefer `retain {}` directly.
 
-Once the backing has soaked, APIs with direct first-party equivalents will be deprecated with replacements, like plain `rememberRetained {}` → `retain {}` and `rememberRetainedStateRegistry` → `retainManagedRetainedValuesStore`.
+Once the backing has soaked, we can reassess which Circuit APIs have practical first-party migration paths. Some are conceptually similar to first-party APIs, but the existing Circuit API shapes do not all have source-compatible replacements.
 
 APIs with no upstream equivalent will likely stay or have recipes: (`rememberRetainedSaveable`, `rememberRetained(key = ...)`, the `produceRetainedState`/`collectAsRetainedState` conveniences).
 

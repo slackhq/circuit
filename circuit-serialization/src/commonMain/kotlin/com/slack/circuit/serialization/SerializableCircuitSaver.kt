@@ -8,6 +8,8 @@ import androidx.savedstate.serialization.decodeFromSavedState
 import androidx.savedstate.serialization.encodeToSavedState
 import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.CircuitSaver
+import com.slack.circuit.runtime.screen.PopResult
+import com.slack.circuit.runtime.screen.Screen
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SerializationException
@@ -15,6 +17,10 @@ import kotlinx.serialization.SerializationException
 /**
  * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx-serialization,
  * encoding them to `SavedState` via `androidx.savedstate`.
+ *
+ * In 0.35, Android [Screen] and [PopResult] implementations must still be `Parcelable`, even though
+ * this saver stores `SavedState` rather than the Parcelable value. That Android supertype
+ * requirement will be removed in a future release.
  *
  * Screens and results must be `@Serializable` and registered for polymorphic serialization against
  * the [CircuitSaveable] base class in [configuration]'s `serializersModule`:
@@ -47,17 +53,15 @@ public fun SerializableCircuitSaver(
 private class SavedStateCircuitSaver(
   private val configuration: SavedStateConfiguration,
   private val onRestoreError: (Throwable) -> Unit,
-) : CircuitSaver {
+) : CircuitSaver() {
   private val circuitSaveableSerializer = PolymorphicSerializer(CircuitSaveable::class)
 
   override fun save(value: CircuitSaveable): Any {
     return encode(circuitSaveableSerializer, value)
   }
 
-  override fun <T : CircuitSaveable> restore(saved: Any): T? {
-    @Suppress("UNCHECKED_CAST")
-    return decode(circuitSaveableSerializer, saved) as? T?
-  }
+  protected override fun restore(saved: Any): CircuitSaveable? =
+    saved as? CircuitSaveable ?: decode(circuitSaveableSerializer, saved)
 
   private fun <T : Any> encode(serializer: KSerializer<T>, value: T): SavedState =
     try {

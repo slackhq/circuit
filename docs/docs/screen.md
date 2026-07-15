@@ -67,16 +67,42 @@ val ui: Ui<*>? = circuit.ui(addFavoritesScreen)
 
 Circuit's saveable back stacks (`rememberSaveableBackStack` and `rememberSaveableNavStack`) persist
 navigation state across configuration changes and process death. How screens are converted to a
-saveable form is pluggable via the `CircuitSaver` interface. `Screen` and `PopResult` both extend
-the `CircuitSaveable` marker, and a `CircuitSaver` converts those values to and from
+saveable form is pluggable via `CircuitSaver`. Both `Screen` and `PopResult` extend the
+`CircuitSaveable` marker, and a `CircuitSaver` converts those values to and from
 representations that Compose's `SaveableStateRegistry` can store.
 
 ```kotlin
-interface CircuitSaver {
-  fun save(value: CircuitSaveable): Any?
-  fun <T : CircuitSaveable> restore(saved: Any): T?
+abstract class CircuitSaver protected constructor() {
+  abstract fun save(value: CircuitSaveable): Any?
+
+  protected abstract fun restore(saved: Any): CircuitSaveable?
 }
+
+inline fun <reified T : Screen> CircuitSaver.restoreScreen(
+  saved: Any,
+  onAbsent: () -> Unit = {},
+  onTypeMismatch: (CircuitSaveable) -> Unit = {
+    error("Expected ${T::class}, but CircuitSaver restored ${it::class}.")
+  },
+): T?
+
+inline fun <reified T : PopResult> CircuitSaver.restorePopResult(
+  saved: Any,
+  onAbsent: () -> Unit = {},
+  onTypeMismatch: (CircuitSaveable) -> Unit = {
+    error("Expected ${T::class}, but CircuitSaver restored ${it::class}.")
+  },
+): T?
 ```
+
+`restore` is a protected implementation hook for `CircuitSaver` authors. Application code uses the
+reified helpers instead.
+
+The reified type parameter is the concrete expected type: `restoreScreen<HomeScreen>(saved)`
+rejects another `Screen` subtype. When the saver returns null, the helper invokes `onAbsent` and
+returns null. When the restored value is not the requested type, the helper passes it to
+`onTypeMismatch`. That callback throws by default; if a custom callback completes normally, the
+helper returns null. `restorePopResult` has the same behavior for `PopResult` subtypes.
 
 The default (`DefaultCircuitSaver`) passes values through unchanged. On Android that means screens
 persist via their `Parcelable` implementations, matching Circuit's historical behavior. Other
@@ -88,10 +114,12 @@ Parcelable is the Android default and needs no setup. Annotate screens with `@Pa
 default saver persists them. For common-code screens, implement `ParcelableScreen`, which adds
 `Parcelable` on Android and is just a `Screen` elsewhere.
 
-To use kotlinx-serialization instead, the `circuit-serialization` artifact persists `@Serializable`
-screens to `SavedState` on any platform:
+To persist `SavedState` encoded with kotlinx-serialization, use the `circuit-serialization`
+artifact. In 0.35, Android screens and pop results still need to be Parcelable in addition to being
+`@Serializable`, even though the saver stores `SavedState` rather than the Parcelable value:
 
 ```kotlin
+@Parcelize
 @Serializable
 data object HomeScreen : Screen
 
@@ -112,10 +140,22 @@ artifact skips the registration requirement by resolving serializers reflectivel
 class name. The artifact embeds the R8/ProGuard rules it needs, so minified apps work without
 additional configuration.
 
+Both serializing savers can restore navigation state saved by Circuit 0.34's default saver, so
+adopting serialization in 0.35 does not by itself reset existing navigation state.
+
+When a saved value can no longer be restored:
+
+- `SaveableBackStack` drops the affected record. If none survive, it starts from its initial value.
+- `SaveableNavStack` discards incomplete forward history. If the active screen or its back history
+  is missing, it starts from its initial value.
+- Stored back-stack snapshots are discarded if any record is missing.
+- An unrestorable pending pop result clears its expectation, so `awaitResult` returns null.
+
 See the `circuit-serialization` README for the full setup.
 
 To disable persistence entirely, use `CircuitSaver.NoOp`. Stacks saved with it restore to their
-initial state.
+initial state. This changes persistence behavior only: Android `Screen` and `PopResult`
+implementations still need to be Parcelable in 0.35.
 
 ### Wiring
 
@@ -141,7 +181,7 @@ any back stack created inside it.
 
 ### Roadmap
 
-`Screen`'s Android `actual` still extends `Parcelable`. A future release removes that supertype,
-making `Screen` a plain marker interface on every platform. To prepare, implement
-`ParcelableScreen` on screens that should keep using Parcelable, or adopt a serializing
-`CircuitSaver`. The `circuit-serialization` README has the full roadmap.
+`Screen` and `PopResult` still extend `Parcelable` on Android in 0.35. A future release removes
+those supertypes. To prepare, implement `ParcelableScreen` or `ParcelablePopResult` on values that
+should keep using Parcelable, or adopt a serializing `CircuitSaver`. The `circuit-serialization`
+README has the full roadmap.

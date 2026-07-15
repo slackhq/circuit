@@ -20,6 +20,7 @@ import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.restoreScreen
 import kotlin.collections.set
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -29,6 +30,8 @@ import kotlin.uuid.Uuid
  *
  * If [root] changes, a new nav stack will be created.
  *
+ * @param circuitSaver the [CircuitSaver] used to persist screens, defaulting to
+ *   [LocalCircuitSaver].
  * @param init optional initializer callback to perform extra initialization logic.
  */
 @Composable
@@ -45,6 +48,9 @@ public fun rememberSaveableNavStack(
  * Creates and remembers a [SaveableNavStack] filled with the given [initialScreens].
  *
  * [initialScreens] must not be empty. If [initialScreens] changes, a new nav stack will be created.
+ *
+ * @param circuitSaver the [CircuitSaver] used to persist screens, defaulting to
+ *   [LocalCircuitSaver].
  */
 @Composable
 public fun rememberSaveableNavStack(
@@ -65,6 +71,9 @@ public fun rememberSaveableNavStack(
  * Creates and remembers a [SaveableNavStack] filled with the given [navStackList].
  *
  * If [navStackList] changes, a new nav stack will be created.
+ *
+ * @param circuitSaver the [CircuitSaver] used to persist screens, defaulting to
+ *   [LocalCircuitSaver].
  */
 @Composable
 public fun rememberSaveableNavStack(
@@ -284,7 +293,7 @@ internal constructor(
           },
           restore = { map ->
             val screen =
-              map["screen"]?.let { circuitSaver.restore<Screen>(it) } ?: return@mapSaver null
+              map["screen"]?.let { circuitSaver.restoreScreen<Screen>(it) } ?: return@mapSaver null
             Record(screen = screen, key = map["key"] as String)
           },
         )
@@ -334,13 +343,16 @@ internal constructor(
             }
           },
           restore = { map ->
-            @Suppress("UNCHECKED_CAST")
-            val entries = (map["entries"] as List<List<Any>>).mapNotNull { recordSaver.restore(it) }
-            if (entries.isEmpty()) return@mapSaver null
+            @Suppress("UNCHECKED_CAST") val savedEntries = map["entries"] as List<List<Any>>
+            val restored =
+              restoreRecords(
+                savedEntries = savedEntries,
+                savedCurrentIndex = map["currentIndex"] as Int,
+                recordSaver = recordSaver,
+              ) ?: return@mapSaver null
             SaveableNavStackList(
-              entries = entries,
-              // Records may have been dropped on restore, so clamp the index into bounds.
-              currentIndex = (map["currentIndex"] as Int).coerceIn(0, entries.lastIndex),
+              entries = restored.entries,
+              currentIndex = restored.currentIndex,
             )
           },
         )
@@ -375,18 +387,28 @@ internal constructor(
           }
         },
         restore = { value ->
-          var currentIndex = -1
+          var savedCurrentIndex = -1
+          var restoredCurrentIndex = -1
           val navStack = SaveableNavStack()
           value.forEachIndexed { index, item ->
             when (index) {
               0 -> {
                 // The first list is the current index
-                currentIndex = item.first() as Int
+                savedCurrentIndex = item.first() as Int
               }
 
               1 -> {
                 // The second list is the entry list
-                item.mapNotNullTo(navStack.entryList) { recordSaver.restore(it as List<Any>) }
+                val restored =
+                  restoreRecords(
+                    savedEntries = item,
+                    savedCurrentIndex = savedCurrentIndex,
+                    recordSaver = recordSaver,
+                  )
+                if (restored != null) {
+                  navStack.entryList.addAll(restored.entries)
+                  restoredCurrentIndex = restored.currentIndex
+                }
               }
 
               else -> {
@@ -405,11 +427,36 @@ internal constructor(
           // If every record was dropped, return null so rememberSaveable falls back to its
           // factory instead of restoring an empty, unusable stack.
           if (navStack.entryList.isEmpty()) return@listSaver null
-          // Records may have been dropped on restore, so clamp the index into bounds.
-          navStack.currentIndex = currentIndex.coerceIn(0, navStack.entryList.lastIndex)
+          navStack.currentIndex = restoredCurrentIndex
           navStack
         },
       )
     }
+  }
+}
+
+private data class RestoredRecords(
+  val entries: List<Record>,
+  val currentIndex: Int,
+)
+
+private fun restoreRecords(
+  savedEntries: List<*>,
+  savedCurrentIndex: Int,
+  recordSaver: Saver<Record, Any>,
+): RestoredRecords? {
+  if (savedCurrentIndex !in savedEntries.indices) return null
+
+  val restored = savedEntries.map { savedRecord ->
+    @Suppress("UNCHECKED_CAST") recordSaver.restore(savedRecord as List<Any>)
+  }
+  val currentToRoot = restored.drop(savedCurrentIndex)
+  if (currentToRoot.any { it == null }) return null
+
+  val forward = restored.take(savedCurrentIndex)
+  return if (forward.any { it == null }) {
+    RestoredRecords(currentToRoot.filterNotNull(), currentIndex = 0)
+  } else {
+    RestoredRecords(restored.filterNotNull(), currentIndex = savedCurrentIndex)
   }
 }

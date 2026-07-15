@@ -107,37 +107,113 @@ class SaveableNavStackTest {
   fun test_saveable_restore_with_noop_saver_returns_null() {
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
     navStack.push(TestScreen.ScreenA)
+    val navStackList =
+      SaveableNavStack.SaveableNavStackList(
+        entries = navStack.entryList.toList(),
+        currentIndex = 0,
+      )
 
     val saved = save(navStack, CircuitSaver.NoOp)
     assertNotNull(saved)
-
     assertNull(SaveableNavStack.Saver(CircuitSaver.NoOp).restore(saved))
+
+    val savedList = save(navStackList, CircuitSaver.NoOp)
+    assertNotNull(savedList)
+    assertNull(SaveableNavStack.SaveableNavStackList.Saver(CircuitSaver.NoOp).restore(savedList))
   }
 
   @Test
-  fun test_saveable_restore_clamps_current_index_when_records_drop() {
-    // Drops the root screen on save, so the restored list is shorter than the saved index.
-    val droppingSaver =
-      object : CircuitSaver by DefaultCircuitSaver {
-        override fun save(value: CircuitSaveable): Any? =
-          if (value == TestScreen.RootAlpha) null else value
-      }
+  fun test_saveable_restore_keeps_active_record_when_topward_record_drops() {
+    assertRestoreCurrentAfterDropping(
+      dropped = TestScreen.ScreenC,
+      expectedCurrent = TestScreen.ScreenB,
+    )
+  }
+
+  @Test
+  fun test_saveable_restore_returns_null_when_rootward_record_drops() {
+    assertRestoreCurrentAfterDropping(
+      dropped = TestScreen.ScreenA,
+      expectedCurrent = null,
+    )
+  }
+
+  @Test
+  fun test_saveable_restore_returns_null_when_active_record_drops() {
+    assertRestoreCurrentAfterDropping(
+      dropped = TestScreen.ScreenB,
+      expectedCurrent = null,
+    )
+  }
+
+  @Test
+  fun test_saveable_restore_returns_null_when_active_root_drops() {
+    val circuitSaver = droppingSaver(TestScreen.RootAlpha)
+    val navStack = navStackWithCurrent(TestScreen.RootAlpha)
+    val navStackList =
+      SaveableNavStack.SaveableNavStackList(
+        entries = navStack.entryList.toList(),
+        currentIndex = navStack.entryList.lastIndex,
+      )
+
+    val restored =
+      SaveableNavStack.Saver(circuitSaver).restore(assertNotNull(save(navStack, circuitSaver)))
+    assertNull(restored)
+
+    val restoredList =
+      SaveableNavStack.SaveableNavStackList.Saver(circuitSaver)
+        .restore(assertNotNull(save(navStackList, circuitSaver)))
+    assertNull(restoredList)
+  }
+
+  @Test
+  fun test_saveable_restore_discards_all_forward_records_when_one_drops() {
+    val circuitSaver = droppingSaver(TestScreen.ScreenB)
+    val navStack = navStackWithCurrent(TestScreen.ScreenA)
+    val navStackList =
+      SaveableNavStack.SaveableNavStackList(
+        entries = navStack.entryList.toList(),
+        currentIndex = 2,
+      )
+
+    val restored =
+      SaveableNavStack.Saver(circuitSaver).restore(assertNotNull(save(navStack, circuitSaver)))
+    assertNotNull(restored)
+    assertEquals(
+      listOf(TestScreen.ScreenA, TestScreen.RootAlpha),
+      restored.entryList.map { it.screen },
+    )
+    assertEquals(TestScreen.ScreenA, restored.currentRecord?.screen)
+
+    val restoredList =
+      SaveableNavStack.SaveableNavStackList.Saver(circuitSaver)
+        .restore(assertNotNull(save(navStackList, circuitSaver)))
+    assertNotNull(restoredList)
+    assertEquals(
+      listOf(TestScreen.ScreenA, TestScreen.RootAlpha),
+      restoredList.entries.map { it.screen },
+    )
+    assertEquals(TestScreen.ScreenA, restoredList.active.screen)
+  }
+
+  @Test
+  fun test_saveable_restore_discards_snapshot_when_its_root_drops() {
+    val circuitSaver = droppingSaver(TestScreen.RootAlpha)
     val navStack = SaveableNavStack(TestScreen.RootAlpha)
     navStack.push(TestScreen.ScreenA)
-    navStack.push(TestScreen.ScreenB)
-    // Move the current record back to the root (index 2)
-    navStack.backward()
-    navStack.backward()
-    assertEquals(TestScreen.RootAlpha, navStack.currentRecord?.screen)
+    navStack.saveState()
+    navStack.popUntil { false }
+    navStack.push(TestScreen.RootBeta)
+    navStack.push(TestScreen.ScreenC)
 
-    val saved = save(navStack, droppingSaver)
-    assertNotNull(saved)
-
-    val restored = SaveableNavStack.Saver(droppingSaver).restore(saved)
+    val restored =
+      SaveableNavStack.Saver(circuitSaver).restore(assertNotNull(save(navStack, circuitSaver)))
     assertNotNull(restored)
-    assertEquals(2, restored.entryList.size)
-    // Saved index (2) is out of bounds for the restored list, so it clamps to the last entry.
-    assertEquals(TestScreen.ScreenA, restored.currentRecord?.screen)
+    assertEquals(
+      listOf(TestScreen.ScreenC, TestScreen.RootBeta),
+      restored.entryList.map { it.screen },
+    )
+    assertTrue(restored.stateStore.isEmpty())
   }
 
   @Test
@@ -347,4 +423,56 @@ private fun save(navStack: SaveableNavStack, circuitSaver: CircuitSaver = Defaul
   with(SaveableNavStack.Saver(circuitSaver)) {
     val scope = SaverScope { true }
     scope.save(navStack)
+  }
+
+private fun save(
+  navStackList: SaveableNavStack.SaveableNavStackList,
+  circuitSaver: CircuitSaver = DefaultCircuitSaver,
+) =
+  with(SaveableNavStack.SaveableNavStackList.Saver(circuitSaver)) {
+    val scope = SaverScope { true }
+    scope.save(navStackList)
+  }
+
+private fun navStackWithCurrent(current: TestScreen): SaveableNavStack =
+  SaveableNavStack(TestScreen.RootAlpha).apply {
+    push(TestScreen.ScreenA)
+    push(TestScreen.ScreenB)
+    push(TestScreen.ScreenC)
+    while (currentRecord?.screen != current) {
+      assertTrue(backward())
+    }
+  }
+
+private fun assertRestoreCurrentAfterDropping(
+  dropped: TestScreen,
+  expectedCurrent: TestScreen?,
+) {
+  val circuitSaver = droppingSaver(dropped)
+  val navStack = navStackWithCurrent(TestScreen.ScreenB)
+  val navStackList =
+    SaveableNavStack.SaveableNavStackList(
+      entries = navStack.entryList.toList(),
+      currentIndex = 1,
+    )
+
+  val restored =
+    SaveableNavStack.Saver(circuitSaver).restore(assertNotNull(save(navStack, circuitSaver)))
+  val restoredList =
+    SaveableNavStack.SaveableNavStackList.Saver(circuitSaver)
+      .restore(assertNotNull(save(navStackList, circuitSaver)))
+  if (expectedCurrent == null) {
+    assertNull(restored)
+    assertNull(restoredList)
+  } else {
+    assertEquals(expectedCurrent, assertNotNull(restored).currentRecord?.screen)
+    assertEquals(expectedCurrent, assertNotNull(restoredList).active.screen)
+  }
+}
+
+private fun droppingSaver(vararg dropped: CircuitSaveable): CircuitSaver =
+  object : CircuitSaver() {
+    override fun save(value: CircuitSaveable): Any? = value.takeUnless { it in dropped }
+
+    override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
   }

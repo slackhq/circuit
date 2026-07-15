@@ -37,7 +37,7 @@ pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
   }
   // todo Robolectric: targetSdk on host test compilations is not getting set on the manifest??
   tasks.matching { it.name == "processAndroidHostTestManifest" }.configureEach {
-    val sdkVersion = targetSdkVersion
+    val sdkVersion = compileSdkVersion
     doLast {
       val manifestDir = outputs.files.files.first { it.isDirectory }
       val manifest = File(manifestDir, "AndroidManifest.xml")

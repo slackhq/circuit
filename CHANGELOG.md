@@ -63,12 +63,6 @@ Also new:
 - `SaveableBackStack.Record.args` and `SaveableBackStack.push(screen, args)`. Pass data through the `Screen` itself instead; `args` will be removed in a future release. This matches what the new `SaveableNavStack` already does.
 - The `Saver` vals on `SaveableBackStack`, `SaveableNavStack`, and `AnsweringResultHandler` companions. Use the `Saver(CircuitSaver)` functions instead.
 
-### Changed
-
-- **SubCircuit:** `@SubCircuitInject` is now handled by the main `circuit-codegen` processor.
-  `circuitx-subcircuit-codegen` is now a relocation pointer to `circuit-codegen`, but prefer
-  depending on `circuit-codegen` directly.
-
 ### Fixed
 
 - Fixed saveable stacks restoring empty when every record is dropped. Saveable nav stacks now
@@ -82,6 +76,21 @@ Also new:
   Metro's `@Inject`, and referenced `dev.zacsweers.metro.annotations.ContributesIntoSet` (wrong package).
   Metro mode now accepts `dev.zacsweers.metro.AssistedFactory` and emits `dev.zacsweers.metro.Inject` +
   `dev.zacsweers.metro.ContributesIntoSet`, so generated factories compile against Metro.
+
+### Changed
+
+- **SubCircuit:** `@SubCircuitInject` is now handled by the main `circuit-codegen` processor.
+  `circuitx-subcircuit-codegen` is now a relocation pointer to `circuit-codegen`, but prefer
+  depending on `circuit-codegen` directly.
+- Update Compose Runtime to `1.11.4`.
+- Update Dagger to `2.60.1`.
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@ryanbrookepayne](https://github.com/ryanbrookepayne)
+- [@wiyarmir](https://github.com/wiyarmir)
 
 0.34.0
 ------

@@ -16,7 +16,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuitx.sideeffects"
-    compileSdk = 36
     withHostTest { isIncludeAndroidResources = true }
   }
   jvm()

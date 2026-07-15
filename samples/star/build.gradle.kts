@@ -27,7 +27,6 @@ kotlin {
   jvm()
   android {
     namespace = "com.slack.circuit.star"
-    compileSdk = 36
     minSdk = 30
     androidResources { enable = true }
     withHostTest { isIncludeAndroidResources = true }
@@ -123,7 +122,7 @@ kotlin {
         implementation(projects.circuitx.android)
       }
     }
-    val androidHostTest by getting {
+    maybeCreate("androidHostTest").apply {
       dependencies {
         implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
@@ -139,7 +138,7 @@ kotlin {
         implementation(projects.samples.star.coilRule)
       }
     }
-    val androidDeviceTest by getting {
+    maybeCreate("androidDeviceTest").apply {
       dependencies {
         implementation(libs.androidx.activity.compose)
         implementation(libs.compose.ui.testing.junit)

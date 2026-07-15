@@ -28,6 +28,7 @@ import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.restoreScreen
 import kotlin.math.min
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -225,7 +226,7 @@ internal constructor(
           },
           restore = { map ->
             val screen =
-              map["screen"]?.let { circuitSaver.restore<Screen>(it) } ?: return@mapSaver null
+              map["screen"]?.let { circuitSaver.restoreScreen<Screen>(it) } ?: return@mapSaver null
             @Suppress("UNCHECKED_CAST")
             Record(
               screen = screen,
@@ -270,14 +271,12 @@ internal constructor(
               list.mapNotNullTo(backStack.entryList) { recordSaver.restore(it as List<Any>) }
             } else {
               // Any list after that is from the state store
-              list
-                .filterIsInstance<List<Any>>()
-                .mapNotNull { recordSaver.restore(it) }
-                .takeIf { it.isNotEmpty() }
-                ?.let { records ->
-                  // The key is always the root screen (i.e. last item)
-                  backStack.stateStore[records.last().screen] = records
-                }
+              val records = list.map { savedRecord ->
+                (savedRecord as? List<Any>)?.let(recordSaver::restore) ?: return@forEachIndexed
+              }
+              // The key is always the root screen (i.e. last item)
+              val root = records.lastOrNull()?.screen ?: return@forEachIndexed
+              backStack.stateStore[root] = records
             }
           }
           // If every record was dropped, return null so rememberSaveable falls back to its

@@ -3,7 +3,8 @@
 kotlinx-serialization support for persisting Circuit navigation state. This artifact provides
 `CircuitSaver` implementations that encode `Screen`s and `PopResult`s to `SavedState` via
 `androidx.savedstate`, so saveable back stacks survive configuration changes and process death
-without requiring `Parcelable`.
+without using Parcelable as the persisted representation. In 0.35, Android screens and results
+must still be Parcelable; that type requirement is removed in a future release.
 
 ## Installation
 
@@ -14,11 +15,12 @@ dependencies {
 ```
 
 Screens must be annotated with `@Serializable`, which requires the kotlinx-serialization compiler
-plugin:
+plugin. Android screens must also remain Parcelable in 0.35, typically via `@Parcelize`:
 
 ```kotlin
 plugins {
   kotlin("plugin.serialization")
+  kotlin("plugin.parcelize") // Android projects in 0.35
 }
 ```
 
@@ -28,9 +30,11 @@ plugins {
 polymorphic serialization against the `CircuitSaveable` base class in a `SavedStateConfiguration`:
 
 ```kotlin
+@Parcelize
 @Serializable
 data object HomeScreen : Screen
 
+@Parcelize
 @Serializable
 data class DetailScreen(val itemId: Long) : Screen
 
@@ -49,6 +53,13 @@ val saver = SerializableCircuitSaver(
 Saving an unregistered type fails with a descriptive error. Restoring an unregistered type, such as
 after an app update removed a screen, drops that record instead of failing. Pass an
 `onRestoreError` callback to observe dropped records, such as for logging.
+
+Use `restoreScreen<T>` and `restorePopResult<T>` to restore a specific type. They return null when
+the saver cannot restore a value and reject a different concrete Screen or PopResult type by
+default.
+
+Both serializing savers can restore navigation state saved by Circuit 0.34's default saver. This
+allows an app to adopt serialization in 0.35 without resetting existing navigation state.
 
 ## Skipping registration on JVM/Android
 
@@ -77,18 +88,28 @@ ProvideCircuitSaver(saver) {
 this only reaches back stacks created inside `CircuitCompositionLocals`. A back stack created
 above it needs one of the other two options.
 
+## Lenient restoration
+
+When a saved value can no longer be restored:
+
+- `SaveableBackStack` drops the affected record. If none survive, it starts from its initial value.
+- `SaveableNavStack` discards incomplete forward history. If the active screen or its back history
+  is missing, it starts from its initial value.
+- Stored back-stack snapshots are discarded if any record is missing.
+- An unrestorable pending pop result clears its expectation, so `awaitResult` returns null.
+
 ## Roadmap
 
-`Screen`'s Android `actual` currently extends `Parcelable`, so Android screens must still be
-parcelable even when a serializing saver handles persistence. A future release removes that
-supertype and completes the migration:
+`Screen` and `PopResult` currently extend `Parcelable` on Android, so Android implementations must
+still be Parcelable even when a serializing saver or `CircuitSaver.NoOp` handles persistence. A
+future release removes those supertypes and completes the migration:
 
-- `Screen` becomes a plain marker interface on all platforms, and `@Parcelize` becomes optional
-  for apps that use a saver from this artifact.
-- The default Android saver keeps working for screens that implement `Parcelable` and fails with
-  a descriptive error for screens that don't when no saver is configured.
-- Common-code screens that should keep the Parcelable strategy migrate to `ParcelableScreen`,
-  which adds `Parcelable` on Android only.
+- `Screen` and `PopResult` become plain marker interfaces on all platforms, and `@Parcelize`
+  becomes optional for apps that use a saver from this artifact.
+- The default Android saver keeps working for screens and results that implement `Parcelable` and
+  fails with a descriptive error for values that do not when no saver is configured.
+- Common-code values that should keep the Parcelable strategy migrate to `ParcelableScreen` or
+  `ParcelablePopResult`, which add `Parcelable` on Android only.
 
 Planned follow-ups after that:
 

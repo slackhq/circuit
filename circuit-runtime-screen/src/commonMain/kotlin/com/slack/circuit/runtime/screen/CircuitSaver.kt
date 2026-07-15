@@ -14,8 +14,9 @@ import com.slack.circuit.runtime.screen.CircuitSaver.Companion.NoOp
  * `SaveableStateRegistry`.
  *
  * Circuit's saveable back/nav stack implementations use this to persist navigation state across
- * configuration changes and process death. [Screen] itself does not require any particular
- * serialization mechanism, implementations of this interface supply one.
+ * configuration changes and process death. On Android, [Screen] and [PopResult] still require
+ * `Parcelable` in 0.35. [CircuitSaver] implementations choose the representation that is actually
+ * stored; a future release removes the Android `Parcelable` supertype requirement.
  *
  * Available strategies include
  * - Android `Parcelable` (the Android default)
@@ -29,20 +30,80 @@ import com.slack.circuit.runtime.screen.CircuitSaver.Companion.NoOp
  * `SerializableCircuitSaver` so the stored values are actually encodable.
  */
 @Stable
-public interface CircuitSaver {
+public abstract class CircuitSaver protected constructor() {
   /** Returns a saveable representation of [value], or null to skip persisting it. */
-  public fun save(value: CircuitSaveable): Any?
+  public abstract fun save(value: CircuitSaveable): Any?
 
-  /** Restores a [Screen] previously returned by [save], or null if it cannot be restored. */
-  public fun <T : CircuitSaveable> restore(saved: Any): T?
+  /**
+   * Restores a [CircuitSaveable] previously returned by [save], or null if it cannot be restored.
+   */
+  protected abstract fun restore(saved: Any): CircuitSaveable?
 
   public companion object {
+    @PublishedApi
+    internal fun restoreForInline(
+      saver: CircuitSaver,
+      saved: Any,
+    ): CircuitSaveable? = saver.restore(saved)
+
     /**
      * A [CircuitSaver] that persists nothing. Stacks saved with this restore to their initial
      * state.
      */
     public val NoOp: CircuitSaver = NoOpCircuitSaver
   }
+}
+
+/**
+ * Restores [saved] as a [T].
+ *
+ * If this saver returns null, [onAbsent] is invoked and this returns null. If it restores a
+ * [CircuitSaveable] that is not a [T], [onTypeMismatch] is invoked and this returns null if the
+ * callback completes normally. By default, [onAbsent] does nothing and [onTypeMismatch] throws.
+ */
+public inline fun <reified T : Screen> CircuitSaver.restoreScreen(
+  saved: Any,
+  onAbsent: () -> Unit = {},
+  onTypeMismatch: (CircuitSaveable) -> Unit = {
+    error("Expected ${T::class}, but CircuitSaver restored ${it::class}.")
+  },
+): T? {
+  val restored = CircuitSaver.restoreForInline(this, saved)
+  if (restored == null) {
+    onAbsent()
+    return null
+  }
+  if (restored !is T) {
+    onTypeMismatch(restored)
+    return null
+  }
+  return restored
+}
+
+/**
+ * Restores [saved] as a [T].
+ *
+ * If this saver returns null, [onAbsent] is invoked and this returns null. If it restores a
+ * [CircuitSaveable] that is not a [T], [onTypeMismatch] is invoked and this returns null if the
+ * callback completes normally. By default, [onAbsent] does nothing and [onTypeMismatch] throws.
+ */
+public inline fun <reified T : PopResult> CircuitSaver.restorePopResult(
+  saved: Any,
+  onAbsent: () -> Unit = {},
+  onTypeMismatch: (CircuitSaveable) -> Unit = {
+    error("Expected ${T::class}, but CircuitSaver restored ${it::class}.")
+  },
+): T? {
+  val restored = CircuitSaver.restoreForInline(this, saved)
+  if (restored == null) {
+    onAbsent()
+    return null
+  }
+  if (restored !is T) {
+    onTypeMismatch(restored)
+    return null
+  }
+  return restored
 }
 
 /**
@@ -72,17 +133,14 @@ public fun ProvideCircuitSaver(circuitSaver: CircuitSaver, content: @Composable 
 }
 
 /** Passes values through unchanged. */
-internal object PassThroughCircuitSaver : CircuitSaver {
+internal object PassThroughCircuitSaver : CircuitSaver() {
   override fun save(value: CircuitSaveable): Any = value
 
-  override fun <T : CircuitSaveable> restore(saved: Any): T? {
-    @Suppress("UNCHECKED_CAST")
-    return saved as? T
-  }
+  override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
 }
 
-private object NoOpCircuitSaver : CircuitSaver {
+private object NoOpCircuitSaver : CircuitSaver() {
   override fun save(value: CircuitSaveable): Any? = null
 
-  override fun <T : CircuitSaveable> restore(saved: Any): T? = null
+  override fun restore(saved: Any): CircuitSaveable? = null
 }

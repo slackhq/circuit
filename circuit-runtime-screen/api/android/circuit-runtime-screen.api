@@ -1,9 +1,0 @@
-public abstract interface class com/slack/circuit/runtime/screen/PopResult : android/os/Parcelable {
-}
-
-public abstract interface class com/slack/circuit/runtime/screen/Screen : android/os/Parcelable {
-}
-
-public abstract interface class com/slack/circuit/runtime/screen/StaticScreen : com/slack/circuit/runtime/screen/Screen {
-}
-

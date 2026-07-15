@@ -50,6 +50,8 @@ Circuit is split into a few different artifacts to allow for more granular contr
 | `circuit-test`              | First-party test APIs for testing navigation, state emissions, and event sinks.                  |
 | `circuit-overlay`           | Optional `Overlay` APIs.                                                                         |
 | `circuit-retained`          | Optional `rememberRetained()` APIs.                                                              |
+| `circuit-serialization`     | Kotlin Multiplatform serialization for explicitly registered `CircuitSaveable` types.            |
+| `circuit-serialization-reflect` | Reflective serialization for `CircuitSaveable` types on JVM and Android.                    |
 
 ## Platform Support
 

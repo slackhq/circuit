@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.runtime.screen
 
-/**
- * Marker interface for any Circuit type that is **saveable** and may be serialized into a
- * `SaveableStateRegistry`.
- */
-public interface CircuitSaveable
+/** A Circuit value whose persisted representation is handled by a [CircuitSaver]. */
+// Trivially expect/actual because that's required for KMP when the subtypes are expect/actual
+public expect sealed interface CircuitSaveable

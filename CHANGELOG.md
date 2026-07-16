@@ -50,13 +50,15 @@ Also new:
 
 #### circuit-retained is migrating to upstream `retained` APIs
 
-- **circuit-retained:** Experimental opt-in interop with Compose's first-party
-  [retain](https://developer.android.com/develop/ui/compose/state-lifespans#retain) API.
-  - Setting `CircuitRetainedSettings.useFirstParty = true` (before the first composition) backs `lifecycleRetainedStateRegistry()` with a root-level `retain` call instead of a Circuit-managed `ViewModel`, delegating configuration-change survival to the `RetainedValuesStore` installed in the composition.
-  - All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged.
-  - First-party `retain {}` can be used directly in presenters and UIs alongside `rememberRetained`. In navigated content, retained values follow their record's lifetime.
-  - See the [circuit-retained README](https://github.com/slackhq/circuit/tree/main/circuit-retained) for more details.
-  - **NOTE:** This is part of a multi-phase migration to the first-party API.
+Compose recently introduced a [retain](https://developer.android.com/develop/ui/compose/state-lifespans#retain) API, which is essentially a first-party solution for what circuit-retained has long offered. While it's not fully ready to replace all the things circuit-retained covered, most of the core functionality is there. As such, we are beginning to wind down circuit-retained in favor of the first-party solution where it makes sense.
+
+This will a multi-phase migration over multiple releases, starting with initial interop in this release to allow making circuit-retained run on top of the first-party `retain` APIs under the hood. This allows for testing use without migrating anything in your codebase.
+
+- Setting `CircuitRetainedSettings.useFirstParty = true` (before the first composition) backs `lifecycleRetainedStateRegistry()` with a root-level `retain` call instead of a Circuit-managed `ViewModel`, delegating configuration-change survival to the `RetainedValuesStore` installed in the composition.
+- All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged.
+- First-party `retain {}` can be used directly in presenters and UIs alongside `rememberRetained`. In navigated content, retained values follow their record's lifetime.
+- See the [circuit-retained README](https://github.com/slackhq/circuit/tree/main/circuit-retained) for more details.
+- **NOTE:** This is part of a multi-phase migration to the first-party API.
 
 ### Deprecated
 

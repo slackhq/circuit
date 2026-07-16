@@ -82,6 +82,7 @@ Also new:
 - **SubCircuit:** `@SubCircuitInject` is now handled by the main `circuit-codegen` processor.
   `circuitx-subcircuit-codegen` is now a relocation pointer to `circuit-codegen`, but prefer
   depending on `circuit-codegen` directly.
+- Update Android compileSdk to `37`.
 - Update Compose Runtime to `1.11.4`.
 - Update Dagger to `2.60.1`.
 

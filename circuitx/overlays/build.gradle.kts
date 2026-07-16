@@ -15,7 +15,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuitx.overlays"
-    compileSdk = 37
     withHostTest {}
   }
   jvm()

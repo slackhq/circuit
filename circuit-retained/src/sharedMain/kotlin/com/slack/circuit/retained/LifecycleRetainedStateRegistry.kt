@@ -15,6 +15,20 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.reflect.KClass
 
+/**
+ * Shared implementation for [lifecycleRetainedStateRegistry] on targets that support the
+ * ViewModel-backed registry. Branches to the first-party retain backing when
+ * [CircuitRetainedSettings.useFirstParty] is set.
+ */
+@OptIn(ExperimentalCircuitRetainedApi::class)
+@Composable
+internal fun defaultLifecycleRetainedStateRegistry(key: String): RetainedStateRegistry =
+  if (CircuitRetainedSettings.useFirstParty) {
+    retainBackedRetainedStateRegistry(key)
+  } else {
+    viewModelRetainedStateRegistry(key, RetainedStateRegistryViewModel.Factory)
+  }
+
 @Composable
 internal fun viewModelRetainedStateRegistry(
   key: String,
@@ -55,6 +69,13 @@ internal interface UpdatableRetainedStateRegistry : RetainedStateRegistry {
   fun update(canRetainChecker: CanRetainChecker)
 }
 
+/** Inspection hooks for tests to assert on registry internals across backings. */
+internal interface InspectableRetainedStateRegistry : RetainedStateRegistry {
+  fun peekRetained(): Map<String, List<Any?>>
+
+  fun peekProviders(): Map<String, MutableList<RetainedValueProvider>>
+}
+
 /**
  * A factory for creating a [ViewModel] that implements [UpdatableRetainedStateRegistry] for
  * [lifecycleRetainedStateRegistry].
@@ -65,7 +86,7 @@ internal interface ViewModelRetainedStateRegistryFactory<T>
 }
 
 internal class RetainedStateRegistryViewModel :
-  ViewModel(), UpdatableRetainedStateRegistry, CanRetainChecker {
+  ViewModel(), UpdatableRetainedStateRegistry, InspectableRetainedStateRegistry, CanRetainChecker {
   private val delegate = RetainedStateRegistryImpl(this, null)
   private var canRetainChecker: CanRetainChecker = CanRetainChecker.Never
 
@@ -105,10 +126,11 @@ internal class RetainedStateRegistryViewModel :
     delegate.valueProviders.clear()
   }
 
-  @VisibleForTesting fun peekRetained(): Map<String, List<Any?>> = delegate.retained.toMap()
+  @VisibleForTesting
+  override fun peekRetained(): Map<String, List<Any?>> = delegate.retained.toMap()
 
   @VisibleForTesting
-  fun peekProviders(): Map<String, MutableList<RetainedValueProvider>> =
+  override fun peekProviders(): Map<String, MutableList<RetainedValueProvider>> =
     delegate.valueProviders.toMap()
 
   internal object Factory : ViewModelRetainedStateRegistryFactory<RetainedStateRegistryViewModel> {

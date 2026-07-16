@@ -10,6 +10,7 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.compose)
+  alias(libs.plugins.emulatorWtf)
   id("circuit.base")
   id("circuit.publish")
 }
@@ -18,7 +19,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.foundation"
-    compileSdk = 37
     androidResources { enable = true }
     withHostTest { isIncludeAndroidResources = true }
     withDeviceTest { androidResources { enable = true } }

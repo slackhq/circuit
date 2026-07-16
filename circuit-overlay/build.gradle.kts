@@ -17,7 +17,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.overlay"
-    compileSdk = 37
   }
   jvm()
   iosArm64()

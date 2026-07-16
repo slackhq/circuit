@@ -16,7 +16,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.internal.test"
-    compileSdk = 37
   }
   jvm()
   iosArm64()

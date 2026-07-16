@@ -8,7 +8,11 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.slack.circuit.runtime.ExperimentalCircuitApi
+import com.slack.circuit.runtime.screen.CircuitSaver
+import com.slack.circuit.runtime.screen.DefaultCircuitSaver
+import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.PopResult
+import com.slack.circuit.runtime.screen.restorePopResult
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.iterator
@@ -21,11 +25,16 @@ import kotlinx.coroutines.channels.Channel
  *
  * This manages the state needed for records to send and receive [PopResult]s when navigating
  * between screens with [rememberAnsweringNavigator].
+ *
+ * @param circuitSaver the [CircuitSaver] used to persist results, defaulting to
+ *   [LocalCircuitSaver].
  */
 @ExperimentalCircuitApi
 @Composable
-public fun rememberAnsweringResultHandler(): AnsweringResultHandler =
-  rememberSaveable(saver = AnsweringResultHandler.Saver) { AnsweringResultHandler() }
+public fun rememberAnsweringResultHandler(
+  circuitSaver: CircuitSaver = LocalCircuitSaver.current
+): AnsweringResultHandler =
+  rememberSaveable(saver = AnsweringResultHandler.Saver(circuitSaver)) { AnsweringResultHandler() }
 
 /**
  * Handles result passing between records in a [NavigableCircuitContent].
@@ -112,24 +121,52 @@ public class AnsweringResultHandler {
   }
 
   public companion object {
+    @Deprecated(
+      "Use Saver(CircuitSaver) instead.",
+      ReplaceWith(
+        "AnsweringResultHandler.Saver(DefaultCircuitSaver)",
+        "com.slack.circuit.runtime.screen.DefaultCircuitSaver",
+      ),
+    )
+    public val Saver: Saver<AnsweringResultHandler, Any> = Saver(DefaultCircuitSaver)
+
+    /**
+     * Returns a [Saver] that persists [AnsweringResultHandler]s, saving pending [PopResult]s with
+     * the given [circuitSaver].
+     */
     @Suppress("UNCHECKED_CAST")
-    public val Saver: Saver<AnsweringResultHandler, Any> =
+    public fun Saver(circuitSaver: CircuitSaver): Saver<AnsweringResultHandler, Any> =
       mapSaver(
         save = { handler ->
           buildMap {
             for ((recordKey, state) in handler.recordStates) {
               // Peek the result so checking save isn't destructive.
-              put(recordKey, listOf(state.resultKey, state.peekResult()))
+              val pendingResult = state.peekResult()
+              val savedPendingResult = pendingResult?.let(circuitSaver::save)
+              put(recordKey, listOf(state.resultKey, savedPendingResult, pendingResult != null))
             }
           }
         },
         restore = { map ->
           AnsweringResultHandler().apply {
             for ((recordKey, value) in map) {
-              val (resultKey, pendingResult) = value as List<Any?>
+              val values = value as List<Any?>
+              val resultKey = values.getOrNull(0) as? String ?: continue
+              val savedPendingResult = values.getOrNull(1)
+              // The legacy two-element form could only distinguish pending results by payload.
+              val hadPendingResult =
+                if (values.size >= 3) values[2] as Boolean else savedPendingResult != null
+
+              if (!hadPendingResult) {
+                prepareForResult(recordKey, resultKey)
+                continue
+              }
+
+              val pendingResult =
+                savedPendingResult?.let { circuitSaver.restorePopResult<PopResult>(it) } ?: continue
               // NOTE order matters here, prepareForResult() clears the buffer
-              resultKey?.let { prepareForResult(recordKey, it as String) }
-              pendingResult?.let { sendResult(recordKey, it as PopResult) }
+              prepareForResult(recordKey, resultKey)
+              sendResult(recordKey, pendingResult)
             }
           }
         },

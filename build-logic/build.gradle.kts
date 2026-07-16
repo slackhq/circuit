@@ -18,12 +18,7 @@ dependencies {
     libs.plugins.dependencyGuard.get().run { "$pluginId:$pluginId.gradle.plugin:$version" }
   )
   implementation(
-    libs.plugins.spotless.get().run { "$pluginId:$pluginId.gradle.plugin:$version" }
-  )
-  implementation(
     libs.plugins.emulatorWtf.get().run { "$pluginId:$pluginId.gradle.plugin:$version" }
   )
-  implementation(
-    libs.plugins.anvil.get().run { "$pluginId:$pluginId.gradle.plugin:$version" }
-  )
+  implementation(libs.plugins.anvil.get().run { "$pluginId:$pluginId.gradle.plugin:$version" })
 }

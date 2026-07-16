@@ -13,6 +13,7 @@ import com.slack.circuit.retained.NoOpRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.lifecycleRetainedStateRegistry
 import com.slack.circuit.runtime.CircuitContext
+import com.slack.circuit.runtime.screen.LocalCircuitSaver
 
 /**
  * Provides the given [circuit] as a [CompositionLocal] to all composables within [content]. Also
@@ -24,11 +25,22 @@ public fun CircuitCompositionLocals(
   retainedStateRegistry: RetainedStateRegistry = lifecycleRetainedStateRegistry(),
   content: @Composable () -> Unit,
 ) {
-  CompositionLocalProvider(
-    LocalCircuit provides circuit,
-    LocalRetainedStateRegistry provides retainedStateRegistry,
-  ) {
-    content()
+  val circuitSaver = circuit.circuitSaver
+  if (circuitSaver != null) {
+    CompositionLocalProvider(
+      LocalCircuit provides circuit,
+      LocalRetainedStateRegistry provides retainedStateRegistry,
+      LocalCircuitSaver provides circuitSaver,
+    ) {
+      content()
+    }
+  } else {
+    CompositionLocalProvider(
+      LocalCircuit provides circuit,
+      LocalRetainedStateRegistry provides retainedStateRegistry,
+    ) {
+      content()
+    }
   }
 }
 

@@ -18,7 +18,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.retained"
-    compileSdk = 37
     androidResources { enable = true }
     withDeviceTest { androidResources { enable = true } }
   }
@@ -59,6 +58,7 @@ kotlin {
     commonMain {
       dependencies {
         api(libs.compose.runtime)
+        api(libs.compose.runtime.retain)
         api(libs.compose.runtime.saveable)
         api(libs.coroutines)
       }

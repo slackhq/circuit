@@ -139,9 +139,11 @@ pluginManager.withPlugin("com.android.application") {
     // causing it to lint transitive dependency test sources.
     // Just disable the tasks until this is fixed.
     afterEvaluate {
-      tasks.matching { it.name.contains("lint", ignoreCase = true) }.configureEach {
-        enabled = false
-      }
+      tasks
+        .matching { it.name.contains("lint", ignoreCase = true) }
+        .configureEach {
+          enabled = false
+        }
     }
     lint {
       // https://issuetracker.google.com/issues/243267012

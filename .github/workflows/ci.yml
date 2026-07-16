@@ -19,6 +19,25 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '23'
+
+      - name: Check formatting
+        uses: ZacSweers/kempt@v0.3.0
+        with:
+          version: v0.2.1
+          cache: true
+          cache-key: kempt-${{ hashFiles('.kempt.toml') }}
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -144,7 +163,7 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          ruby-version: '4.0.5'
+          ruby-version: '4.0.6'
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
@@ -170,9 +189,9 @@ jobs:
 
       - run: brew install swiftlint
 
-# TODO re-enable once fastlane fixes it https://github.com/fastlane/fastlane/issues/22191
-#      - name: Run lint on iOS samples
-#        run: bundle exec fastlane ios lint
+      # TODO re-enable once fastlane fixes it https://github.com/fastlane/fastlane/issues/22191
+      #  - name: Run lint on iOS samples
+      #    run: bundle exec fastlane ios lint
 
       - name: Run iOS Simulator tests
         id: gradle-ios-tests
@@ -237,9 +256,28 @@ jobs:
             **/build/reports/**
             **/src/test/snapshots/**/*_compare.png
 
+  # https://jakewharton.com/fan-in-to-a-single-required-github-action/
+  final-status:
+    if: always()
+    runs-on: ubuntu-slim
+    needs:
+      - build
+      - build-ios
+      - formatting
+      - snapshots
+    steps:
+      - name: Check
+        run: |
+          results=$(tr -d '\n' <<< '${{ toJSON(needs.*.result) }}')
+          if ! grep -q -v -E '(failure|cancelled)' <<< "$results"; then
+            echo "One or more required jobs failed"
+            exit 1
+          fi
+
   publish:
     runs-on: ubuntu-latest
-    needs: [build, build-ios, snapshots]
+    needs:
+      - final-status
     if: github.repository == 'slackhq/circuit' && github.ref == 'refs/heads/main'
 
     steps:

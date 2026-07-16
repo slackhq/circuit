@@ -37,18 +37,19 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import kotlin.reflect.KClass
+import kotlinx.serialization.Serializable
 
 @Parcelize
 sealed interface TabScreen : Screen {
   val label: String
 
-  @Parcelize data class Root(override val label: String = "Root") : TabScreen
+  @Parcelize @Serializable data class Root(override val label: String = "Root") : TabScreen
 
-  @Parcelize data class Screen1(override val label: String = "Screen 1") : TabScreen
+  @Parcelize @Serializable data class Screen1(override val label: String = "Screen 1") : TabScreen
 
-  @Parcelize data class Screen2(override val label: String = "Screen 2") : TabScreen
+  @Parcelize @Serializable data class Screen2(override val label: String = "Screen 2") : TabScreen
 
-  @Parcelize data class Screen3(override val label: String = "Screen 3") : TabScreen
+  @Parcelize @Serializable data class Screen3(override val label: String = "Screen 3") : TabScreen
 
   fun next(): TabScreen {
     return when (this) {

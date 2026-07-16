@@ -32,7 +32,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-@Config(minSdk = 34)
+@Config(minSdk = 34, maxSdk = 36)
 @RunWith(RobolectricTestRunner::class)
 class GestureNavigationCrashTest {
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()

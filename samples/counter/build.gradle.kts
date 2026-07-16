@@ -18,7 +18,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.sample.counter"
-    compileSdk = 37
   }
   jvm()
   js {
@@ -50,8 +49,8 @@ kotlin {
       }
     }
     commonTest { dependencies { implementation(libs.kotlin.test) } }
-    val iosMain by sourceSets.getting { dependencies { api(libs.coroutines) } }
-    val iosSimulatorArm64Main by sourceSets.getting
+    sourceSets.maybeCreate("iosMain").apply { dependencies { api(libs.coroutines) } }
+    sourceSets.maybeCreate("iosSimulatorArm64Main")
 
     configureEach { languageSettings.optIn("kotlin.experimental.ExperimentalObjCName") }
     targets.configureEach {

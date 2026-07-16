@@ -6,4 +6,4 @@ import androidx.compose.runtime.Composable
 
 @Composable
 public actual fun lifecycleRetainedStateRegistry(key: String): RetainedStateRegistry =
-  viewModelRetainedStateRegistry(key, RetainedStateRegistryViewModel.Factory)
+  defaultLifecycleRetainedStateRegistry(key)

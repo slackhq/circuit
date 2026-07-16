@@ -25,7 +25,6 @@ plugins {
   alias(libs.plugins.emulatorWtf) apply false
   alias(libs.plugins.binaryCompatibilityValidator)
   id("circuit.base") apply false
-  id("circuit.spotless")
 }
 
 dokka {
@@ -45,6 +44,7 @@ apiValidation {
     setOf(
       "com.slack.circuit.runtime.InternalCircuitApi",
       "com.slack.circuit.runtime.ExperimentalCircuitApi",
+      "com.slack.circuit.retained.ExperimentalCircuitRetainedApi",
       "com.slack.circuit.test.ExperimentalForInheritanceCircuitTestApi",
     )
   ignoredPackages +=
@@ -100,6 +100,8 @@ dependencies {
   dokka(projects.circuitRuntimePresenter)
   dokka(projects.circuitRuntimeScreen)
   dokka(projects.circuitRuntimeUi)
+  dokka(projects.circuitSerialization)
+  dokka(projects.circuitSerializationReflect)
   dokka(projects.circuitTest)
   dokka(projects.circuitx.android)
   dokka(projects.circuitx.effects)

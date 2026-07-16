@@ -10,6 +10,7 @@ import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.navigation.navStackListOf
 import com.slack.circuit.runtime.navigation.transform
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -18,6 +19,29 @@ import org.junit.runner.RunWith
 
 @RunWith(ComposeUiTestRunner::class)
 class RememberSaveableNavStackTest {
+
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun noOpSaverRestoresOnlyInitialRoot() = runComposeUiTest {
+    val restorationTester = StateRestorationTester(this)
+    lateinit var navStack: NavStack<*>
+    restorationTester.setContent {
+      navStack =
+        rememberSaveableNavStack(
+          root = TestScreen.RootAlpha,
+          circuitSaver = CircuitSaver.NoOp,
+        )
+    }
+    navStack.push(TestScreen.ScreenA)
+    navStack.push(TestScreen.ScreenB)
+
+    restorationTester.emulateSaveAndRestore()
+
+    assertEquals(
+      navStackListOf<Screen>(TestScreen.RootAlpha),
+      navStack.snapshot()?.transform { it.screen },
+    )
+  }
 
   @OptIn(ExperimentalTestApi::class)
   @Test

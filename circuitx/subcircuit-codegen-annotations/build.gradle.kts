@@ -14,7 +14,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.subcircuit.codegen.annotations"
-    compileSdk = 37
   }
   jvm()
   iosArm64()

@@ -4,13 +4,108 @@ Changelog
 Unreleased
 ----------
 
+0.35.1
+------
+
+_2026-07-15_
+
+### New
+
+#### Pluggable `Screen`/`PopResult` persistence with `CircuitSaver`
+
+Circuit's saveable back stacks no longer mandate how `Screen`s and `PopResult`s are persisted. A new
+`CircuitSaver` abstraction in `circuit-runtime-screen` converts them to and from saveable
+representations. Everything that saves navigation state (`rememberSaveableBackStack`,
+`rememberSaveableNavStack`, and answering results) now accepts one.
+
+This is the first step toward removing the `Parcelable` supertypes from `Screen` and `PopResult` on
+Android in a future release. In 0.35, both types still need to be Parcelable even when using a
+serializing saver or `CircuitSaver.NoOp`. The default saver preserves the current Parcelable
+behavior. To prepare for the later removal, implement `ParcelableScreen` or `ParcelablePopResult`
+on types that should remain Parcelable, or adopt a serializing saver.
+
+Configure a saver by passing it explicitly, providing `LocalCircuitSaver` at your app root via
+`ProvideCircuitSaver`, or with `Circuit.Builder.setCircuitSaver` (reaches only content inside
+`CircuitCompositionLocals`).
+
+**New artifacts: `circuit-serialization` and `circuit-serialization-reflect`**
+
+For kotlinx-serialization users, the new `circuit-serialization` artifact persists `@Serializable`
+screens and pop results to `SavedState` via `androidx.savedstate`:
+
+- `SerializableCircuitSaver(configuration)`: KMP-friendly; register screens and results for
+  polymorphic serialization against `CircuitSaveable` in the `SavedStateConfiguration`'s
+  `serializersModule`.
+- `ReflectiveSerializableCircuitSaver(configuration)` (in the JVM/Android-only
+  `circuit-serialization-reflect` artifact): resolves serializers reflectively with no registration
+  needed. It embeds the R8/ProGuard rules it needs, so minified apps need no additional
+  Circuit-specific rules.
+
+Both savers can restore navigation state saved by Circuit 0.34's default saver. They restore
+leniently: records that no longer decode, such as after an app update removed a screen, are dropped
+rather than crashing. Pass an `onRestoreError` callback to observe drops. The bottom-navigation
+sample demonstrates the kotlinx setup end to end.
+
+Also new:
+
+- `ParcelableScreen`/`ParcelablePopResult`: common interfaces that add `Parcelable` on Android.
+  Migrate common-code values to these to keep using the Parcelable strategy once `Screen` and
+  `PopResult` drop their `Parcelable` supertypes.
+- `CircuitSaver.NoOp`: disables navigation state persistence entirely.
+
+#### circuit-retained is migrating to upstream `retained` APIs
+
+Compose recently introduced a [retain](https://developer.android.com/develop/ui/compose/state-lifespans#retain) API, which is essentially a first-party solution for what circuit-retained has long offered. While it's not fully ready to replace all the things circuit-retained covered, most of the core functionality is there. As such, we are beginning to wind down circuit-retained in favor of the first-party solution where it makes sense.
+
+This will a multi-phase migration over multiple releases, starting with initial interop in this release to allow making circuit-retained run on top of the first-party `retain` APIs under the hood. This allows for testing use without migrating anything in your codebase.
+
+- Setting `CircuitRetainedSettings.useFirstParty = true` (before the first composition) backs `lifecycleRetainedStateRegistry()` with a root-level `retain` call instead of a Circuit-managed `ViewModel`, delegating configuration-change survival to the `RetainedValuesStore` installed in the composition.
+- All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged.
+- First-party `retain {}` can be used directly in presenters and UIs alongside `rememberRetained`. In navigated content, retained values follow their record's lifetime.
+
+See the [circuit-retained README](https://github.com/slackhq/circuit/tree/main/circuit-retained) for more details.
+
+### Deprecated
+
+- `SaveableBackStack.Record.args` and `SaveableBackStack.push(screen, args)`. Pass data through the `Screen` itself instead; `args` will be removed in a future release. This matches what the new `SaveableNavStack` already does.
+- The `Saver` vals on `SaveableBackStack`, `SaveableNavStack`, and `AnsweringResultHandler` companions. Use the `Saver(CircuitSaver)` functions instead.
+
 ### Fixed
 
+- Fixed saveable stacks restoring empty when every record is dropped. Saveable nav stacks now
+  discard incomplete forward history and fall back to their initial value if the active screen or
+  its back history cannot be restored.
+- Fixed stored back-stack snapshots being partially restored or associated with a different root
+  when one of their records cannot be restored.
+- Fixed `awaitResult` suspending indefinitely when a pending pop result cannot be saved or restored.
 - **SubCircuit:** Fix `subcircuit-codegen` Metro mode (`subcircuit.codegen.mode=metro`). It previously
   required Dagger's `@AssistedFactory` even in Metro mode, generated `@javax.inject.Inject` instead of
   Metro's `@Inject`, and referenced `dev.zacsweers.metro.annotations.ContributesIntoSet` (wrong package).
   Metro mode now accepts `dev.zacsweers.metro.AssistedFactory` and emits `dev.zacsweers.metro.Inject` +
   `dev.zacsweers.metro.ContributesIntoSet`, so generated factories compile against Metro.
+
+### Changed
+
+- **SubCircuit:** `@SubCircuitInject` is now handled by the main `circuit-codegen` processor.
+  `circuitx-subcircuit-codegen` is now a relocation pointer to `circuit-codegen`, but prefer
+  depending on `circuit-codegen` directly.
+- Update Android compileSdk to `37`.
+- Update Compose Runtime to `1.11.4`.
+- Update Dagger to `2.60.1`.
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@ryanbrookepayne](https://github.com/ryanbrookepayne)
+- [@wiyarmir](https://github.com/wiyarmir)
+
+0.35.0
+------
+
+_2026-07-15_
+
+Ignore this release, we goofed and it didn't include regenerated baseline profiles! Use 0.35.1.
 
 0.34.0
 ------

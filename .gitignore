@@ -19,6 +19,7 @@ reports
 
 # IDE-generated dir
 out/
+plans/
 
 # We have one gitignore but project generation often generates extra ones. Ignore those
 */**/.gitignore

@@ -16,7 +16,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuitx.navigation"
-    compileSdk = 37
   }
   jvm()
   iosArm64()

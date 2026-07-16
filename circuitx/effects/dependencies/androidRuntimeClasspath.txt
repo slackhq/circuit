@@ -69,10 +69,16 @@ androidx.window:window-core-android
 androidx.window:window-core
 androidx.window:window
 com.google.guava:listenablefuture
+org.jetbrains.androidx.lifecycle:lifecycle-common-jvm
 org.jetbrains.androidx.lifecycle:lifecycle-common
+org.jetbrains.androidx.lifecycle:lifecycle-runtime-android
+org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose-android
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose
 org.jetbrains.androidx.lifecycle:lifecycle-runtime
+org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-android
+org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose-android
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose
+org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate-android
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
 org.jetbrains.androidx.savedstate:savedstate-compose

@@ -23,11 +23,13 @@ kotlin {
   js {
     outputModuleName = "internal-runtime"
     browser()
+    binaries.executable()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     outputModuleName = "internal-runtime"
     browser()
+    binaries.executable()
   }
   // endregion
 

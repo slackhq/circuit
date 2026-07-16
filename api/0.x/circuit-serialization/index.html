@@ -1,0 +1,137 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>circuit-serialization</title>
+<link href="../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../scripts/sourceset_dependencies.js" async></script>
+<link href="../styles/style.css" rel="Stylesheet">
+<link href="../styles/main.css" rel="Stylesheet">
+<link href="../styles/prism.css" rel="Stylesheet">
+<link href="../styles/logo-styles.css" rel="Stylesheet">
+<link href="../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../scripts/main.js" defer></script>
+<script type="text/javascript" src="../scripts/prism.js" async></script>
+<script type="text/javascript" src="../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../index.html" tabindex="1">
+                    circuit-root
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector common-like" data-active="" aria-pressed="true" data-filter=":circuit-serialization/commonMain">common</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option common-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":circuit-serialization/commonMain" data-filter=":circuit-serialization/commonMain">
+                                <span class="checkbox--icon"></span>
+                                common
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    circuit-root
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" id="content" pageids="circuit-serialization::////PointingToDeclaration//-2116782907">
+  <div class="breadcrumbs"></div>
+  <div class="cover ">
+    <h1 class="cover"><span><span>circuit-serialization</span></span></h1>
+    <div class="platform-hinted UnderCoverText" data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":circuit-serialization/commonMain"><p class="paragraph">kotlinx-serialization support for persisting Circuit navigation state. This artifact provides <code class="lang-kotlin">CircuitSaver</code> implementations that encode <code class="lang-kotlin">Screen</code>s and <code class="lang-kotlin">PopResult</code>s to <code class="lang-kotlin">SavedState</code> via <code class="lang-kotlin">androidx.savedstate</code>, so saveable back stacks survive configuration changes and process death without using Parcelable as the persisted representation. In 0.35, Android screens and results must still be Parcelable; that type requirement is removed in a future release.</p><h2 class="">Installation</h2><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">dependencies {<br>  implementation("com.slack.circuit:circuit-serialization:&lt;version&gt;")<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Screens must be annotated with <code class="lang-kotlin">@Serializable</code>, which requires the kotlinx-serialization compiler plugin. Android screens must also remain Parcelable in 0.35, typically via <code class="lang-kotlin">@Parcelize</code>:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">plugins {<br>  kotlin("plugin.serialization")<br>  kotlin("plugin.parcelize") // Android projects in 0.35<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><h2 class="">SerializableCircuitSaver</h2><p class="paragraph"><code class="lang-kotlin">SerializableCircuitSaver</code> works on all platforms. Screens and results are registered for polymorphic serialization against the <code class="lang-kotlin">CircuitSaveable</code> base class in a <code class="lang-kotlin">SavedStateConfiguration</code>:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">@Parcelize<br>@Serializable<br>data object HomeScreen : Screen<br><br>@Parcelize<br>@Serializable<br>data class DetailScreen(val itemId: Long) : Screen<br><br>val saver = SerializableCircuitSaver(<br>  SavedStateConfiguration {<br>    serializersModule = SerializersModule {<br>      polymorphic(CircuitSaveable::class) {<br>        subclass(HomeScreen::class)<br>        subclass(DetailScreen::class)<br>      }<br>    }<br>  }<br>)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Saving an unregistered type fails with a descriptive error. Restoring an unregistered type, such as after an app update removed a screen, drops that record instead of failing. Pass an <code class="lang-kotlin">onRestoreError</code> callback to observe dropped records, such as for logging.</p><p class="paragraph">Use <code class="lang-kotlin">restoreScreen&lt;T&gt;</code> and <code class="lang-kotlin">restorePopResult&lt;T&gt;</code> to restore a specific type. They return null when the saver cannot restore a value and reject a different concrete Screen or PopResult type by default.</p><p class="paragraph">Both serializing savers can restore navigation state saved by Circuit 0.34's default saver. This allows an app to adopt serialization in 0.35 without resetting existing navigation state.</p><h2 class="">Skipping registration on JVM/Android</h2><p class="paragraph">The <code class="lang-kotlin">circuit-serialization-reflect</code> artifact provides <code class="lang-kotlin">ReflectiveSerializableCircuitSaver</code>, which skips the registration requirement by resolving serializers reflectively from the saved class name. It embeds the R8/ProGuard rules it needs, so it works in minified apps without additional configuration. See its README for details.</p><h2 class="">Wiring it up</h2><p class="paragraph">Pass the saver to back stack creation directly:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">val backStack = rememberSaveableBackStack(root = HomeScreen, circuitSaver = saver)</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph">Or provide it once at the app root so every back stack picks it up:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">ProvideCircuitSaver(saver) {<br>  // App content<br>}</code></pre><span class="copy-tooltip"><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div><span class="copy-icon"></span></span></div><p class="paragraph"><code class="lang-kotlin">Circuit.Builder.setCircuitSaver(saver)</code> also provides it via <code class="lang-kotlin">CircuitCompositionLocals</code>. Note this only reaches back stacks created inside <code class="lang-kotlin">CircuitCompositionLocals</code>. A back stack created above it needs one of the other two options.</p><h2 class="">Lenient restoration</h2><p class="paragraph">When a saved value can no longer be restored:</p><ul><li><p class="paragraph"><code class="lang-kotlin">SaveableBackStack</code> drops the affected record. If none survive, it starts from its initial value.</p></li><li><p class="paragraph"><code class="lang-kotlin">SaveableNavStack</code> discards incomplete forward history. If the active screen or its back history   is missing, it starts from its initial value.</p></li><li><p class="paragraph">Stored back-stack snapshots are discarded if any record is missing.</p></li><li><p class="paragraph">An unrestorable pending pop result clears its expectation, so <code class="lang-kotlin">awaitResult</code> returns null.</p></li></ul><h2 class="">Roadmap</h2><p class="paragraph"><code class="lang-kotlin">Screen</code> and <code class="lang-kotlin">PopResult</code> currently extend <code class="lang-kotlin">Parcelable</code> on Android, so Android implementations must still be Parcelable even when a serializing saver or <code class="lang-kotlin">CircuitSaver.NoOp</code> handles persistence. A future release removes those supertypes and completes the migration:</p><ul><li><p class="paragraph"><code class="lang-kotlin">Screen</code> and <code class="lang-kotlin">PopResult</code> become plain marker interfaces on all platforms, and <code class="lang-kotlin">@Parcelize</code>   becomes optional for apps that use a saver from this artifact.</p></li><li><p class="paragraph">The default Android saver keeps working for screens and results that implement <code class="lang-kotlin">Parcelable</code> and   fails with a descriptive error for values that do not when no saver is configured.</p></li><li><p class="paragraph">Common-code values that should keep the Parcelable strategy migrate to <code class="lang-kotlin">ParcelableScreen</code> or   <code class="lang-kotlin">ParcelablePopResult</code>, which add <code class="lang-kotlin">Parcelable</code> on Android only.</p></li></ul><p class="paragraph">Planned follow-ups after that:</p><ul><li><p class="paragraph">KSP code generation for the <code class="lang-kotlin">polymorphic(CircuitSaveable::class)</code> registrations, replacing the   hand-written <code class="lang-kotlin">SerializersModule</code>.</p></li><li><p class="paragraph">Removal of the deprecated <code class="lang-kotlin">SaveableBackStack.Record.args</code> and the deprecated companion <code class="lang-kotlin">Saver</code>   vals.</p></li></ul></div></div>
+  </div>
+  <h2 class="">Packages</h2>
+  <div class="table"><a data-name="1904029890%2FPackages%2F-2116782907" anchor-label="com.slack.circuit.serialization" id="1904029890%2FPackages%2F-2116782907" data-filterable-set=":circuit-serialization/commonMain"></a>
+    <div class="table-row table-row_platform-tagged" data-filterable-current=":circuit-serialization/commonMain" data-filterable-set=":circuit-serialization/commonMain">
+      <div>
+        <div class="main-subrow ">
+          <div class=""><span class="inline-flex">
+              <div><a href="com.slack.circuit.serialization/index.html">com.slack.circuit.serialization</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1904029890%2FPackages%2F-2116782907"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div class="pull-right platform-tags--wrapper">
+            <div class="platform-tags no-gutters">
+              <div class="platform-tag common-like">common</div>
+            </div>
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

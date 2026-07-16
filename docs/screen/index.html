@@ -680,6 +680,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Screen
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -696,6 +714,75 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#saving-and-restoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saving and restoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Saving and restoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choosing-a-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wiring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wiring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roadmap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1725,6 +1812,64 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#saving-and-restoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Saving and restoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Saving and restoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choosing-a-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wiring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wiring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roadmap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1804,6 +1949,107 @@ we are getting the <code>externalId</code> from the screen in order to get infor
 <p class="admonition-title">Nomenclature</p>
 <p>Semantically, in this example we would call all of these components together the &ldquo;AddFavorites Screen&rdquo;.</p>
 </div>
+<h2 id="saving-and-restoring">Saving and restoring<a class="headerlink" href="#saving-and-restoring" title="Permanent link">&para;</a></h2>
+<p>Circuit&rsquo;s saveable back stacks (<code>rememberSaveableBackStack</code> and <code>rememberSaveableNavStack</code>) persist
+navigation state across configuration changes and process death. How screens are converted to a
+saveable form is pluggable via <code>CircuitSaver</code>. Both <code>Screen</code> and <code>PopResult</code> extend the
+<code>CircuitSaveable</code> marker, and a <code>CircuitSaver</code> converts those values to and from
+representations that Compose&rsquo;s <code>SaveableStateRegistry</code> can store.</p>
+<div class="highlight"><pre><span></span><code><span class="kd">abstract</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">CircuitSaver</span><span class="w"> </span><span class="n">protected</span><span class="w"> </span><span class="k">constructor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">abstract</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="n">CircuitSaveable</span><span class="p">):</span><span class="w"> </span><span class="kt">Any?</span>
+
+<span class="w">  </span><span class="kd">protected</span><span class="w"> </span><span class="kd">abstract</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">restore</span><span class="p">(</span><span class="n">saved</span><span class="p">:</span><span class="w"> </span><span class="kt">Any</span><span class="p">):</span><span class="w"> </span><span class="n">CircuitSaveable?</span>
+<span class="p">}</span>
+
+<span class="kd">inline</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="o">&lt;</span><span class="k">reified</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CircuitSaver</span><span class="p">.</span><span class="nf">restoreScreen</span><span class="p">(</span>
+<span class="w">  </span><span class="n">saved</span><span class="p">:</span><span class="w"> </span><span class="kt">Any</span><span class="p">,</span>
+<span class="w">  </span><span class="n">onAbsent</span><span class="p">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="n">onTypeMismatch</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">CircuitSaveable</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Expected </span><span class="si">${</span><span class="n">T</span><span class="o">::</span><span class="n">class</span><span class="si">}</span><span class="s">, but CircuitSaver restored </span><span class="si">${</span><span class="nb">it</span><span class="o">::</span><span class="n">class</span><span class="si">}</span><span class="s">.&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">):</span><span class="w"> </span><span class="n">T?</span>
+
+<span class="kd">inline</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="o">&lt;</span><span class="k">reified</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">PopResult</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CircuitSaver</span><span class="p">.</span><span class="nf">restorePopResult</span><span class="p">(</span>
+<span class="w">  </span><span class="n">saved</span><span class="p">:</span><span class="w"> </span><span class="kt">Any</span><span class="p">,</span>
+<span class="w">  </span><span class="n">onAbsent</span><span class="p">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">  </span><span class="n">onTypeMismatch</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">CircuitSaveable</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">error</span><span class="p">(</span><span class="s">&quot;Expected </span><span class="si">${</span><span class="n">T</span><span class="o">::</span><span class="n">class</span><span class="si">}</span><span class="s">, but CircuitSaver restored </span><span class="si">${</span><span class="nb">it</span><span class="o">::</span><span class="n">class</span><span class="si">}</span><span class="s">.&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">):</span><span class="w"> </span><span class="n">T?</span>
+</code></pre></div>
+<p><code>restore</code> is a protected implementation hook for <code>CircuitSaver</code> authors. Application code uses the
+reified helpers instead.</p>
+<p>The reified type parameter is the concrete expected type: <code>restoreScreen&lt;HomeScreen&gt;(saved)</code>
+rejects another <code>Screen</code> subtype. When the saver returns null, the helper invokes <code>onAbsent</code> and
+returns null. When the restored value is not the requested type, the helper passes it to
+<code>onTypeMismatch</code>. That callback throws by default; if a custom callback completes normally, the
+helper returns null. <code>restorePopResult</code> has the same behavior for <code>PopResult</code> subtypes.</p>
+<p>The default (<code>DefaultCircuitSaver</code>) passes values through unchanged. On Android that means screens
+persist via their <code>Parcelable</code> implementations, matching Circuit&rsquo;s historical behavior. Other
+platforms hold saved state in memory only.</p>
+<h3 id="choosing-a-strategy">Choosing a strategy<a class="headerlink" href="#choosing-a-strategy" title="Permanent link">&para;</a></h3>
+<p>Parcelable is the Android default and needs no setup. Annotate screens with <code>@Parcelize</code> and the
+default saver persists them. For common-code screens, implement <code>ParcelableScreen</code>, which adds
+<code>Parcelable</code> on Android and is just a <code>Screen</code> elsewhere.</p>
+<p>To persist <code>SavedState</code> encoded with kotlinx-serialization, use the <code>circuit-serialization</code>
+artifact. In 0.35, Android screens and pop results still need to be Parcelable in addition to being
+<code>@Serializable</code>, even though the saver stores <code>SavedState</code> rather than the Parcelable value:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span>
+<span class="nd">@Serializable</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">HomeScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">saver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SerializableCircuitSaver</span><span class="p">(</span>
+<span class="w">  </span><span class="n">SavedStateConfiguration</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">serializersModule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SerializersModule</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">polymorphic</span><span class="p">(</span><span class="n">CircuitSaveable</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">subclass</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="w">        </span><span class="c1">// Register every screen and pop result here</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>On JVM and Android, <code>ReflectiveSerializableCircuitSaver()</code> from the <code>circuit-serialization-reflect</code>
+artifact skips the registration requirement by resolving serializers reflectively from the saved
+class name. The artifact embeds the R8/ProGuard rules it needs, so minified apps work without
+additional configuration.</p>
+<p>Both serializing savers can restore navigation state saved by Circuit 0.34&rsquo;s default saver, so
+adopting serialization in 0.35 does not by itself reset existing navigation state.</p>
+<p>When a saved value can no longer be restored:</p>
+<ul>
+<li><code>SaveableBackStack</code> drops the affected record. If none survive, it starts from its initial value.</li>
+<li><code>SaveableNavStack</code> discards incomplete forward history. If the active screen or its back history
+  is missing, it starts from its initial value.</li>
+<li>Stored back-stack snapshots are discarded if any record is missing.</li>
+<li>An unrestorable pending pop result clears its expectation, so <code>awaitResult</code> returns null.</li>
+</ul>
+<p>See the <code>circuit-serialization</code> README for the full setup.</p>
+<p>To disable persistence entirely, use <code>CircuitSaver.NoOp</code>. Stacks saved with it restore to their
+initial state. This changes persistence behavior only: Android <code>Screen</code> and <code>PopResult</code>
+implementations still need to be Parcelable in 0.35.</p>
+<h3 id="wiring">Wiring<a class="headerlink" href="#wiring" title="Permanent link">&para;</a></h3>
+<p>Pass a saver directly to back stack creation, or provide it once at the app root:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Explicit</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">,</span><span class="w"> </span><span class="n">circuitSaver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saver</span><span class="p">)</span>
+
+<span class="c1">// Or at the root, reaches all back stacks below it</span>
+<span class="n">ProvideCircuitSaver</span><span class="p">(</span><span class="n">saver</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// App content</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><code>Circuit.Builder.setCircuitSaver(saver)</code> also provides it via <code>CircuitCompositionLocals</code>, reaching
+any back stack created inside it.</p>
+<div class="admonition note">
+<p class="admonition-title">Back stacks created outside <code>CircuitCompositionLocals</code></p>
+<p>Composition locals only reach content below their provider. If a back stack is created above
+<code>CircuitCompositionLocals</code>, a saver set on <code>Circuit.Builder</code> won&rsquo;t apply to it. Pass the saver
+explicitly or use <code>ProvideCircuitSaver</code> above the back stack creation.</p>
+</div>
+<h3 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h3>
+<p><code>Screen</code> and <code>PopResult</code> still extend <code>Parcelable</code> on Android in 0.35. A future release removes
+those supertypes. To prepare, implement <code>ParcelableScreen</code> or <code>ParcelablePopResult</code> on values that
+should keep using Parcelable, or adopt a serializing <code>CircuitSaver</code>. The <code>circuit-serialization</code>
+README has the full roadmap.</p>
 
 
 

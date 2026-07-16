@@ -2237,8 +2237,8 @@
 <p>SubCircuit is a lightweight framework for rendering nested presenter/UI pairs that delegate events to an outer component rather than handling navigation themselves.</p>
 <div class="highlight"><pre><span></span><code><span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuitx-subcircuit:&lt;version&gt;&quot;</span><span class="p">)</span>
-<span class="w">  </span><span class="c1">// For code generation</span>
-<span class="w">  </span><span class="n">ksp</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuitx-subcircuit-codegen:&lt;version&gt;&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="c1">// For code generation. `@SubCircuitInject` is handled by the same processor as `@CircuitInject`.</span>
+<span class="w">  </span><span class="n">ksp</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-codegen:&lt;version&gt;&quot;</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// For testing</span>
 <span class="w">  </span><span class="n">testImplementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuitx-subcircuit-test:&lt;version&gt;&quot;</span><span class="p">)</span>
 <span class="p">}</span>
@@ -2434,7 +2434,11 @@
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="code-generation">Code Generation<a class="headerlink" href="#code-generation" title="Permanent link">&para;</a></h2>
-<p>SubCircuit uses KSP to generate factory classes that wire presenters and UIs into the DI graph.</p>
+<p>SubCircuit uses KSP to generate factory classes that wire presenters and UIs into the DI graph. <code>@SubCircuitInject</code> is handled by the same <code>circuit-codegen</code> processor as <code>@CircuitInject</code>, so it shares the same setup and options — see <a href="../../docs/code-gen/">Circuit&rsquo;s code gen</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Migrating from <code>circuitx-subcircuit-codegen</code></p>
+<p>The old <code>circuitx-subcircuit-codegen</code> artifact is now a relocation pointer to <code>circuit-codegen</code>, so existing dependencies keep resolving, but you should depend on <code>circuit-codegen</code> directly. The <code>subcircuit.codegen.*</code> KSP options still work as fallbacks; prefer the <code>circuit.codegen.*</code> equivalents. Generated factories are behaviorally equivalent, though the exact source formatting now matches <code>@CircuitInject</code> output (named arguments, a <code>when (screen)</code> branch, and a <code>jakarta.inject.Inject</code> default — override with <code>circuit.codegen.useJavaxOnly</code>).</p>
+</div>
 <h3 id="presenter-factories">Presenter Factories<a class="headerlink" href="#presenter-factories" title="Permanent link">&para;</a></h3>
 <p>Annotate your <code>@AssistedFactory</code> interface with <code>@SubCircuitInject</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">ProfileCardPresenter</span><span class="w"> </span><span class="nd">@AssistedInject</span><span class="w"> </span><span class="k">constructor</span><span class="p">(</span>
@@ -2470,14 +2474,20 @@
 <li>Second parameter should be <code>modifier: Modifier</code></li>
 </ul>
 <h3 id="di-modes">DI Modes<a class="headerlink" href="#di-modes" title="Permanent link">&para;</a></h3>
-<p>The code generator supports two DI frameworks:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Anvil (default)</label><label for="__tabbed_1_2">Metro</label></div>
+<p>The code generator supports four DI frameworks via the <code>circuit.codegen.mode</code> KSP option:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Anvil (default)</label><label for="__tabbed_1_2">Hilt</label><label for="__tabbed_1_3">kotlin-inject-anvil</label><label for="__tabbed_1_4">Metro</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Generates <code>@ContributesMultibinding(Scope::class)</code> + <code>@Inject</code>.</p>
 </div>
 <div class="tabbed-block">
-<p>Set <code>subcircuit.codegen.mode=metro</code> as a KSP argument. Generates <code>@ContributesIntoSet(Scope::class)</code> + <code>@Inject</code>.</p>
+<p>Set <code>circuit.codegen.mode=hilt</code>. Generates a <code>@Module</code>/<code>@InstallIn</code> with a <code>@Binds @IntoSet</code> provider for the factory.</p>
+</div>
+<div class="tabbed-block">
+<p>Set <code>circuit.codegen.mode=kotlin_inject_anvil</code>. Generates <code>@Inject</code> + <code>@ContributesBinding(Scope::class, multibinding = true)</code>.</p>
+</div>
+<div class="tabbed-block">
+<p>Set <code>circuit.codegen.mode=metro</code>. Generates <code>@Inject</code> + <code>@ContributesIntoSet(Scope::class)</code>.</p>
 </div>
 </div>
 </div>

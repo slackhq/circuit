@@ -172,7 +172,7 @@ limitations under the License.</code></pre>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div><span class="brief-comment">
-              <p class="paragraph">This optional artifact contains a alternative implementations of <code class="lang-kotlin">rememberRetained</code>, <code class="lang-kotlin">produceRetainedState</code>, <code class="lang-kotlin">collectAsRetainedState()</code>, etc. This is useful for cases where you want to retain non-saveable state across configuration changes or across a back stack. This comes at the cost of not participating in the <code class="lang-kotlin">SavedStateRegistry</code> and thus not being able to persist across process death, but added flexibility of not requiring Saveable values.</p>
+              <p class="paragraph">This optional artifact contains alternative implementations of <code class="lang-kotlin">rememberRetained</code>, <code class="lang-kotlin">produceRetainedState</code>, <code class="lang-kotlin">collectAsRetainedState()</code>, etc. This is useful for cases where you want to retain non-saveable state across configuration changes or across a back stack. This comes at the cost of not participating in the <code class="lang-kotlin">SavedStateRegistry</code> and thus not being able to persist across process death, but added flexibility of not requiring Saveable values. For values that should also survive process death, <code class="lang-kotlin">rememberRetainedSaveable</code> layers an opportunistic <code class="lang-kotlin">Saver</code> on top of retention.</p>
             </span></div>
         </div>
       </div>
@@ -218,6 +218,32 @@ limitations under the License.</code></pre>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div><span class="brief-comment"></span></div>
+        </div>
+      </div>
+<a data-name="-1827537663%2FMain%2F0" anchor-label="circuit-serialization" id="-1827537663%2FMain%2F0" data-filterable-set=""></a>
+      <div class="table-row table-row_multimodule">
+        <div class="main-subrow ">
+          <div class="w-100"><span class="inline-flex">
+              <div><a href="circuit-serialization/index.html">circuit-serialization</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1827537663%2FMain%2F0"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div><span class="brief-comment">
+              <p class="paragraph">kotlinx-serialization support for persisting Circuit navigation state. This artifact provides <code class="lang-kotlin">CircuitSaver</code> implementations that encode <code class="lang-kotlin">Screen</code>s and <code class="lang-kotlin">PopResult</code>s to <code class="lang-kotlin">SavedState</code> via <code class="lang-kotlin">androidx.savedstate</code>, so saveable back stacks survive configuration changes and process death without using Parcelable as the persisted representation. In 0.35, Android screens and results must still be Parcelable; that type requirement is removed in a future release.</p>
+            </span></div>
+        </div>
+      </div>
+<a data-name="229736721%2FMain%2F0" anchor-label="circuit-serialization-reflect" id="229736721%2FMain%2F0" data-filterable-set=""></a>
+      <div class="table-row table-row_multimodule">
+        <div class="main-subrow ">
+          <div class="w-100"><span class="inline-flex">
+              <div><a href="circuit-serialization-reflect/index.html">circuit-serialization-reflect</a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="229736721%2FMain%2F0"></span>
+                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+              </span></span></div>
+          <div><span class="brief-comment">
+              <p class="paragraph">A JVM/Android companion to <code class="lang-kotlin">circuit-serialization</code> that persists <code class="lang-kotlin">@Serializable</code> screens without requiring polymorphic registration. <code class="lang-kotlin">ReflectiveSerializableCircuitSaver</code> records each class's fully qualified name in saved state and resolves its serializer reflectively on restore.</p>
+            </span></div>
         </div>
       </div>
 <a data-name="-916890337%2FMain%2F0" anchor-label="circuit-test" id="-916890337%2FMain%2F0" data-filterable-set=""></a>

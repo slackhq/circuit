@@ -1864,9 +1864,15 @@ checkout.</p>
 <p>Circuit is a Kotlin Multiplatform project, so ensure you have your environment set up 
 accordingly: <a href="https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-setup.html">https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-setup.html</a></p>
 <p>This project is written in Kotlin and should only use Kotlin.</p>
-<p>Code formatting is checked via <a href="https://github.com/diffplug/spotless">Spotless</a>. To run the
-formatter, use the <code>spotlessApply</code> command.</p>
-<div class="highlight"><pre><span></span><code>./gradlew<span class="w"> </span>spotlessApply
+<p>Code formatting is handled by <a href="https://github.com/ZacSweers/kempt">Kempt</a>. Install it with
+Homebrew, then install its pre-commit hook:</p>
+<div class="highlight"><pre><span></span><code>brew<span class="w"> </span>install<span class="w"> </span>ZacSweers/tap/kempt-fmt
+kempt<span class="w"> </span>install-hook
+</code></pre></div>
+<p>The hook runs Kempt on staged files before each commit. To format or check the whole project
+manually, use:</p>
+<div class="highlight"><pre><span></span><code>kempt<span class="w"> </span>format
+kempt<span class="w"> </span>check
 </code></pre></div>
 <p>You can build and run the CI checks (aside from instrumentation tests) with:</p>
 <div class="highlight"><pre><span></span><code>./gradlew<span class="w"> </span>circuitCi

@@ -39,7 +39,7 @@ import org.junit.runner.RunWith
 import org.robolectric.ParameterizedRobolectricTestRunner
 import org.robolectric.annotation.Config
 
-@Config(minSdk = 34)
+@Config(minSdk = 34, maxSdk = 36)
 @RunWith(ParameterizedRobolectricTestRunner::class)
 class BackNavigationTest(private val androidNavigator: Boolean) {
 

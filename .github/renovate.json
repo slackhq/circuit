@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base"
+    "config:recommended"
   ],
   "branchPrefix": "renovate/",
   "gitAuthor": "OSS-Bot <svc-oss-bot@slack-corp.com>",
@@ -26,12 +26,12 @@
       "extends": ["schedule:monthly"]
     },
     {
-      "matchDepPatterns": [
-        "^org\\.jetbrains\\.compose.*$",
-        "^org\\.jetbrains\\.androidx\\.lifecycle.*$"
-      ],
       "description": "Ignore Jetbrains versions with build identifiers",
-      "allowedVersions": "!/.*\\+[\\w\\d\\.\\-]+$/"
+      "allowedVersions": "!/.*\\+[\\w\\d\\.\\-]+$/",
+      "matchDepNames": [
+        "/^org\\.jetbrains\\.compose.*$/",
+        "/^org\\.jetbrains\\.androidx\\.lifecycle.*$/"
+      ]
     },
     {
       "matchManagers": ["maven"],

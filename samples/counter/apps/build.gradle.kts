@@ -18,7 +18,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.sample.counter.android"
-    compileSdk = 36
   }
   jvm()
   iosArm64()

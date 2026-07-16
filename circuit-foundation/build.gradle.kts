@@ -19,7 +19,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.foundation"
-    compileSdk = 36
     androidResources { enable = true }
     withHostTest { isIncludeAndroidResources = true }
     withDeviceTest { androidResources { enable = true } }

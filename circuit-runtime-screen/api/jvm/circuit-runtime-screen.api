@@ -1,14 +1,17 @@
 public abstract interface class com/slack/circuit/runtime/screen/CircuitSaveable {
 }
 
-public abstract interface class com/slack/circuit/runtime/screen/CircuitSaver {
+public abstract class com/slack/circuit/runtime/screen/CircuitSaver {
+	public static final field $stable I
 	public static final field Companion Lcom/slack/circuit/runtime/screen/CircuitSaver$Companion;
-	public abstract fun restore (Ljava/lang/Object;)Lcom/slack/circuit/runtime/screen/CircuitSaveable;
+	protected fun <init> ()V
+	protected abstract fun restore (Ljava/lang/Object;)Lcom/slack/circuit/runtime/screen/CircuitSaveable;
 	public abstract fun save (Lcom/slack/circuit/runtime/screen/CircuitSaveable;)Ljava/lang/Object;
 }
 
 public final class com/slack/circuit/runtime/screen/CircuitSaver$Companion {
 	public final fun getNoOp ()Lcom/slack/circuit/runtime/screen/CircuitSaver;
+	public final fun restoreForInline (Lcom/slack/circuit/runtime/screen/CircuitSaver;Ljava/lang/Object;)Lcom/slack/circuit/runtime/screen/CircuitSaveable;
 }
 
 public final class com/slack/circuit/runtime/screen/CircuitSaverKt {

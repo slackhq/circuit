@@ -3,8 +3,11 @@
 package com.slack.circuit.serialization.reflect
 
 import androidx.savedstate.savedState
+import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.restorePopResult
+import com.slack.circuit.runtime.screen.restoreScreen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -26,14 +29,53 @@ class ReflectiveSerializableCircuitSaverTest {
   fun screen_round_trip() {
     val screen = ReflectiveScreen("hello")
     val saved = assertNotNull(saver.save(screen))
-    assertEquals(screen, saver.restore<Screen>(saved))
+    assertEquals(screen, saver.restoreScreen<ReflectiveScreen>(saved))
   }
 
   @Test
   fun pop_result_round_trip() {
     val result = ReflectivePopResult(42)
     val saved = assertNotNull(saver.save(result))
-    assertEquals(result, saver.restore<PopResult>(saved))
+    assertEquals(result, saver.restorePopResult<ReflectivePopResult>(saved))
+  }
+
+  @Test
+  fun raw_values_restore_without_reporting_an_error() {
+    var reported: Throwable? = null
+    val reportingSaver = ReflectiveSerializableCircuitSaver(onRestoreError = { reported = it })
+    val screen = ReflectiveScreen("legacy")
+    val result = ReflectivePopResult(42)
+
+    assertEquals(screen, reportingSaver.restoreScreen<ReflectiveScreen>(screen))
+    assertEquals(result, reportingSaver.restorePopResult<ReflectivePopResult>(result))
+    assertNull(reported)
+  }
+
+  @Test
+  fun screen_cannot_restore_as_pop_result() {
+    val screen = ReflectiveScreen("hello")
+    val saved = assertNotNull(saver.save(screen))
+    assertFailsWith<IllegalStateException> {
+      saver.restorePopResult<ReflectivePopResult>(saved)
+    }
+    var mismatched: CircuitSaveable? = null
+    assertNull(
+      saver.restorePopResult<ReflectivePopResult>(
+        saved,
+        onTypeMismatch = { mismatched = it },
+      )
+    )
+    assertEquals(screen, mismatched)
+  }
+
+  @Test
+  fun pop_result_cannot_restore_as_screen() {
+    val result = ReflectivePopResult(42)
+    val saved = assertNotNull(saver.save(result))
+    assertFailsWith<IllegalStateException> { saver.restoreScreen<ReflectiveScreen>(saved) }
+    var mismatched: CircuitSaveable? = null
+    assertNull(saver.restoreScreen<ReflectiveScreen>(saved, onTypeMismatch = { mismatched = it }))
+    assertEquals(result, mismatched)
   }
 
   @Test
@@ -47,7 +89,7 @@ class ReflectiveSerializableCircuitSaverTest {
       putString("type", "com.example.DoesNotExist")
       putSavedState("value", savedState {})
     }
-    assertNull(saver.restore<Screen>(saved))
+    assertNull(saver.restoreScreen<ReflectiveScreen>(saved))
   }
 
   @Test
@@ -58,12 +100,12 @@ class ReflectiveSerializableCircuitSaverTest {
     }
     var reported: Throwable? = null
     val reportingSaver = ReflectiveSerializableCircuitSaver(onRestoreError = { reported = it })
-    assertNull(reportingSaver.restore<Screen>(saved))
+    assertNull(reportingSaver.restoreScreen<ReflectiveScreen>(saved))
     assertNotNull(reported)
   }
 
   @Test
   fun restore_unexpected_value_returns_null() {
-    assertNull(saver.restore<Screen>("garbage"))
+    assertNull(saver.restoreScreen<ReflectiveScreen>("garbage"))
   }
 }

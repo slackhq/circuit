@@ -18,7 +18,6 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.backstack"
-    compileSdk = 36
     withHostTest { isReturnDefaultValues = true }
   }
   jvm()

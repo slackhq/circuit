@@ -100,6 +100,8 @@ dependencies {
   dokka(projects.circuitRuntimePresenter)
   dokka(projects.circuitRuntimeScreen)
   dokka(projects.circuitRuntimeUi)
+  dokka(projects.circuitSerialization)
+  dokka(projects.circuitSerializationReflect)
   dokka(projects.circuitTest)
   dokka(projects.circuitx.android)
   dokka(projects.circuitx.effects)

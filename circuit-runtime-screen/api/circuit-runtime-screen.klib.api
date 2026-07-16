@@ -6,18 +6,6 @@
 // - Show declarations: true
 
 // Library unique name: <circuit-root:circuit-runtime-screen>
-abstract interface com.slack.circuit.runtime.screen/CircuitSaveable // com.slack.circuit.runtime.screen/CircuitSaveable|null[0]
-
-abstract interface com.slack.circuit.runtime.screen/CircuitSaver { // com.slack.circuit.runtime.screen/CircuitSaver|null[0]
-    abstract fun <#A1: com.slack.circuit.runtime.screen/CircuitSaveable> restore(kotlin/Any): #A1? // com.slack.circuit.runtime.screen/CircuitSaver.restore|restore(kotlin.Any){0§<com.slack.circuit.runtime.screen.CircuitSaveable>}[0]
-    abstract fun save(com.slack.circuit.runtime.screen/CircuitSaveable): kotlin/Any? // com.slack.circuit.runtime.screen/CircuitSaver.save|save(com.slack.circuit.runtime.screen.CircuitSaveable){}[0]
-
-    final object Companion { // com.slack.circuit.runtime.screen/CircuitSaver.Companion|null[0]
-        final val NoOp // com.slack.circuit.runtime.screen/CircuitSaver.Companion.NoOp|{}NoOp[0]
-            final fun <get-NoOp>(): com.slack.circuit.runtime.screen/CircuitSaver // com.slack.circuit.runtime.screen/CircuitSaver.Companion.NoOp.<get-NoOp>|<get-NoOp>(){}[0]
-    }
-}
-
 abstract interface com.slack.circuit.runtime.screen/ParcelablePopResult : com.slack.circuit.runtime.screen/PopResult // com.slack.circuit.runtime.screen/ParcelablePopResult|null[0]
 
 abstract interface com.slack.circuit.runtime.screen/ParcelableScreen : com.slack.circuit.runtime.screen/Screen // com.slack.circuit.runtime.screen/ParcelableScreen|null[0]
@@ -28,9 +16,29 @@ abstract interface com.slack.circuit.runtime.screen/Screen : com.slack.circuit.r
 
 abstract interface com.slack.circuit.runtime.screen/StaticScreen : com.slack.circuit.runtime.screen/Screen // com.slack.circuit.runtime.screen/StaticScreen|null[0]
 
+sealed interface com.slack.circuit.runtime.screen/CircuitSaveable // com.slack.circuit.runtime.screen/CircuitSaveable|null[0]
+
+abstract class com.slack.circuit.runtime.screen/CircuitSaver { // com.slack.circuit.runtime.screen/CircuitSaver|null[0]
+    constructor <init>() // com.slack.circuit.runtime.screen/CircuitSaver.<init>|<init>(){}[0]
+
+    abstract fun restore(kotlin/Any): com.slack.circuit.runtime.screen/CircuitSaveable? // com.slack.circuit.runtime.screen/CircuitSaver.restore|restore(kotlin.Any){}[0]
+    abstract fun save(com.slack.circuit.runtime.screen/CircuitSaveable): kotlin/Any? // com.slack.circuit.runtime.screen/CircuitSaver.save|save(com.slack.circuit.runtime.screen.CircuitSaveable){}[0]
+
+    final object Companion { // com.slack.circuit.runtime.screen/CircuitSaver.Companion|null[0]
+        final val NoOp // com.slack.circuit.runtime.screen/CircuitSaver.Companion.NoOp|{}NoOp[0]
+            final fun <get-NoOp>(): com.slack.circuit.runtime.screen/CircuitSaver // com.slack.circuit.runtime.screen/CircuitSaver.Companion.NoOp.<get-NoOp>|<get-NoOp>(){}[0]
+
+        final fun restoreForInline(com.slack.circuit.runtime.screen/CircuitSaver, kotlin/Any): com.slack.circuit.runtime.screen/CircuitSaveable? // com.slack.circuit.runtime.screen/CircuitSaver.Companion.restoreForInline|restoreForInline(com.slack.circuit.runtime.screen.CircuitSaver;kotlin.Any){}[0]
+    }
+}
+
 final val com.slack.circuit.runtime.screen/DefaultCircuitSaver // com.slack.circuit.runtime.screen/DefaultCircuitSaver|{}DefaultCircuitSaver[0]
     final fun <get-DefaultCircuitSaver>(): com.slack.circuit.runtime.screen/CircuitSaver // com.slack.circuit.runtime.screen/DefaultCircuitSaver.<get-DefaultCircuitSaver>|<get-DefaultCircuitSaver>(){}[0]
 final val com.slack.circuit.runtime.screen/LocalCircuitSaver // com.slack.circuit.runtime.screen/LocalCircuitSaver|{}LocalCircuitSaver[0]
     final fun <get-LocalCircuitSaver>(): androidx.compose.runtime/ProvidableCompositionLocal<com.slack.circuit.runtime.screen/CircuitSaver> // com.slack.circuit.runtime.screen/LocalCircuitSaver.<get-LocalCircuitSaver>|<get-LocalCircuitSaver>(){}[0]
+final val com.slack.circuit.runtime.screen/com_slack_circuit_runtime_screen_CircuitSaver$stableprop // com.slack.circuit.runtime.screen/com_slack_circuit_runtime_screen_CircuitSaver$stableprop|#static{}com_slack_circuit_runtime_screen_CircuitSaver$stableprop[0]
 
 final fun com.slack.circuit.runtime.screen/ProvideCircuitSaver(com.slack.circuit.runtime.screen/CircuitSaver, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuit.runtime.screen/ProvideCircuitSaver|ProvideCircuitSaver(com.slack.circuit.runtime.screen.CircuitSaver;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){}[0]
+final fun com.slack.circuit.runtime.screen/com_slack_circuit_runtime_screen_CircuitSaver$stableprop_getter(): kotlin/Int // com.slack.circuit.runtime.screen/com_slack_circuit_runtime_screen_CircuitSaver$stableprop_getter|com_slack_circuit_runtime_screen_CircuitSaver$stableprop_getter(){}[0]
+final inline fun <#A: reified com.slack.circuit.runtime.screen/PopResult> (com.slack.circuit.runtime.screen/CircuitSaver).com.slack.circuit.runtime.screen/restorePopResult(kotlin/Any, kotlin/Function0<kotlin/Unit> = ..., kotlin/Function1<com.slack.circuit.runtime.screen/CircuitSaveable, kotlin/Unit> = ...): #A? // com.slack.circuit.runtime.screen/restorePopResult|restorePopResult@com.slack.circuit.runtime.screen.CircuitSaver(kotlin.Any;kotlin.Function0<kotlin.Unit>;kotlin.Function1<com.slack.circuit.runtime.screen.CircuitSaveable,kotlin.Unit>){0§<com.slack.circuit.runtime.screen.PopResult>}[0]
+final inline fun <#A: reified com.slack.circuit.runtime.screen/Screen> (com.slack.circuit.runtime.screen/CircuitSaver).com.slack.circuit.runtime.screen/restoreScreen(kotlin/Any, kotlin/Function0<kotlin/Unit> = ..., kotlin/Function1<com.slack.circuit.runtime.screen/CircuitSaveable, kotlin/Unit> = ...): #A? // com.slack.circuit.runtime.screen/restoreScreen|restoreScreen@com.slack.circuit.runtime.screen.CircuitSaver(kotlin.Any;kotlin.Function0<kotlin.Unit>;kotlin.Function1<com.slack.circuit.runtime.screen.CircuitSaveable,kotlin.Unit>){0§<com.slack.circuit.runtime.screen.Screen>}[0]

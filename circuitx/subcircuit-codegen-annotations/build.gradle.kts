@@ -14,13 +14,12 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.subcircuit.codegen.annotations"
-    compileSdk = 36
   }
   jvm()
   iosArm64()
   iosSimulatorArm64()
   macosArm64()
-  js(IR) {
+  js {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
   }

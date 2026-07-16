@@ -4,6 +4,11 @@ Changelog
 Unreleased
 ----------
 
+0.35.0
+------
+
+_2026-07-15_
+
 ### New
 
 #### Pluggable `Screen`/`PopResult` persistence with `CircuitSaver`

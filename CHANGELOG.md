@@ -6,7 +6,7 @@ Unreleased
 
 ### New
 
-#### Pluggable Screen persistence with `CircuitSaver`
+#### Pluggable `Screen`/`PopResult` persistence with `CircuitSaver`
 
 Circuit's saveable back stacks no longer mandate how `Screen`s and `PopResult`s are persisted. A new
 `CircuitSaver` abstraction in `circuit-runtime-screen` converts them to and from saveable

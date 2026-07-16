@@ -4,7 +4,7 @@ Changelog
 Unreleased
 ----------
 
-0.35.0
+0.35.1
 ------
 
 _2026-07-15_
@@ -99,6 +99,13 @@ Special thanks to the following contributors for contributing to this release!
 
 - [@ryanbrookepayne](https://github.com/ryanbrookepayne)
 - [@wiyarmir](https://github.com/wiyarmir)
+
+0.35.0
+------
+
+_2026-07-15_
+
+Ignore this release, we goofed and it didn't include regenerated baseline profiles! Use 0.35.1.
 
 0.34.0
 ------

@@ -17,6 +17,7 @@ dependencies {
 ```
 
 Currently supported types are:
+
 - [Anvil](https://github.com/square/anvil) and [Anvil KSP](https://github.com/zacsweers/anvil)
 - [Dagger/Hilt](https://dagger.dev/hilt/)
 - [kotlin-inject](https://github.com/evant/kotlin-inject) + [kotlin-inject-anvil](https://github.com/amzn/kotlin-inject-anvil)

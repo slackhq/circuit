@@ -84,7 +84,7 @@ import kotlin.collections.mutableSetOf
  *
  * This function automatically wraps your navigator with result handling capabilities via
  * [rememberAnsweringResultNavigator], enabling screens to pass results back when using
- * `com.slack.circuit.runtime.rememberAnsweringNavigator`.
+ * `rememberAnsweringNavigator`.
  *
  * ## Features
  * - **State Management**: Manages saveable and retained state for each screen in the navstack with
@@ -92,7 +92,7 @@ import kotlin.collections.mutableSetOf
  * - **Navigation Transitions**: Handles animated transitions between screens using [NavDecoration]
  *   or custom [AnimatedNavDecorator]
  * - **Result Handling**: Automatically manages screen results when using
- *   `com.slack.circuit.runtime.rememberAnsweringNavigator` to pass data back from child screens
+ *   `rememberAnsweringNavigator` to pass data back from child screens
  *
  * ## Usage
  *
@@ -126,8 +126,7 @@ import kotlin.collections.mutableSetOf
  *   transitions. If provided, takes precedence over [decoration].
  * @param unavailableRoute A composable function invoked when a screen cannot be rendered (e.g., no
  *   UI factory available). Defaults to the circuit's [Circuit.onUnavailableContent].
- * @see com.slack.circuit.runtime.rememberAnsweringNavigator for requesting results from child
- *   screens
+ * @see rememberAnsweringNavigator for requesting results from child screens
  * @see rememberAnsweringResultNavigator for the underlying result navigator creation
  * @see rememberSaveableNavStack for creating a navstack
  * @see rememberCircuitNavigator for creating a navigator
@@ -359,10 +358,10 @@ public fun <R : Record> NavigableCircuitContent(
  *
  * @param navigator The base [Navigator] to wrap with result handling.
  * @param navStack The [NavStack] used for tracking navigation state.
- * @param answeringResultHandler The [RuntimeAnsweringResultHandler] for managing screen results.
- *   Defaults to a new instance created via [rememberAnsweringResultHandler]. Only provide a custom
- *   handler if you need to share result handling across multiple navigation graphs or require
- *   custom result handling logic.
+ * @param answeringResultHandler The [AnsweringResultHandler] for managing screen results. Defaults
+ *   to a new instance created via [rememberAnsweringResultHandler]. Only provide a custom handler
+ *   if you need to share result handling across multiple navigation graphs or require custom result
+ *   handling logic.
  * @return An [AnsweringResultNavigator] that combines all three components.
  * @see AnsweringResultNavigator for the wrapped navigator type
  * @see rememberAnsweringResultHandler for creating a result handler
@@ -736,12 +735,11 @@ public object NavigatorDefaults {
 }
 
 /**
- * Delicate API to access the [NavStack] from within a [NavigableCircuitContent], useful for cases
- * where we create nested nav handling.
+ * Provides access to the [NavStack] within [NavigableCircuitContent] for nested navigation
+ * handling.
  *
- * This is generally considered an internal API to Circuit, but can be useful for interop cases and
- * testing of the explicit Foundation answering navigator overloads. As such, it's public but
- * annotated as [DelicateCircuitFoundationApi].
+ * This API is intended for Circuit internals. It is public for interop and tests of the explicit
+ * Foundation answering navigator overloads and marked as [DelicateCircuitFoundationApi].
  */
 @DelicateCircuitFoundationApi
 public val LocalNavStack: ProvidableCompositionLocal<NavStack<out Record>?> = compositionLocalOf {
@@ -749,12 +747,11 @@ public val LocalNavStack: ProvidableCompositionLocal<NavStack<out Record>?> = co
 }
 
 /**
- * Delicate API to access the [RuntimeAnsweringResultHandler] from within a
- * [NavigableCircuitContent], useful for cases where we create nested nav handling.
+ * Provides access to the [AnsweringResultHandler] within [NavigableCircuitContent] for nested
+ * navigation handling.
  *
- * This is generally considered an internal API to Circuit, but can be useful for interop cases and
- * testing of the explicit Foundation answering navigator overloads. As such, it's public but
- * annotated as [DelicateCircuitFoundationApi].
+ * This API is intended for Circuit internals. It is public for interop and tests of the explicit
+ * Foundation answering navigator overloads and marked as [DelicateCircuitFoundationApi].
  */
 @OptIn(ExperimentalCircuitApi::class)
 @DelicateCircuitFoundationApi

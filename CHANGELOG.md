@@ -4,6 +4,19 @@ Changelog
 Unreleased
 ----------
 
+### New
+
+- `rememberAnsweringNavigator` and `answeringNavigationAvailable` are now part of `circuit-runtime`, so presenters can use them through `circuit-runtime-presenter`.
+  - `NavigableCircuitContent` continues to provide result delivery. Without it, `rememberAnsweringNavigator` returns the supplied fallback navigator.
+- `AnsweringResultHandler` has moved to `circuit-runtime`.
+  - `rememberAnsweringResultHandler` remains in `circuit-foundation` to provide saveable-state persistence without adding Compose runtime-saveable to `circuit-runtime`.
+
+### Deprecated
+
+- The Foundation `answeringNavigationAvailable` function and `rememberAnsweringNavigator` overloads that take a fallback `Navigator` are deprecated. Use the runtime versions.
+  - IntelliJ IDEA and Android Studio versions before the 2026.2 platform may fail to update imports for these same-named replacements or leave a literal `T` in a reified call. Update the import manually if this occurs ([KTIJ-12093](https://youtrack.jetbrains.com/issue/KTIJ-12093)).
+- The experimental Foundation `AnsweringResultHandler` type is deprecated in favor of its runtime replacement. Its `Saver` APIs have been removed. Use `rememberAnsweringResultHandler` for a saveable handler.
+
 0.35.1
 ------
 

@@ -10,7 +10,7 @@ import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.screen.PopResult
 import kotlin.reflect.KClass
 
-/** Internal host implementation for the public answering navigation APIs. */
+/** Provides answering navigation for the public runtime APIs. */
 @InternalCircuitApi
 public interface AnsweringNavigatorProvider {
   /** Creates an answering navigator for [resultType]. */
@@ -21,7 +21,7 @@ public interface AnsweringNavigatorProvider {
   ): GoToNavigator
 }
 
-/** The answering navigation implementation installed by a Circuit content host. */
+/** Holds the answering navigation provider installed by a Circuit content host. */
 @InternalCircuitApi
 public val LocalAnsweringNavigatorProvider:
   ProvidableCompositionLocal<AnsweringNavigatorProvider?> =

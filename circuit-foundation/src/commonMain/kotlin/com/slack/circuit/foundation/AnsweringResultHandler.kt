@@ -25,7 +25,7 @@ import com.slack.circuit.runtime.screen.restorePopResult
 public typealias AnsweringResultHandler = RuntimeAnsweringResultHandler
 
 /**
- * Returns a saveable [RuntimeAnsweringResultHandler] for use with [NavigableCircuitContent].
+ * Returns a saveable [AnsweringResultHandler] for use with [NavigableCircuitContent].
  *
  * @param circuitSaver the [CircuitSaver] used to persist results, defaulting to
  *   [LocalCircuitSaver].

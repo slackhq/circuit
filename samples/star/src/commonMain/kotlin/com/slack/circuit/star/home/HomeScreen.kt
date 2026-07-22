@@ -50,8 +50,10 @@ import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.AppScope
 import kotlin.math.roundToInt
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data object HomeScreen : Screen {
 
   data class State(

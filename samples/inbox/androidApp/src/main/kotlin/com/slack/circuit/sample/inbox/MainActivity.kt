@@ -20,9 +20,10 @@ class MainActivity : AppCompatActivity() {
     enableEdgeToEdge()
 
     val graph = InboxAppGraph.create()
+    val circuitSaver = requireNotNull(graph.circuit.circuitSaver)
     setContent {
       MaterialTheme {
-        val backStack = rememberSaveableBackStack(InboxScreen)
+        val backStack = rememberSaveableBackStack(InboxScreen, circuitSaver)
         val navigator = rememberCircuitNavigator(backStack)
         CircuitCompositionLocals(graph.circuit) {
           NavigableCircuitContent(navigator = navigator, backStack = backStack)

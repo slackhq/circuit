@@ -10,6 +10,7 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.kotlin.plugin.parcelize)
+  alias(libs.plugins.kotlin.plugin.serialization)
   alias(libs.plugins.ksp)
   alias(libs.plugins.metro)
   id("circuit.base")
@@ -44,6 +45,7 @@ kotlin {
         implementation(projects.circuitCodegenAnnotations)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitRetained)
+        implementation(projects.circuitSerialization)
         implementation(projects.circuitx.effects)
         implementation(projects.internalRuntime)
       }

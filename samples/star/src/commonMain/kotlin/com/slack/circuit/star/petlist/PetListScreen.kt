@@ -144,8 +144,10 @@ import io.ktor.util.Platform
 import io.ktor.util.PlatformUtils
 import io.ktor.util.platform
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data object PetListScreen : Screen {
 
   sealed interface State : CircuitUiState {

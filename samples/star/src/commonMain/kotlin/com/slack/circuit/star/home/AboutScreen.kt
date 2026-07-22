@@ -27,9 +27,10 @@ import com.slack.circuit.star.resources.Res
 import com.slack.circuit.star.resources.star_icon
 import com.slack.circuit.star.ui.StarTheme
 import dev.zacsweers.metro.AppScope
+import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.painterResource
 
-@Parcelize data object AboutScreen : StaticScreen
+@Parcelize @Serializable data object AboutScreen : StaticScreen
 
 @CircuitInject(screen = AboutScreen::class, scope = AppScope::class)
 @Composable

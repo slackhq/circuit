@@ -12,21 +12,24 @@ import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuit.tutorial.MainActivity
+import com.slack.circuit.tutorial.buildCircuitSaver
 import com.slack.circuit.tutorial.common.EmailRepository
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun MainActivity.sharedElementsTutorialOnCreate() {
   val emailRepository = EmailRepository()
+  val circuitSaver = buildCircuitSaver()
   val circuit: Circuit =
     Circuit.Builder()
       .addPresenterFactory(DetailPresenter.Factory(emailRepository))
       .addPresenterFactory(InboxPresenter.Factory(emailRepository))
       .addUi<InboxScreen, InboxScreen.State> { state, modifier -> Inbox(state, modifier) }
       .addUi<DetailScreen, DetailScreen.State> { state, modifier -> EmailDetail(state, modifier) }
+      .setCircuitSaver(circuitSaver)
       .build()
   setContent {
     MaterialTheme {
-      val backStack = rememberSaveableBackStack(InboxScreen)
+      val backStack = rememberSaveableBackStack(root = InboxScreen, circuitSaver = circuitSaver)
       val navigator = rememberCircuitNavigator(backStack)
       CircuitCompositionLocals(circuit) {
         SharedElementTransitionLayout {

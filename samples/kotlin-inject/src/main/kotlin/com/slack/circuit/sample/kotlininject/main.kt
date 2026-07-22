@@ -15,6 +15,7 @@ import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.serialization.Serializable
 import me.tatarka.inject.annotations.Assisted
 import me.tatarka.inject.annotations.Inject
 import software.amazon.lastmile.kotlin.inject.anvil.AppScope
@@ -39,6 +40,7 @@ fun MyScreen(state: MyScreen.State, modifier: Modifier = Modifier) {
   Text(state.visibleString, modifier = modifier)
 }
 
+@Serializable
 data class MyScreen(val inputText: String) : Screen {
   data class State(val visibleString: String) : CircuitUiState
 }

@@ -8,8 +8,10 @@ import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.overlay.OverlayHost
 import com.slack.circuit.star.db.Gender
 import com.slack.circuit.star.db.Size
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 class Filters(
   val genders: Set<Gender> = Gender.entries.toSet(),
   val sizes: Set<Size> = Size.entries.toSet(),

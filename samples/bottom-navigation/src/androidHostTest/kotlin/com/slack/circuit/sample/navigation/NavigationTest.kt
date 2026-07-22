@@ -23,7 +23,9 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.navigation.transform
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.restoreScreen
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -40,6 +42,14 @@ class NavigationTest {
   @get:Rule(order = 2) val composeTestRule = createComposeRule()
 
   @Test
+  fun infoScreenRoundTrips() {
+    val circuitSaver = buildCircuitSaver()
+    val saved = requireNotNull(circuitSaver.save(InfoScreen))
+
+    assertEquals(InfoScreen, circuitSaver.restoreScreen<InfoScreen>(saved))
+  }
+
+  @Test
   fun `Test savable, fast multi-root reset`() {
     with(composeTestRule) {
       val tabs = TabScreen.all
@@ -47,7 +57,7 @@ class NavigationTest {
       val circuitSaver = buildCircuitSaver()
       lateinit var navStack: NavStack<out NavStack.Record>
       lateinit var navigator: Navigator
-      stateRestorationTester.setTestContent(tabs) {
+      stateRestorationTester.setTestContent(tabs, circuitSaver) {
         navStack = rememberSaveableNavStack(tabs.first(), circuitSaver)
         navigator = rememberCircuitNavigator(navStack)
         ContentScaffold(navStack, navigator, tabs, Modifier.fillMaxSize())
@@ -139,10 +149,11 @@ class NavigationTest {
   @OptIn(ExperimentalSharedTransitionApi::class)
   private fun StateRestorationTester.setTestContent(
     tabs: List<TabScreen>,
+    circuitSaver: CircuitSaver,
     content: @Composable () -> Unit,
   ) {
     val circuit =
-      buildCircuitForTabs(tabs)
+      buildCircuitForTabs(tabs, circuitSaver)
         .newBuilder()
         .setAnimatedNavDecoratorFactory(CrossFadeNavDecoratorFactory(ANIMATION_DURATION))
         .build()

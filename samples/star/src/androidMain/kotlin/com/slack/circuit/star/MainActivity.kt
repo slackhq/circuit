@@ -68,7 +68,7 @@ class MainActivity(private val circuit: Circuit) : AppCompatActivity() {
     setContent {
       val uriHandler = remember { CustomTabsUriHandler() }
       CompositionLocalProvider(LocalUriHandler provides uriHandler) {
-        val backStack = rememberSaveableBackStack(initialBackstack)
+        val backStack = rememberSaveableBackStack(initialBackstack, circuitSaver = starCircuitSaver)
         val circuitNavigator = rememberCircuitNavigator(backStack)
         val navigator = rememberAndroidScreenAwareNavigator(circuitNavigator, this::goTo)
         val state = rememberStarAppState(backStack = backStack, navigator = navigator)

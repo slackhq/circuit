@@ -7,8 +7,10 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sample.inbox.data.Email
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data class EmailDetailScreen(val emailId: String) : Screen {
   sealed interface State : CircuitUiState {
     data object Loading : State

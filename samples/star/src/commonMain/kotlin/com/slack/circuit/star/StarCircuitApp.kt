@@ -67,7 +67,8 @@ private class StarAppStateImpl(
 @Composable
 fun rememberStarAppState(
   useDarkTheme: Boolean = isSystemInDarkTheme(),
-  backStack: BackStack<*> = rememberSaveableBackStack(listOf(HomeScreen)),
+  backStack: BackStack<*> =
+    rememberSaveableBackStack(listOf(HomeScreen), circuitSaver = starCircuitSaver),
   onRootPop: (PopResult?) -> Unit = {},
   navigator: Navigator = rememberCircuitNavigator(backStack, onRootPop = onRootPop),
 ): StarAppState {

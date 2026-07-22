@@ -8,8 +8,10 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sample.inbox.data.Email
 import com.slack.circuit.sample.inbox.data.EmailFolder
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data class InboxListScreen(val folder: EmailFolder = EmailFolder.Inbox) : Screen {
   data class State(
     val folder: EmailFolder,

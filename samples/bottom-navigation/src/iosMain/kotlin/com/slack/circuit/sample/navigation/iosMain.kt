@@ -33,8 +33,8 @@ fun MainViewController(): UIViewController {
   val notifier = LoggingNavigatorFailureNotifier(Logger)
 
   val tabs = TabScreen.all
-  val circuit = buildCircuitForTabs(tabs)
   val circuitSaver = buildCircuitSaver()
+  val circuit = buildCircuitForTabs(tabs, circuitSaver)
   return ComposeUIViewController {
     MaterialTheme {
       val navStack = rememberSaveableNavStack(tabs.first(), circuitSaver)

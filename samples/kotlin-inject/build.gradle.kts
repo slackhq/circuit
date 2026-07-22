@@ -4,6 +4,7 @@ plugins {
   alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.ksp)
   alias(libs.plugins.compose)
+  alias(libs.plugins.kotlin.plugin.serialization)
   id("circuit.base")
 }
 
@@ -26,6 +27,7 @@ dependencies {
   implementation(libs.compose.foundation)
   implementation(libs.compose.runtime)
   implementation(libs.compose.material.material3)
+  implementation(libs.kotlinx.serialization.core)
 
   implementation(libs.kotlinInject.runtime)
   implementation(libs.kotlinInject.anvil.runtime)

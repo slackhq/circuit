@@ -7,6 +7,7 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
   alias(libs.plugins.kotlin.plugin.parcelize)
+  alias(libs.plugins.kotlin.plugin.serialization)
   id("circuit.base")
 }
 
@@ -29,11 +30,18 @@ kotlin {
         implementation(libs.compose.material.material3)
         implementation(libs.compose.material.icons)
         implementation(libs.compose.ui.tooling.preview)
+        implementation(libs.kotlinx.serialization.core)
         implementation(projects.circuitFoundation)
       }
     }
-    androidMain {}
-    jvmMain { dependencies { implementation(compose.desktop.currentOs) } }
+    androidMain { dependencies { implementation(projects.circuitSerializationReflect) } }
+    jvmMain {
+      dependencies {
+        implementation(compose.desktop.currentOs)
+        implementation(projects.circuitSerializationReflect)
+      }
+    }
+    jvmTest { dependencies { implementation(libs.kotlin.test) } }
 
     configureEach {
       compilerOptions {

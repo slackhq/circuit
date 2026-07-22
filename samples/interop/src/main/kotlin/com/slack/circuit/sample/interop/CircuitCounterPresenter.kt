@@ -12,6 +12,7 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 class CircuitCounterPresenter(private val initialCount: Int) : Presenter<CounterScreen.State> {
   @Composable
@@ -28,6 +29,7 @@ class CircuitCounterPresenter(private val initialCount: Int) : Presenter<Counter
 }
 
 @Parcelize
+@Serializable
 data object CounterScreen : Screen {
   data class State(val count: Int, val eventSink: (Event) -> Unit = {}) : CircuitUiState
 

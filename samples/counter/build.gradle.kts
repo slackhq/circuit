@@ -23,11 +23,13 @@ kotlin {
   js {
     outputModuleName = "counterbrowser"
     browser()
+    binaries.executable()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     outputModuleName = "counterbrowser"
     browser()
+    binaries.executable()
   }
   listOf(iosArm64(), iosSimulatorArm64()).forEach {
     it.binaries.framework { baseName = "CounterKt" }

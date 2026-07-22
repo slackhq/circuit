@@ -15,6 +15,7 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.subcircuit.test"
+    withHostTest { isReturnDefaultValues = true }
   }
   jvm()
   iosArm64()
@@ -23,11 +24,13 @@ kotlin {
   js {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
+    binaries.executable()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
+    binaries.executable()
   }
   // endregion
 

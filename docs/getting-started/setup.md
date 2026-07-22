@@ -40,18 +40,18 @@ See the docs for `CircuitContent` and `NavigableCircuitContent` for more informa
 
 Circuit is split into a few different artifacts to allow for more granular control over your dependencies. The following table shows the available artifacts and their purpose:
 
-| Artifact ID                 | Dependencies                                                                                     |
-|-----------------------------|--------------------------------------------------------------------------------------------------|
-| `circuit-backstack`         | Circuit's backstack implementation.                                                              |
-| `circuit-runtime`           | Common runtime components like `Screen`, `Navigator`, etc.                                       |
-| `circuit-runtime-presenter` | The `Presenter` API, depends on `circuit-runtime`.                                               |
-| `circuit-runtime-ui`        | The `Ui` API, depends on `circuit-runtime`.                                                      |
-| `circuit-foundation`        | The Circuit foundational APIs like `Circuit`, `CircuitContent`, etc. Depends on the first four. |
-| `circuit-test`              | First-party test APIs for testing navigation, state emissions, and event sinks.                  |
-| `circuit-overlay`           | Optional `Overlay` APIs.                                                                         |
-| `circuit-retained`          | Optional `rememberRetained()` APIs.                                                              |
-| `circuit-serialization`     | Kotlin Multiplatform serialization for explicitly registered `CircuitSaveable` types.            |
-| `circuit-serialization-reflect` | Reflective serialization for `CircuitSaveable` types on JVM and Android.                    |
+| Artifact ID                     | Dependencies                                                                                    |
+|---------------------------------|-------------------------------------------------------------------------------------------------|
+| `circuit-backstack`             | Circuit's backstack implementation.                                                             |
+| `circuit-runtime`               | Common runtime APIs like `Screen`, `Navigator`, etc.                                            |
+| `circuit-runtime-presenter`     | The `Presenter` API, depends on `circuit-runtime`.                                              |
+| `circuit-runtime-ui`            | The `Ui` API, depends on `circuit-runtime`.                                                     |
+| `circuit-foundation`            | The Circuit foundational APIs like `Circuit`, `CircuitContent`, etc. Depends on the first four. |
+| `circuit-test`                  | First-party test APIs for testing navigation, state emissions, and event sinks.                 |
+| `circuit-overlay`               | Optional `Overlay` APIs.                                                                        |
+| `circuit-retained`              | Optional `rememberRetained()` APIs.                                                             |
+| `circuit-serialization`         | Kotlin Multiplatform serialization for explicitly registered `CircuitSaveable` types.           |
+| `circuit-serialization-reflect` | Reflective serialization for `CircuitSaveable` types on JVM and Android.                        |
 
 ## Platform Support
 

@@ -20,8 +20,8 @@ import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 fun main() {
 
   val tabs = TabScreen.all
-  val circuit = buildCircuitForTabs(tabs)
   val circuitSaver = buildCircuitSaver()
+  val circuit = buildCircuitForTabs(tabs, circuitSaver)
   application {
     Window(title = "Navigation Sample", onCloseRequest = ::exitApplication) {
       MaterialTheme {

@@ -3,9 +3,7 @@
 **Problem:** you navigate to a screen (a picker, an editor) and need the value it produces back on
 the calling screen — surviving process death.
 
-Use the **answering navigator**. The caller wraps its `Navigator` with `rememberAnsweringNavigator<R>`
-and a callback. The target screen pops a `PopResult`, and Circuit delivers it only to the caller that
-asked.
+Call `rememberAnsweringNavigator<R>` with the caller's `Navigator` and handle the result in its callback. The target screen pops a `PopResult`, which Circuit delivers only to the caller that requested it. `NavigableCircuitContent` provides result delivery, and presenters can call the API through `circuit-runtime-presenter`.
 
 ## 1. Define the result
 
@@ -58,6 +56,8 @@ override fun present(): EditNameState {
 
 If the target pops without a result (e.g. the user backs out), the callback simply never fires —
 treat that as "cancelled".
+
+Outside `NavigableCircuitContent`, `rememberAnsweringNavigator` returns the supplied fallback navigator and cannot deliver results. Check `answeringNavigationAvailable()` when a presenter needs different behavior in that case.
 
 ## Screen result vs. overlay
 

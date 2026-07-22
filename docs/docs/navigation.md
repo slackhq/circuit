@@ -41,7 +41,7 @@ For more details on handling deep links and manipulating the back stack, refer t
 
 In some cases, it makes sense for a screen to return a result to the previous screen. This is done by using the _answering Navigator_ pattern in Circuit.
 
-The primary entry point for requesting a result is the `rememberAnsweringNavigator` API, which takes a `Navigator` or `BackStack` and `PopResult` type and returns a navigator that can go to a screen and await a result.
+The primary entry point for requesting a result is `rememberAnsweringNavigator`. It accepts a fallback `Navigator` and a `PopResult` type, then returns a navigator that can go to a screen and await a result. Since the API is part of `circuit-runtime`, presenters can use it through `circuit-runtime-presenter`.
 
 Result types must implement `PopResult` and are used to carry data back to the previous screen.
 
@@ -70,7 +70,9 @@ class TakePhotoPresenter {
 }
 ```
 
-Circuit automatically manages saving/restoring result states and ensuring that results are only delivered to the original receiver that requested it. If the target screen does not pop back a result, the previous screen's receiver will just never receive one.
+`NavigableCircuitContent` saves and restores pending results and delivers each result only to the screen that requested it. If the target screen pops without a result, the requesting screen receives nothing.
+
+Outside `NavigableCircuitContent`, `rememberAnsweringNavigator` returns the supplied fallback navigator and cannot deliver results. Use `answeringNavigationAvailable()` to check before requesting a result.
 
 !!! note "When to use an `Overlay` vs navigating to a `Screen` with result?"
     See this doc in [Overlays](overlays.md#overlay-vs-popresult)!

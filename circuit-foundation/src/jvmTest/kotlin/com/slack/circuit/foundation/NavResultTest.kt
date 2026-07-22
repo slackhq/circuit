@@ -29,10 +29,12 @@ import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_POP
+import com.slack.circuit.runtime.AnsweringResultHandler as RuntimeAnsweringResultHandler
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.rememberAnsweringNavigator as rememberRuntimeAnsweringNavigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.fail
@@ -110,7 +112,7 @@ class NavResultTest {
   @Test
   fun onlyTheCallerGetsTheResult() {
     lateinit var backStack: SaveableBackStack
-    lateinit var answeringResultHandler: AnsweringResultHandler
+    lateinit var answeringResultHandler: RuntimeAnsweringResultHandler
     composeTestRule.run {
       setContent {
         CircuitCompositionLocals(circuit) {
@@ -136,9 +138,9 @@ class NavResultTest {
   }
 
   private fun ComposeContentTestRule.setUpTestContent():
-    Pair<SaveableBackStack, AnsweringResultHandler> {
+    Pair<SaveableBackStack, RuntimeAnsweringResultHandler> {
     lateinit var backStack: SaveableBackStack
-    lateinit var answeringResultHandler: AnsweringResultHandler
+    lateinit var answeringResultHandler: RuntimeAnsweringResultHandler
     setContent {
       CircuitCompositionLocals(circuit) {
         backStack = rememberSaveableBackStack(TestResultScreen("root", answer = false))
@@ -212,7 +214,7 @@ class NavResultTest {
 
   private fun ComposeContentTestRule.dumpState(
     backStack: SaveableBackStack,
-    resultHandler: AnsweringResultHandler,
+    resultHandler: RuntimeAnsweringResultHandler,
   ) {
     val state = buildString {
       appendLine("BackStack:")
@@ -283,19 +285,19 @@ class TestResultPresenter(private val navigator: Navigator, private val screen: 
     var text by remember { mutableStateOf(screen.input) }
 
     // See docs on UnscrupulousResultListenerEffect for details on these surrounding error calls
-    rememberAnsweringNavigator<TestResultScreen.Result>(navigator) {
+    rememberRuntimeAnsweringNavigator<TestResultScreen.Result>(navigator) {
       error("This should never be called")
     }
     UnscrupulousResultListenerEffect()
 
     // The real next navigator
     val nextNavigator =
-      rememberAnsweringNavigator<TestResultScreen.Result>(navigator) { result ->
+      rememberRuntimeAnsweringNavigator<TestResultScreen.Result>(navigator) { result ->
         text = result.output
       }
 
     UnscrupulousResultListenerEffect()
-    rememberAnsweringNavigator<TestResultScreen.Result>(navigator) {
+    rememberRuntimeAnsweringNavigator<TestResultScreen.Result>(navigator) {
       error("This should never be called")
     }
 
@@ -372,7 +374,7 @@ class WrapperPresenter(private val navigator: Navigator) : Presenter<WrapperScre
   @Composable
   override fun present(): WrapperScreen.State {
     UnscrupulousResultListenerEffect()
-    rememberAnsweringNavigator<TestResultScreen.Result>(navigator) {
+    rememberRuntimeAnsweringNavigator<TestResultScreen.Result>(navigator) {
       error("This should never be called")
     }
     return WrapperScreen.State(navigator)

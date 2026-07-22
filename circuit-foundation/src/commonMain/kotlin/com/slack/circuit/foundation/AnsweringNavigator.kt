@@ -11,10 +11,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import com.slack.circuit.runtime.AnsweringResultHandler as RuntimeAnsweringResultHandler
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.answeringNavigationAvailable as runtimeAnsweringNavigationAvailable
 import com.slack.circuit.runtime.navigation.NavStack
+import com.slack.circuit.runtime.rememberAnsweringNavigator as rememberRuntimeAnsweringNavigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.reflect.KClass
@@ -25,36 +28,50 @@ import kotlin.uuid.Uuid
  * Returns whether or not answering navigation is available. This is essentially a proxy for whether
  * or not this composition is running within a [NavigableCircuitContent].
  */
-@OptIn(ExperimentalCircuitApi::class)
+@Deprecated(
+  "Moved to com.slack.circuit.runtime.",
+  ReplaceWith(
+    "answeringNavigationAvailable()",
+    "com.slack.circuit.runtime.answeringNavigationAvailable",
+  ),
+)
 @Composable
-public fun answeringNavigationAvailable(): Boolean =
-  LocalNavStack.current != null && LocalAnsweringResultHandler.current != null
+public fun answeringNavigationAvailable(): Boolean = runtimeAnsweringNavigationAvailable()
 
 /**
  * A reified version of [rememberAnsweringNavigator]. See documented overloads of this function for
  * more information.
  */
+@Deprecated(
+  "Moved to com.slack.circuit.runtime.",
+  ReplaceWith(
+    "rememberAnsweringNavigator<T>(fallbackNavigator, block)",
+    "com.slack.circuit.runtime.rememberAnsweringNavigator",
+  ),
+)
 @Composable
 public inline fun <reified T : PopResult> rememberAnsweringNavigator(
   fallbackNavigator: Navigator,
   noinline block: (result: T) -> Unit,
-): GoToNavigator = rememberAnsweringNavigator(fallbackNavigator, T::class, block)
+): GoToNavigator = rememberRuntimeAnsweringNavigator<T>(fallbackNavigator, block)
 
 /**
  * Returns a [GoToNavigator] that answers with the given [resultType] or defaults to
  * [fallbackNavigator] if no back stack is available to pass results through.
  */
-@OptIn(ExperimentalCircuitApi::class)
+@Deprecated(
+  "Moved to com.slack.circuit.runtime.",
+  ReplaceWith(
+    "rememberAnsweringNavigator(fallbackNavigator, resultType, block)",
+    "com.slack.circuit.runtime.rememberAnsweringNavigator",
+  ),
+)
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
   fallbackNavigator: Navigator,
   resultType: KClass<T>,
   block: (result: T) -> Unit,
-): GoToNavigator {
-  val navStack = LocalNavStack.current ?: return fallbackNavigator
-  val resultHandler = LocalAnsweringResultHandler.current ?: return fallbackNavigator
-  return rememberAnsweringNavigator(navStack, resultHandler, resultType, block)
-}
+): GoToNavigator = rememberRuntimeAnsweringNavigator(fallbackNavigator, resultType, block)
 
 /**
  * A reified version of [rememberAnsweringNavigator]. See documented overloads of this function for
@@ -64,14 +81,14 @@ public fun <T : PopResult> rememberAnsweringNavigator(
 @Composable
 public inline fun <reified T : PopResult> rememberAnsweringNavigator(
   navStack: NavStack<out NavStack.Record>,
-  answeringResultHandler: AnsweringResultHandler,
+  answeringResultHandler: RuntimeAnsweringResultHandler,
   noinline block: (result: T) -> Unit,
 ): GoToNavigator {
   return rememberAnsweringNavigator(navStack, answeringResultHandler, T::class, block)
 }
 
 /**
- * Returns a [GoToNavigator] that answers with the given [resultType] using the given [backStack].
+ * Returns a [GoToNavigator] that answers with the given [resultType] using the given [navStack].
  *
  * Handling of the result type [T] should be handled in the [block] parameter and is guaranteed to
  * only be called _at most_ once. It may never be called if the navigated screen never pops with a
@@ -100,7 +117,7 @@ public inline fun <reified T : PopResult> rememberAnsweringNavigator(
 @Composable
 public fun <T : PopResult> rememberAnsweringNavigator(
   navStack: NavStack<out NavStack.Record>,
-  answeringResultHandler: AnsweringResultHandler,
+  answeringResultHandler: RuntimeAnsweringResultHandler,
   resultType: KClass<T>,
   block: (result: T) -> Unit,
 ): GoToNavigator {

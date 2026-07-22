@@ -3,10 +3,6 @@ public final class com/slack/circuit/foundation/AnsweringNavigatorKt {
 	public static final fun rememberAnsweringNavigator (Lcom/slack/circuit/runtime/Navigator;Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/GoToNavigator;
 }
 
-public final class com/slack/circuit/foundation/AnsweringResultHandler$Companion {
-	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
-}
-
 public final class com/slack/circuit/foundation/Circuit {
 	public static final field $stable I
 	public synthetic fun <init> (Lcom/slack/circuit/foundation/Circuit$Builder;Lkotlin/jvm/internal/DefaultConstructorMarker;)V

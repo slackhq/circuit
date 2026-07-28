@@ -9,6 +9,7 @@ plugins {
   alias(libs.plugins.agp.kmp)
   alias(libs.plugins.nativecoroutines)
   alias(libs.plugins.kotlin.plugin.parcelize)
+  alias(libs.plugins.kotlin.plugin.serialization)
   id("circuit.base")
 }
 
@@ -48,6 +49,7 @@ kotlin {
         api(libs.compose.material.material3)
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.molecule.runtime)
+        implementation(projects.circuitSerialization)
       }
     }
     commonTest { dependencies { implementation(libs.kotlin.test) } }

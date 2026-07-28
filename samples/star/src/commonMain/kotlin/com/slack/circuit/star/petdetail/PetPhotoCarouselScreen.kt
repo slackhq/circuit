@@ -77,11 +77,13 @@ import com.slack.circuitx.overlays.showFullScreenOverlay
 import dev.zacsweers.metro.AppScope
 import kotlin.math.absoluteValue
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
 /** Default aspect ratio to use when photo metadata is not available (4:3) */
 private const val DEFAULT_ASPECT_RATIO = 4f / 3f
 
 @Parcelize
+@Serializable
 data class PetPhotoCarouselScreen(
   val id: Long,
   val name: String,

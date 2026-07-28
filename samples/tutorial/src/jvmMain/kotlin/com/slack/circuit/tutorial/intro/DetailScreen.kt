@@ -24,7 +24,9 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.tutorial.common.Email
 import com.slack.circuit.tutorial.common.EmailRepository
 import com.slack.circuit.tutorial.common.intro.EmailDetailContent
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class DetailScreen(val emailId: String) : Screen {
   data class State(val email: Email, val eventSink: (Event) -> Unit) : CircuitUiState
 

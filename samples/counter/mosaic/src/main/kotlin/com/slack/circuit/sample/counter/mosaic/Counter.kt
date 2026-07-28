@@ -25,6 +25,7 @@ import com.slack.circuit.sample.counter.CounterApp
 import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.counter.PrimeScreen
 import com.slack.circuit.sample.counter.buildCircuit
+import com.slack.circuit.sample.counter.buildCircuitSaver
 import kotlinx.coroutines.awaitCancellation
 
 class CounterUiFactory : Ui.Factory {
@@ -65,12 +66,14 @@ private fun Prime(state: PrimeScreen.State) {
 }
 
 internal suspend fun runCounterScreen() = runMosaic {
-  val circuit = remember {
-    buildCircuit(uiFactory = CounterUiFactory())
-      .newBuilder()
-      .setDefaultNavDecoration(EmptyNavDecoration)
-      .build()
-  }
+  val circuitSaver = remember { buildCircuitSaver() }
+  val circuit =
+    remember(circuitSaver) {
+      buildCircuit(uiFactory = CounterUiFactory(), circuitSaver = circuitSaver)
+        .newBuilder()
+        .setDefaultNavDecoration(EmptyNavDecoration)
+        .build()
+    }
   var exit by remember { mutableStateOf(false) }
   CounterApp(circuit = circuit) { exit = true }
   // Mosaic exits if no effects are running, so we use this to keep it alive until the app exits

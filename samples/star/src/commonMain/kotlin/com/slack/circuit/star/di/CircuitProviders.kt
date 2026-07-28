@@ -8,6 +8,7 @@ import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
+import com.slack.circuit.star.starCircuitSaver
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.MapKey
@@ -39,6 +40,7 @@ interface CircuitProviders {
       .addPresenterFactories(presenterFactories)
       .addUiFactories(uiFactories)
       .addAnimatedScreenTransforms(animatedScreenTransforms)
+      .setCircuitSaver(starCircuitSaver)
       .build()
   }
 }

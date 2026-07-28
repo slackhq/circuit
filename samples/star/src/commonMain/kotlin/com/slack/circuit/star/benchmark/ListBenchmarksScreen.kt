@@ -30,8 +30,10 @@ import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.Inject
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {
   data class State(val useNestedContent: Boolean) : CircuitUiState
 }
@@ -71,6 +73,7 @@ fun ListBenchmarks(state: State, modifier: Modifier = Modifier) {
 }
 
 @Parcelize
+@Serializable
 data class ListBenchmarksItemScreen(val index: Int) : Screen {
   data class State(val index: Int) : CircuitUiState
 }

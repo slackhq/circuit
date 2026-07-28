@@ -12,7 +12,10 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-fun buildCircuitForTabs(tabs: Collection<TabScreen>): Circuit {
+fun buildCircuitForTabs(
+  tabs: Collection<TabScreen>,
+  circuitSaver: CircuitSaver = buildCircuitSaver(),
+): Circuit {
   return Circuit.Builder()
     .apply {
       for (tab in tabs) {
@@ -21,6 +24,7 @@ fun buildCircuitForTabs(tabs: Collection<TabScreen>): Circuit {
       }
     }
     .setAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory())
+    .setCircuitSaver(circuitSaver)
     .build()
 }
 
@@ -32,6 +36,7 @@ fun buildCircuitSaver(): CircuitSaver =
   SerializableCircuitSaver(
     SavedStateConfiguration {
       serializersModule = SerializersModule {
+        // TODO: Replace these manual registrations with Circuit serialization code generation.
         polymorphic(CircuitSaveable::class) {
           subclass(TabScreen.Root::class)
           subclass(TabScreen.Screen1::class)

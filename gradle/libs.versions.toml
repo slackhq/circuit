@@ -89,7 +89,7 @@ androidx-compose-ui-testing-manifest = { module = "androidx.compose.ui:ui-test-m
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 # Force a newer version of androidx.loader because Espresso depends on an old and wrong version of it
-androidx-loader = "androidx.loader:loader:1.1.0"
+androidx-loader = "androidx.loader:loader:1.2.0"
 androidx-profileinstaller = "androidx.profileinstaller:profileinstaller:1.4.1"
 androidx-test-espresso-core = "androidx.test.espresso:espresso-core:3.7.0"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.3.0"

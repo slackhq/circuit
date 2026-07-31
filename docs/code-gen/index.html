@@ -2001,11 +2001,13 @@
 <span class="w">  </span><span class="n">ksp</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-codegen:&lt;version&gt;&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Currently supported types are:
-- <a href="https://github.com/square/anvil">Anvil</a> and <a href="https://github.com/zacsweers/anvil">Anvil KSP</a>
-- <a href="https://dagger.dev/hilt/">Dagger/Hilt</a>
-- <a href="https://github.com/evant/kotlin-inject">kotlin-inject</a> + <a href="https://github.com/amzn/kotlin-inject-anvil">kotlin-inject-anvil</a>
-- <a href="https://github.com/ZacSweers/metro">Metro</a></p>
+<p>Currently supported types are:</p>
+<ul>
+<li><a href="https://github.com/square/anvil">Anvil</a> and <a href="https://github.com/zacsweers/anvil">Anvil KSP</a></li>
+<li><a href="https://dagger.dev/hilt/">Dagger/Hilt</a></li>
+<li><a href="https://github.com/evant/kotlin-inject">kotlin-inject</a> + <a href="https://github.com/amzn/kotlin-inject-anvil">kotlin-inject-anvil</a></li>
+<li><a href="https://github.com/ZacSweers/metro">Metro</a></li>
+</ul>
 <p>Note that Dagger+Anvil is the default mode. </p>
 <p>If you are using another mode, you must specify the mode as a KSP arg.</p>
 <div class="highlight"><pre><span></span><code><span class="n">ksp</span><span class="w"> </span><span class="p">{</span>

@@ -1570,6 +1570,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecated
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1585,7 +1613,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new" class="md-nav__link">
+  <a href="#new_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         New
@@ -1624,7 +1652,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#deprecated" class="md-nav__link">
+  <a href="#deprecated_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Deprecated
@@ -1696,7 +1724,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new_1" class="md-nav__link">
+  <a href="#new_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         New
@@ -1785,7 +1813,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new_2" class="md-nav__link">
+  <a href="#new_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         New
@@ -1857,7 +1885,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#new_3" class="md-nav__link">
+  <a href="#new_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         New
@@ -3247,6 +3275,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Unreleased">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deprecated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deprecated
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3262,7 +3318,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new" class="md-nav__link">
+  <a href="#new_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         New
@@ -3301,7 +3357,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#deprecated" class="md-nav__link">
+  <a href="#deprecated_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Deprecated
@@ -3373,7 +3429,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new_1" class="md-nav__link">
+  <a href="#new_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         New
@@ -3462,7 +3518,7 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#new_2" class="md-nav__link">
+  <a href="#new_3" class="md-nav__link">
     <span class="md-ellipsis">
       
         New
@@ -3534,7 +3590,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#new_3" class="md-nav__link">
+  <a href="#new_4" class="md-nav__link">
     <span class="md-ellipsis">
       
         New
@@ -4746,9 +4802,22 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h3 id="new">New<a class="headerlink" href="#new" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>rememberAnsweringNavigator</code> and <code>answeringNavigationAvailable</code> are now part of <code>circuit-runtime</code>, so presenters can use them through <code>circuit-runtime-presenter</code>.</li>
+<li><code>NavigableCircuitContent</code> continues to provide result delivery. Without it, <code>rememberAnsweringNavigator</code> returns the supplied fallback navigator.</li>
+<li><code>AnsweringResultHandler</code> has moved to <code>circuit-runtime</code>.</li>
+<li><code>rememberAnsweringResultHandler</code> remains in <code>circuit-foundation</code> to provide saveable-state persistence without adding Compose runtime-saveable to <code>circuit-runtime</code>.</li>
+</ul>
+<h3 id="deprecated">Deprecated<a class="headerlink" href="#deprecated" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The Foundation <code>answeringNavigationAvailable</code> function and <code>rememberAnsweringNavigator</code> overloads that take a fallback <code>Navigator</code> are deprecated. Use the runtime versions.</li>
+<li>IntelliJ IDEA and Android Studio versions before the 2026.2 platform may fail to update imports for these same-named replacements or leave a literal <code>T</code> in a reified call. Update the import manually if this occurs (<a href="https://youtrack.jetbrains.com/issue/KTIJ-12093">KTIJ-12093</a>).</li>
+<li>The experimental Foundation <code>AnsweringResultHandler</code> type is deprecated in favor of its runtime replacement. Its <code>Saver</code> APIs have been removed. Use <code>rememberAnsweringResultHandler</code> for a saveable handler.</li>
+</ul>
 <h2 id="0351">0.35.1<a class="headerlink" href="#0351" title="Permanent link">&para;</a></h2>
 <p><em>2026-07-15</em></p>
-<h3 id="new">New<a class="headerlink" href="#new" title="Permanent link">&para;</a></h3>
+<h3 id="new_1">New<a class="headerlink" href="#new_1" title="Permanent link">&para;</a></h3>
 <h4 id="pluggable-screenpopresult-persistence-with-circuitsaver">Pluggable <code>Screen</code>/<code>PopResult</code> persistence with <code>CircuitSaver</code><a class="headerlink" href="#pluggable-screenpopresult-persistence-with-circuitsaver" title="Permanent link">&para;</a></h4>
 <p>Circuit&rsquo;s saveable back stacks no longer mandate how <code>Screen</code>s and <code>PopResult</code>s are persisted. A new
 <code>CircuitSaver</code> abstraction in <code>circuit-runtime-screen</code> converts them to and from saveable
@@ -4794,7 +4863,7 @@ sample demonstrates the kotlinx setup end to end.</p>
 <li>First-party <code>retain {}</code> can be used directly in presenters and UIs alongside <code>rememberRetained</code>. In navigated content, retained values follow their record&rsquo;s lifetime.</li>
 </ul>
 <p>See the <a href="https://github.com/slackhq/circuit/tree/main/circuit-retained">circuit-retained README</a> for more details.</p>
-<h3 id="deprecated">Deprecated<a class="headerlink" href="#deprecated" title="Permanent link">&para;</a></h3>
+<h3 id="deprecated_1">Deprecated<a class="headerlink" href="#deprecated_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>SaveableBackStack.Record.args</code> and <code>SaveableBackStack.push(screen, args)</code>. Pass data through the <code>Screen</code> itself instead; <code>args</code> will be removed in a future release. This matches what the new <code>SaveableNavStack</code> already does.</li>
 <li>The <code>Saver</code> vals on <code>SaveableBackStack</code>, <code>SaveableNavStack</code>, and <code>AnsweringResultHandler</code> companions. Use the <code>Saver(CircuitSaver)</code> functions instead.</li>
@@ -4833,7 +4902,7 @@ sample demonstrates the kotlinx setup end to end.</p>
 <p>Ignore this release, we goofed and it didn&rsquo;t include regenerated baseline profiles! Use 0.35.1.</p>
 <h2 id="0340">0.34.0<a class="headerlink" href="#0340" title="Permanent link">&para;</a></h2>
 <p><em>2026-05-09</em></p>
-<h3 id="new_1">New<a class="headerlink" href="#new_1" title="Permanent link">&para;</a></h3>
+<h3 id="new_2">New<a class="headerlink" href="#new_2" title="Permanent link">&para;</a></h3>
 <h4 id="subcircuit">SubCircuit<a class="headerlink" href="#subcircuit" title="Permanent link">&para;</a></h4>
 <p>SubCircuit is a lightweight version of Circuit for rendering nested presenter/UI pairs that delegate events to an outer component rather than handling navigation themselves. Use it for nested, reusable UI components that don&rsquo;t need direct navigation access, and need to delegate cross-cutting concerns (navigation, dialogs) to a parent. See the <a href="https://slackhq.github.io/circuit/circuitx/subcircuit/">SubCircuit</a> docs for more info!</p>
 <p><strong>Artifacts</strong></p>
@@ -4876,7 +4945,7 @@ sample demonstrates the kotlinx setup end to end.</p>
 </ul>
 <h2 id="0331">0.33.1<a class="headerlink" href="#0331" title="Permanent link">&para;</a></h2>
 <p><em>2026-02-19</em></p>
-<h3 id="new_2">New<a class="headerlink" href="#new_2" title="Permanent link">&para;</a></h3>
+<h3 id="new_3">New<a class="headerlink" href="#new_3" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Added <code>ProvideRecordLifecycle</code> to safely override the <code>LocalRecordLifecycle</code> behaviour of <code>NavigableCircuitContent</code> where only the currently active record in the <code>NavStack</code> is not paused.</li>
 <li>Add <code>rememberSaveableNavStack(NavStackList)</code> overload to initialize a nav stack from an existing snapshot.</li>
@@ -4929,7 +4998,7 @@ sample demonstrates the kotlinx setup end to end.</p>
 <li>Rewrite interceptors can now rewrite to any <code>NavEvent</code> (not just specific navigation types like <code>InterceptedGoToResult.Rewrite</code> or <code>InterceptedResetRootResult.Rewrite</code>)</li>
 <li><code>FailureNotifier</code> interface updated with <code>forwardFailure()</code> and <code>backwardFailure()</code> methods with default implementations</li>
 </ul>
-<h3 id="new_3">New<a class="headerlink" href="#new_3" title="Permanent link">&para;</a></h3>
+<h3 id="new_4">New<a class="headerlink" href="#new_4" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Add <code>mingwX64()</code> target to <code>circuit-codegen-annotations</code>.</li>
 </ul>

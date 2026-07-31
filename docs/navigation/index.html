@@ -1898,7 +1898,7 @@
 <p>For more details on handling deep links and manipulating the back stack, refer to the <a href="../../recipes/deep-linking-android/">deep linking guide</a> for Android.</p>
 <h2 id="results">Results<a class="headerlink" href="#results" title="Permanent link">&para;</a></h2>
 <p>In some cases, it makes sense for a screen to return a result to the previous screen. This is done by using the <em>answering Navigator</em> pattern in Circuit.</p>
-<p>The primary entry point for requesting a result is the <code>rememberAnsweringNavigator</code> API, which takes a <code>Navigator</code> or <code>BackStack</code> and <code>PopResult</code> type and returns a navigator that can go to a screen and await a result.</p>
+<p>The primary entry point for requesting a result is <code>rememberAnsweringNavigator</code>. It accepts a fallback <code>Navigator</code> and a <code>PopResult</code> type, then returns a navigator that can go to a screen and await a result. Since the API is part of <code>circuit-runtime</code>, presenters can use it through <code>circuit-runtime-presenter</code>.</p>
 <p>Result types must implement <code>PopResult</code> and are used to carry data back to the previous screen.</p>
 <p>The returned navigator should be used to navigate to the screen that will return the result. The target screen can then <code>pop</code> the result back to the previous screen and Circuit will automatically deliver this result to the previous screen&rsquo;s receiver.</p>
 <div class="highlight"><pre><span></span><code><span class="kd">var</span><span class="w"> </span><span class="nv">photoUri</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">remember</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">mutableStateOf</span><span class="o">&lt;</span><span class="kt">String?</span><span class="o">&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
@@ -1922,7 +1922,8 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Circuit automatically manages saving/restoring result states and ensuring that results are only delivered to the original receiver that requested it. If the target screen does not pop back a result, the previous screen&rsquo;s receiver will just never receive one.</p>
+<p><code>NavigableCircuitContent</code> saves and restores pending results and delivers each result only to the screen that requested it. If the target screen pops without a result, the requesting screen receives nothing.</p>
+<p>Outside <code>NavigableCircuitContent</code>, <code>rememberAnsweringNavigator</code> returns the supplied fallback navigator and cannot deliver results. Use <code>answeringNavigationAvailable()</code> to check before requesting a result.</p>
 <div class="admonition note">
 <p class="admonition-title">When to use an <code>Overlay</code> vs navigating to a <code>Screen</code> with result?</p>
 <p>See this doc in <a href="../overlays/#overlay-vs-popresult">Overlays</a>!</p>

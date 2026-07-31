@@ -1792,9 +1792,7 @@
 <h1 id="recipe-return-a-result-to-the-previous-screen"><a href="../">Recipe</a>: Return a result to the previous screen<a class="headerlink" href="#recipe-return-a-result-to-the-previous-screen" title="Permanent link">&para;</a></h1>
 <p><strong>Problem:</strong> you navigate to a screen (a picker, an editor) and need the value it produces back on
 the calling screen — surviving process death.</p>
-<p>Use the <strong>answering navigator</strong>. The caller wraps its <code>Navigator</code> with <code>rememberAnsweringNavigator&lt;R&gt;</code>
-and a callback. The target screen pops a <code>PopResult</code>, and Circuit delivers it only to the caller that
-asked.</p>
+<p>Call <code>rememberAnsweringNavigator&lt;R&gt;</code> with the caller&rsquo;s <code>Navigator</code> and handle the result in its callback. The target screen pops a <code>PopResult</code>, which Circuit delivers only to the caller that requested it. <code>NavigableCircuitContent</code> provides result delivery, and presenters can call the API through <code>circuit-runtime-presenter</code>.</p>
 <h2 id="1-define-the-result">1. Define the result<a class="headerlink" href="#1-define-the-result" title="Permanent link">&para;</a></h2>
 <p><code>PopResult</code> extends <code>Parcelable</code>, so results survive process death. <code>@Parcelize</code> is the easy way to
 satisfy that.</p>
@@ -1836,6 +1834,7 @@ satisfy that.</p>
 </code></pre></div>
 <p>If the target pops without a result (e.g. the user backs out), the callback simply never fires —
 treat that as &ldquo;cancelled&rdquo;.</p>
+<p>Outside <code>NavigableCircuitContent</code>, <code>rememberAnsweringNavigator</code> returns the supplied fallback navigator and cannot deliver results. Check <code>answeringNavigationAvailable()</code> when a presenter needs different behavior in that case.</p>
 <h2 id="screen-result-vs-overlay">Screen result vs. overlay<a class="headerlink" href="#screen-result-vs-overlay" title="Permanent link">&para;</a></h2>
 <p>If the thing you&rsquo;re asking for is a prompt, such as confirm or pick from a sheet, an
 <a href="../confirmation-dialog/">overlay</a> is usually a better fit. It&rsquo;s type-safe and suspends on the

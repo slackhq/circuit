@@ -10,6 +10,14 @@ There are few core APIs for setting up and providing the required `SharedTransit
 
 You can follow along with the [tutorial](shared-elements-tutorial.md) to see how to use these APIs. 
 
+## Installation
+
+Add the dependency.
+
+```kotlin
+implementation("com.slack.circuit:circuit-sharedelements:$circuit_version")
+```
+
 ## Usage
 
 ### SharedElementTransitionLayout

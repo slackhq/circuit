@@ -4,6 +4,10 @@ Changelog
 Unreleased
 ----------
 
+### Changed
+
+- **circuit-retained:** Added the key-based `retain(key = ...)` and `retainSaveable(...)` APIs. Non-saveable `rememberRetained(key = ...)` calls are now deprecated in favor of `retain(key = ...)`. Unkeyed and saveable `rememberRetained` variants and `rememberRetainedSaveable` remain supported but will eventually be deprecated.
+
 0.35.1
 ------
 

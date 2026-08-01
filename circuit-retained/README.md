@@ -28,7 +28,7 @@ CompositionLocalProvider(
 
 Compose now ships a first-party retain API (`androidx.compose.runtime:runtime-retain`, stable since Compose 1.10) that covers the same core problem as `rememberRetained`. Circuit is migrating toward it in phases.
 
-The current, opt-in phase runs Circuit's retention on top of the first-party store with no API or behavior changes:
+The initial opt-in phase runs Circuit's retention on top of the first-party store with no behavior changes:
 
 ```kotlin
 // Set before the first composition, such as in Application.onCreate() or main().
@@ -45,19 +45,17 @@ With the flag enabled, `NavigableCircuitContent` also scopes a `RetainedValuesSt
 
 The opt-in flag above swaps the retention transport and scopes `retain {}` per record, with no API changes. From here, new unkeyed, non-saveable usages can prefer `retain {}` directly.
 
-Once the backing has soaked, we can reassess which Circuit APIs have practical first-party migration paths. Some are conceptually similar to first-party APIs, but the existing Circuit API shapes do not all have source-compatible replacements.
-
-APIs with no upstream equivalent will likely stay or have recipes: (`rememberRetainedSaveable`, `rememberRetained(key = ...)`, the `produceRetainedState`/`collectAsRetainedState` conveniences).
+Circuit APIs without upstream equivalents remain supported. `retain(key = ...)` preserves explicit-key retention, while `retainSaveable` provides the retained-and-saveable hybrid. The unkeyed `rememberRetained`, saveable `rememberRetained` variants, `rememberRetainedSaveable`, and the `produceRetainedState`/`collectAsRetainedState` conveniences remain supported.
 
 ### Retained + saveable
 
-The first-party API has no equivalent to `rememberRetainedSaveable`, where a value is retained across configuration changes and opportunistically saved
-for process death. Circuit's two-layer mechanism is unaffected by the backing swap and keeps working under the flag, so `rememberRetainedSaveable`
-remains the supported answer for hybrid lifetimes until an upstream equivalent exists (if ever).
+The first-party API has no equivalent to Circuit's retained-and-saveable APIs, where a value is retained across configuration changes and opportunistically saved for process death. Circuit's two-layer mechanism is unaffected by the backing swap and remains available through `retainSaveable`, the saveable `rememberRetained` variants, and `rememberRetainedSaveable`.
 
-### Keyed retention with first-party `retain`
+### Keyed retention
 
-First-party `retain` is positional-only and does not support explicit keys. For dynamic key spaces (for example — a controller per chat ID at a single call site), the pattern is a keyed container retained as a single value.
+First-party `retain` is positional-only and does not support explicit keys. Circuit's `retain(key = ...)` preserves explicit-key retention and replaces non-saveable `rememberRetained(key = ...)` calls.
+
+For code moving entirely to first-party APIs with dynamic key spaces, such as a controller per chat ID at one call site, the pattern is a keyed container retained as a single value.
 
 A reference implementation with retention-lifecycle forwarding and composition-refcounted eviction lives in this module's tests as a recipe: [RetainedStoreRecipe.kt](src/jvmTest/kotlin/com/slack/circuit/retained/RetainedStoreRecipe.kt).
 

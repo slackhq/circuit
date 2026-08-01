@@ -11,6 +11,10 @@ Unreleased
 - `AnsweringResultHandler` has moved to `circuit-runtime`.
   - `rememberAnsweringResultHandler` remains in `circuit-foundation` to provide saveable-state persistence without adding Compose runtime-saveable to `circuit-runtime`.
 
+### Fixed
+
+- When `CircuitRetainedSettings.useFirstParty` is enabled, `retain {}` values removed from conditional UI now retire normally instead of surviving for the navigation record's entire lifetime.
+
 ### Deprecated
 
 - The Foundation `answeringNavigationAvailable` function and `rememberAnsweringNavigator` overloads that take a fallback `Navigator` are deprecated. Use the runtime versions.

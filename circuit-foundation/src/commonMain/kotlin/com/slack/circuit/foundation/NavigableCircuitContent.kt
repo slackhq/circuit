@@ -34,8 +34,8 @@ import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.retain.LocalRetainedValuesStoreProvider
-import androidx.compose.runtime.retain.retain
+import androidx.compose.runtime.retain.RetainedValuesStoreRegistry
+import androidx.compose.runtime.retain.retainRetainedValuesStoreRegistry
 import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
@@ -49,8 +49,6 @@ import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavDecorator
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.AnimatedNavState
-import com.slack.circuit.foundation.internal.RecordRetainedValuesStores
-import com.slack.circuit.foundation.internal.RecordRetainedValuesStoresHolder
 import com.slack.circuit.foundation.navstack.ProvidedValues
 import com.slack.circuit.foundation.navstack.providedValuesForNavStack
 import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
@@ -271,9 +269,9 @@ public fun <R : Record> NavigableCircuitContent(
   // retain {} calls inside record content get per-record lifetimes. Hosted here, outside any
   // movableContentOf, so the registry's own retain slot has a stable position.
   @OptIn(ExperimentalCircuitRetainedApi::class)
-  val recordRetainedValuesStores =
+  val recordRetainedValuesStoreRegistry =
     if (CircuitRetainedSettings.useFirstParty) {
-      retain { RecordRetainedValuesStoresHolder() }.stores
+      retainRetainedValuesStoreRegistry()
     } else {
       null
     }
@@ -295,7 +293,7 @@ public fun <R : Record> NavigableCircuitContent(
     val saveableStateHolder = rememberSaveableStateHolder()
     val retainedStateHolder = rememberRetainedStateHolder()
     val contentProviderState =
-      remember(saveableStateHolder, retainedStateHolder, recordRetainedValuesStores) {
+      remember(saveableStateHolder, retainedStateHolder, recordRetainedValuesStoreRegistry) {
           ContentProviderState(
             saveableStateHolder = saveableStateHolder,
             retainedStateHolder = retainedStateHolder,
@@ -308,7 +306,7 @@ public fun <R : Record> NavigableCircuitContent(
           lastNavigator = navigator
           lastCircuit = circuit
           lastUnavailableRoute = unavailableRoute
-          recordRetainedStores = recordRetainedValuesStores
+          this.recordRetainedValuesStoreRegistry = recordRetainedValuesStoreRegistry
         }
     val activeContentProviders =
       buildCircuitContentProviders(navStack = navigator.navStack) ?: return@CompositionLocalProvider
@@ -487,7 +485,7 @@ public class ContentProviderState<R : Record>(
   internal var lastNavigator by mutableStateOf(navigator)
   internal var lastCircuit by mutableStateOf(circuit)
   internal var lastUnavailableRoute by mutableStateOf(unavailableRoute)
-  internal var recordRetainedStores: RecordRetainedValuesStores? = null
+  internal var recordRetainedValuesStoreRegistry: RetainedValuesStoreRegistry? = null
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -510,23 +508,23 @@ public class ContentProviderState<R : Record>(
 private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: () -> Unit) =
   movableContentOf<R, ContentProviderState<R>> { record, contentProviderState ->
     with(contentProviderState) {
-      val stores = recordRetainedStores
-      if (stores != null) {
+      val registry = recordRetainedValuesStoreRegistry
+      if (registry != null) {
         // Clear the record's first-party store once the record permanently leaves the nav stack.
         // Registered before the store provider below so its onDispose runs after the record
         // content has torn down.
         DisposableEffect(record.registryKey) {
           onDispose {
             if (!lastNavigator.navStack.containsRecord(record, includeSaved = true)) {
-              stores.clear(record.registryKey)
+              registry.clearChild(record.registryKey)
             }
           }
         }
       }
       val body: @Composable () -> Unit = { RecordContent(record, contentProviderState) }
-      if (stores != null) {
+      if (registry != null) {
         // Scope retain {} calls within the record's content to the record itself.
-        LocalRetainedValuesStoreProvider(stores.storeFor(record.registryKey), body)
+        registry.LocalRetainedValuesStoreProvider(record.registryKey, body)
       } else {
         body()
       }

@@ -24,8 +24,10 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data class FiltersScreen(val initialFilters: Filters) : Screen {
   data class State(val initialFilters: Filters, val eventSink: (Event) -> Unit) : CircuitUiState
 
@@ -33,7 +35,7 @@ data class FiltersScreen(val initialFilters: Filters) : Screen {
     data class Save(val filters: Filters) : Event
   }
 
-  @Parcelize data class Result(val filters: Filters) : PopResult
+  @Parcelize @Serializable data class Result(val filters: Filters) : PopResult
 }
 
 @AssistedInject

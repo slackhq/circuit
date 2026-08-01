@@ -17,12 +17,13 @@ dependencies {
 ```
 
 Currently supported types are:
+
 - [Anvil](https://github.com/square/anvil) and [Anvil KSP](https://github.com/zacsweers/anvil)
 - [Dagger/Hilt](https://dagger.dev/hilt/)
 - [kotlin-inject](https://github.com/evant/kotlin-inject) + [kotlin-inject-anvil](https://github.com/amzn/kotlin-inject-anvil)
 - [Metro](https://github.com/ZacSweers/metro)
 
-Note that Dagger+Anvil is the default mode. 
+Note that Dagger+Anvil is the default mode.
 
 If you are using another mode, you must specify the mode as a KSP arg.
 
@@ -32,8 +33,8 @@ ksp {
 }
 ```
 
-If using Kotlin multiplatform with typealias annotations for Dagger annotations (i.e. expect 
-annotations in common with actual typealias declarations in JVM source sets), you can match on just 
+If using Kotlin multiplatform with typealias annotations for Dagger annotations (i.e. expect
+annotations in common with actual typealias declarations in JVM source sets), you can match on just
 annotation short names alone to support this case via `circuit.codegen.lenient` mode.
 
 ```kotlin
@@ -42,7 +43,7 @@ ksp {
 }
 ```
 
-If using anvil-ksp or kotlin-inject-anvil, you also need to indicate `@CircuitInject` as a 
+If using anvil-ksp or kotlin-inject-anvil, you also need to indicate `@CircuitInject` as a
 contributing annotation.
 
 ```kotlin
@@ -165,7 +166,7 @@ class HomePresenter @AssistedInject constructor(
 
 ### kotlin-inject
 
-Assisted injection in kotlin-inject works slightly differently for classes. Since there is no 
+Assisted injection in kotlin-inject works slightly differently for classes. Since there is no
 `@AssistedFactory`, you can continue to just annotate the injected class directly.
 
 ```kotlin
@@ -181,7 +182,7 @@ class HomePresenter(
 ## Qualifier propagation
 
 Qualifier annotations (any annotation meta-annotated with `@Qualifier` like `javax.inject.Qualifier`,
-`dev.zacsweers.metro.Qualifier`, etc.) are propagated from the `@CircuitInject`-annotated 
+`dev.zacsweers.metro.Qualifier`, etc.) are propagated from the `@CircuitInject`-annotated
 declaration to the generated factory class.
 
 ```kotlin

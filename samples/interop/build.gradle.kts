@@ -4,6 +4,7 @@ plugins {
   alias(libs.plugins.agp.application)
   alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.kotlin.plugin.compose)
+  alias(libs.plugins.kotlin.plugin.serialization)
   id("circuit.base")
 }
 
@@ -33,6 +34,7 @@ dependencies {
   implementation(libs.compose.material.material3)
   implementation(libs.compose.ui)
   implementation(libs.coroutines.rxjava)
+  implementation(libs.kotlinx.serialization.core)
   implementation(libs.molecule.runtime)
   implementation(libs.rxjava)
   implementation(libs.windowSizeClass)

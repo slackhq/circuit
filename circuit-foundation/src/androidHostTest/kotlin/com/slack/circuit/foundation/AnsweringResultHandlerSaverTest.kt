@@ -5,6 +5,7 @@ package com.slack.circuit.foundation
 import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import com.slack.circuit.runtime.AnsweringResultHandler as RuntimeAnsweringResultHandler
 import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.DefaultCircuitSaver
@@ -25,7 +26,7 @@ class AnsweringResultHandlerSaverTest {
   @get:Rule val composeTestRule = createComposeRule()
   val stateRestorationTester = StateRestorationTester(composeTestRule)
 
-  lateinit var handler: AnsweringResultHandler
+  lateinit var handler: RuntimeAnsweringResultHandler
 
   @Test
   fun saverRestoresEmptyHandler() {
@@ -59,7 +60,7 @@ class AnsweringResultHandlerSaverTest {
 
   @Test
   fun saverRecordsPendingResultPresenceAndPeeksNonDestructively() = runTest {
-    val handler = AnsweringResultHandler()
+    val handler = RuntimeAnsweringResultHandler()
     handler.prepareForResult("record1", "resultKey1")
 
     val savedWithoutPendingResult = save(handler)
@@ -122,7 +123,7 @@ class AnsweringResultHandlerSaverTest {
   @Test
   fun saverRestoresLegacyExpectationWithoutPendingResult() {
     val restored =
-      AnsweringResultHandler.Saver(DefaultCircuitSaver)
+      answeringResultHandlerSaver(DefaultCircuitSaver)
         .restore(listOf("record1", listOf("resultKey1", null)))
 
     assertTrue(restored!!.expectingResult("record1"))
@@ -131,7 +132,7 @@ class AnsweringResultHandlerSaverTest {
   @Test
   fun saverRestoresLegacyPendingResult() = runTest {
     val restored =
-      AnsweringResultHandler.Saver(DefaultCircuitSaver)
+      answeringResultHandlerSaver(DefaultCircuitSaver)
         .restore(listOf("record1", listOf("resultKey1", TestPopResult)))
 
     assertEquals(TestPopResult, restored!!.awaitResult("record1", "resultKey1"))
@@ -140,7 +141,7 @@ class AnsweringResultHandlerSaverTest {
   @Test
   fun saverIgnoresEntryWithoutResultKey() {
     val restored =
-      AnsweringResultHandler.Saver(DefaultCircuitSaver)
+      answeringResultHandlerSaver(DefaultCircuitSaver)
         .restore(listOf("record1", listOf(null, TestPopResult, true)))
 
     assertFalse(restored!!.expectingResult("record1"))
@@ -156,7 +157,7 @@ class AnsweringResultHandlerSaverTest {
       }
 
     assertFailsWith<IllegalStateException> {
-      AnsweringResultHandler.Saver(mismatchingSaver)
+      answeringResultHandlerSaver(mismatchingSaver)
         .restore(listOf("record1", listOf("resultKey1", TestPopResult, true)))
     }
   }
@@ -170,9 +171,9 @@ class AnsweringResultHandlerSaverTest {
 
 @Suppress("UNCHECKED_CAST")
 private fun save(
-  handler: AnsweringResultHandler,
+  handler: RuntimeAnsweringResultHandler,
   circuitSaver: CircuitSaver = DefaultCircuitSaver,
 ): List<Any?> =
-  with(AnsweringResultHandler.Saver(circuitSaver)) {
+  with(answeringResultHandlerSaver(circuitSaver)) {
     SaverScope { true }.save(handler) as List<Any?>
   }

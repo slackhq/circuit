@@ -8,9 +8,11 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sample.inbox.detail.EmailDetailScreen
 import com.slack.circuit.sample.inbox.list.InboxListScreen
+import kotlinx.serialization.Serializable
 
 /** Root screen for the adaptive inbox surface. */
 @Parcelize
+@Serializable
 data object InboxScreen : Screen {
   data class State(
     val listState: InboxListScreen.State,

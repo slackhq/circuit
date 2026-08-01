@@ -16,6 +16,7 @@ import com.slack.circuit.runtime.popRoot
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.presenter.presenterOf
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.serialization.Serializable
 
 @Composable
 fun CounterPresenter(navigator: Navigator): CounterScreen.State {
@@ -43,6 +44,7 @@ private fun isPrime(value: Int): Boolean {
 }
 
 @Parcelize
+@Serializable
 data object CounterScreen : Screen {
   data class State(val count: Int, val eventSink: (Event) -> Unit = {}) : CircuitUiState
 
@@ -58,6 +60,7 @@ data object CounterScreen : Screen {
 }
 
 @Parcelize
+@Serializable
 data class PrimeScreen(val number: Int) : Screen {
   data class State(val number: Int, val isPrime: Boolean, val eventSink: (Event) -> Unit = {}) :
     CircuitUiState

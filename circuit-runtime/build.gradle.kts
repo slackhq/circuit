@@ -50,6 +50,13 @@ kotlin {
         api(projects.circuitRuntimeNavigation)
       }
     }
+    jvmTest {
+      dependencies {
+        implementation(libs.coroutines.test)
+        implementation(libs.kotlin.test)
+        implementation(libs.molecule.runtime)
+      }
+    }
   }
 }
 

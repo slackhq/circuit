@@ -7,6 +7,7 @@ plugins {
   alias(libs.plugins.agp.application)
   alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.kotlin.plugin.compose)
+  alias(libs.plugins.kotlin.plugin.serialization)
   alias(libs.plugins.ksp)
   alias(libs.plugins.metro)
   id("circuit.base")
@@ -38,6 +39,7 @@ dependencies {
   implementation(libs.androidx.appCompat)
   implementation(libs.compose.material.icons)
   implementation(libs.compose.material.material3)
+  implementation(libs.kotlinx.serialization.core)
   implementation(projects.circuitCodegenAnnotations)
   implementation(projects.circuitFoundation)
 

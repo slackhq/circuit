@@ -13,13 +13,17 @@ import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.answeringNavigationAvailable as runtimeAnsweringNavigationAvailable
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.rememberAnsweringNavigator as rememberRuntimeAnsweringNavigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertSame
 import kotlinx.coroutines.test.runTest
 
 /**
@@ -66,12 +70,15 @@ class AnsweringNavigatorTest {
   }
 
   @Test
+  @Suppress("DEPRECATION")
   fun `answeringNavigationAvailable is true in NavigableCircuitContent`() = runComposeUiTest {
-    var navigationAvailable = true
+    var runtimeNavigationAvailable = false
+    var foundationNavigationAvailable = false
     val testCircuit =
       Circuit.Builder()
         .addStaticUi<TestStaticScreen, CircuitUiState> { _, _ ->
-          navigationAvailable = answeringNavigationAvailable()
+          runtimeNavigationAvailable = runtimeAnsweringNavigationAvailable()
+          foundationNavigationAvailable = answeringNavigationAvailable()
         }
         .build()
     setContent {
@@ -82,14 +89,15 @@ class AnsweringNavigatorTest {
       }
     }
     waitForIdle()
-    assertEquals(true, navigationAvailable)
+    assertEquals(true, runtimeNavigationAvailable)
+    assertEquals(runtimeNavigationAvailable, foundationNavigationAvailable)
   }
 
   @Test
   fun `answeringNavigationAvailable returns false when locals are not available`() =
     runComposeUiTest {
       var navigationAvailable = true
-      setContent { navigationAvailable = answeringNavigationAvailable() }
+      setContent { navigationAvailable = runtimeAnsweringNavigationAvailable() }
       waitForIdle()
       assertEquals(false, navigationAvailable)
     }
@@ -107,13 +115,39 @@ class AnsweringNavigatorTest {
 
     setContent {
       val answeringNavigator =
-        rememberAnsweringNavigator<TestPopResult>(fallbackNavigator) {
+        rememberRuntimeAnsweringNavigator<TestPopResult>(fallbackNavigator) {
           error("Result handler should not be called")
         }
       SideEffect { answeringNavigator.goTo(TestScreen2) }
     }
     waitForIdle()
     assertEquals(TestScreen2, fallbackCalled)
+  }
+
+  @Suppress("DEPRECATION")
+  @Test
+  fun `deprecated Foundation APIs remain callable`() = runComposeUiTest {
+    var navigationAvailable = true
+    lateinit var reifiedNavigator: GoToNavigator
+    lateinit var classNavigator: GoToNavigator
+    val fallbackNavigator = Navigator.NoOp
+
+    setContent {
+      navigationAvailable = answeringNavigationAvailable()
+      reifiedNavigator =
+        rememberAnsweringNavigator<TestPopResult>(fallbackNavigator) {
+          error("Result handler should not be called")
+        }
+      classNavigator =
+        rememberAnsweringNavigator(fallbackNavigator, TestPopResult::class) {
+          error("Result handler should not be called")
+        }
+    }
+    waitForIdle()
+
+    assertEquals(false, navigationAvailable)
+    assertSame(fallbackNavigator, reifiedNavigator)
+    assertSame(fallbackNavigator, classNavigator)
   }
 
   @Test
@@ -242,7 +276,7 @@ private class AnsweringPresenter(
   @Composable
   override fun present(): State {
     val answeringNavigator =
-      rememberAnsweringNavigator<TestValuePopResult>(navigator) { resultTracker.add(it) }
+      rememberRuntimeAnsweringNavigator<TestValuePopResult>(navigator) { resultTracker.add(it) }
     return State {
       when (it) {
         is NavEvent.GoTo -> answeringNavigator.goTo(it.screen)
@@ -260,7 +294,7 @@ private class TypePresenter(
   @Composable
   override fun present(): State {
     val answeringNavigator =
-      rememberAnsweringNavigator<SuperPopResult>(navigator) { resultTracker.add(it) }
+      rememberRuntimeAnsweringNavigator<SuperPopResult>(navigator) { resultTracker.add(it) }
     return State {
       when (it) {
         is NavEvent.GoTo -> answeringNavigator.goTo(it.screen)

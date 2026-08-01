@@ -61,9 +61,11 @@ import com.slack.circuit.retained.RetainedStateHolder
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
 import com.slack.circuit.retained.rememberRetainedStateRegistry
+import com.slack.circuit.runtime.AnsweringResultHandler as RuntimeAnsweringResultHandler
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.internal.LocalAnsweringNavigatorProvider
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.navigation.NavStack.Record
@@ -82,7 +84,7 @@ import kotlin.collections.mutableSetOf
  *
  * This function automatically wraps your navigator with result handling capabilities via
  * [rememberAnsweringResultNavigator], enabling screens to pass results back when using
- * [rememberAnsweringNavigator].
+ * `rememberAnsweringNavigator`.
  *
  * ## Features
  * - **State Management**: Manages saveable and retained state for each screen in the navstack with
@@ -90,7 +92,7 @@ import kotlin.collections.mutableSetOf
  * - **Navigation Transitions**: Handles animated transitions between screens using [NavDecoration]
  *   or custom [AnimatedNavDecorator]
  * - **Result Handling**: Automatically manages screen results when using
- *   [rememberAnsweringNavigator] to pass data back from child screens
+ *   `rememberAnsweringNavigator` to pass data back from child screens
  *
  * ## Usage
  *
@@ -217,6 +219,7 @@ public fun <R : BackStack.Record> NavigableCircuitContent(
  * @see rememberAnsweringResultNavigator for creating an answering result navigator
  */
 @ExperimentalCircuitApi // For AnsweringResultNavigator
+@OptIn(InternalCircuitApi::class)
 @Composable
 public fun <R : Record> NavigableCircuitContent(
   navigator: AnsweringResultNavigator<R>,
@@ -329,7 +332,12 @@ public fun <R : Record> NavigableCircuitContent(
         }
       val localNavStack = contentProviderState.lastNavigator.navStack
       val localResultHandler = contentProviderState.lastNavigator.answeringResultHandler
+      val localAnsweringNavigatorProvider =
+        remember(localNavStack, localResultHandler) {
+          FoundationAnsweringNavigatorProvider(localNavStack, localResultHandler)
+        }
       CompositionLocalProvider(
+        LocalAnsweringNavigatorProvider provides localAnsweringNavigatorProvider,
         LocalNavStack provides localNavStack,
         LocalAnsweringResultHandler provides localResultHandler,
         *providedLocals,
@@ -363,7 +371,7 @@ public fun <R : Record> NavigableCircuitContent(
 public fun <R : Record> rememberAnsweringResultNavigator(
   navigator: Navigator,
   navStack: NavStack<R>,
-  answeringResultHandler: AnsweringResultHandler = rememberAnsweringResultHandler(),
+  answeringResultHandler: RuntimeAnsweringResultHandler = rememberAnsweringResultHandler(),
 ): AnsweringResultNavigator<R> {
   return remember(navigator, navStack, answeringResultHandler) {
     AnsweringResultNavigator(navigator, navStack, answeringResultHandler)
@@ -375,7 +383,7 @@ public fun <R : Record> rememberAnsweringResultNavigator(
 public class AnsweringResultNavigator<R : Record>(
   internal val originalNavigator: Navigator,
   internal val navStack: NavStack<R>,
-  internal val answeringResultHandler: AnsweringResultHandler,
+  internal val answeringResultHandler: RuntimeAnsweringResultHandler,
 ) : Navigator by originalNavigator {
   override fun pop(result: PopResult?): Screen? {
     // Run in a snapshot to ensure the sendResult doesn't get missed.
@@ -727,12 +735,11 @@ public object NavigatorDefaults {
 }
 
 /**
- * Delicate API to access the [NavStack] from within a [CircuitContent] or
- * [rememberAnsweringNavigator] composable, useful for cases where we create nested nav handling.
+ * Provides access to the [NavStack] within [NavigableCircuitContent] for nested navigation
+ * handling.
  *
- * This is generally considered an internal API to Circuit, but can be useful for interop cases and
- * testing of [rememberAnsweringNavigator] APIs. As such, it's public but annotated as
- * [DelicateCircuitFoundationApi].
+ * This API is intended for Circuit internals. It is public for interop and tests of the explicit
+ * Foundation answering navigator overloads and marked as [DelicateCircuitFoundationApi].
  */
 @DelicateCircuitFoundationApi
 public val LocalNavStack: ProvidableCompositionLocal<NavStack<out Record>?> = compositionLocalOf {
@@ -740,16 +747,15 @@ public val LocalNavStack: ProvidableCompositionLocal<NavStack<out Record>?> = co
 }
 
 /**
- * Delicate API to access the [AnsweringResultHandler] from within a [NavigableCircuitContent] or
- * [rememberAnsweringNavigator] composable, useful for cases where we create nested nav handling.
+ * Provides access to the [AnsweringResultHandler] within [NavigableCircuitContent] for nested
+ * navigation handling.
  *
- * This is generally considered an internal API to Circuit, but can be useful for interop cases and
- * testing of [rememberAnsweringNavigator] APIs. As such, it's public but annotated as
- * [DelicateCircuitFoundationApi].
+ * This API is intended for Circuit internals. It is public for interop and tests of the explicit
+ * Foundation answering navigator overloads and marked as [DelicateCircuitFoundationApi].
  */
 @OptIn(ExperimentalCircuitApi::class)
 @DelicateCircuitFoundationApi
-public val LocalAnsweringResultHandler: ProvidableCompositionLocal<AnsweringResultHandler?> =
+public val LocalAnsweringResultHandler: ProvidableCompositionLocal<RuntimeAnsweringResultHandler?> =
   compositionLocalOf {
     null
   }

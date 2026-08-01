@@ -47,6 +47,7 @@ import com.slack.circuit.sample.counter.CounterScreen
 import com.slack.circuit.sample.counter.PrimeScreen
 import com.slack.circuit.sample.counter.Remove
 import com.slack.circuit.sample.counter.buildCircuit
+import com.slack.circuit.sample.counter.buildCircuitSaver
 
 @Composable
 fun DesktopCounter(state: CounterScreen.State, modifier: Modifier = Modifier) {
@@ -147,9 +148,13 @@ fun main() = application {
     onCloseRequest = ::exitApplication,
   ) {
     val initialBackStack = listOf<Screen>(CounterScreen)
-    val backStack = rememberSaveableBackStack(initialBackStack)
+    val circuitSaver = remember { buildCircuitSaver() }
+    val backStack = rememberSaveableBackStack(initialBackStack, circuitSaver)
     val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
-    val circuit = remember { buildCircuit(uiFactory = CounterUiFactory()) }
+    val circuit =
+      remember(circuitSaver) {
+        buildCircuit(uiFactory = CounterUiFactory(), circuitSaver = circuitSaver)
+      }
 
     MaterialTheme {
       CircuitCompositionLocals(circuit) {

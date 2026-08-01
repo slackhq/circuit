@@ -57,8 +57,10 @@ import com.slack.circuit.tacos.step.ToppingsOrderStep
 import com.slack.circuit.tacos.step.ToppingsUi
 import com.slack.circuit.tacos.ui.theme.TacoTheme
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data object OrderTacosScreen : Screen {
   data class State(
     @StringRes val headerResId: Int,

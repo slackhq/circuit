@@ -42,8 +42,8 @@ class MainActivity : AppCompatActivity() {
     val notifier = LoggingNavigatorFailureNotifier(LogcatLogger)
 
     val tabs = TabScreen.all
-    val circuit = buildCircuitForTabs(tabs)
     val circuitSaver = buildCircuitSaver()
+    val circuit = buildCircuitForTabs(tabs, circuitSaver)
     setContent {
       MaterialTheme {
         val navStack = rememberSaveableNavStack(tabs.first(), circuitSaver)

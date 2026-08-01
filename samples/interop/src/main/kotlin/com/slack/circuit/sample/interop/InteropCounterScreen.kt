@@ -5,8 +5,10 @@ package com.slack.circuit.sample.interop
 import android.os.Parcelable
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data class InteropCounterScreen(
   val presenterSource: PresenterSource,
   val uiSource: UiSource,

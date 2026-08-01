@@ -81,8 +81,10 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data class PetDetailScreen(
   val petId: Long,
   val photoUrlMemoryCacheKey: String? = null,
@@ -90,6 +92,7 @@ data class PetDetailScreen(
 ) : Screen {
 
   @Parcelize
+  @Serializable
   data class PartialAnimal(
     val id: Long,
     val name: String,

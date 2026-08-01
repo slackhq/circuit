@@ -86,7 +86,7 @@ public fun rememberRetainedStateRegistry(
   key: String? = null,
   canRetainChecker: CanRetainChecker = CanRetainChecker.Always,
 ): RetainedStateRegistry {
-  return rememberRetained(inputs = inputs, key = key) {
+  return rememberRetainedInternal(inputs = inputs, key = key) {
       RetainedStateRegistryImpl(canRetainChecker, null)
     }
     .apply { update(canRetainChecker) }

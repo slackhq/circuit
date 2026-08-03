@@ -64,4 +64,4 @@ val store = retain { RetainedStore<ChatId, ChatController>() }
 val controller = store.rememberRetainedEntry(chatId) { ChatController(it) }
 ```
 
-Despite the similar name, this is unrelated to the per-record `RetainedValuesStore` scoping in `NavigableCircuitContent`. That is an internal implementation of the retain runtime's store interface for scoping, while `RetainedStore` is a user-facing container for keying your own values within whatever scope you retain it in.
+Despite the similar name, this is unrelated to the per-record `RetainedValuesStore` scoping in `NavigableCircuitContent`. That scoping uses the retain runtime's store registry internally, while `RetainedStore` is a user-facing container for keying your own values within whatever scope you retain it in.

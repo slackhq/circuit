@@ -1,14 +1,14 @@
 Shared Elements
 ===============
 
-Circuit has an additional artifact for integrating [Compose Shared Elements Transitions](https://developer.android.com/develop/ui/compose/animation/shared-elements) with [Navigation](navigation.md) and [Overlays](overlays.md). Circuit Shared Elements are designed as a lightweight API to easily access the required `SharedTransitionScope` and `AnimatedVisibilityScope` directly in a Composable nested within a `Screen`. 
+Circuit has an additional artifact for integrating [Compose Shared Elements Transitions](https://developer.android.com/develop/ui/compose/animation/shared-elements) with [Navigation](navigation.md) and [Overlays](overlays.md). Circuit Shared Elements are designed as a lightweight API to easily access the required `SharedTransitionScope` and `AnimatedVisibilityScope` directly in a Composable nested within a `Screen`.
 
 There are few core APIs for setting up and providing the required `SharedTransitionScope` in order use shared elements.
 
 - [SharedElementTransitionLayout](#sharedelementtransitionlayout) is the layout that creates and provides a `SharedElementTransitionScope`
 - [SharedElementTransitionScope](#sharedelementtransitionscope) is a `SharedTransitionScope` which is required to use the shared element modifiers. The `SharedElementTransitionScope` also provides access to a `AnimatedVisibilityScope`.
 
-You can follow along with the [tutorial](shared-elements-tutorial.md) to see how to use these APIs. 
+You can follow along with the [tutorial](shared-elements-tutorial.md) to see how to use these APIs.
 
 ## Installation
 
@@ -22,7 +22,7 @@ implementation("com.slack.circuit:circuit-sharedelements:$circuit_version")
 
 ### SharedElementTransitionLayout
 
-Normally `SharedElementTransitionLayout` should be setup around the root Circuit. It needs to be outside of a `ContentWithOverlays` or `NavigableCircuitContent` in order for the _Overlay_ and _Navigation_ `AnimatedVisibilityScope` to be available. 
+Normally `SharedElementTransitionLayout` should be setup around the root Circuit. It needs to be outside of a `ContentWithOverlays` or `NavigableCircuitContent` in order for the _Overlay_ and _Navigation_ `AnimatedVisibilityScope` to be available.
 
 ```kotlin
 setContent {
@@ -49,7 +49,7 @@ private fun PreviewShowAnimalPortrait() {
 
 ### SharedElementTransitionScope
 
-`SharedElementTransitionScope` extends `SharedTransitionScope` which is required to use the core shared elements API. The scope can be accessed using the `SharedElementTransitionScope` Composable wherever the `SharedTransitionScope` is needed, without having to explicitly pass it to a calling Composable. 
+`SharedElementTransitionScope` extends `SharedTransitionScope` which is required to use the core shared elements API. The scope can be accessed using the `SharedElementTransitionScope` Composable wherever the `SharedTransitionScope` is needed, without having to explicitly pass it to a calling Composable.
 
 
 _Screen UI_
@@ -57,7 +57,7 @@ _Screen UI_
 @OptIn(ExperimentalSharedTransitionApi::class)
 @CircuitInject(screen = HomeScreen::class)
 @Composable
-fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) = 
+fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
   SharedElementTransitionScope {
     // Content here
   }
@@ -68,7 +68,7 @@ _Normal UI_
 ```kotlin
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun GridItem(animal: PetListAnimal, modifier: Modifier = Modifier) = 
+private fun GridItem(animal: PetListAnimal, modifier: Modifier = Modifier) =
   SharedElementTransitionScope {
     // Content here
   }
@@ -101,9 +101,9 @@ Box(
 
 ### AnimatedScope
 
-By default Circuit provides a `Navigation` and `Overlay` `AnimatedVisibilityScope` when a `SharedElementTransitionScope` is available and either `NavigableCircuitContent` or `ContentWithOverlays` has been used. 
+By default Circuit provides a `Navigation` and `Overlay` `AnimatedVisibilityScope` when a `SharedElementTransitionScope` is available and either `NavigableCircuitContent` or `ContentWithOverlays` has been used.
 
-An `AnimatedScope` can be provided using `ProvideAnimatedTransitionScope`, including custom scopes. Doing so will make the `AnimatedVisibilityScope` available to the `SharedElementTransitionScope` inside the `ProvideAnimatedTransitionScope`. 
+An `AnimatedScope` can be provided using `ProvideAnimatedTransitionScope`, including custom scopes. Doing so will make the `AnimatedVisibilityScope` available to the `SharedElementTransitionScope` inside the `ProvideAnimatedTransitionScope`.
 
 ```kotlin
 AnimatedContent(modifier = modifier, transitionSpec = transitionSpec()) { targetState ->

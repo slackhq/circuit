@@ -17,6 +17,10 @@ Unreleased
   - IntelliJ IDEA and Android Studio versions before the 2026.2 platform may fail to update imports for these same-named replacements or leave a literal `T` in a reified call. Update the import manually if this occurs ([KTIJ-12093](https://youtrack.jetbrains.com/issue/KTIJ-12093)).
 - The experimental Foundation `AnsweringResultHandler` type is deprecated in favor of its runtime replacement. Its `Saver` APIs have been removed. Use `rememberAnsweringResultHandler` for a saveable handler.
 
+### Changed
+
+- **circuit-retained:** Added the key-based `retain(key = ...)` and `retainSaveable(...)` APIs. Non-saveable `rememberRetained(key = ...)` calls are now deprecated in favor of `retain(key = ...)`. Unkeyed and saveable `rememberRetained` variants and `rememberRetainedSaveable` remain supported but will eventually be deprecated.
+
 0.35.1
 ------
 

@@ -13,6 +13,7 @@ import com.slack.circuit.runtime.screen.Screen
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.modules.plus
 
 /**
  * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx-serialization,
@@ -49,6 +50,25 @@ public fun SerializableCircuitSaver(
   configuration: SavedStateConfiguration = SavedStateConfiguration.DEFAULT,
   onRestoreError: (Throwable) -> Unit = {},
 ): CircuitSaver = SavedStateCircuitSaver(configuration, onRestoreError)
+
+/**
+ * Returns a [CircuitSaver] that persists the screens and pop results supplied by [registrations].
+ *
+ * The registrations are added to [configuration]'s existing serializers module. All other
+ * configuration options are preserved. Conflicting serializer registrations fail when the saver is
+ * created.
+ */
+public fun SerializableCircuitSaver(
+  registrations: Iterable<CircuitSerializerRegistration>,
+  configuration: SavedStateConfiguration = SavedStateConfiguration.DEFAULT,
+  onRestoreError: (Throwable) -> Unit = {},
+): CircuitSaver =
+  SavedStateCircuitSaver(
+    SavedStateConfiguration(from = configuration) {
+      serializersModule = configuration.serializersModule + circuitSerializersModule(registrations)
+    },
+    onRestoreError,
+  )
 
 private class SavedStateCircuitSaver(
   private val configuration: SavedStateConfiguration,

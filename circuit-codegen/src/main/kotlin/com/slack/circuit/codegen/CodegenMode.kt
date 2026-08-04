@@ -97,12 +97,11 @@ internal enum class CodegenMode {
       return platforms.all { it is JvmPlatformInfo }
     }
 
-    override fun produceAdditionalTypeSpec(
-      factory: ClassName,
-      factoryType: FactoryType,
+    override fun produceAdditionalMultibindingTypeSpec(
+      implementation: ClassName,
+      boundType: TypeName,
       scope: TypeName,
       topLevelClass: ClassName?,
-      target: CodegenTarget,
     ): TypeSpec {
       val moduleAnnotations =
         listOfNotNull(
@@ -125,19 +124,20 @@ internal enum class CodegenMode {
           AnnotationSpec.builder(CircuitNames.DAGGER_INTO_SET).build(),
         )
 
-      val providerReturns = target.factorySuperinterface(factoryType)
-
-      val factoryName = factory.simpleName
+      val factoryName = implementation.simpleName
 
       val providerSpec =
         FunSpec.builder("bind${factoryName}")
           .addModifiers(ABSTRACT)
           .addAnnotations(providerAnnotations)
-          .addParameter(name = factoryName.replaceFirstChar { it.lowercase() }, type = factory)
-          .returns(providerReturns)
+          .addParameter(
+            name = factoryName.replaceFirstChar { it.lowercase() },
+            type = implementation,
+          )
+          .returns(boundType)
           .build()
 
-      return TypeSpec.classBuilder(factory.peerClass(factoryName + CircuitNames.MODULE))
+      return TypeSpec.classBuilder(implementation.peerClass(factoryName + CircuitNames.MODULE))
         .addModifiers(ABSTRACT)
         .addAnnotations(moduleAnnotations)
         .addFunction(providerSpec)
@@ -259,9 +259,20 @@ internal enum class CodegenMode {
     scope: TypeName,
     topLevelClass: ClassName?,
     target: CodegenTarget,
-  ): TypeSpec? {
-    return null
-  }
+  ): TypeSpec? =
+    produceAdditionalMultibindingTypeSpec(
+      implementation = factory,
+      boundType = target.factorySuperinterface(factoryType),
+      scope = scope,
+      topLevelClass = topLevelClass,
+    )
+
+  open fun produceAdditionalMultibindingTypeSpec(
+    implementation: ClassName,
+    boundType: TypeName,
+    scope: TypeName,
+    topLevelClass: ClassName?,
+  ): TypeSpec? = null
 
   abstract fun supportsPlatforms(platforms: List<PlatformInfo>): Boolean
 

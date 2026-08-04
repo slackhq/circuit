@@ -20,6 +20,7 @@ internal object CircuitNames {
   const val CIRCUIT_RUNTIME_UI_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.ui"
   const val CIRCUIT_RUNTIME_SCREEN_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.screen"
   const val CIRCUIT_RUNTIME_PRESENTER_PACKAGE = "$CIRCUIT_RUNTIME_BASE_PACKAGE.presenter"
+  const val CIRCUIT_SERIALIZATION_PACKAGE = "com.slack.circuit.serialization"
   val MODIFIER = ClassName("androidx.compose.ui", "Modifier")
   val CIRCUIT_INJECT_ANNOTATION =
     ClassName("com.slack.circuit.codegen.annotations", "CircuitInject")
@@ -31,6 +32,13 @@ internal object CircuitNames {
   val SCREEN = ClassName(CIRCUIT_RUNTIME_SCREEN_PACKAGE, "Screen")
   val NAVIGATOR = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "Navigator")
   val CIRCUIT_CONTEXT = ClassName(CIRCUIT_RUNTIME_BASE_PACKAGE, "CircuitContext")
+  val CIRCUIT_SAVEABLE = ClassName(CIRCUIT_RUNTIME_SCREEN_PACKAGE, "CircuitSaveable")
+  val POP_RESULT = ClassName(CIRCUIT_RUNTIME_SCREEN_PACKAGE, "PopResult")
+  val CIRCUIT_SERIALIZABLE = ClassName(CIRCUIT_SERIALIZATION_PACKAGE, "CircuitSerializable")
+  val CIRCUIT_SERIALIZER_REGISTRATION =
+    ClassName(CIRCUIT_SERIALIZATION_PACKAGE, "CircuitSerializerRegistration")
+  val POLYMORPHIC_MODULE_BUILDER =
+    ClassName("kotlinx.serialization.modules", "PolymorphicModuleBuilder")
 
   // SubCircuit target. Referenced by string only so circuit-codegen keeps no compile dependency on
   // the circuitx-subcircuit runtime; these types are resolved from the consumer's classpath when a

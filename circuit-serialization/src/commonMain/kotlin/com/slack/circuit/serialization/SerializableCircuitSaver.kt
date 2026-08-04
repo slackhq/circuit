@@ -16,12 +16,12 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.modules.plus
 
 /**
- * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx-serialization,
- * encoding them to `SavedState` via `androidx.savedstate`.
+ * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx serialization. It
+ * encodes them to `SavedState` with `androidx.savedstate`.
  *
- * In 0.35, Android [Screen] and [PopResult] implementations must still be `Parcelable`, even though
- * this saver stores `SavedState` rather than the Parcelable value. That Android supertype
- * requirement will be removed in a future release.
+ * Android [Screen] and [PopResult] implementations must still be `Parcelable`. This saver stores
+ * `SavedState` instead of the Parcelable value. A future release will remove the Parcelable
+ * requirement.
  *
  * Screens and results must be `@Serializable` and registered for polymorphic serialization against
  * the [CircuitSaveable] base class in [configuration]'s `serializersModule`:
@@ -39,9 +39,8 @@ import kotlinx.serialization.modules.plus
  * )
  * ```
  *
- * Saving an unregistered type fails with a descriptive error. Restoring an unregistered type, such
- * as after an app update removed a screen, drops that record instead of failing. Pass
- * [onRestoreError] to observe dropped records, such as for logging.
+ * Saving an unregistered type fails with a descriptive error. Restoring an unregistered type drops
+ * the saved record. Pass [onRestoreError] to observe dropped records.
  *
  * On JVM and Android, `ReflectiveSerializableCircuitSaver` from the `circuit-serialization-reflect`
  * artifact can be used instead to avoid the registration requirement.
@@ -54,7 +53,7 @@ public fun SerializableCircuitSaver(
 /**
  * Returns a [CircuitSaver] that persists the screens and pop results supplied by [registrations].
  *
- * The registrations are added to [configuration]'s existing serializers module. All other
+ * The registrations are added to [configuration]'s existing serializers module. The other
  * configuration options are preserved. Conflicting serializer registrations fail when the saver is
  * created.
  */

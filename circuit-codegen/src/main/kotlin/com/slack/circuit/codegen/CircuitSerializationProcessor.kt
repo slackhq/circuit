@@ -182,7 +182,7 @@ internal class CircuitSerializationProcessor(
           CircuitNames.POLYMORPHIC_MODULE_BUILDER.parameterizedBy(CircuitNames.CIRCUIT_SAVEABLE),
         )
         .addStatement(
-          "builder.subclass(subclass = %T::class, serializer = %T.serializer()",
+          "builder.subclass(subclass = %T::class, serializer = %T.serializer())",
           serializedType,
           serializedType,
         )

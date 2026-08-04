@@ -108,8 +108,8 @@ internal data class MutableRef<R>(var value: R?)
  * value produced by [content]. The upstream `Unit` return would allow the producer to recompose
  * without propagating its updated value to this function's caller.
  *
- * Ideally upstream offers us something eventually:
- * https://issuetracker.google.com/issues/533778695#comment3
+ * TODO: Replace this copy with the upstream return-valued provider once
+ *   https://issuetracker.google.com/issues/542168593 is available.
  */
 @Composable
 private fun <T> withRetainedValuesStoreProvider(

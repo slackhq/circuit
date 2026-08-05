@@ -6,6 +6,26 @@ Unreleased
 
 ### New
 
+- `circuit-codegen` can now generate kotlinx serialization registrations for `Screen` and `PopResult` types. Annotate each type with `@CircuitSerializable(scope)`. The annotation supplies the default kotlinx serializer, and `circuit-codegen` contributes a registration through the selected DI framework. Pass the injected `Set<CircuitSerializerRegistration>` to `SerializableCircuitSaver`.
+
+  A Metro setup looks like this:
+
+  ```kotlin
+  @Parcelize
+  @CircuitSerializable(AppScope::class)
+  data class DetailScreen(val itemId: Long) : Screen
+
+  @Provides
+  fun provideCircuitSaver(
+    registrations: Set<CircuitSerializerRegistration>,
+  ): CircuitSaver = SerializableCircuitSaver(registrations)
+  ```
+
+  - Metro, Hilt, kotlin-inject-anvil, and Anvil can provide registrations declared in different Gradle modules to the same application graph.
+  - Apps without one of these DI frameworks can continue to register types manually or use the reflective saver on JVM and Android.
+  - Android screens and results must still implement `Parcelable`. A future release will remove this requirement.
+
+  See the [code generation guide](https://slackhq.github.io/circuit/code-gen/#serialization-registrations) for setup and generated code examples.
 - `rememberAnsweringNavigator` and `answeringNavigationAvailable` are now part of `circuit-runtime`, so presenters can use them through `circuit-runtime-presenter`.
   - `NavigableCircuitContent` continues to provide result delivery. Without it, `rememberAnsweringNavigator` returns the supplied fallback navigator.
 - `AnsweringResultHandler` has moved to `circuit-runtime`.

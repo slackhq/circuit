@@ -6,4 +6,17 @@
 // - Show declarations: true
 
 // Library unique name: <circuit-root:circuit-serialization>
+open annotation class com.slack.circuit.serialization/CircuitSerializable : kotlin/Annotation { // com.slack.circuit.serialization/CircuitSerializable|null[0]
+    constructor <init>(kotlin.reflect/KClass<*>) // com.slack.circuit.serialization/CircuitSerializable.<init>|<init>(kotlin.reflect.KClass<*>){}[0]
+
+    final val scope // com.slack.circuit.serialization/CircuitSerializable.scope|{}scope[0]
+        final fun <get-scope>(): kotlin.reflect/KClass<*> // com.slack.circuit.serialization/CircuitSerializable.scope.<get-scope>|<get-scope>(){}[0]
+}
+
+abstract fun interface com.slack.circuit.serialization/CircuitSerializerRegistration { // com.slack.circuit.serialization/CircuitSerializerRegistration|null[0]
+    abstract fun register(kotlinx.serialization.modules/PolymorphicModuleBuilder<com.slack.circuit.runtime.screen/CircuitSaveable>) // com.slack.circuit.serialization/CircuitSerializerRegistration.register|register(kotlinx.serialization.modules.PolymorphicModuleBuilder<com.slack.circuit.runtime.screen.CircuitSaveable>){}[0]
+}
+
 final fun com.slack.circuit.serialization/SerializableCircuitSaver(androidx.savedstate.serialization/SavedStateConfiguration = ..., kotlin/Function1<kotlin/Throwable, kotlin/Unit> = ...): com.slack.circuit.runtime.screen/CircuitSaver // com.slack.circuit.serialization/SerializableCircuitSaver|SerializableCircuitSaver(androidx.savedstate.serialization.SavedStateConfiguration;kotlin.Function1<kotlin.Throwable,kotlin.Unit>){}[0]
+final fun com.slack.circuit.serialization/SerializableCircuitSaver(kotlin.collections/Iterable<com.slack.circuit.serialization/CircuitSerializerRegistration>, androidx.savedstate.serialization/SavedStateConfiguration = ..., kotlin/Function1<kotlin/Throwable, kotlin/Unit> = ...): com.slack.circuit.runtime.screen/CircuitSaver // com.slack.circuit.serialization/SerializableCircuitSaver|SerializableCircuitSaver(kotlin.collections.Iterable<com.slack.circuit.serialization.CircuitSerializerRegistration>;androidx.savedstate.serialization.SavedStateConfiguration;kotlin.Function1<kotlin.Throwable,kotlin.Unit>){}[0]
+final fun com.slack.circuit.serialization/circuitSerializersModule(kotlin.collections/Iterable<com.slack.circuit.serialization/CircuitSerializerRegistration>): kotlinx.serialization.modules/SerializersModule // com.slack.circuit.serialization/circuitSerializersModule|circuitSerializersModule(kotlin.collections.Iterable<com.slack.circuit.serialization.CircuitSerializerRegistration>){}[0]

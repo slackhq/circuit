@@ -6,9 +6,11 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.animation.AnimatedScreenTransform
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
-import com.slack.circuit.star.starCircuitSaver
+import com.slack.circuit.serialization.CircuitSerializerRegistration
+import com.slack.circuit.serialization.SerializableCircuitSaver
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.MapKey
@@ -29,18 +31,27 @@ interface CircuitProviders {
   @Multibinds(allowEmpty = true)
   fun animatedScreenTransforms(): Map<KClass<out Screen>, AnimatedScreenTransform>
 
+  @Multibinds(allowEmpty = true)
+  fun circuitSerializerRegistrations(): Set<CircuitSerializerRegistration>
+
+  @SingleIn(AppScope::class)
+  @Provides
+  fun provideCircuitSaver(registrations: Set<CircuitSerializerRegistration>): CircuitSaver =
+    SerializableCircuitSaver(registrations)
+
   @SingleIn(AppScope::class)
   @Provides
   fun provideCircuit(
     presenterFactories: Set<Presenter.Factory>,
     uiFactories: Set<Ui.Factory>,
     animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
+    circuitSaver: CircuitSaver,
   ): Circuit {
     return Circuit.Builder()
       .addPresenterFactories(presenterFactories)
       .addUiFactories(uiFactories)
       .addAnimatedScreenTransforms(animatedScreenTransforms)
-      .setCircuitSaver(starCircuitSaver)
+      .setCircuitSaver(circuitSaver)
       .build()
   }
 }

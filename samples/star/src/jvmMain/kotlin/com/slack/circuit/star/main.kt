@@ -39,7 +39,11 @@ fun main() {
     var darkMode by remember { mutableStateOf(false) }
     val uriHandler = remember { DesktopUriHandler() }
     CompositionLocalProvider(LocalUriHandler provides uriHandler) {
-      val state = rememberStarAppState(useDarkTheme = darkMode)
+      val state =
+        rememberStarAppState(
+          circuitSaver = requireNotNull(appGraph.circuit.circuitSaver),
+          useDarkTheme = darkMode,
+        )
       Window(
         title = "STAR",
         state = windowState,

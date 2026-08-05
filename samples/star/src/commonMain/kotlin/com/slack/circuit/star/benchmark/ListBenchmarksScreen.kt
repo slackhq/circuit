@@ -23,6 +23,7 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.serialization.CircuitSerializable
 import com.slack.circuit.star.benchmark.ListBenchmarksScreen.State
 import com.slack.circuit.star.common.Platform
 import dev.zacsweers.metro.AppScope
@@ -30,10 +31,9 @@ import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.Inject
-import kotlinx.serialization.Serializable
 
 @Parcelize
-@Serializable
+@CircuitSerializable(AppScope::class)
 data class ListBenchmarksScreen(val useNestedContent: Boolean) : Screen {
   data class State(val useNestedContent: Boolean) : CircuitUiState
 }
@@ -73,7 +73,7 @@ fun ListBenchmarks(state: State, modifier: Modifier = Modifier) {
 }
 
 @Parcelize
-@Serializable
+@CircuitSerializable(AppScope::class)
 data class ListBenchmarksItemScreen(val index: Int) : Screen {
   data class State(val index: Int) : CircuitUiState
 }

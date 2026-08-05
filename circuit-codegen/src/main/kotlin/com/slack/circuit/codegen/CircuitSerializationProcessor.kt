@@ -33,7 +33,7 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 
 /**
- * Generates one multibinding contribution for each serializable Circuit value.
+ * Generates one multibinding contribution for each opted-in `Screen` or `PopResult` type.
  *
  * Metro mode generates code like this:
  * ```kotlin
@@ -41,12 +41,12 @@ import com.squareup.kotlinpoet.ksp.writeTo
  * @ContributesIntoSet(AppScope::class)
  * class HomeScreenCircuitSerializerRegistration : CircuitSerializerRegistration {
  *   override fun register(builder: PolymorphicModuleBuilder<CircuitSaveable>) {
- *     builder.subclass(HomeScreen::class, HomeScreen.serializer())
+ *     builder.subclass(subclass = HomeScreen::class, serializer = HomeScreen.serializer())
  *   }
  * }
  * ```
  *
- * The DI annotations vary by mode but the rest stays the same.
+ * Only the DI annotations differ between modes.
  */
 internal class CircuitSerializationProcessor(
   private val logger: KSPLogger,

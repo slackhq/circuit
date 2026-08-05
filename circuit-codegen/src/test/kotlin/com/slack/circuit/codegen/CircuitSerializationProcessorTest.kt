@@ -348,10 +348,8 @@ class CircuitSerializationProcessorTest {
 
             import com.slack.circuit.runtime.screen.Screen
             import com.slack.circuit.serialization.CircuitSerializable
-            import kotlinx.serialization.Serializable
 
             @CircuitSerializable(AppScope::class)
-            @Serializable
             actual object OpenUrlScreen : Screen
             """
               .trimIndent(),

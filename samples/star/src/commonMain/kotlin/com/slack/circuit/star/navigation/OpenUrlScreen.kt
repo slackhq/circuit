@@ -3,10 +3,12 @@
 package com.slack.circuit.star.navigation
 
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.serialization.KSerializer
+import com.slack.circuit.serialization.CircuitSerializable
+import dev.zacsweers.metro.AppScope
 
-expect class OpenUrlScreen(url: String) : Screen {
+@CircuitSerializable(AppScope::class)
+expect class OpenUrlScreen : Screen {
   val url: String
-}
 
-internal expect val openUrlScreenSerializer: KSerializer<OpenUrlScreen>
+  constructor(url: String)
+}

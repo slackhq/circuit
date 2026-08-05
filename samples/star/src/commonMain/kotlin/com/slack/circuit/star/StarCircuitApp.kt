@@ -25,6 +25,7 @@ import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
@@ -66,9 +67,10 @@ private class StarAppStateImpl(
 
 @Composable
 fun rememberStarAppState(
+  circuitSaver: CircuitSaver,
   useDarkTheme: Boolean = isSystemInDarkTheme(),
   backStack: BackStack<*> =
-    rememberSaveableBackStack(listOf(HomeScreen), circuitSaver = starCircuitSaver),
+    rememberSaveableBackStack(listOf(HomeScreen), circuitSaver = circuitSaver),
   onRootPop: (PopResult?) -> Unit = {},
   navigator: Navigator = rememberCircuitNavigator(backStack, onRootPop = onRootPop),
 ): StarAppState {
@@ -103,7 +105,7 @@ fun rememberStarAppState(
 fun StarCircuitApp(
   circuit: Circuit,
   modifier: Modifier = Modifier,
-  state: StarAppState = rememberStarAppState(),
+  state: StarAppState = rememberStarAppState(requireNotNull(circuit.circuitSaver)),
 ) {
   StarTheme(state.useDarkTheme) {
     // TODO why isn't the windowBackground enough so we don't need to do this?

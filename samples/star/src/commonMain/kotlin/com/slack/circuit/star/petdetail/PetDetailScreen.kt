@@ -49,6 +49,7 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.serialization.CircuitSerializable
 import com.slack.circuit.sharedelements.ExperimentalCircuitSharedElementsApi
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
@@ -84,7 +85,7 @@ import dev.zacsweers.metro.AssistedInject
 import kotlinx.serialization.Serializable
 
 @Parcelize
-@Serializable
+@CircuitSerializable(AppScope::class)
 data class PetDetailScreen(
   val petId: Long,
   val photoUrlMemoryCacheKey: String? = null,

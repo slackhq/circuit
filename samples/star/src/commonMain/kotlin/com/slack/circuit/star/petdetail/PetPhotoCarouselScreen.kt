@@ -63,6 +63,7 @@ import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.overlay.OverlayState.UNAVAILABLE
 import com.slack.circuit.runtime.internal.rememberStableCoroutineScope
 import com.slack.circuit.runtime.screen.StaticScreen
+import com.slack.circuit.serialization.CircuitSerializable
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
@@ -77,13 +78,12 @@ import com.slack.circuitx.overlays.showFullScreenOverlay
 import dev.zacsweers.metro.AppScope
 import kotlin.math.absoluteValue
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 
 /** Default aspect ratio to use when photo metadata is not available (4:3) */
 private const val DEFAULT_ASPECT_RATIO = 4f / 3f
 
 @Parcelize
-@Serializable
+@CircuitSerializable(AppScope::class)
 data class PetPhotoCarouselScreen(
   val id: Long,
   val name: String,

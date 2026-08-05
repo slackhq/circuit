@@ -1906,7 +1906,7 @@
 <p>The core <code>Screen</code> interface is this:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">interface</span><span class="w"> </span><span class="nc">Screen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Parcelable</span>
 </code></pre></div>
-<p>These types are <code>Parcelable</code> on Android for saveability in our backstack and easy deeplinking. A 
+<p>These types are <code>Parcelable</code> on Android for saveability in our backstack and easy deeplinking. A
 <code>Screen</code> can be a simple marker <code>data object</code> or a <code>data class</code> with information to pass on.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">HomeScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
@@ -1926,7 +1926,7 @@ UIs) to start a new sub-circuit or nested circuit.</p>
 <span class="p">}</span>
 </code></pre></div>
 <p>The information passed into a screen can also be used to interact with the data layer. In the example here,
-we are getting the <code>externalId</code> from the screen in order to get information back from our repository. </p>
+we are getting the <code>externalId</code> from the screen in order to get information back from our repository.</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// In a presenter class</span>
 <span class="kd">class</span><span class="w"> </span><span class="nc">AddFavoritesPresenter</span>
 <span class="nd">@AssistedInject</span>
@@ -1991,42 +1991,32 @@ platforms hold saved state in memory only.</p>
 <p>Parcelable is the Android default and needs no setup. Annotate screens with <code>@Parcelize</code> and the
 default saver persists them. For common-code screens, implement <code>ParcelableScreen</code>, which adds
 <code>Parcelable</code> on Android and is just a <code>Screen</code> elsewhere.</p>
-<p>To persist <code>SavedState</code> encoded with kotlinx-serialization, use the <code>circuit-serialization</code>
-artifact. In 0.35, Android screens and pop results still need to be Parcelable in addition to being
-<code>@Serializable</code>, even though the saver stores <code>SavedState</code> rather than the Parcelable value:</p>
+<p>Use the <code>circuit-serialization</code> artifact to persist navigation state with kotlinx serialization. Android screens and pop results must still be Parcelable. A future release will remove this requirement. The saver stores <code>SavedState</code> instead of the Parcelable value.</p>
+<p><code>@CircuitSerializable</code> supplies the default kotlinx serializer. Circuit&rsquo;s KSP processor contributes a registration through Metro, Hilt, kotlin-inject-anvil, or Anvil. For example, a Metro graph can declare the registration set and provide the saver like this:</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span>
-<span class="nd">@Serializable</span>
+<span class="nd">@CircuitSerializable</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">HomeScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 
-<span class="kd">val</span><span class="w"> </span><span class="nv">saver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SerializableCircuitSaver</span><span class="p">(</span>
-<span class="w">  </span><span class="n">SavedStateConfiguration</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">serializersModule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SerializersModule</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">polymorphic</span><span class="p">(</span><span class="n">CircuitSaveable</span><span class="o">::</span><span class="n">class</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">subclass</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
-<span class="w">        </span><span class="c1">// Register every screen and pop result here</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">)</span>
+<span class="nd">@Multibinds</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">circuitSerializerRegistrations</span><span class="p">():</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">CircuitSerializerRegistration</span><span class="o">&gt;</span>
+
+<span class="nd">@Provides</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">provideCircuitSaver</span><span class="p">(</span>
+<span class="w">  </span><span class="n">registrations</span><span class="p">:</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">CircuitSerializerRegistration</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">):</span><span class="w"> </span><span class="n">CircuitSaver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SerializableCircuitSaver</span><span class="p">(</span><span class="n">registrations</span><span class="p">)</span>
 </code></pre></div>
-<p>On JVM and Android, <code>ReflectiveSerializableCircuitSaver()</code> from the <code>circuit-serialization-reflect</code>
-artifact skips the registration requirement by resolving serializers reflectively from the saved
-class name. The artifact embeds the R8/ProGuard rules it needs, so minified apps work without
-additional configuration.</p>
-<p>Both serializing savers can restore navigation state saved by Circuit 0.34&rsquo;s default saver, so
-adopting serialization in 0.35 does not by itself reset existing navigation state.</p>
+<p>Each Gradle module compiles the generated set contributions for its annotated types. The application graph collects contributions from the application module and its dependency modules in the injected <code>Set&lt;CircuitSerializerRegistration&gt;</code>. Apps without a supported DI framework can register <code>@Serializable</code> types manually in a <code>SerializersModule</code>. They can also use the reflective saver. See the <a href="../code-gen/#serialization-registrations">code generation guide</a> for setup and generated code.</p>
+<p>On JVM and Android, <code>ReflectiveSerializableCircuitSaver()</code> can resolve serializers from the saved class name. Apps that use it do not need to register each type. The <code>circuit-serialization-reflect</code> artifact includes the R8 and ProGuard rules it needs. Minified apps do not need extra configuration.</p>
+<p>Both serializing savers can restore navigation state written by Circuit 0.34&rsquo;s default saver. Switching to serialization does not reset that state.</p>
 <p>When a saved value can no longer be restored:</p>
 <ul>
 <li><code>SaveableBackStack</code> drops the affected record. If none survive, it starts from its initial value.</li>
-<li><code>SaveableNavStack</code> discards incomplete forward history. If the active screen or its back history
-  is missing, it starts from its initial value.</li>
+<li><code>SaveableNavStack</code> discards incomplete forward history. If the active screen or its back history is missing, it starts from its initial value.</li>
 <li>Stored back-stack snapshots are discarded if any record is missing.</li>
 <li>An unrestorable pending pop result clears its expectation, so <code>awaitResult</code> returns null.</li>
 </ul>
 <p>See the <code>circuit-serialization</code> README for the full setup.</p>
-<p>To disable persistence entirely, use <code>CircuitSaver.NoOp</code>. Stacks saved with it restore to their
-initial state. This changes persistence behavior only: Android <code>Screen</code> and <code>PopResult</code>
-implementations still need to be Parcelable in 0.35.</p>
+<p>To disable persistence entirely, use <code>CircuitSaver.NoOp</code>. Stacks saved with it restore to their initial state. This changes persistence behavior only. Android <code>Screen</code> and <code>PopResult</code> implementations must still be <code>Parcelable</code> for now.</p>
 <h3 id="wiring">Wiring<a class="headerlink" href="#wiring" title="Permanent link">&para;</a></h3>
 <p>Pass a saver directly to back stack creation, or provide it once at the app root:</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// Explicit</span>
@@ -2046,8 +2036,8 @@ any back stack created inside it.</p>
 explicitly or use <code>ProvideCircuitSaver</code> above the back stack creation.</p>
 </div>
 <h3 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h3>
-<p><code>Screen</code> and <code>PopResult</code> still extend <code>Parcelable</code> on Android in 0.35. A future release removes
-those supertypes. To prepare, implement <code>ParcelableScreen</code> or <code>ParcelablePopResult</code> on values that
+<p><code>Screen</code> and <code>PopResult</code> still extend <code>Parcelable</code> on Android. A future release will remove those
+supertypes. To prepare, implement <code>ParcelableScreen</code> or <code>ParcelablePopResult</code> on values that
 should keep using Parcelable, or adopt a serializing <code>CircuitSaver</code>. The <code>circuit-serialization</code>
 README has the full roadmap.</p>
 

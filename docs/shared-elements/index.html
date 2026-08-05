@@ -1946,20 +1946,20 @@
 
 
 <h1 id="shared-elements">Shared Elements<a class="headerlink" href="#shared-elements" title="Permanent link">&para;</a></h1>
-<p>Circuit has an additional artifact for integrating <a href="https://developer.android.com/develop/ui/compose/animation/shared-elements">Compose Shared Elements Transitions</a> with <a href="../navigation/">Navigation</a> and <a href="../overlays/">Overlays</a>. Circuit Shared Elements are designed as a lightweight API to easily access the required <code>SharedTransitionScope</code> and <code>AnimatedVisibilityScope</code> directly in a Composable nested within a <code>Screen</code>. </p>
+<p>Circuit has an additional artifact for integrating <a href="https://developer.android.com/develop/ui/compose/animation/shared-elements">Compose Shared Elements Transitions</a> with <a href="../navigation/">Navigation</a> and <a href="../overlays/">Overlays</a>. Circuit Shared Elements are designed as a lightweight API to easily access the required <code>SharedTransitionScope</code> and <code>AnimatedVisibilityScope</code> directly in a Composable nested within a <code>Screen</code>.</p>
 <p>There are few core APIs for setting up and providing the required <code>SharedTransitionScope</code> in order use shared elements.</p>
 <ul>
 <li><a href="#sharedelementtransitionlayout">SharedElementTransitionLayout</a> is the layout that creates and provides a <code>SharedElementTransitionScope</code></li>
 <li><a href="#sharedelementtransitionscope">SharedElementTransitionScope</a> is a <code>SharedTransitionScope</code> which is required to use the shared element modifiers. The <code>SharedElementTransitionScope</code> also provides access to a <code>AnimatedVisibilityScope</code>.</li>
 </ul>
-<p>You can follow along with the <a href="../shared-elements-tutorial/">tutorial</a> to see how to use these APIs. </p>
+<p>You can follow along with the <a href="../shared-elements-tutorial/">tutorial</a> to see how to use these APIs.</p>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
 <p>Add the dependency.</p>
 <div class="highlight"><pre><span></span><code><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-sharedelements:</span><span class="si">$</span><span class="n">circuit_version</span><span class="s">&quot;</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <h3 id="sharedelementtransitionlayout">SharedElementTransitionLayout<a class="headerlink" href="#sharedelementtransitionlayout" title="Permanent link">&para;</a></h3>
-<p>Normally <code>SharedElementTransitionLayout</code> should be setup around the root Circuit. It needs to be outside of a <code>ContentWithOverlays</code> or <code>NavigableCircuitContent</code> in order for the <em>Overlay</em> and <em>Navigation</em> <code>AnimatedVisibilityScope</code> to be available. </p>
+<p>Normally <code>SharedElementTransitionLayout</code> should be setup around the root Circuit. It needs to be outside of a <code>ContentWithOverlays</code> or <code>NavigableCircuitContent</code> in order for the <em>Overlay</em> and <em>Navigation</em> <code>AnimatedVisibilityScope</code> to be available.</p>
 <div class="highlight"><pre><span></span><code><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">SharedElementTransitionLayout</span><span class="w"> </span><span class="p">{</span>
@@ -1979,12 +1979,12 @@
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="sharedelementtransitionscope">SharedElementTransitionScope<a class="headerlink" href="#sharedelementtransitionscope" title="Permanent link">&para;</a></h3>
-<p><code>SharedElementTransitionScope</code> extends <code>SharedTransitionScope</code> which is required to use the core shared elements API. The scope can be accessed using the <code>SharedElementTransitionScope</code> Composable wherever the <code>SharedTransitionScope</code> is needed, without having to explicitly pass it to a calling Composable. </p>
+<p><code>SharedElementTransitionScope</code> extends <code>SharedTransitionScope</code> which is required to use the core shared elements API. The scope can be accessed using the <code>SharedElementTransitionScope</code> Composable wherever the <code>SharedTransitionScope</code> is needed, without having to explicitly pass it to a calling Composable.</p>
 <p><em>Screen UI</em>
 <div class="highlight"><pre><span></span><code><span class="nd">@OptIn</span><span class="p">(</span><span class="n">ExperimentalSharedTransitionApi</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
 <span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">screen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
 <span class="nd">@Composable</span>
-<span class="kd">fun</span><span class="w"> </span><span class="nf">HomeContent</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">.</span><span class="na">State</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">HomeContent</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">.</span><span class="na">State</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">SharedElementTransitionScope</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// Content here</span>
 <span class="w">  </span><span class="p">}</span>
@@ -1992,7 +1992,7 @@
 <p><em>Normal UI</em>
 <div class="highlight"><pre><span></span><code><span class="nd">@OptIn</span><span class="p">(</span><span class="n">ExperimentalSharedTransitionApi</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
 <span class="nd">@Composable</span>
-<span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">GridItem</span><span class="p">(</span><span class="n">animal</span><span class="p">:</span><span class="w"> </span><span class="n">PetListAnimal</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>
+<span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">GridItem</span><span class="p">(</span><span class="n">animal</span><span class="p">:</span><span class="w"> </span><span class="n">PetListAnimal</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="o">=</span>
 <span class="w">  </span><span class="n">SharedElementTransitionScope</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// Content here</span>
 <span class="w">  </span><span class="p">}</span>
@@ -2017,8 +2017,8 @@
 <span class="p">)</span>
 </code></pre></div>
 <h3 id="animatedscope">AnimatedScope<a class="headerlink" href="#animatedscope" title="Permanent link">&para;</a></h3>
-<p>By default Circuit provides a <code>Navigation</code> and <code>Overlay</code> <code>AnimatedVisibilityScope</code> when a <code>SharedElementTransitionScope</code> is available and either <code>NavigableCircuitContent</code> or <code>ContentWithOverlays</code> has been used. </p>
-<p>An <code>AnimatedScope</code> can be provided using <code>ProvideAnimatedTransitionScope</code>, including custom scopes. Doing so will make the <code>AnimatedVisibilityScope</code> available to the <code>SharedElementTransitionScope</code> inside the <code>ProvideAnimatedTransitionScope</code>. </p>
+<p>By default Circuit provides a <code>Navigation</code> and <code>Overlay</code> <code>AnimatedVisibilityScope</code> when a <code>SharedElementTransitionScope</code> is available and either <code>NavigableCircuitContent</code> or <code>ContentWithOverlays</code> has been used.</p>
+<p>An <code>AnimatedScope</code> can be provided using <code>ProvideAnimatedTransitionScope</code>, including custom scopes. Doing so will make the <code>AnimatedVisibilityScope</code> available to the <code>SharedElementTransitionScope</code> inside the <code>ProvideAnimatedTransitionScope</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="n">AnimatedContent</span><span class="p">(</span><span class="n">modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">modifier</span><span class="p">,</span><span class="w"> </span><span class="n">transitionSpec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">transitionSpec</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">targetState</span><span class="w"> </span><span class="o">-&gt;</span>
 <span class="w">  </span><span class="n">ProvideAnimatedTransitionScope</span><span class="p">(</span><span class="n">Navigation</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">AnimatedNavContent</span><span class="p">(</span><span class="n">targetState</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">content</span><span class="p">(</span><span class="nb">it</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>

@@ -1241,6 +1241,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#serialization-registrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serialization registrations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#classes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1885,6 +1896,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#serialization-registrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serialization registrations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#classes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2001,41 +2023,93 @@
 <span class="w">  </span><span class="n">ksp</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-codegen:&lt;version&gt;&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Currently supported types are:</p>
+<p>Supported DI modes are:</p>
 <ul>
-<li><a href="https://github.com/square/anvil">Anvil</a> and <a href="https://github.com/zacsweers/anvil">Anvil KSP</a></li>
+<li><a href="https://github.com/ZacSweers/metro">Metro</a></li>
 <li><a href="https://dagger.dev/hilt/">Dagger/Hilt</a></li>
 <li><a href="https://github.com/evant/kotlin-inject">kotlin-inject</a> + <a href="https://github.com/amzn/kotlin-inject-anvil">kotlin-inject-anvil</a></li>
-<li><a href="https://github.com/ZacSweers/metro">Metro</a></li>
+<li><a href="https://github.com/square/anvil">Anvil</a> and <a href="https://github.com/zacsweers/anvil">Anvil KSP</a>, which are deprecated</li>
 </ul>
-<p>Note that Dagger+Anvil is the default mode. </p>
+<p>Dagger+Anvil remains the default mode for compatibility. New projects should use Metro, Hilt, or kotlin-inject-anvil.</p>
 <p>If you are using another mode, you must specify the mode as a KSP arg.</p>
 <div class="highlight"><pre><span></span><code><span class="n">ksp</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;circuit.codegen.mode&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;hilt&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// or &quot;kotlin_inject_anvil&quot;, &quot;metro&quot;</span>
+<span class="w">  </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;circuit.codegen.mode&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;metro&quot;</span><span class="p">)</span><span class="w"> </span><span class="c1">// or &quot;hilt&quot;, &quot;kotlin_inject_anvil&quot;</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>If using Kotlin multiplatform with typealias annotations for Dagger annotations (i.e. expect 
-annotations in common with actual typealias declarations in JVM source sets), you can match on just 
+<p>If using Kotlin multiplatform with typealias annotations for Dagger annotations (i.e. expect
+annotations in common with actual typealias declarations in JVM source sets), you can match on just
 annotation short names alone to support this case via <code>circuit.codegen.lenient</code> mode.</p>
 <div class="highlight"><pre><span></span><code><span class="n">ksp</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;circuit.codegen.lenient&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;true&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>If using anvil-ksp or kotlin-inject-anvil, you also need to indicate <code>@CircuitInject</code> as a 
-contributing annotation.</p>
+<p>If you use anvil-ksp or kotlin-inject-anvil, configure <code>@CircuitInject</code> and <code>@CircuitSerializable</code> as contributing annotations.</p>
 <div class="highlight"><pre><span></span><code><span class="n">ksp</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">circuitContributingAnnotations</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">listOf</span><span class="p">(</span>
+<span class="w">      </span><span class="s">&quot;com.slack.circuit.codegen.annotations.CircuitInject&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;com.slack.circuit.serialization.CircuitSerializable&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="p">).</span><span class="na">joinToString</span><span class="p">(</span><span class="s">&quot;:&quot;</span><span class="p">)</span>
+
 <span class="w">  </span><span class="c1">// Anvil-KSP</span>
-<span class="w">  </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;anvil-ksp-extraContributingAnnotations&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;com.slack.circuit.codegen.annotations.CircuitInject&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;anvil-ksp-extraContributingAnnotations&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">circuitContributingAnnotations</span><span class="p">)</span>
 <span class="w">  </span><span class="c1">// kotlin-inject-anvil (requires 0.0.3+)</span>
-<span class="w">  </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;kotlin-inject-anvil-contributing-annotations&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;com.slack.circuit.codegen.annotations.CircuitInject&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;kotlin-inject-anvil-contributing-annotations&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">circuitContributingAnnotations</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>The primary entry point is the <code>CircuitInject</code> annotation.</p>
 <p>This annotation is used to mark a UI or presenter class or function for code generation. When
 annotated, the type&rsquo;s corresponding factory will be generated and keyed with the defined <code>screen</code>.</p>
-<p>The generated factories are then contributed to Anvil via <code>ContributesMultibinding</code> and scoped
-with the provided <code>scope</code> key.</p>
+<p>The generated factories are contributed to the selected DI framework and scoped with the provided <code>scope</code> key. Metro uses <code>@ContributesIntoSet</code>. The other modes generate equivalent multibindings.</p>
+<h2 id="serialization-registrations">Serialization registrations<a class="headerlink" href="#serialization-registrations" title="Permanent link">&para;</a></h2>
+<p><code>circuit-codegen</code> can register serializable <code>Screen</code> and <code>PopResult</code> types for <code>SerializableCircuitSaver</code>. Add the <code>circuit-serialization</code> runtime. Then annotate each saved type with its DI scope:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@CircuitSerializable</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">HomeScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">userId</span><span class="p">:</span><span class="w"> </span><span class="kt">Long</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+</code></pre></div>
+<p>In a multiplatform project using Metro or kotlin-inject-anvil, add <code>circuit-codegen</code> to <code>kspCommonMainMetadata</code>. Also add it to each target-specific KSP configuration that compiles the annotated declarations. Anvil and Hilt support code generation only for JVM and Android targets.</p>
+<p><code>@CircuitSerializable</code> supplies the default kotlinx serializer. The serialization processor in <code>circuit-codegen</code> generates a registration and contributes it through the selected DI mode. Metro mode generates code equivalent to:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Inject</span>
+<span class="nd">@ContributesIntoSet</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">HomeScreenCircuitSerializerRegistration</span><span class="w"> </span><span class="p">:</span>
+<span class="w">  </span><span class="n">CircuitSerializerRegistration</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span>
+<span class="w">    </span><span class="n">builder</span><span class="p">:</span><span class="w"> </span><span class="n">PolymorphicModuleBuilder</span><span class="o">&lt;</span><span class="n">CircuitSaveable</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">builder</span><span class="p">.</span><span class="na">subclass</span><span class="p">(</span><span class="n">subclass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">serializer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">.</span><span class="na">serializer</span><span class="p">())</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The other modes contribute the same registration through Hilt, kotlin-inject-anvil, or Anvil. For example, a Metro graph can declare the registration set and provide the saver like this:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Multibinds</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">circuitSerializerRegistrations</span><span class="p">():</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">CircuitSerializerRegistration</span><span class="o">&gt;</span>
+
+<span class="nd">@Provides</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">provideCircuitSaver</span><span class="p">(</span>
+<span class="w">  </span><span class="n">registrations</span><span class="p">:</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">CircuitSerializerRegistration</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">):</span><span class="w"> </span><span class="n">CircuitSaver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SerializableCircuitSaver</span><span class="p">(</span><span class="n">registrations</span><span class="p">)</span>
+</code></pre></div>
+<p>Each supported type contributes one registrar to the DI set. The application graph collects generated contributions from the application module and its dependency modules in the injected <code>Set&lt;CircuitSerializerRegistration&gt;</code>. <code>SerializableCircuitSaver</code> invokes each registrar when it builds its serializers module. The processor supports accessible, concrete, non-generic <code>Screen</code> and <code>PopResult</code> classes and objects, including nested declarations.</p>
+<p>For an expect/actual type, annotate the expect declaration and every actual declaration with <code>@CircuitSerializable</code> using the same scope. The annotation supplies the default serializer in every compilation. The processor generates one registration from the expect declaration.</p>
+<p>An expect class with constructor state must declare the property in its body and expose a secondary constructor:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@CircuitSerializable</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">expect</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">OpenUrlScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">url</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span>
+
+<span class="w">  </span><span class="k">constructor</span><span class="p">(</span><span class="n">url</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="nd">@CircuitSerializable</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">actual</span><span class="w"> </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">OpenUrlScreen</span><span class="w"> </span><span class="n">actual</span><span class="w"> </span><span class="k">constructor</span><span class="p">(</span>
+<span class="w">  </span><span class="kd">actual</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">url</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+</code></pre></div>
+<p>To use a custom serializer for a screen or result, keep <code>@CircuitSerializable</code> for registration and add <code>@Serializable(with = ...)</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@CircuitSerializable</span><span class="p">(</span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="nd">@Serializable</span><span class="p">(</span><span class="n">with</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LegacyScreenSerializer</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">LegacyScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">value</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+</code></pre></div>
+<p>Apps without a supported DI framework can build a <code>SerializersModule</code> manually. On JVM and Android, they can use <code>ReflectiveSerializableCircuitSaver</code> instead.</p>
 <h2 id="classes">Classes<a class="headerlink" href="#classes" title="Permanent link">&para;</a></h2>
 <p><code>Presenter</code> and <code>Ui</code> classes can be annotated and have their corresponding <code>Presenter.Factory</code> or
 <code>Ui.Factory</code> classes generated for them. The annotated class <em>must</em> be injectable — either
@@ -2118,7 +2192,7 @@ injection to types using Dagger <code>AssistedInject</code>. For these cases, th
 <span class="p">}</span>
 </code></pre></div></p>
 <h3 id="kotlin-inject">kotlin-inject<a class="headerlink" href="#kotlin-inject" title="Permanent link">&para;</a></h3>
-<p>Assisted injection in kotlin-inject works slightly differently for classes. Since there is no 
+<p>Assisted injection in kotlin-inject works slightly differently for classes. Since there is no
 <code>@AssistedFactory</code>, you can continue to just annotate the injected class directly.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Inject</span>
 <span class="nd">@CircuitInject</span><span class="p">(</span><span class="n">HomeScreen</span><span class="o">::</span><span class="n">class</span><span class="p">,</span><span class="w"> </span><span class="n">AppScope</span><span class="o">::</span><span class="n">class</span><span class="p">)</span>
@@ -2130,7 +2204,7 @@ injection to types using Dagger <code>AssistedInject</code>. For these cases, th
 </code></pre></div>
 <h2 id="qualifier-propagation">Qualifier propagation<a class="headerlink" href="#qualifier-propagation" title="Permanent link">&para;</a></h2>
 <p>Qualifier annotations (any annotation meta-annotated with <code>@Qualifier</code> like <code>javax.inject.Qualifier</code>,
-<code>dev.zacsweers.metro.Qualifier</code>, etc.) are propagated from the <code>@CircuitInject</code>-annotated 
+<code>dev.zacsweers.metro.Qualifier</code>, etc.) are propagated from the <code>@CircuitInject</code>-annotated
 declaration to the generated factory class.</p>
 <div class="highlight"><pre><span></span><code><span class="nd">@Named</span><span class="p">(</span><span class="s">&quot;home&quot;</span><span class="p">)</span>
 <span class="nd">@Inject</span>

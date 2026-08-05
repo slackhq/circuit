@@ -1,3 +1,9 @@
+Lcom/slack/circuit/runtime/AnsweringNavigatorKt;
+HSPLcom/slack/circuit/runtime/AnsweringNavigatorKt;->rememberAnsweringNavigator(Lcom/slack/circuit/runtime/Navigator;Lkotlin/reflect/KClass;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/GoToNavigator;
+Lcom/slack/circuit/runtime/AnsweringResultHandler;
+HSPLcom/slack/circuit/runtime/AnsweringResultHandler;-><clinit>()V
+HSPLcom/slack/circuit/runtime/AnsweringResultHandler;-><init>()V
+HSPLcom/slack/circuit/runtime/AnsweringResultHandler;->forEachExpectedResult(Lkotlin/jvm/functions/Function3;)V
 Lcom/slack/circuit/runtime/CircuitContext;
 HSPLcom/slack/circuit/runtime/CircuitContext;-><clinit>()V
 HSPLcom/slack/circuit/runtime/CircuitContext;-><init>(Lcom/slack/circuit/runtime/CircuitContext;Ljava/util/Map;)V

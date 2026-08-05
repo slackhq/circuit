@@ -4,6 +4,11 @@ Changelog
 Unreleased
 ----------
 
+0.36.0
+------
+
+_2026-08-05_
+
 ### New
 
 - `circuit-codegen` can now generate kotlinx serialization registrations for `Screen` and `PopResult` types. Annotate each type with `@CircuitSerializable(scope)`. The annotation supplies the default kotlinx serializer, and `circuit-codegen` contributes a registration through the selected DI framework. Pass the injected `Set<CircuitSerializerRegistration>` to `SerializableCircuitSaver`.

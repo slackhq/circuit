@@ -23,8 +23,10 @@ import kotlinx.serialization.modules.plus
  * `SavedState` instead of the Parcelable value. A future release will remove the Parcelable
  * requirement.
  *
- * Screens and results must be `@Serializable` and registered for polymorphic serialization against
- * the [CircuitSaveable] base class in [configuration]'s `serializersModule`:
+ * Screens and results must have a kotlinx serializer and be registered for polymorphic
+ * serialization against the [CircuitSaveable] base class. Use [Serializable] for manual
+ * registration or [CircuitSerializable] with Circuit code generation. Manual registrations belong
+ * in [configuration]'s `serializersModule`:
  * ```
  * val saver = SerializableCircuitSaver(
  *   SavedStateConfiguration {
@@ -39,8 +41,9 @@ import kotlinx.serialization.modules.plus
  * )
  * ```
  *
- * Saving an unregistered type fails with a descriptive error. Restoring an unregistered type drops
- * the saved record. Pass [onRestoreError] to observe dropped records.
+ * Saving an unregistered type fails with a descriptive error. Restoring an unregistered type
+ * returns null, allowing the navigation owner to drop that record. Pass [onRestoreError] to observe
+ * restoration failures.
  *
  * On JVM and Android, `ReflectiveSerializableCircuitSaver` from the `circuit-serialization-reflect`
  * artifact can be used instead to avoid the registration requirement.

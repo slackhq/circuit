@@ -7,16 +7,18 @@ import com.slack.circuit.runtime.screen.Screen
 import kotlin.reflect.KClass
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.MetaSerializable
-import kotlinx.serialization.Serializable
 
 /**
  * Marks a concrete [Screen] or [PopResult] for serialization registration code generation in
  * [scope].
  *
- * This annotation also generates the type's default kotlinx serializer. Add [Serializable] with a
- * custom serializer when the type needs one.
+ * This annotation supplies the type's default kotlinx serializer. Add `@Serializable(with = ...)`
+ * only when the type uses a custom serializer.
+ *
+ * Apply this annotation with the same [scope] to an expect declaration and every actual
+ * declaration. Code generation emits one registration for the expect declaration.
  */
-// KMP only for `@GeneratesRootInput` use on android/jvm
+// Declared with expect/actual so the JVM annotation can include Hilt's `@GeneratesRootInput`.
 @OptIn(ExperimentalSerializationApi::class)
 @MetaSerializable
 @Target(AnnotationTarget.CLASS)

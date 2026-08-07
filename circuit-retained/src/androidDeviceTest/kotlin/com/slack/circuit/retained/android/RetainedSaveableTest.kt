@@ -27,6 +27,7 @@ import com.slack.circuit.retained.RetainedStateRegistryViewModel
 import com.slack.circuit.retained.ViewModelRetainedStateRegistryFactory
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.retainBackedRetainedStateRegistry
+import com.slack.circuit.retained.retainSaveable
 import com.slack.circuit.retained.viewModelRetainedStateRegistry
 import kotlin.reflect.KClass
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
@@ -37,11 +38,20 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 @RunWith(Parameterized::class)
-class RetainedSaveableTest(private val useFirstParty: Boolean) {
+class RetainedSaveableTest(
+  private val useFirstParty: Boolean,
+  private val useRetainSaveable: Boolean,
+) {
   companion object {
     @JvmStatic
-    @Parameterized.Parameters(name = "useFirstParty={0}")
-    fun parameters() = listOf(false, true)
+    @Parameterized.Parameters(name = "useFirstParty={0}, useRetainSaveable={1}")
+    fun parameters() =
+      listOf(
+        arrayOf(false, false),
+        arrayOf(false, true),
+        arrayOf(true, false),
+        arrayOf(true, true),
+      )
   }
 
   private val composeTestRule = createAndroidComposeRule<ComponentActivity>()
@@ -78,7 +88,7 @@ class RetainedSaveableTest(private val useFirstParty: Boolean) {
 
     val content =
       @Composable {
-        data = rememberRetained(saver = CacheableData.Saver) { CacheableData(id++) }
+        data = retainedSaveable { CacheableData(id++) }
         Text(modifier = Modifier.testTag("id"), text = "${data.id}")
         Text(modifier = Modifier.testTag("superBigData"), text = "${data.superBigData}")
       }
@@ -111,7 +121,7 @@ class RetainedSaveableTest(private val useFirstParty: Boolean) {
 
     val content =
       @Composable {
-        data = rememberRetained(saver = CacheableData.Saver) { CacheableData(id++) }
+        data = retainedSaveable { CacheableData(id++) }
         Text(modifier = Modifier.testTag("id"), text = "${data.id}")
         Text(modifier = Modifier.testTag("superBigData"), text = "${data.superBigData}")
       }
@@ -149,7 +159,7 @@ class RetainedSaveableTest(private val useFirstParty: Boolean) {
       scenario.onActivity { activity ->
         activity.setContent {
           CompositionLocalProvider(LocalRetainedStateRegistry provides NoOpRetainedStateRegistry) {
-            data = rememberRetained(saver = CacheableData.Saver) { CacheableData(id++) }
+            data = retainedSaveable { CacheableData(id++) }
             Text(modifier = Modifier.testTag("id"), text = "${data.id}")
             Text(modifier = Modifier.testTag("superBigData"), text = "${data.superBigData}")
           }
@@ -177,6 +187,14 @@ class RetainedSaveableTest(private val useFirstParty: Boolean) {
     composeTestRule.onNodeWithTag("id").assertTextEquals("0")
     composeTestRule.onNodeWithTag("superBigData").assertTextEquals("null")
   }
+
+  @Composable
+  private fun retainedSaveable(init: () -> CacheableData): CacheableData =
+    if (useRetainSaveable) {
+      retainSaveable(saver = CacheableData.Saver, calculation = init)
+    } else {
+      rememberRetained(saver = CacheableData.Saver, init = init)
+    }
 
   private fun setActivityContent(content: @Composable () -> Unit) {
     scenario.onActivity { activity ->

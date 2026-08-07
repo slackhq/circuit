@@ -4,18 +4,57 @@ Changelog
 Unreleased
 ----------
 
+0.36.0
+------
+
+_2026-08-05_
+
 ### New
 
+- `circuit-codegen` can now generate kotlinx serialization registrations for `Screen` and `PopResult` types. Annotate each type with `@CircuitSerializable(scope)`. The annotation supplies the default kotlinx serializer, and `circuit-codegen` contributes a registration through the selected DI framework. Pass the injected `Set<CircuitSerializerRegistration>` to `SerializableCircuitSaver`.
+
+  A Metro setup looks like this:
+
+  ```kotlin
+  @Parcelize
+  @CircuitSerializable(AppScope::class)
+  data class DetailScreen(val itemId: Long) : Screen
+
+  @Provides
+  fun provideCircuitSaver(
+    registrations: Set<CircuitSerializerRegistration>,
+  ): CircuitSaver = SerializableCircuitSaver(registrations)
+  ```
+
+  - Metro, Hilt, kotlin-inject-anvil, and Anvil can provide registrations declared in different Gradle modules to the same application graph.
+  - Apps without one of these DI frameworks can continue to register types manually or use the reflective saver on JVM and Android.
+  - Android screens and results must still implement `Parcelable`. A future release will remove this requirement.
+
+  See the [code generation guide](https://slackhq.github.io/circuit/code-gen/#serialization-registrations) for setup and generated code examples.
 - `rememberAnsweringNavigator` and `answeringNavigationAvailable` are now part of `circuit-runtime`, so presenters can use them through `circuit-runtime-presenter`.
   - `NavigableCircuitContent` continues to provide result delivery. Without it, `rememberAnsweringNavigator` returns the supplied fallback navigator.
 - `AnsweringResultHandler` has moved to `circuit-runtime`.
   - `rememberAnsweringResultHandler` remains in `circuit-foundation` to provide saveable-state persistence without adding Compose runtime-saveable to `circuit-runtime`.
+
+### Fixed
+
+- When `CircuitRetainedSettings.useFirstParty` is enabled, `retain {}` values removed from conditional UI now retire normally instead of surviving for the navigation record's entire lifetime.
 
 ### Deprecated
 
 - The Foundation `answeringNavigationAvailable` function and `rememberAnsweringNavigator` overloads that take a fallback `Navigator` are deprecated. Use the runtime versions.
   - IntelliJ IDEA and Android Studio versions before the 2026.2 platform may fail to update imports for these same-named replacements or leave a literal `T` in a reified call. Update the import manually if this occurs ([KTIJ-12093](https://youtrack.jetbrains.com/issue/KTIJ-12093)).
 - The experimental Foundation `AnsweringResultHandler` type is deprecated in favor of its runtime replacement. Its `Saver` APIs have been removed. Use `rememberAnsweringResultHandler` for a saveable handler.
+
+### Changed
+
+- **circuit-retained:** Added the key-based `retain(key = ...)` and `retainSaveable(...)` APIs. Non-saveable `rememberRetained(key = ...)` calls are now deprecated in favor of `retain(key = ...)`. Unkeyed and saveable `rememberRetained` variants and `rememberRetainedSaveable` remain supported but will eventually be deprecated.
+
+### Contributors
+
+Special thanks to the following contributors for contributing to this release!
+
+- [@JessalynWang](https://github.com/JessalynWang)
 
 0.35.1
 ------

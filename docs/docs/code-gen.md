@@ -16,25 +16,25 @@ dependencies {
 }
 ```
 
-Currently supported types are:
+Supported DI modes are:
 
-- [Anvil](https://github.com/square/anvil) and [Anvil KSP](https://github.com/zacsweers/anvil)
+- [Metro](https://github.com/ZacSweers/metro)
 - [Dagger/Hilt](https://dagger.dev/hilt/)
 - [kotlin-inject](https://github.com/evant/kotlin-inject) + [kotlin-inject-anvil](https://github.com/amzn/kotlin-inject-anvil)
-- [Metro](https://github.com/ZacSweers/metro)
+- [Anvil](https://github.com/square/anvil) and [Anvil KSP](https://github.com/zacsweers/anvil), which are deprecated
 
-Note that Dagger+Anvil is the default mode. 
+Dagger+Anvil remains the default mode for compatibility. New projects should use Metro, Hilt, or kotlin-inject-anvil.
 
 If you are using another mode, you must specify the mode as a KSP arg.
 
 ```kotlin
 ksp {
-  arg("circuit.codegen.mode", "hilt") // or "kotlin_inject_anvil", "metro"
+  arg("circuit.codegen.mode", "metro") // or "hilt", "kotlin_inject_anvil"
 }
 ```
 
-If using Kotlin multiplatform with typealias annotations for Dagger annotations (i.e. expect 
-annotations in common with actual typealias declarations in JVM source sets), you can match on just 
+If using Kotlin multiplatform with typealias annotations for Dagger annotations (i.e. expect
+annotations in common with actual typealias declarations in JVM source sets), you can match on just
 annotation short names alone to support this case via `circuit.codegen.lenient` mode.
 
 ```kotlin
@@ -43,15 +43,20 @@ ksp {
 }
 ```
 
-If using anvil-ksp or kotlin-inject-anvil, you also need to indicate `@CircuitInject` as a 
-contributing annotation.
+If you use anvil-ksp or kotlin-inject-anvil, configure `@CircuitInject` and `@CircuitSerializable` as contributing annotations.
 
 ```kotlin
 ksp {
+  val circuitContributingAnnotations =
+    listOf(
+      "com.slack.circuit.codegen.annotations.CircuitInject",
+      "com.slack.circuit.serialization.CircuitSerializable",
+    ).joinToString(":")
+
   // Anvil-KSP
-  arg("anvil-ksp-extraContributingAnnotations", "com.slack.circuit.codegen.annotations.CircuitInject")
+  arg("anvil-ksp-extraContributingAnnotations", circuitContributingAnnotations)
   // kotlin-inject-anvil (requires 0.0.3+)
-  arg("kotlin-inject-anvil-contributing-annotations", "com.slack.circuit.codegen.annotations.CircuitInject")
+  arg("kotlin-inject-anvil-contributing-annotations", circuitContributingAnnotations)
 }
 ```
 
@@ -62,8 +67,75 @@ The primary entry point is the `CircuitInject` annotation.
 This annotation is used to mark a UI or presenter class or function for code generation. When
 annotated, the type's corresponding factory will be generated and keyed with the defined `screen`.
 
-The generated factories are then contributed to Anvil via `ContributesMultibinding` and scoped
-with the provided `scope` key.
+The generated factories are contributed to the selected DI framework and scoped with the provided `scope` key. Metro uses `@ContributesIntoSet`. The other modes generate equivalent multibindings.
+
+## Serialization registrations
+
+`circuit-codegen` can register serializable `Screen` and `PopResult` types for `SerializableCircuitSaver`. Add the `circuit-serialization` runtime. Then annotate each saved type with its DI scope:
+
+```kotlin
+@CircuitSerializable(AppScope::class)
+data class HomeScreen(val userId: Long) : Screen
+```
+
+In a multiplatform project using Metro or kotlin-inject-anvil, add `circuit-codegen` to `kspCommonMainMetadata`. Also add it to each target-specific KSP configuration that compiles the annotated declarations. Anvil and Hilt support code generation only for JVM and Android targets.
+
+`@CircuitSerializable` supplies the default kotlinx serializer. The serialization processor in `circuit-codegen` generates a registration and contributes it through the selected DI mode. Metro mode generates code equivalent to:
+
+```kotlin
+@Inject
+@ContributesIntoSet(AppScope::class)
+public class HomeScreenCircuitSerializerRegistration :
+  CircuitSerializerRegistration {
+  override fun register(
+    builder: PolymorphicModuleBuilder<CircuitSaveable>,
+  ) {
+    builder.subclass(subclass = HomeScreen::class, serializer = HomeScreen.serializer())
+  }
+}
+```
+
+The other modes contribute the same registration through Hilt, kotlin-inject-anvil, or Anvil. For example, a Metro graph can declare the registration set and provide the saver like this:
+
+```kotlin
+@Multibinds
+fun circuitSerializerRegistrations(): Set<CircuitSerializerRegistration>
+
+@Provides
+fun provideCircuitSaver(
+  registrations: Set<CircuitSerializerRegistration>,
+): CircuitSaver = SerializableCircuitSaver(registrations)
+```
+
+Each supported type contributes one registrar to the DI set. The application graph collects generated contributions from the application module and its dependency modules in the injected `Set<CircuitSerializerRegistration>`. `SerializableCircuitSaver` invokes each registrar when it builds its serializers module. The processor supports accessible, concrete, non-generic `Screen` and `PopResult` classes and objects, including nested declarations.
+
+For an expect/actual type, annotate the expect declaration and every actual declaration with `@CircuitSerializable` using the same scope. The annotation supplies the default serializer in every compilation. The processor generates one registration from the expect declaration.
+
+An expect class with constructor state must declare the property in its body and expose a secondary constructor:
+
+```kotlin
+@CircuitSerializable(AppScope::class)
+expect class OpenUrlScreen : Screen {
+  val url: String
+
+  constructor(url: String)
+}
+
+@CircuitSerializable(AppScope::class)
+actual data class OpenUrlScreen actual constructor(
+  actual val url: String,
+) : Screen
+```
+
+To use a custom serializer for a screen or result, keep `@CircuitSerializable` for registration and add `@Serializable(with = ...)`:
+
+```kotlin
+@CircuitSerializable(AppScope::class)
+@Serializable(with = LegacyScreenSerializer::class)
+data class LegacyScreen(val value: String) : Screen
+```
+
+Apps without a supported DI framework can build a `SerializersModule` manually. On JVM and Android, they can use `ReflectiveSerializableCircuitSaver` instead.
 
 ## Classes
 
@@ -166,7 +238,7 @@ class HomePresenter @AssistedInject constructor(
 
 ### kotlin-inject
 
-Assisted injection in kotlin-inject works slightly differently for classes. Since there is no 
+Assisted injection in kotlin-inject works slightly differently for classes. Since there is no
 `@AssistedFactory`, you can continue to just annotate the injected class directly.
 
 ```kotlin
@@ -182,7 +254,7 @@ class HomePresenter(
 ## Qualifier propagation
 
 Qualifier annotations (any annotation meta-annotated with `@Qualifier` like `javax.inject.Qualifier`,
-`dev.zacsweers.metro.Qualifier`, etc.) are propagated from the `@CircuitInject`-annotated 
+`dev.zacsweers.metro.Qualifier`, etc.) are propagated from the `@CircuitInject`-annotated
 declaration to the generated factory class.
 
 ```kotlin

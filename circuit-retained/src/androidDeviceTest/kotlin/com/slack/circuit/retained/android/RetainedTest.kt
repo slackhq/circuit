@@ -42,6 +42,7 @@ import com.slack.circuit.retained.RetainedStateRegistryViewModel
 import com.slack.circuit.retained.ViewModelRetainedStateRegistryFactory
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateHolder
+import com.slack.circuit.retained.retain
 import com.slack.circuit.retained.retainBackedRetainedStateRegistry
 import com.slack.circuit.retained.viewModelRetainedStateRegistry
 import kotlin.reflect.KClass
@@ -111,6 +112,30 @@ class RetainedTest(private val useFirstParty: Boolean) {
     // Was the text saved
     composeTestRule.onNodeWithTag(TAG_REMEMBER).assertTextContains("")
     composeTestRule.onNodeWithTag(TAG_RETAINED_1).assertTextContains("Text_Retained")
+  }
+
+  @Test
+  fun keyedValueSurvivesMigrationToRetain() {
+    var useRetain = false
+    var retainedValue: Any? = null
+    val content =
+      @Composable {
+        retainedValue =
+          if (useRetain) {
+            retain(key = "value") { Any() }
+          } else {
+            rememberRetainedWithOptionalKey(key = "value") { Any() }
+          }
+      }
+
+    setActivityContent(content)
+    val original = composeTestRule.runOnIdle { checkNotNull(retainedValue) }
+
+    scenario.recreate()
+    useRetain = true
+    setActivityContent(content)
+
+    composeTestRule.runOnIdle { assertThat(retainedValue).isSameInstanceAs(original) }
   }
 
   @Test
@@ -703,11 +728,24 @@ class RetainedTest(private val useFirstParty: Boolean) {
 }
 
 @Composable
+@Suppress("DEPRECATION") // This helper verifies the deprecated explicit-key overload.
+private fun <T : Any> rememberRetainedWithOptionalKey(
+  vararg inputs: Any?,
+  key: String?,
+  init: () -> T,
+): T =
+  if (key.isNullOrEmpty()) {
+    rememberRetained(*inputs, init = init)
+  } else {
+    rememberRetained(*inputs, key = key, init = init)
+  }
+
+@Composable
 internal fun KeyContent(key: String?) {
   var text1 by remember { mutableStateOf("") }
   // By default rememberSavable uses it's line number as its key, this doesn't seem
   // to work when testing, instead pass a key
-  var retainedText: String by rememberRetained(key = key) { mutableStateOf("") }
+  var retainedText: String by rememberRetainedWithOptionalKey(key = key) { mutableStateOf("") }
   Column {
     TextField(
       modifier = Modifier.testTag(TAG_REMEMBER),
@@ -727,11 +765,11 @@ internal fun KeyContent(key: String?) {
 @Composable
 private fun MultipleRetains(useKeys: Boolean) {
   var retainedInt: Int by
-    rememberRetained(key = "retainedInt".takeIf { useKeys }) { mutableStateOf(0) }
+    rememberRetainedWithOptionalKey(key = "retainedInt".takeIf { useKeys }) { mutableStateOf(0) }
   var retainedText1: String by
-    rememberRetained(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
+    rememberRetainedWithOptionalKey(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
   var retainedText2: String by
-    rememberRetained(key = "retained2".takeIf { useKeys }) { mutableStateOf("") }
+    rememberRetainedWithOptionalKey(key = "retained2".takeIf { useKeys }) { mutableStateOf("") }
   Column {
     TextField(
       modifier = Modifier.testTag(TAG_RETAINED_1),
@@ -757,7 +795,7 @@ private fun MultipleRetains(useKeys: Boolean) {
 @Composable
 private fun NestedRetains(useKeys: Boolean) {
   var retainedText1: String by
-    rememberRetained(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
+    rememberRetainedWithOptionalKey(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
 
   Column {
     TextField(
@@ -775,7 +813,7 @@ private fun NestedRetains(useKeys: Boolean) {
 @Composable
 private fun NestedRetainLevel1(useKeys: Boolean) {
   var retainedText2: String by
-    rememberRetained(key = "retained2".takeIf { useKeys }) { mutableStateOf("") }
+    rememberRetainedWithOptionalKey(key = "retained2".takeIf { useKeys }) { mutableStateOf("") }
 
   TextField(
     modifier = Modifier.testTag(TAG_RETAINED_2),
@@ -794,7 +832,7 @@ private fun NestedRetainLevel1(useKeys: Boolean) {
 @Composable
 private fun NestedRetainLevel2(useKeys: Boolean) {
   var retainedInt: Int by
-    rememberRetained(key = "retainedInt".takeIf { useKeys }) { mutableStateOf(0) }
+    rememberRetainedWithOptionalKey(key = "retainedInt".takeIf { useKeys }) { mutableStateOf(0) }
 
   TextField(
     modifier = Modifier.testTag(TAG_RETAINED_3),
@@ -810,7 +848,7 @@ private fun NestedRetainLevel2(useKeys: Boolean) {
 @Composable
 private fun NestedRetainWithPushAndPop(useKeys: Boolean) {
   var retainedText1: String by
-    rememberRetained(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
+    rememberRetainedWithOptionalKey(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
 
   Column {
     TextField(
@@ -847,7 +885,7 @@ private fun NestedRetainWithPushAndPop(useKeys: Boolean) {
 @Composable
 private fun NestedRetainWithPushAndPopAndCannotRetain(useKeys: Boolean) {
   var retainedText1: String by
-    rememberRetained(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
+    rememberRetainedWithOptionalKey(key = "retained1".takeIf { useKeys }) { mutableStateOf("") }
 
   Column {
     TextField(

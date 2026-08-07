@@ -36,7 +36,7 @@ fun buildCircuitSaver(): CircuitSaver =
   SerializableCircuitSaver(
     SavedStateConfiguration {
       serializersModule = SerializersModule {
-        // TODO: Replace these manual registrations with Circuit serialization code generation.
+        // This sample does not use DI, so its Circuit saveables are registered manually.
         polymorphic(CircuitSaveable::class) {
           subclass(TabScreen.Root::class)
           subclass(TabScreen.Screen1::class)

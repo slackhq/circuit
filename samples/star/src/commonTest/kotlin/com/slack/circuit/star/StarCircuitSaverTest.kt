@@ -25,6 +25,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 class StarCircuitSaverTest : BasePresenterTest() {
+  private val circuitSaver = testCircuitSaver()
 
   @Test
   fun allCircuitSaveablesRoundTrip() {
@@ -73,15 +74,15 @@ class StarCircuitSaverTest : BasePresenterTest() {
   }
 
   private inline fun <reified T : Screen> assertScreenRoundTrips(screen: T) {
-    val saved = assertNotNull(starCircuitSaver.save(screen))
-    val restored = assertNotNull(starCircuitSaver.restoreScreen<T>(saved))
+    val saved = assertNotNull(circuitSaver.save(screen))
+    val restored = assertNotNull(circuitSaver.restoreScreen<T>(saved))
 
     assertEquals(screen.snapshot(), restored.snapshot())
   }
 
   private inline fun <reified T : PopResult> assertPopResultRoundTrips(result: T) {
-    val saved = assertNotNull(starCircuitSaver.save(result))
-    val restored = assertNotNull(starCircuitSaver.restorePopResult<T>(saved))
+    val saved = assertNotNull(circuitSaver.save(result))
+    val restored = assertNotNull(circuitSaver.restorePopResult<T>(saved))
 
     assertEquals(result.snapshot(), restored.snapshot())
   }

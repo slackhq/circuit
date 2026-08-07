@@ -4,9 +4,23 @@
 
 package com.slack.circuit.foundation
 
+import androidx.compose.runtime.CancellationHandle
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composer
+import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.currentComposer
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.LocalRetainedValuesStore
+import androidx.compose.runtime.retain.RetainedValuesStore
+import androidx.compose.runtime.retain.retainManagedRetainedValuesStore
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withCompositionLocal
+import com.slack.circuit.retained.CircuitRetainedSettings
+import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 
@@ -57,17 +71,30 @@ public fun <T> pausableState(
 
   val saveableStateHolder = rememberSaveableStateHolderWithReturn()
   val retainedStateHolder = rememberRetainedStateHolderWithReturn()
+  @OptIn(ExperimentalCircuitRetainedApi::class)
+  val retainedValuesStore =
+    if (CircuitRetainedSettings.useFirstParty) {
+      key(key) { retainManagedRetainedValuesStore() }
+    } else {
+      null
+    }
 
   return if (isActive || state.value == null) {
     val finalKey = key ?: "pausable_state"
-    saveableStateHolder
-      .SaveableStateProvider(finalKey) {
-        retainedStateHolder.RetainedStateProvider(key = finalKey, content = produceState)
+    val producedState =
+      if (retainedValuesStore != null) {
+        withRetainedValuesStoreProvider(retainedValuesStore) {
+          saveableStateHolder.SaveableStateProvider(finalKey) {
+            retainedStateHolder.RetainedStateProvider(key = finalKey, content = produceState)
+          }
+        }
+      } else {
+        saveableStateHolder.SaveableStateProvider(finalKey) {
+          retainedStateHolder.RetainedStateProvider(key = finalKey, content = produceState)
+        }
       }
-      .also {
-        // Store the last emitted state
-        state.value = it
-      }
+    state.value = producedState
+    producedState
   } else {
     // Else, we just emit the last stored state instance
     state.value!!
@@ -75,3 +102,61 @@ public fun <T> pausableState(
 }
 
 internal data class MutableRef<R>(var value: R?)
+
+/**
+ * Copy of [androidx.compose.runtime.retain.LocalRetainedValuesStoreProvider], tweaked to return the
+ * value produced by [content]. The upstream `Unit` return would allow the producer to recompose
+ * without propagating its updated value to this function's caller.
+ *
+ * TODO: Replace this copy with the upstream return-valued provider once
+ *   https://issuetracker.google.com/issues/542168593 is available.
+ */
+@Composable
+private fun <T> withRetainedValuesStoreProvider(
+  store: RetainedValuesStore,
+  content: @Composable () -> T,
+): T {
+  return withCompositionLocal(LocalRetainedValuesStore provides store) {
+    val result = content()
+
+    // This must come after content so the store starts retaining before its values are forgotten.
+    val composer = currentComposer
+    remember(store) { RetainedContentPresenceIndicator(store, composer) }
+      .apply { this.composer = composer }
+
+    result
+  }
+}
+
+private class RetainedContentPresenceIndicator(
+  private val store: RetainedValuesStore,
+  composer: Composer,
+) : RememberObserver {
+  var composer by mutableStateOf(composer)
+
+  private var didEnterComposition = false
+  private var enterCompositionCancellationHandle: CancellationHandle? = null
+    set(value) {
+      field?.cancel()
+      field = value
+    }
+
+  override fun onRemembered() {
+    enterCompositionCancellationHandle = composer.scheduleFrameEndCallback {
+      didEnterComposition = true
+      store.onContentEnteredComposition()
+    }
+  }
+
+  override fun onForgotten() {
+    enterCompositionCancellationHandle?.cancel()
+    if (didEnterComposition) {
+      store.onContentExitComposition()
+      didEnterComposition = false
+    }
+  }
+
+  override fun onAbandoned() {
+    enterCompositionCancellationHandle?.cancel()
+  }
+}

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.inbox.di
 
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.sample.inbox.data.EmailRepository
 import com.slack.circuit.sample.inbox.detail.EmailDetailPresenter
 import com.slack.circuit.sample.inbox.list.InboxListPresenter
@@ -18,6 +19,7 @@ import dev.zacsweers.metro.createGraphFactory
  */
 @DependencyGraph(scope = AppScope::class)
 interface InboxTestGraph {
+  val circuitSaver: CircuitSaver
   val inboxListFactory: InboxListPresenter.Factory
   val emailDetailFactory: EmailDetailPresenter.Factory
 

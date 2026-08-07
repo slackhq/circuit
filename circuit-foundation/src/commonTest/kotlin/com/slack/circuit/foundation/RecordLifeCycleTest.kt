@@ -11,7 +11,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runComposeUiTest
 import app.cash.turbine.Turbine
 import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.retain
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
@@ -87,7 +87,7 @@ private class TestPresenter(private val screen: Screen, private val navigator: N
 
   @Composable
   override fun present(): TestState {
-    val value = rememberRetained(key = screen::class.simpleName) { mutableIntStateOf(0) }
+    val value = retain(key = checkNotNull(screen::class.simpleName)) { mutableIntStateOf(0) }
     SideEffect { value.value++ }
     return TestState(Snapshot.withoutReadObservation { value.value }) { navigator.onNavEvent(it) }
   }

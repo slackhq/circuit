@@ -1,5 +1,25 @@
+public abstract interface annotation class com/slack/circuit/serialization/CircuitSerializable : java/lang/annotation/Annotation {
+	public abstract fun scope ()Ljava/lang/Class;
+}
+
+public final synthetic class com/slack/circuit/serialization/CircuitSerializable$Impl : com/slack/circuit/serialization/CircuitSerializable {
+	public static final field $stable I
+	public fun <init> (Lkotlin/reflect/KClass;)V
+	public final synthetic fun scope ()Ljava/lang/Class;
+}
+
+public abstract interface class com/slack/circuit/serialization/CircuitSerializerRegistration {
+	public abstract fun register (Lkotlinx/serialization/modules/PolymorphicModuleBuilder;)V
+}
+
+public final class com/slack/circuit/serialization/CircuitSerializerRegistrationKt {
+	public static final fun circuitSerializersModule (Ljava/lang/Iterable;)Lkotlinx/serialization/modules/SerializersModule;
+}
+
 public final class com/slack/circuit/serialization/SerializableCircuitSaverKt {
 	public static final fun SerializableCircuitSaver (Landroidx/savedstate/serialization/SavedStateConfiguration;Lkotlin/jvm/functions/Function1;)Lcom/slack/circuit/runtime/screen/CircuitSaver;
+	public static final fun SerializableCircuitSaver (Ljava/lang/Iterable;Landroidx/savedstate/serialization/SavedStateConfiguration;Lkotlin/jvm/functions/Function1;)Lcom/slack/circuit/runtime/screen/CircuitSaver;
 	public static synthetic fun SerializableCircuitSaver$default (Landroidx/savedstate/serialization/SavedStateConfiguration;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/slack/circuit/runtime/screen/CircuitSaver;
+	public static synthetic fun SerializableCircuitSaver$default (Ljava/lang/Iterable;Landroidx/savedstate/serialization/SavedStateConfiguration;Lkotlin/jvm/functions/Function1;ILjava/lang/Object;)Lcom/slack/circuit/runtime/screen/CircuitSaver;
 }
 

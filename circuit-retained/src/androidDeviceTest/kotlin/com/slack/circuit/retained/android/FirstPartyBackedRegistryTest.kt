@@ -19,6 +19,7 @@ import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.lifecycleRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedSaveable
+import com.slack.circuit.retained.retainSaveable
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.After
 import org.junit.Rule
@@ -104,12 +105,19 @@ class FirstPartyBackedRegistryTest {
   private val countSetters = mutableMapOf<String, (Int) -> Unit>()
 
   @Composable
-  private fun SaveableRetainingContent() {
+  private fun SaveableRetainingContent(useRetainSaveable: Boolean) {
     CompositionLocalProvider(LocalRetainedStateRegistry provides lifecycleRetainedStateRegistry()) {
-      var count by
-        rememberRetainedSaveable(stateSaver = autoSaver()) {
-          androidx.compose.runtime.mutableIntStateOf(0)
+      val state =
+        if (useRetainSaveable) {
+          retainSaveable(stateSaver = autoSaver()) {
+            androidx.compose.runtime.mutableIntStateOf(0)
+          }
+        } else {
+          rememberRetainedSaveable(stateSaver = autoSaver()) {
+            androidx.compose.runtime.mutableIntStateOf(0)
+          }
         }
+      var count by state
       counts["count"] = count
       countSetters["count"] = { count = it }
     }
@@ -117,22 +125,29 @@ class FirstPartyBackedRegistryTest {
 
   /** The retained+saveable hybrid keeps working with the first-party backing. */
   @Test
-  fun retainedSaveableSurvivesRecreation() {
-    runRetainedSaveableRecreation()
+  fun rememberRetainedSaveableSurvivesRecreation() {
+    runRetainedSaveableRecreation(useRetainSaveable = false)
   }
 
   /** Control: same content under the ViewModel backing. */
   @Test
-  fun retainedSaveableSurvivesRecreationWithViewModelBacking() {
+  fun rememberRetainedSaveableSurvivesRecreationWithViewModelBacking() {
     CircuitRetainedSettings.useFirstParty = false
-    runRetainedSaveableRecreation()
+    runRetainedSaveableRecreation(useRetainSaveable = false)
   }
 
-  private fun runRetainedSaveableRecreation() {
+  @Test
+  fun retainSaveableSurvivesRecreation() {
+    runRetainedSaveableRecreation(useRetainSaveable = true)
+  }
+
+  private fun runRetainedSaveableRecreation(useRetainSaveable: Boolean) {
     // Content must be set from a single source location; positional retained/saveable keys are
     // derived from the content lambda's source position.
     fun setSaveableContent() {
-      scenario.onActivity { activity -> activity.setContent { SaveableRetainingContent() } }
+      scenario.onActivity { activity ->
+        activity.setContent { SaveableRetainingContent(useRetainSaveable) }
+      }
     }
 
     setSaveableContent()

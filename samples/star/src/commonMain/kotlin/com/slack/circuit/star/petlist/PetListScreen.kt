@@ -106,6 +106,7 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.rememberAnsweringNavigator
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.serialization.CircuitSerializable
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.sharedelements.progress
@@ -144,10 +145,9 @@ import io.ktor.util.Platform
 import io.ktor.util.PlatformUtils
 import io.ktor.util.platform
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.Serializable
 
 @Parcelize
-@Serializable
+@CircuitSerializable(AppScope::class)
 data object PetListScreen : Screen {
 
   sealed interface State : CircuitUiState {

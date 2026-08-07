@@ -3,9 +3,8 @@
 package com.slack.circuit.star.navigation
 
 import com.slack.circuit.runtime.screen.Screen
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
+import com.slack.circuit.serialization.CircuitSerializable
+import dev.zacsweers.metro.AppScope
 
-@Serializable actual data class OpenUrlScreen actual constructor(actual val url: String) : Screen
-
-internal actual val openUrlScreenSerializer: KSerializer<OpenUrlScreen> = OpenUrlScreen.serializer()
+@CircuitSerializable(AppScope::class)
+actual data class OpenUrlScreen actual constructor(actual val url: String) : Screen

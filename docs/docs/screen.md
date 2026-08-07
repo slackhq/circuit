@@ -9,7 +9,7 @@ The core `Screen` interface is this:
 interface Screen : Parcelable
 ```
 
-These types are `Parcelable` on Android for saveability in our backstack and easy deeplinking. A 
+These types are `Parcelable` on Android for saveability in our backstack and easy deeplinking. A
 `Screen` can be a simple marker `data object` or a `data class` with information to pass on.
 
 ```kotlin
@@ -35,7 +35,7 @@ fun showAddFavorites() {
 ```
 
 The information passed into a screen can also be used to interact with the data layer. In the example here,
-we are getting the `externalId` from the screen in order to get information back from our repository. 
+we are getting the `externalId` from the screen in order to get information back from our repository.
 
 ```kotlin
 // In a presenter class
@@ -114,48 +114,40 @@ Parcelable is the Android default and needs no setup. Annotate screens with `@Pa
 default saver persists them. For common-code screens, implement `ParcelableScreen`, which adds
 `Parcelable` on Android and is just a `Screen` elsewhere.
 
-To persist `SavedState` encoded with kotlinx-serialization, use the `circuit-serialization`
-artifact. In 0.35, Android screens and pop results still need to be Parcelable in addition to being
-`@Serializable`, even though the saver stores `SavedState` rather than the Parcelable value:
+Use the `circuit-serialization` artifact to persist navigation state with kotlinx serialization. Android screens and pop results must still be Parcelable. A future release will remove this requirement. The saver stores `SavedState` instead of the Parcelable value.
+
+`@CircuitSerializable` supplies the default kotlinx serializer. Circuit's KSP processor contributes a registration through Metro, Hilt, kotlin-inject-anvil, or Anvil. For example, a Metro graph can declare the registration set and provide the saver like this:
 
 ```kotlin
 @Parcelize
-@Serializable
+@CircuitSerializable(AppScope::class)
 data object HomeScreen : Screen
 
-val saver = SerializableCircuitSaver(
-  SavedStateConfiguration {
-    serializersModule = SerializersModule {
-      polymorphic(CircuitSaveable::class) {
-        subclass(HomeScreen::class)
-        // Register every screen and pop result here
-      }
-    }
-  }
-)
+@Multibinds
+fun circuitSerializerRegistrations(): Set<CircuitSerializerRegistration>
+
+@Provides
+fun provideCircuitSaver(
+  registrations: Set<CircuitSerializerRegistration>,
+): CircuitSaver = SerializableCircuitSaver(registrations)
 ```
 
-On JVM and Android, `ReflectiveSerializableCircuitSaver()` from the `circuit-serialization-reflect`
-artifact skips the registration requirement by resolving serializers reflectively from the saved
-class name. The artifact embeds the R8/ProGuard rules it needs, so minified apps work without
-additional configuration.
+Each Gradle module compiles the generated set contributions for its annotated types. The application graph collects contributions from the application module and its dependency modules in the injected `Set<CircuitSerializerRegistration>`. Apps without a supported DI framework can register `@Serializable` types manually in a `SerializersModule`. They can also use the reflective saver. See the [code generation guide](code-gen.md#serialization-registrations) for setup and generated code.
 
-Both serializing savers can restore navigation state saved by Circuit 0.34's default saver, so
-adopting serialization in 0.35 does not by itself reset existing navigation state.
+On JVM and Android, `ReflectiveSerializableCircuitSaver()` can resolve serializers from the saved class name. Apps that use it do not need to register each type. The `circuit-serialization-reflect` artifact includes the R8 and ProGuard rules it needs. Minified apps do not need extra configuration.
+
+Both serializing savers can restore navigation state written by Circuit 0.34's default saver. Switching to serialization does not reset that state.
 
 When a saved value can no longer be restored:
 
 - `SaveableBackStack` drops the affected record. If none survive, it starts from its initial value.
-- `SaveableNavStack` discards incomplete forward history. If the active screen or its back history
-  is missing, it starts from its initial value.
+- `SaveableNavStack` discards incomplete forward history. If the active screen or its back history is missing, it starts from its initial value.
 - Stored back-stack snapshots are discarded if any record is missing.
 - An unrestorable pending pop result clears its expectation, so `awaitResult` returns null.
 
 See the `circuit-serialization` README for the full setup.
 
-To disable persistence entirely, use `CircuitSaver.NoOp`. Stacks saved with it restore to their
-initial state. This changes persistence behavior only: Android `Screen` and `PopResult`
-implementations still need to be Parcelable in 0.35.
+To disable persistence entirely, use `CircuitSaver.NoOp`. Stacks saved with it restore to their initial state. This changes persistence behavior only. Android `Screen` and `PopResult` implementations must still be `Parcelable` for now.
 
 ### Wiring
 
@@ -181,7 +173,7 @@ any back stack created inside it.
 
 ### Roadmap
 
-`Screen` and `PopResult` still extend `Parcelable` on Android in 0.35. A future release removes
-those supertypes. To prepare, implement `ParcelableScreen` or `ParcelablePopResult` on values that
+`Screen` and `PopResult` still extend `Parcelable` on Android. A future release will remove those
+supertypes. To prepare, implement `ParcelableScreen` or `ParcelablePopResult` on values that
 should keep using Parcelable, or adopt a serializing `CircuitSaver`. The `circuit-serialization`
 README has the full roadmap.

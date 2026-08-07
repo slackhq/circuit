@@ -2,6 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.serialization
 
+import androidx.savedstate.SavedState
+import androidx.savedstate.read
+import androidx.savedstate.serialization.ClassDiscriminatorMode
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.PopResult
@@ -11,15 +14,26 @@ import com.slack.circuit.runtime.screen.restoreScreen
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
 
-@Serializable data class StringScreen(val value: String) : Screen
+object TestScope
+
+@CircuitSerializable(TestScope::class) data class StringScreen(val value: String) : Screen
 
 @Serializable data object ObjectScreen : Screen
 
@@ -27,22 +41,38 @@ import kotlinx.serialization.modules.subclass
 
 @Serializable data class StringPopResult(val value: String) : PopResult
 
+@Serializable data class DefaultScreen(val value: String = "default") : Screen
+
+@CircuitSerializable(TestScope::class)
+@Serializable(with = CustomStringScreenSerializer::class)
+data class CustomStringScreen(val value: String) : Screen
+
+object CustomStringScreenSerializer : KSerializer<CustomStringScreen> {
+  override val descriptor: SerialDescriptor =
+    PrimitiveSerialDescriptor("CustomStringScreen", PrimitiveKind.STRING)
+
+  override fun serialize(encoder: Encoder, value: CustomStringScreen) {
+    encoder.encodeString("custom:${value.value}")
+  }
+
+  override fun deserialize(decoder: Decoder): CustomStringScreen {
+    return CustomStringScreen(decoder.decodeString().removePrefix("custom:"))
+  }
+}
+
 data class UnregisteredScreen(val value: String) : Screen
 
 class SerializableCircuitSaverTest {
 
   private val saver =
     SerializableCircuitSaver(
-      SavedStateConfiguration {
-        serializersModule = SerializersModule {
-          polymorphic(CircuitSaveable::class) {
-            subclass(StringScreen::class)
-            subclass(ObjectScreen::class)
-            subclass(IntPopResult::class)
-            subclass(StringPopResult::class)
-          }
-        }
-      }
+      listOf(
+        registration(StringScreen::class, StringScreen.serializer()),
+        registration(ObjectScreen::class, ObjectScreen.serializer()),
+        registration(IntPopResult::class, IntPopResult.serializer()),
+        registration(StringPopResult::class, StringPopResult.serializer()),
+        registration(CustomStringScreen::class, CustomStringScreen.serializer()),
+      )
     )
 
   @Test
@@ -63,6 +93,100 @@ class SerializableCircuitSaverTest {
     val result = IntPopResult(42)
     val saved = assertNotNull(saver.save(result))
     assertEquals(result, saver.restorePopResult<IntPopResult>(saved))
+  }
+
+  @Test
+  fun custom_serializer_round_trip() {
+    val screen = CustomStringScreen("hello")
+    val saved = assertNotNull(saver.save(screen))
+    assertEquals(screen, saver.restoreScreen<CustomStringScreen>(saved))
+  }
+
+  @OptIn(ExperimentalSerializationApi::class)
+  @Test
+  fun registrations_create_a_polymorphic_module() {
+    val module =
+      circuitSerializersModule(listOf(registration(StringScreen::class, StringScreen.serializer())))
+
+    assertSame(
+      StringScreen.serializer(),
+      module.getPolymorphic(CircuitSaveable::class, StringScreen("hello")),
+    )
+  }
+
+  @Test
+  fun registration_module_is_combined_with_existing_configuration() {
+    val configuration = SavedStateConfiguration {
+      serializersModule = SerializersModule {
+        polymorphic(CircuitSaveable::class) { subclass(StringScreen::class) }
+      }
+      encodeDefaults = true
+    }
+    val combinedSaver =
+      SerializableCircuitSaver(
+        listOf(registration(IntPopResult::class, IntPopResult.serializer())),
+        configuration,
+      )
+
+    val screen = StringScreen("existing")
+    val result = IntPopResult(42)
+    assertEquals(
+      screen,
+      combinedSaver.restoreScreen<StringScreen>(assertNotNull(combinedSaver.save(screen))),
+    )
+    assertEquals(
+      result,
+      combinedSaver.restorePopResult<IntPopResult>(assertNotNull(combinedSaver.save(result))),
+    )
+  }
+
+  @Test
+  fun existing_configuration_options_are_preserved() {
+    val configuration = SavedStateConfiguration {
+      encodeDefaults = true
+      classDiscriminatorMode = ClassDiscriminatorMode.ALL_OBJECTS
+    }
+    val configuredSaver =
+      SerializableCircuitSaver(
+        listOf(registration(DefaultScreen::class, DefaultScreen.serializer())),
+        configuration,
+      )
+
+    val saved = assertIs<SavedState>(configuredSaver.save(DefaultScreen()))
+    saved.read {
+      getSavedState("value").read {
+        assertTrue("type" in this)
+        assertTrue("value" in this)
+      }
+    }
+  }
+
+  @Test
+  fun conflicting_registration_fails() {
+    val configuration = SavedStateConfiguration {
+      serializersModule = SerializersModule {
+        polymorphic(CircuitSaveable::class) { subclass(StringScreen::class) }
+      }
+    }
+
+    assertFailsWith<IllegalArgumentException> {
+      SerializableCircuitSaver(
+        listOf(registration(StringScreen::class, AlternateStringScreenSerializer)),
+        configuration,
+      )
+    }
+  }
+
+  @Test
+  fun duplicate_registrations_fail() {
+    assertFailsWith<IllegalArgumentException> {
+      circuitSerializersModule(
+        listOf(
+          registration(StringScreen::class, StringScreen.serializer()),
+          registration(StringScreen::class, AlternateStringScreenSerializer),
+        )
+      )
+    }
   }
 
   @Test
@@ -149,4 +273,14 @@ class SerializableCircuitSaverTest {
   fun restore_unexpected_value_returns_null() {
     assertNull(saver.restoreScreen<StringScreen>("garbage"))
   }
+}
+
+private object AlternateStringScreenSerializer :
+  KSerializer<StringScreen> by StringScreen.serializer()
+
+private fun <T : CircuitSaveable> registration(
+  subclass: kotlin.reflect.KClass<T>,
+  serializer: KSerializer<T>,
+): CircuitSerializerRegistration = CircuitSerializerRegistration { builder ->
+  builder.subclass(subclass, serializer)
 }

@@ -13,9 +13,13 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.internal.test.TestContent
+import com.slack.circuit.internal.test.TestContentTags.TAG_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
+import com.slack.circuit.internal.test.TestContentTags.TAG_INCREASE_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_LABEL
 import com.slack.circuit.internal.test.TestContentTags.TAG_POP
+import com.slack.circuit.internal.test.TestCountPresenter
 import com.slack.circuit.internal.test.TestEvent
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.TestState
@@ -131,6 +135,118 @@ class FirstPartyRetainRecordLifecycleTest {
     composeTestRule.waitForIdle()
     assertThat(events.count { it == "A:retired" }).isEqualTo(1)
     assertThat(events.count { it == "B:retired" }).isEqualTo(1)
+  }
+
+  @Test
+  fun removedConditionalUiValueRetiresWhileRecordRemainsComposed() {
+    CircuitRetainedSettings.useFirstParty = true
+    var showRetained by mutableStateOf(true)
+    val circuit =
+      Circuit.Builder()
+        .addPresenter<TestScreen, TestState> { screen, _, _ ->
+          presenterOf { TestState(0, screen.label) {} }
+        }
+        .addUi<TestScreen, TestState> { state, modifier ->
+          if (showRetained) {
+            retain {
+              events += "conditional:create"
+              Tracked("conditional")
+            }
+          }
+          TestContent(state, modifier)
+        }
+        .build()
+
+    composeTestRule.setContent {
+      CircuitCompositionLocals(circuit) {
+        val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
+        val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+        NavigableCircuitContent(navigator = navigator, backStack = backStack)
+      }
+    }
+
+    composeTestRule.onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+    assertThat(events.count { it == "conditional:create" }).isEqualTo(1)
+
+    composeTestRule.runOnIdle { showRetained = false }
+    composeTestRule.waitForIdle()
+    assertThat(events.count { it == "conditional:retired" }).isEqualTo(1)
+
+    composeTestRule.runOnIdle { showRetained = true }
+    composeTestRule.waitForIdle()
+    assertThat(events.count { it == "conditional:create" }).isEqualTo(2)
+  }
+
+  @Test
+  fun firstPartyPresenterStateUpdatesWhileActive() {
+    CircuitRetainedSettings.useFirstParty = true
+    val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.FirstPartyRetain)
+
+    composeTestRule.setContent {
+      CircuitCompositionLocals(circuit) {
+        val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
+        val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+        NavigableCircuitContent(navigator = navigator, backStack = backStack)
+      }
+    }
+
+    composeTestRule.onNodeWithTag(TAG_COUNT).assertTextEquals("0")
+    composeTestRule.onNodeWithTag(TAG_INCREASE_COUNT).performClick()
+    composeTestRule.onNodeWithTag(TAG_COUNT).assertTextEquals("1")
+  }
+
+  @Test
+  fun retainedPresenterSurvivesInterruptedRootTransition() {
+    CircuitRetainedSettings.useFirstParty = true
+    lateinit var navigator: Navigator
+    val circuit =
+      createTestCircuit(
+        presenter = { screen, _ ->
+          val label = (screen as TestScreen).label
+          presenterOf {
+            retain {
+              events += "$label:create"
+              Tracked(label)
+            }
+            TestState(0, label) {}
+          }
+        }
+      )
+
+    composeTestRule.setContent {
+      CircuitCompositionLocals(circuit) {
+        val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
+        navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+        NavigableCircuitContent(navigator = navigator, backStack = backStack)
+      }
+    }
+
+    composeTestRule.onNodeWithTag(TAG_LABEL).assertTextEquals("Root Alpha")
+    composeTestRule.mainClock.autoAdvance = false
+    try {
+      navigator.resetRoot(TestScreen.ScreenA, StateOptions.SaveAndRestore)
+      composeTestRule.mainClock.advanceTimeByFrame()
+      repeat(10) {
+        navigator.resetRoot(TestScreen.ScreenB, StateOptions.SaveAndRestore)
+        composeTestRule.mainClock.advanceTimeByFrame()
+        navigator.resetRoot(TestScreen.ScreenA, StateOptions.SaveAndRestore)
+        composeTestRule.mainClock.advanceTimeByFrame()
+        navigator.resetRoot(TestScreen.ScreenC, StateOptions.SaveAndRestore)
+        composeTestRule.mainClock.advanceTimeByFrame()
+        navigator.resetRoot(TestScreen.ScreenA, StateOptions.SaveAndRestore)
+        composeTestRule.mainClock.advanceTimeByFrame()
+        navigator.resetRoot(TestScreen.ScreenB, StateOptions.SaveAndRestore)
+        composeTestRule.mainClock.advanceTimeByFrame()
+      }
+      navigator.resetRoot(TestScreen.ScreenA, StateOptions.SaveAndRestore)
+    } finally {
+      composeTestRule.mainClock.autoAdvance = true
+    }
+
+    composeTestRule.onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+    composeTestRule.waitForIdle()
+    assertThat(events.count { it == "A:create" }).isEqualTo(1)
+    assertThat(events).doesNotContain("A:retired")
   }
 
   private fun runScenario(useEmptyDecoration: Boolean) {

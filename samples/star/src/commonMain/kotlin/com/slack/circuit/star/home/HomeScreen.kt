@@ -40,6 +40,7 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.serialization.CircuitSerializable
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.sharedelements.progress
@@ -50,10 +51,9 @@ import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.AppScope
 import kotlin.math.roundToInt
-import kotlinx.serialization.Serializable
 
 @Parcelize
-@Serializable
+@CircuitSerializable(AppScope::class)
 data object HomeScreen : Screen {
 
   data class State(

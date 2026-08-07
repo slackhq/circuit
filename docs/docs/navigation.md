@@ -94,11 +94,11 @@ Navigation carries special semantic value in `CircuitContent` as well, where itâ
   }
 }
 
-@Composable 
+@Composable
 fun NestedPresenter(navigator: Navigator): NestedState {
   // These are forwarded up!
   navigator.goTo(AnotherScreen)
-  
+
   // ...
 }
 ```

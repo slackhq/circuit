@@ -4,6 +4,10 @@ Changelog
 Unreleased
 ----------
 
+### Fixed
+
+- Fixed `SerializableCircuitSaver` round trips for registered types with nested `Screen` or `PopResult` properties.
+
 0.36.0
 ------
 

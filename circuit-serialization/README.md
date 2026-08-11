@@ -74,6 +74,8 @@ data class LegacyScreen(val value: String) : Screen
 
 `SerializableCircuitSaver(registrations, configuration)` adds generated registrations to the configuration's existing serializers module. It preserves the other configuration options. Conflicting registrations fail when the saver is created.
 
+Registrations against `CircuitSaveable` are also used for nested properties declared as `Screen` or `PopResult`.
+
 ### Manual registration
 
 Apps that do not use DI can register `@Serializable` screens and results manually against the `CircuitSaveable` base class in a `SavedStateConfiguration`:

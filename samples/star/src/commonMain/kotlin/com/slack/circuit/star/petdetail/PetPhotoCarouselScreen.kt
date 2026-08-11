@@ -68,8 +68,10 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
 import com.slack.circuit.sharedelements.requireActiveAnimatedScope
+import com.slack.circuit.star.common.isLandscape
 import com.slack.circuit.star.imageviewer.ImageViewerScreen
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.PAGER_INDICATOR_TAG
 import com.slack.circuit.star.transition.PetImageBoundsKey
 import com.slack.circuit.star.transition.PetImageElementKey
 import com.slack.circuit.star.ui.HorizontalPagerIndicator
@@ -128,26 +130,32 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
   // Use the primary photo's aspect ratio for consistent container sizing
   val containerAspectRatio = screen.photoAspectRatio ?: DEFAULT_ASPECT_RATIO
 
+  val isLandscape = isLandscape()
   Column(
-    modifier.testTag(CAROUSEL_TAG).focusRequester(requester).focusable().onKeyEvent { event ->
-      if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
-      val index =
-        when (event.key) {
-          Key.DirectionRight -> {
-            pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
+    modifier
+      .let { if (isLandscape) it.fillMaxSize() else it }
+      .testTag(CAROUSEL_TAG)
+      .focusRequester(requester)
+      .focusable()
+      .onKeyEvent { event ->
+        if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
+        val index =
+          when (event.key) {
+            Key.DirectionRight -> {
+              pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
+            }
+            Key.DirectionLeft -> {
+              pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
+            }
+            else -> -1
           }
-          Key.DirectionLeft -> {
-            pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
-          }
-          else -> -1
+        if (index == -1) {
+          false
+        } else {
+          scope.launch { pagerState.animateScrollToPage(index) }
+          true
         }
-      if (index == -1) {
-        false
-      } else {
-        scope.launch { pagerState.animateScrollToPage(index) }
-        true
-      }
-    },
+      },
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     PhotoPager(
@@ -157,12 +165,13 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
       name = screen.name,
       photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
       containerAspectRatio = containerAspectRatio,
+      modifier = if (isLandscape) Modifier.weight(1f, fill = false) else Modifier,
     )
 
     HorizontalPagerIndicator(
       pagerState = pagerState,
       pageCount = totalPhotos,
-      modifier = Modifier.padding(16.dp),
+      modifier = Modifier.padding(16.dp).testTag(PAGER_INDICATOR_TAG),
       activeColor = MaterialTheme.colorScheme.onBackground,
     )
   }
@@ -291,4 +300,5 @@ private fun PhotoPager(
 
 internal object PetPhotoCarouselTestConstants {
   const val CAROUSEL_TAG = "carousel"
+  const val PAGER_INDICATOR_TAG = "pager_indicator"
 }

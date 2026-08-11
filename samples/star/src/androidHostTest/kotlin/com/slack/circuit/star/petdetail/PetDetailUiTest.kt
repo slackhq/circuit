@@ -3,7 +3,12 @@
 package com.slack.circuit.star.petdetail
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.test.assertIsDisplayed
@@ -15,6 +20,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
+import androidx.compose.ui.unit.dp
 import coil3.ColorImage
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
@@ -31,12 +37,14 @@ import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
+import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.PAGER_INDICATOR_TAG
 import com.slack.circuit.test.TestEventSink
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 class PetDetailUiTest {
@@ -123,6 +131,30 @@ class PetDetailUiTest {
         isNotNull()
         isEqualTo(expectedScreen)
       }
+    }
+  }
+
+  @Test
+  @Config(qualifiers = "w640dp-h360dp-land")
+  fun petPhotoCarousel_keeps_paging_indicator_visible_when_height_is_constrained() {
+    val screen =
+      PetPhotoCarouselScreen(
+        id = 1,
+        name = "Baxter",
+        photoUrls = listOf("http://some.url/1", "http://some.url/2"),
+        photoUrlMemoryCacheKey = null,
+      )
+
+    composeTestRule.run {
+      setTestContent(circuit) {
+        ContentWithOverlays {
+          Box(Modifier.size(width = 400.dp, height = 240.dp).clipToBounds()) {
+            PetPhotoCarousel(screen, Modifier.fillMaxSize())
+          }
+        }
+      }
+
+      onNodeWithTag(PAGER_INDICATOR_TAG).assertIsDisplayed()
     }
   }
 

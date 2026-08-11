@@ -26,7 +26,8 @@ import kotlinx.serialization.modules.plus
  * Screens and results must have a kotlinx serializer and be registered for polymorphic
  * serialization against the [CircuitSaveable] base class. Use [Serializable] for manual
  * registration or [CircuitSerializable] with Circuit code generation. Manual registrations belong
- * in [configuration]'s `serializersModule`:
+ * in [configuration]'s `serializersModule`. Registrations against [CircuitSaveable] are also used
+ * for nested properties declared as [Screen] or [PopResult]:
  * ```
  * val saver = SerializableCircuitSaver(
  *   SavedStateConfiguration {
@@ -51,7 +52,7 @@ import kotlinx.serialization.modules.plus
 public fun SerializableCircuitSaver(
   configuration: SavedStateConfiguration = SavedStateConfiguration.DEFAULT,
   onRestoreError: (Throwable) -> Unit = {},
-): CircuitSaver = SavedStateCircuitSaver(configuration, onRestoreError)
+): CircuitSaver = SavedStateCircuitSaver(configuration.withCircuitSerializers(), onRestoreError)
 
 /**
  * Returns a [CircuitSaver] that persists the screens and pop results supplied by [registrations].
@@ -66,11 +67,23 @@ public fun SerializableCircuitSaver(
   onRestoreError: (Throwable) -> Unit = {},
 ): CircuitSaver =
   SavedStateCircuitSaver(
-    SavedStateConfiguration(from = configuration) {
-      serializersModule = configuration.serializersModule + circuitSerializersModule(registrations)
-    },
+    configuration.withCircuitSerializers(registrations),
     onRestoreError,
   )
+
+private fun SavedStateConfiguration.withCircuitSerializers(
+  registrations: Iterable<CircuitSerializerRegistration>? = null
+): SavedStateConfiguration {
+  val sourceModule =
+    if (registrations == null) {
+      serializersModule
+    } else {
+      serializersModule + circuitSerializersModule(registrations)
+    }
+  return SavedStateConfiguration(from = this) {
+    serializersModule = sourceModule.withCircuitSaveableFallbacks()
+  }
+}
 
 private class SavedStateCircuitSaver(
   private val configuration: SavedStateConfiguration,

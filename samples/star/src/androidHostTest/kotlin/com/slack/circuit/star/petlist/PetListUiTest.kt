@@ -6,6 +6,10 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.test.DeviceConfigurationOverride
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.WindowInsets
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
@@ -14,7 +18,11 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
+import androidx.core.graphics.Insets
+import androidx.core.view.WindowInsetsCompat
 import coil3.ColorImage
+import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.common.Strings
@@ -80,6 +88,33 @@ class PetListUiTest {
       onNodeWithTag(IMAGE_TAG, useUnmergedTree = true).assertExists()
       onNodeWithTag(AGE_AND_BREED_TAG, useUnmergedTree = true)
         .assertTextEquals("${ANIMAL.gender!!.displayName} – ${ANIMAL.age}")
+    }
+  }
+
+  @OptIn(ExperimentalTestApi::class)
+  @Test
+  fun petList_avoids_display_cutout() {
+    val animals = listOf(ANIMAL)
+    val cutoutWidth = 96.dp
+    var cutoutWidthPx = 0
+
+    composeTestRule.run {
+      setTestContent {
+        cutoutWidthPx = with(LocalDensity.current) { cutoutWidth.roundToPx() }
+        val windowInsets =
+          WindowInsetsCompat.Builder()
+            .setInsets(
+              WindowInsetsCompat.Type.displayCutout(),
+              Insets.of(cutoutWidthPx, 0, 0, 0),
+            )
+            .build()
+        DeviceConfigurationOverride(DeviceConfigurationOverride.WindowInsets(windowInsets)) {
+          PetList(Success(animals, isRefreshing = false) {})
+        }
+      }
+
+      val firstCardLeft = onAllNodesWithTag(CARD_TAG)[0].fetchSemanticsNode().boundsInRoot.left
+      assertThat(firstCardLeft).isAtLeast(cutoutWidthPx.toFloat())
     }
   }
 

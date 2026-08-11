@@ -35,6 +35,15 @@ pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
         }
       }
   }
+  pluginManager.withPlugin("com.google.devtools.ksp") {
+    // TODO Remove when KSP preserves the task dependency for generated Android host-test
+    //  sources used by lint. https://github.com/google/ksp/issues/3128
+    tasks
+      .matching {
+        it.name == "generateAndroidHostTestLintModel" || it.name == "lintAnalyzeAndroidHostTest"
+      }
+      .configureEach { dependsOn("kspAndroidHostTest") }
+  }
   dependencies { add("lintChecks", catalog.findLibrary("lints-compose").get()) }
 }
 

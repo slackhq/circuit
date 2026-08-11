@@ -1573,6 +1573,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0361" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.36.1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.36.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0360" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1596,7 +1624,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed" class="md-nav__link">
+  <a href="#fixed_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -1707,7 +1735,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_1" class="md-nav__link">
+  <a href="#fixed_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -3322,6 +3350,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#0361" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0.36.1
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0.36.1">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#0360" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3345,7 +3401,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed" class="md-nav__link">
+  <a href="#fixed_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -3456,7 +3512,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#fixed_1" class="md-nav__link">
+  <a href="#fixed_2" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fixed
@@ -4890,6 +4946,12 @@
 
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <h2 id="unreleased">Unreleased<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="0361">0.36.1<a class="headerlink" href="#0361" title="Permanent link">&para;</a></h2>
+<p><em>2026-08-11</em></p>
+<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Fixed <code>SerializableCircuitSaver</code> round trips for registered types with nested <code>Screen</code> or <code>PopResult</code> properties.</li>
+</ul>
 <h2 id="0360">0.36.0<a class="headerlink" href="#0360" title="Permanent link">&para;</a></h2>
 <p><em>2026-08-05</em></p>
 <h3 id="new">New<a class="headerlink" href="#new" title="Permanent link">&para;</a></h3>
@@ -4916,7 +4978,7 @@
   - <code>NavigableCircuitContent</code> continues to provide result delivery. Without it, <code>rememberAnsweringNavigator</code> returns the supplied fallback navigator.
 - <code>AnsweringResultHandler</code> has moved to <code>circuit-runtime</code>.
   - <code>rememberAnsweringResultHandler</code> remains in <code>circuit-foundation</code> to provide saveable-state persistence without adding Compose runtime-saveable to <code>circuit-runtime</code>.</p>
-<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_1">Fixed<a class="headerlink" href="#fixed_1" title="Permanent link">&para;</a></h3>
 <ul>
 <li>When <code>CircuitRetainedSettings.useFirstParty</code> is enabled, <code>retain {}</code> values removed from conditional UI now retire normally instead of surviving for the navigation record&rsquo;s entire lifetime.</li>
 </ul>
@@ -4988,7 +5050,7 @@ sample demonstrates the kotlinx setup end to end.</p>
 <li><code>SaveableBackStack.Record.args</code> and <code>SaveableBackStack.push(screen, args)</code>. Pass data through the <code>Screen</code> itself instead; <code>args</code> will be removed in a future release. This matches what the new <code>SaveableNavStack</code> already does.</li>
 <li>The <code>Saver</code> vals on <code>SaveableBackStack</code>, <code>SaveableNavStack</code>, and <code>AnsweringResultHandler</code> companions. Use the <code>Saver(CircuitSaver)</code> functions instead.</li>
 </ul>
-<h3 id="fixed_1">Fixed<a class="headerlink" href="#fixed_1" title="Permanent link">&para;</a></h3>
+<h3 id="fixed_2">Fixed<a class="headerlink" href="#fixed_2" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed saveable stacks restoring empty when every record is dropped. Saveable nav stacks now
   discard incomplete forward history and fall back to their initial value if the active screen or

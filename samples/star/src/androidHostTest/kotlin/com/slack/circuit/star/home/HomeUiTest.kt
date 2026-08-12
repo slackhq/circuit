@@ -24,6 +24,7 @@ import androidx.core.graphics.Insets
 import androidx.core.view.WindowInsetsCompat
 import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.star.home.HomeTestConstants.BOTTOM_NAVIGATION_TAG
+import com.slack.circuit.star.home.HomeTestConstants.NAVIGATION_RAIL_ITEM_TAG
 import com.slack.circuit.star.home.HomeTestConstants.NAVIGATION_RAIL_TAG
 import org.junit.Rule
 import org.junit.Test
@@ -35,17 +36,22 @@ import org.robolectric.annotation.Config
 class HomeUiTest {
   @get:Rule val composeTestRule = createComposeRule()
 
+  @OptIn(ExperimentalTestApi::class)
   @Test
   @Config(qualifiers = "w480dp-h360dp-land")
   fun compactHeight_usesNavigationRail() {
     var selectedIndex = 0
     composeTestRule.run {
       setContent {
-        HomeNavigationLayout(
-          selectedIndex = selectedIndex,
-          onSelectedIndex = { selectedIndex = it },
-        ) { paddingValues ->
-          Box(Modifier.fillMaxSize().padding(paddingValues).testTag(CONTENT_TAG))
+        DeviceConfigurationOverride(
+          DeviceConfigurationOverride.WindowInsets(WindowInsetsCompat.Builder().build())
+        ) {
+          HomeNavigationLayout(
+            selectedIndex = selectedIndex,
+            onSelectedIndex = { selectedIndex = it },
+          ) { paddingValues ->
+            Box(Modifier.fillMaxSize().padding(paddingValues).testTag(CONTENT_TAG))
+          }
         }
       }
 
@@ -54,6 +60,13 @@ class HomeUiTest {
       val railRight = rail.fetchSemanticsNode().boundsInRoot.right
       val contentLeft = onNodeWithTag(CONTENT_TAG).fetchSemanticsNode().boundsInRoot.left
       assertThat(contentLeft).isAtLeast(railRight)
+
+      val railCenterY = rail.fetchSemanticsNode().boundsInRoot.center.y
+      val adoptablesBounds =
+        onNodeWithTag("$NAVIGATION_RAIL_ITEM_TAG-0").fetchSemanticsNode().boundsInRoot
+      val aboutBounds =
+        onNodeWithTag("$NAVIGATION_RAIL_ITEM_TAG-1").fetchSemanticsNode().boundsInRoot
+      assertThat((adoptablesBounds.top + aboutBounds.bottom) / 2f).isWithin(1f).of(railCenterY)
 
       onNodeWithContentDescription("About", useUnmergedTree = true).performClick()
       assertThat(selectedIndex).isEqualTo(1)

@@ -6,6 +6,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -15,11 +16,14 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.swipeUp
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import coil3.ColorImage
 import com.google.common.truth.Truth.assertThat
@@ -33,11 +37,17 @@ import com.slack.circuit.star.petdetail.PetDetailScreen.Event
 import com.slack.circuit.star.petdetail.PetDetailScreen.Event.ViewFullBio
 import com.slack.circuit.star.petdetail.PetDetailScreen.State.Full
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.ANIMAL_CONTAINER_TAG
+import com.slack.circuit.star.petdetail.PetDetailTestConstants.COMPACT_CLOSE_TAG
+import com.slack.circuit.star.petdetail.PetDetailTestConstants.COMPACT_DETAILS_PANE_TAG
+import com.slack.circuit.star.petdetail.PetDetailTestConstants.COMPACT_PHOTO_PANE_TAG
+import com.slack.circuit.star.petdetail.PetDetailTestConstants.DESCRIPTION_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.FULL_BIO_TAG
+import com.slack.circuit.star.petdetail.PetDetailTestConstants.PET_NAME_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.PROGRESS_TAG
 import com.slack.circuit.star.petdetail.PetDetailTestConstants.UNKNOWN_ANIMAL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.CAROUSEL_TAG
 import com.slack.circuit.star.petdetail.PetPhotoCarouselTestConstants.PAGER_INDICATOR_TAG
+import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuit.test.TestEventSink
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -159,6 +169,131 @@ class PetDetailUiTest {
   }
 
   @Test
+  @Config(qualifiers = "w640dp-h360dp-land")
+  fun petDetail_usesCompactLandscapeLayout() {
+    val success =
+      Full(
+        id = 1,
+        url = "url",
+        photoUrls = listOf("http://some.url/1", "http://some.url/2"),
+        photoUrlMemoryCacheKey = null,
+        name = "Baxter",
+        descriptionMarkdown = "**Their Foster Parent Says:** \"Baxter is very sweet.\"",
+        tags = listOf("dog", "terrier", "male"),
+        attributes = emptyList(),
+        photoAspectRatio = 1.33f,
+        eventSink = {},
+      )
+
+    composeTestRule.run {
+      setTestContent(circuit) { ContentWithOverlays { PetDetail(success) } }
+
+      val photoPane = onNodeWithTag(COMPACT_PHOTO_PANE_TAG).assertIsDisplayed()
+      val detailsPane = onNodeWithTag(COMPACT_DETAILS_PANE_TAG).assertIsDisplayed()
+      val close = onNodeWithTag(COMPACT_CLOSE_TAG).assertIsDisplayed()
+      val name = onNodeWithTag(PET_NAME_TAG).assertIsDisplayed()
+      val description = onNodeWithTag(DESCRIPTION_TAG).assertIsDisplayed()
+      onNodeWithContentDescription("Close").assertIsDisplayed()
+      onNodeWithTag(PAGER_INDICATOR_TAG).assertIsDisplayed()
+      onNodeWithText("Their Foster Parent Says:", substring = true).assertIsDisplayed()
+      onNodeWithText("**", substring = true).assertDoesNotExist()
+
+      val photoBounds = photoPane.fetchSemanticsNode().boundsInRoot
+      val detailsBounds = detailsPane.fetchSemanticsNode().boundsInRoot
+      val closeBounds = close.fetchSemanticsNode().boundsInRoot
+      val nameBounds = name.fetchSemanticsNode().boundsInRoot
+      val descriptionBounds = description.fetchSemanticsNode().boundsInRoot
+      assertThat(photoBounds.right).isAtMost(detailsBounds.left)
+      assertThat(closeBounds.left).isAtLeast(photoBounds.left)
+      assertThat(closeBounds.right).isAtMost(photoBounds.right)
+      assertThat(nameBounds.left).isAtLeast(detailsBounds.left)
+      assertThat(nameBounds.top).isLessThan(descriptionBounds.top)
+    }
+  }
+
+  @Test
+  @Config(qualifiers = "w640dp-h360dp-land")
+  fun petDetail_scrollsCompactLandscapeDetails() {
+    val success =
+      Full(
+        id = 1,
+        url = "url",
+        photoUrls = listOf("http://some.url"),
+        photoUrlMemoryCacheKey = null,
+        name = "Baxter",
+        descriptionMarkdown =
+          buildString {
+            repeat(30) { append("Baxter is looking for a quiet home and a patient family.\n\n") }
+          },
+        tags = listOf("dog"),
+        attributes = emptyList(),
+        photoAspectRatio = 1.33f,
+        eventSink = {},
+      )
+
+    composeTestRule.run {
+      setTestContent(circuit) { ContentWithOverlays { PetDetail(success) } }
+
+      onNodeWithTag(FULL_BIO_TAG).performScrollTo().assertIsDisplayed()
+    }
+  }
+
+  @Test
+  @Config(qualifiers = "w800dp-h600dp-land")
+  fun petDetail_usesRegularLandscapeLayoutWhenHeightIsNotCompact() {
+    val success =
+      Full(
+        id = 1,
+        url = "url",
+        photoUrls = listOf("http://some.url"),
+        photoUrlMemoryCacheKey = null,
+        name = "Baxter",
+        descriptionMarkdown = "Baxter is very sweet.",
+        tags = listOf("dog"),
+        attributes = emptyList(),
+        photoAspectRatio = 1.33f,
+        eventSink = {},
+      )
+
+    composeTestRule.run {
+      setTestContent(circuit) { ContentWithOverlays { PetDetail(success) } }
+
+      onNodeWithTag(COMPACT_PHOTO_PANE_TAG).assertDoesNotExist()
+      onNodeWithTag(COMPACT_DETAILS_PANE_TAG).assertDoesNotExist()
+      onNodeWithTag(COMPACT_CLOSE_TAG).assertDoesNotExist()
+      onNodeWithTag(PET_NAME_TAG).assertIsDisplayed()
+      onNodeWithTag(DESCRIPTION_TAG).assertIsDisplayed()
+    }
+  }
+
+  @Test
+  fun petDescriptionMarkdown_linkInheritsBodyTypography() {
+    var typography: com.mikepenz.markdown.model.MarkdownTypography? = null
+    var expectedLinkColor = Color.Unspecified
+
+    composeTestRule.run {
+      setContent {
+        StarTheme {
+          expectedLinkColor = MaterialTheme.colorScheme.secondary
+          typography = petDescriptionMarkdownTypography()
+        }
+      }
+
+      runOnIdle {
+        val actualTypography = checkNotNull(typography)
+        val body = actualTypography.paragraph.toSpanStyle()
+        val link = checkNotNull(actualTypography.textLink.style)
+        assertThat(link.fontSize).isEqualTo(body.fontSize)
+        assertThat(link.letterSpacing).isEqualTo(body.letterSpacing)
+        assertThat(link.fontFamily).isEqualTo(body.fontFamily)
+        assertThat(link.fontWeight).isEqualTo(body.fontWeight)
+        assertThat(link.color).isEqualTo(expectedLinkColor)
+        assertThat(link.textDecoration).isEqualTo(TextDecoration.Underline)
+      }
+    }
+  }
+
+  @Test
   fun petDetail_emits_event_when_tapping_on_full_bio_button() = runTest {
     val testSink = TestEventSink<Event>()
 
@@ -187,7 +322,7 @@ class PetDetailUiTest {
       setTestContent(circuit) { ContentWithOverlays { PetDetail(success) } }
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
-      onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()
+      onNodeWithTag(FULL_BIO_TAG).assertIsDisplayed().performClick()
 
       testSink.assertEvent(ViewFullBio(success.url))
     }

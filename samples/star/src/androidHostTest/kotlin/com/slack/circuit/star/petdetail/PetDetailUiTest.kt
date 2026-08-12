@@ -234,7 +234,7 @@ class PetDetailUiTest {
     composeTestRule.run {
       setTestContent(circuit) { ContentWithOverlays { PetDetail(success) } }
 
-      onNodeWithTag(FULL_BIO_TAG, useUnmergedTree = true).performScrollTo().assertIsDisplayed()
+      onNodeWithTag(FULL_BIO_TAG).performScrollTo().assertIsDisplayed()
     }
   }
 
@@ -322,7 +322,7 @@ class PetDetailUiTest {
       setTestContent(circuit) { ContentWithOverlays { PetDetail(success) } }
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
-      onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()
+      onNodeWithTag(FULL_BIO_TAG).assertIsDisplayed().performClick()
 
       testSink.assertEvent(ViewFullBio(success.url))
     }

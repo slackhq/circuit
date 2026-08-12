@@ -522,9 +522,11 @@ private fun PetDetailDescriptions(
           modifier = Modifier.fillMaxWidth().testTag(DESCRIPTION_TAG),
         )
       }
-      Button(onClick = { state.eventSink(ViewFullBio(state.url)) }) {
+      Button(
+        onClick = { state.eventSink(ViewFullBio(state.url)) },
+        modifier = Modifier.testTag(FULL_BIO_TAG),
+      ) {
         Text(
-          modifier = Modifier.testTag(FULL_BIO_TAG),
           text = "View full bio on Adopt a Pet",
           style = MaterialTheme.typography.labelLarge,
         )

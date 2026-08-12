@@ -46,6 +46,7 @@ class FirstPartyBackedRegistryTest {
 
   private val retainedValues = mutableMapOf<String, Any>()
   private var showContent by mutableStateOf(true)
+  private val previousUseFirstParty = CircuitRetainedSettings.useFirstParty
 
   init {
     CircuitRetainedSettings.useFirstParty = true
@@ -53,7 +54,7 @@ class FirstPartyBackedRegistryTest {
 
   @After
   fun tearDown() {
-    CircuitRetainedSettings.useFirstParty = false
+    CircuitRetainedSettings.useFirstParty = previousUseFirstParty
   }
 
   @Composable

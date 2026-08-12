@@ -48,6 +48,7 @@ class FirstPartyRetainRecordLifecycleTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   private val events = mutableListOf<String>()
+  private val previousUseFirstParty = CircuitRetainedSettings.useFirstParty
 
   private inner class Tracked(val label: String) : RetainObserver {
     override fun onRetained() {
@@ -73,7 +74,7 @@ class FirstPartyRetainRecordLifecycleTest {
 
   @After
   fun tearDown() {
-    CircuitRetainedSettings.useFirstParty = false
+    CircuitRetainedSettings.useFirstParty = previousUseFirstParty
   }
 
   @Test

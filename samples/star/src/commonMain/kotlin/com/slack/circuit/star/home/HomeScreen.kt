@@ -7,6 +7,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -64,6 +65,7 @@ import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
 import com.slack.circuit.star.home.HomeTestConstants.BOTTOM_NAVIGATION_TAG
+import com.slack.circuit.star.home.HomeTestConstants.NAVIGATION_RAIL_ITEM_TAG
 import com.slack.circuit.star.home.HomeTestConstants.NAVIGATION_RAIL_TAG
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
@@ -165,6 +167,7 @@ val NAV_ITEMS = listOf(BottomNavItem.Adoptables, BottomNavItem.About)
 
 internal object HomeTestConstants {
   const val BOTTOM_NAVIGATION_TAG = "bottom_navigation"
+  const val NAVIGATION_RAIL_ITEM_TAG = "navigation_rail_item"
   const val NAVIGATION_RAIL_TAG = "navigation_rail"
 }
 
@@ -278,8 +281,10 @@ private fun HomeNavigationRail(
     windowInsets = NavigationRailDefaults.windowInsets.only(WindowInsetsSides.Vertical),
     modifier = modifier.fillMaxHeight().testTag(NAVIGATION_RAIL_TAG),
   ) {
+    Spacer(Modifier.weight(1f))
     NAV_ITEMS.forEachIndexed { index, item ->
       NavigationRailItem(
+        modifier = Modifier.testTag("$NAVIGATION_RAIL_ITEM_TAG-$index"),
         icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
         label = { Text(text = item.title) },
         alwaysShowLabel = true,
@@ -287,5 +292,6 @@ private fun HomeNavigationRail(
         onClick = { onSelectedIndex(index) },
       )
     }
+    Spacer(Modifier.weight(1f))
   }
 }

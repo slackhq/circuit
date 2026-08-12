@@ -4,6 +4,10 @@ Changelog
 Unreleased
 ----------
 
+### Changed
+
+- **circuit-retained:** Compose's first-party retain backing is now enabled by default on Android. Set `CircuitRetainedSettings.useFirstParty = false` before the first composition to use the previous `ViewModel`-based backing. Defaults on other platforms are unchanged until upstream supports retained behavior on non-Android platforms ([b/467397537](https://issuetracker.google.com/issues/467397537)).
+
 0.36.1
 ------
 

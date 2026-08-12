@@ -28,22 +28,22 @@ CompositionLocalProvider(
 
 Compose now ships a first-party retain API (`androidx.compose.runtime:runtime-retain`, stable since Compose 1.10) that covers the same core problem as `rememberRetained`. Circuit is migrating toward it in phases.
 
-The initial opt-in phase runs Circuit's retention on top of the first-party store with no behavior changes:
+Circuit uses the first-party backing by default on Android, where Compose UI installs a lifecycle-aware `RetainedValuesStore`. To use the previous ViewModel backing, set the flag before the first composition:
 
 ```kotlin
 // Set before the first composition, such as in Application.onCreate() or main().
-CircuitRetainedSettings.useFirstParty = true
+CircuitRetainedSettings.useFirstParty = false
 ```
 
-With the flag enabled, `lifecycleRetainedStateRegistry()` is backed by a single root-level `retain` call instead of a Circuit-managed `ViewModel`. Survival across configuration changes is then driven by the `RetainedValuesStore` installed in the composition, such as the lifecycle-aware store Compose UI installs on Android. All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged.
+Other platforms continue to use their existing Circuit-retained backing by default. On JVM, iOS, macOS, and web, apps that install an appropriate `RetainedValuesStore` can opt in by setting `CircuitRetainedSettings.useFirstParty = true` before the first composition.
 
-The flag is experimental (`@ExperimentalCircuitRetainedApi`) and currently affects the targets that have the ViewModel-backed registry (Android, JVM, iOS, macOS, web).
+With first-party backing enabled, `lifecycleRetainedStateRegistry()` is backed by a single root-level `retain` call instead of a Circuit-managed hidden `ViewModel`. Survival across configuration changes is then driven by the `RetainedValuesStore` installed in the composition. All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged. The setting remains experimental (`@ExperimentalCircuitRetainedApi`).
 
-With the flag enabled, `NavigableCircuitContent` also scopes a `RetainedValuesStore` to each nav record, so first-party `retain {}` calls inside presenters and UIs get per-record lifetimes side by side with `rememberRetained`: values survive while their record is in the nav stack (including across configuration changes) and are retired when the record is popped.
+With first-party backing enabled, `NavigableCircuitContent` also scopes a `RetainedValuesStore` to each nav record, so first-party `retain {}` calls inside presenters and UIs get per-record lifetimes side by side with `rememberRetained`: values survive while their record is in the nav stack (including across configuration changes) and are retired when the record is popped.
 
 ### Migration Plan
 
-The opt-in flag above swaps the retention transport and scopes `retain {}` per record, with no API changes. From here, new unkeyed, non-saveable usages can prefer `retain {}` directly.
+The backing swap changes the retention transport and scopes `retain {}` per record, with no API changes. From here, new unkeyed, non-saveable usages can prefer `retain {}` directly.
 
 Circuit APIs without upstream equivalents remain supported. `retain(key = ...)` preserves explicit-key retention, while `retainSaveable` provides the retained-and-saveable hybrid. The unkeyed `rememberRetained`, saveable `rememberRetained` variants, `rememberRetainedSaveable`, and the `produceRetainedState`/`collectAsRetainedState` conveniences remain supported.
 

@@ -21,10 +21,15 @@ public object CircuitRetainedSettings {
    * Set this before the first composition. It is not a runtime toggle, registries created under one
    * backing do not migrate their state to the other.
    *
-   * On platforms where no first-party store is installed by default (everything other than Android
-   * currently), retained values only survive as long as the store provided in the composition
-   * allows. This flag currently only affects targets where the ViewModel-backed registry exists
-   * (Android, JVM, iOS, macOS, web).
+   * This defaults to true on Android and false on other platforms. On platforms where no
+   * first-party store is installed by default, retained values only survive as long as the store
+   * provided in the composition allows. The [lifecycleRetainedStateRegistry] backing changes only
+   * on targets where the ViewModel-backed registry exists (Android, JVM, iOS, macOS, web).
    */
-  @Volatile public var useFirstParty: Boolean = false
+  @Volatile public var useFirstParty: Boolean = useFirstPartyByDefault
 }
+
+// Compose Multiplatform does not yet install a RetainedValuesStore alongside its
+// ViewModelStoreOwner. Keep this false off Android until that is addressed.
+// https://issuetracker.google.com/issues/467397537
+internal expect val useFirstPartyByDefault: Boolean

@@ -18,7 +18,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
-import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.test.FakeNavigator
 import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
@@ -129,11 +129,11 @@ class RememberImpressionNavigatorTest {
     }
   }
 
-  @Parcelize private data object TestRootScreen : Screen
+  @Parcelize private data object TestRootScreen : ParcelableScreen
 
-  @Parcelize private data object TestGoToScreen : Screen
+  @Parcelize private data object TestGoToScreen : ParcelableScreen
 
-  @Parcelize private data object TestResetScreen : Screen
+  @Parcelize private data object TestResetScreen : ParcelableScreen
 
   @Composable
   private fun RememberImpressionNavigatorContent(vararg inputs: Any?, impression: () -> Unit) {

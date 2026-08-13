@@ -18,6 +18,7 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.answeringNavigationAvailable as runtimeAnsweringNavigationAvailable
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.rememberAnsweringNavigator as rememberRuntimeAnsweringNavigator
+import com.slack.circuit.runtime.screen.ParcelablePopResult
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.Test
@@ -246,7 +247,7 @@ class AnsweringNavigatorTest {
 }
 
 @Parcelize
-private open class SuperPopResult : PopResult {
+private open class SuperPopResult : ParcelablePopResult {
   @Parcelize class SubPopResult : SuperPopResult()
 }
 

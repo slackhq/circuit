@@ -12,6 +12,7 @@ import androidx.compose.runtime.Immutable
  * presenter to begin presenting state.
  *
  * ```
+ * @Serializable
  * data class AddFavorites(
  *   val externalId: UUID,
  * ) : Screen
@@ -28,6 +29,10 @@ import androidx.compose.runtime.Immutable
  *  )
  * }
  * ```
+ *
+ * Note that `@Serializable` is not strictly required, and you may bring your own serialization or
+ * use [ParcelableScreen] on Android if you rather. You may also opt for no serialization at all if
+ * you do not need it!
  */
 @Immutable public expect interface Screen : CircuitSaveable
 
@@ -39,6 +44,7 @@ import androidx.compose.runtime.Immutable
  * **Stateless UI**
  *
  * ```kotlin
+ * @Serializable
  * data object ProfileScreen : StaticScreen
  *
  * @Composable
@@ -54,6 +60,7 @@ import androidx.compose.runtime.Immutable
  * **Static UI**
  *
  * ```kotlin
+ * @Serializable
  * data object ProfileScreen : StaticScreen
  *
  * @Composable
@@ -72,6 +79,7 @@ import androidx.compose.runtime.Immutable
  * **Static UI w/ Screen data**
  *
  * ```kotlin
+ * @Serializable
  * data class ProfileScreen(val name: String) : StaticScreen
  *
  * @Composable
@@ -89,6 +97,7 @@ import androidx.compose.runtime.Immutable
  * **Static UI w/ Screen input + code gen**
  *
  * ```kotlin
+ * @Serializable
  * data class ProfileScreen(val name: String) : StaticScreen
  *
  * @CircuitInject(ProfileScreen::class, AppScope::class)

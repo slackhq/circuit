@@ -5,15 +5,31 @@ package com.slack.circuit.star.home
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.EaseInOutCubic
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailDefaults
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -26,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntOffset
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -47,6 +64,9 @@ import com.slack.circuit.sharedelements.progress
 import com.slack.circuit.star.common.Platform
 import com.slack.circuit.star.home.HomeScreen.Event.ChildNav
 import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
+import com.slack.circuit.star.home.HomeTestConstants.BOTTOM_NAVIGATION_TAG
+import com.slack.circuit.star.home.HomeTestConstants.NAVIGATION_RAIL_ITEM_TAG
+import com.slack.circuit.star.home.HomeTestConstants.NAVIGATION_RAIL_TAG
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.AppScope
@@ -90,68 +110,47 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
   SharedElementTransitionScope {
     var contentComposed by rememberRetained { mutableStateOf(false) }
-    Scaffold(
-      modifier = modifier.fillMaxWidth(),
-      contentWindowInsets = WindowInsets(0, 0, 0, 0),
-      containerColor = Color.Transparent,
-      bottomBar = {
-        val scope = requireAnimatedScope(Navigation)
-        val isInOverlay =
-          isTransitionActive && scope.transition.targetState == EnterExitState.Visible
-        val fraction by
-          remember(scope) {
-            derivedStateOf {
-              val progress = scope.progress().floatValue / .8f
-              EaseInOutCubic.transform(progress.coerceIn(0f, 1f))
-            }
-          }
-        StarTheme(useDarkTheme = true) {
-          Layout(
-            modifier = Modifier,
-            measurePolicy = { measurables, constraints ->
-              val placeable = measurables.first().measure(constraints)
-              if (isInOverlay) {
-                // Slide in the bottom bar
-                val height = (placeable.height * fraction).roundToInt()
-                layout(placeable.width, height) { placeable.place(IntOffset.Zero) }
-              } else {
-                layout(placeable.width, placeable.height) { placeable.place(IntOffset.Zero) }
-              }
-            },
-            content = {
-              BottomNavigationBar(
-                selectedIndex = state.selectedIndex,
-                onSelectedIndex = { index -> state.eventSink(ClickNavItem(index)) },
-                modifier =
-                  Modifier.renderInSharedTransitionScopeOverlay(
-                    renderInOverlay = { isInOverlay },
-                    zIndexInOverlay = 1f,
-                  ),
-              )
-            },
-          )
-        }
-      },
-    ) { paddingValues ->
-      // Create a single backstack that starts with the initial tab
-      val backStack = rememberSaveableBackStack(root = state.navItems[state.selectedIndex].screen)
-      val navigator =
-        rememberCircuitNavigator(
-          backStack = backStack,
-          onRootPop = { state.eventSink(HomeScreen.Event.Back) },
-        )
-
-      // When tab changes, use resetRoot to switch tabs while preserving state
-      val currentTabIndex = state.selectedIndex
-
-      LaunchedEffect(currentTabIndex) {
-        val currentScreen = state.navItems[currentTabIndex].screen
-        val topScreen = backStack.topRecord?.screen
-        if (topScreen != currentScreen) {
-          navigator.resetRoot(currentScreen, StateOptions.SaveAndRestore)
+    val scope = requireAnimatedScope(Navigation)
+    val isInOverlay = isTransitionActive && scope.transition.targetState == EnterExitState.Visible
+    val navigationVisibilityFraction by
+      remember(scope) {
+        derivedStateOf {
+          val progress = scope.progress().floatValue / .8f
+          EaseInOutCubic.transform(progress.coerceIn(0f, 1f))
         }
       }
 
+    // Create a single backstack that starts with the initial tab
+    val backStack = rememberSaveableBackStack(root = state.navItems[state.selectedIndex].screen)
+    val navigator =
+      rememberCircuitNavigator(
+        backStack = backStack,
+        onRootPop = { state.eventSink(HomeScreen.Event.Back) },
+      )
+
+    // When tab changes, use resetRoot to switch tabs while preserving state
+    val currentTabIndex = state.selectedIndex
+
+    LaunchedEffect(currentTabIndex) {
+      val currentScreen = state.navItems[currentTabIndex].screen
+      val topScreen = backStack.topRecord?.screen
+      if (topScreen != currentScreen) {
+        navigator.resetRoot(currentScreen, StateOptions.SaveAndRestore)
+      }
+    }
+
+    HomeNavigationLayout(
+      selectedIndex = state.selectedIndex,
+      onSelectedIndex = { index -> state.eventSink(ClickNavItem(index)) },
+      navigationModifier =
+        Modifier.renderInSharedTransitionScopeOverlay(
+          renderInOverlay = { isInOverlay },
+          zIndexInOverlay = 1f,
+        ),
+      isInOverlay = isInOverlay,
+      navigationVisibilityFraction = navigationVisibilityFraction,
+      modifier = modifier,
+    ) { paddingValues ->
       NavigableCircuitContent(
         navigator = navigator,
         backStack = backStack,
@@ -166,13 +165,99 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
 // These are the buttons on the NavBar, they dictate where we navigate too
 val NAV_ITEMS = listOf(BottomNavItem.Adoptables, BottomNavItem.About)
 
+internal object HomeTestConstants {
+  const val BOTTOM_NAVIGATION_TAG = "bottom_navigation"
+  const val NAVIGATION_RAIL_ITEM_TAG = "navigation_rail_item"
+  const val NAVIGATION_RAIL_TAG = "navigation_rail"
+}
+
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@Composable
+internal fun HomeNavigationLayout(
+  selectedIndex: Int,
+  onSelectedIndex: (Int) -> Unit,
+  modifier: Modifier = Modifier,
+  navigationModifier: Modifier = Modifier,
+  isInOverlay: Boolean = false,
+  navigationVisibilityFraction: Float = 1f,
+  content: @Composable (PaddingValues) -> Unit,
+) {
+  val useNavigationRail =
+    calculateWindowSizeClass().heightSizeClass == WindowHeightSizeClass.Compact
+  val navigationContent: @Composable () -> Unit = {
+    StarTheme(useDarkTheme = true) {
+      NavigationVisibilityLayout(
+        useNavigationRail = useNavigationRail,
+        isInOverlay = isInOverlay,
+        fraction = navigationVisibilityFraction,
+        modifier = navigationModifier,
+      ) {
+        if (useNavigationRail) {
+          HomeNavigationRail(selectedIndex, onSelectedIndex)
+        } else {
+          BottomNavigationBar(selectedIndex, onSelectedIndex)
+        }
+      }
+    }
+  }
+
+  val layoutModifier = if (useNavigationRail) modifier.fillMaxSize() else modifier.fillMaxWidth()
+  Row(modifier = layoutModifier) {
+    if (useNavigationRail) {
+      navigationContent()
+    }
+    Scaffold(
+      modifier =
+        if (useNavigationRail) {
+          Modifier.weight(1f)
+            .fillMaxHeight()
+            .consumeWindowInsets(WindowInsets.safeDrawing.only(WindowInsetsSides.Start))
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom))
+        } else {
+          Modifier.fillMaxWidth()
+        },
+      contentWindowInsets = WindowInsets(0, 0, 0, 0),
+      containerColor = Color.Transparent,
+      bottomBar = { if (!useNavigationRail) navigationContent() },
+      content = content,
+    )
+  }
+}
+
+@Composable
+private fun NavigationVisibilityLayout(
+  useNavigationRail: Boolean,
+  isInOverlay: Boolean,
+  fraction: Float,
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) {
+  Layout(
+    modifier = modifier,
+    measurePolicy = { measurables, constraints ->
+      val placeable = measurables.first().measure(constraints)
+      val height =
+        if (isInOverlay && !useNavigationRail) {
+          (placeable.height * fraction).roundToInt()
+        } else {
+          placeable.height
+        }
+      layout(placeable.width, height) { placeable.place(IntOffset.Zero) }
+    },
+    content = content,
+  )
+}
+
 @Composable
 private fun BottomNavigationBar(
   selectedIndex: Int,
   onSelectedIndex: (Int) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  NavigationBar(containerColor = MaterialTheme.colorScheme.primaryContainer, modifier = modifier) {
+  NavigationBar(
+    containerColor = MaterialTheme.colorScheme.primaryContainer,
+    modifier = modifier.testTag(BOTTOM_NAVIGATION_TAG),
+  ) {
     NAV_ITEMS.forEachIndexed { index, item ->
       NavigationBarItem(
         icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
@@ -182,5 +267,31 @@ private fun BottomNavigationBar(
         onClick = { onSelectedIndex(index) },
       )
     }
+  }
+}
+
+@Composable
+private fun HomeNavigationRail(
+  selectedIndex: Int,
+  onSelectedIndex: (Int) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  NavigationRail(
+    containerColor = MaterialTheme.colorScheme.primaryContainer,
+    windowInsets = NavigationRailDefaults.windowInsets.only(WindowInsetsSides.Vertical),
+    modifier = modifier.fillMaxHeight().testTag(NAVIGATION_RAIL_TAG),
+  ) {
+    Spacer(Modifier.weight(1f))
+    NAV_ITEMS.forEachIndexed { index, item ->
+      NavigationRailItem(
+        modifier = Modifier.testTag("$NAVIGATION_RAIL_ITEM_TAG-$index"),
+        icon = { Icon(imageVector = item.icon, contentDescription = item.title) },
+        label = { Text(text = item.title) },
+        alwaysShowLabel = true,
+        selected = selectedIndex == index,
+        onClick = { onSelectedIndex(index) },
+      )
+    }
+    Spacer(Modifier.weight(1f))
   }
 }

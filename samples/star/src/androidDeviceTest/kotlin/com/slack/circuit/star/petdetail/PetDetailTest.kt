@@ -152,7 +152,7 @@ class PetDetailTest {
       }
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }
-      onNodeWithTag(FULL_BIO_TAG, true).assertIsDisplayed().performClick()
+      onNodeWithTag(FULL_BIO_TAG).assertIsDisplayed().performClick()
 
       testSink.assertEvent(PetDetailScreen.Event.ViewFullBio(success.url))
     }

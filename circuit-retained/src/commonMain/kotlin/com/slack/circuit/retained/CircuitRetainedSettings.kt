@@ -29,7 +29,9 @@ public object CircuitRetainedSettings {
   @Volatile public var useFirstParty: Boolean = useFirstPartyByDefault
 }
 
-// Compose Multiplatform does not yet install a RetainedValuesStore alongside its
-// ViewModelStoreOwner. Keep this false off Android until that is addressed.
+// Circuit's ViewModel-backed registry survives composition teardown while its ViewModelStore is
+// still alive. Compose Multiplatform does not yet install a corresponding RetainedValuesStore, so
+// first-party retain behaves like remember and would lose that state when the composition is
+// recreated. Keep first-party backing disabled off Android until that is addressed.
 // https://issuetracker.google.com/issues/467397537
 internal expect val useFirstPartyByDefault: Boolean

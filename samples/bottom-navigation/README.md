@@ -17,5 +17,3 @@ Persistence
 -----------
 
 This sample's `buildCircuitSaver()` creates a `SerializableCircuitSaver`. It registers every screen manually under `polymorphic(CircuitSaveable::class)` (because the sample does not use DI). Each platform passes the saver to `rememberSaveableNavStack()`.
-
-Sample screens use both `@Serializable` and `@Parcelize`. Serialization handles their saved navigation state. Android screens must still implement `Parcelable`. A future release will remove this requirement.

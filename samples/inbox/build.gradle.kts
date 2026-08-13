@@ -3,13 +3,11 @@
 import dev.zacsweers.metro.gradle.ExperimentalMetroGradleApi
 import java.util.Locale
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
   alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.kotlin.plugin.serialization)
   alias(libs.plugins.ksp)
   alias(libs.plugins.metro)
@@ -47,7 +45,6 @@ kotlin {
         implementation(projects.circuitRetained)
         implementation(projects.circuitSerialization)
         implementation(projects.circuitx.effects)
-        implementation(projects.internalRuntime)
       }
     }
     commonTest {
@@ -81,21 +78,6 @@ kotlin {
         optIn.add(
           "androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi"
         )
-      }
-    }
-  }
-
-  targets.configureEach {
-    if (platformType == KotlinPlatformType.androidJvm) {
-      compilations.configureEach {
-        compileTaskProvider.configure {
-          compilerOptions {
-            freeCompilerArgs.addAll(
-              "-P",
-              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",
-            )
-          }
-        }
       }
     }
   }

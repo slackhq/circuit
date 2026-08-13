@@ -16,7 +16,7 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.modules.plus
 
 /**
- * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx serialization. It
+ * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx-serialization. It
  * encodes them to `SavedState` with `androidx.savedstate`.
  *
  * Screens and results must have a kotlinx serializer and be registered for polymorphic

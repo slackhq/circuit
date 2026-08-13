@@ -3,12 +3,10 @@
 **Problem:** a bottom-navigation app where each tab keeps its own navigation history — switching tabs
 and coming back lands you where you left off, not at the tab's root.
 
-Make the tab host a Circuit UI that owns its own `NavStack`, `Navigator`, and
-`NavigableCircuitContent`. Switch tabs with `resetRoot(..., StateOptions.SaveAndRestore)` so each
-tab keeps its stack.
+Make the tab host a Circuit UI that owns its own `NavStack`, `Navigator`, and `NavigableCircuitContent`. Switch tabs with `resetRoot(..., StateOptions.SaveAndRestore)` so each tab keeps its stack.
 
 ```kotlin
-@Parcelize
+@Serializable
 data object HomeScreen : Screen
 
 // One entry per tab. Each knows its root Screen and how to render in the bottom bar.

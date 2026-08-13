@@ -25,7 +25,7 @@ val backStack = rememberSaveableBackStack(root = DetailScreen(itemId = 1), circu
 
 No `SerializersModule` setup is needed. See the `circuit-serialization` README for the other ways to wire a `CircuitSaver` up.
 
-Use `restoreScreen<T>` and `restorePopResult<T>` to restore a specific type. The saver can also restore navigation state saved by Circuit 0.34's default saver, so adopting it does not by itself reset existing navigation state.
+Use `restoreScreen<T>` and `restorePopResult<T>` to restore a specific type.
 
 ## R8/ProGuard
 

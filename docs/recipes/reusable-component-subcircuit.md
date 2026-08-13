@@ -4,9 +4,7 @@
 widget) that emits events — but it shouldn't own navigation. The host screen should decide what a tap
 means.
 
-Use `SubCircuit` for embedded components. The child gets no `Navigator`; it sends navigation and other
-host-owned events through an `outerEventSink`. That's almost always what you want when one screen's
-content is composed *inside* another.
+Use `SubCircuit` for embedded components. The child gets no `Navigator` and is not stored as a navigation record. It sends navigation and other host-owned events through an `outerEventSink`. That's almost always what you want when one screen's content is composed *inside* another.
 
 Pick based on how independent the component is
 ([background](https://github.com/slackhq/circuit/pull/2727#issuecomment-4636017793)):
@@ -19,8 +17,7 @@ Pick based on how independent the component is
 
 ## SubCircuit: the default for embedding
 
-A `SubPresenter` receives an `outerEventSink` instead of a `Navigator`. The child needs no
-`Parcelable` screen.
+A `SubPresenter` receives an `outerEventSink` instead of a `Navigator`.
 
 ```kotlin
 // 1. Outer events the parent handles, plus a SubScreen key.

@@ -1,6 +1,6 @@
 # Module circuit-serialization
 
-kotlinx serialization support for persisting Circuit navigation state. This artifact provides `CircuitSaver` implementations that encode `Screen`s and `PopResult`s to `SavedState` with `androidx.savedstate`. Saveable back stacks can survive configuration changes and process death without storing Parcelable values.
+kotlinx-serialization support for persisting Circuit navigation state. This artifact provides `CircuitSaver` implementations that encode `Screen`s and `PopResult`s to `SavedState` with `androidx.savedstate`. Saveable back stacks can survive configuration changes and process death without storing Parcelable values.
 
 ## Installation
 
@@ -97,8 +97,6 @@ val saver = SerializableCircuitSaver(
 Saving an unregistered type fails with a descriptive error. Restoring an unregistered type returns null, allowing the navigation owner to drop that record. Pass an `onRestoreError` callback to observe restoration failures.
 
 Use `restoreScreen<T>` and `restorePopResult<T>` to restore a specific type. They return null when the saver cannot restore a value. By default, they reject a different concrete `Screen` or `PopResult` type.
-
-Both serializing savers can restore navigation state written by Circuit 0.34's default saver. Switching to serialization does not reset that state.
 
 ## Skipping registration on JVM/Android
 

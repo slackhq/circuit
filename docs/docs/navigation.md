@@ -57,8 +57,9 @@ val takePhotoNavigator = rememberAnsweringNavigator<TakePhotoScreen.Result>(navi
 takePhotoNavigator.goTo(TakePhotoScreen)
 
 // In TakePhotoScreen.kt
+@Serializable
 data object TakePhotoScreen : Screen {
-  @Parcelize
+  @Serializable
   data class Result(val uri: String) : PopResult
 }
 

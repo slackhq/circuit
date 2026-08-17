@@ -21,10 +21,11 @@ public object CircuitRetainedSettings {
    * Set this before the first composition. It is not a runtime toggle, registries created under one
    * backing do not migrate their state to the other.
    *
-   * On platforms where no first-party store is installed by default (everything other than Android
-   * currently), retained values only survive as long as the store provided in the composition
-   * allows. This flag currently only affects targets where the ViewModel-backed registry exists
-   * (Android, JVM, iOS, macOS, web).
+   * On non-Android platforms, Compose's default store loses values when the composition is
+   * destroyed, just like `remember`. [RetainedValuesStoreProvider] can preserve them until its
+   * `ViewModelStore` is cleared or its explicit [RetainedValuesStoreOwner] is disposed. This flag
+   * currently only affects targets where the ViewModel-backed registry exists (Android, JVM, iOS,
+   * macOS, web).
    */
   @Volatile public var useFirstParty: Boolean = false
 }

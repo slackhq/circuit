@@ -21,7 +21,7 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_INCREASE_COUNT
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.runtime.ui.ui
 import org.junit.Rule
 import org.junit.Test
@@ -52,7 +52,7 @@ class CircuitContentTest {
   }
 
   @Parcelize
-  private data class CountScreen(val count: Int) : Screen {
+  private data class CountScreen(val count: Int) : ParcelableScreen {
     data class State(val count: Int) : CircuitUiState
   }
 

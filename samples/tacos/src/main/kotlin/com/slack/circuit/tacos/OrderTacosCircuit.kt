@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.tacos.model.Cents
 import com.slack.circuit.tacos.model.Diet
 import com.slack.circuit.tacos.model.Ingredient
@@ -61,7 +61,7 @@ import kotlinx.serialization.Serializable
 
 @Parcelize
 @Serializable
-data object OrderTacosScreen : Screen {
+data object OrderTacosScreen : ParcelableScreen {
   data class State(
     @StringRes val headerResId: Int,
     val orderCost: String,

@@ -6,19 +6,20 @@ Screens are keys for Presenter and UI pairings.
 The core `Screen` interface is this:
 
 ```kotlin
-interface Screen : Parcelable
+interface Screen
 ```
 
-These types are `Parcelable` on Android for saveability in our backstack and easy deeplinking. A
-`Screen` can be a simple marker `data object` or a `data class` with information to pass on.
+`Screen` does not require a particular persistence format. A `Screen` can be a simple marker `data object` or a `data class` with information to pass on.
 
 ```kotlin
-@Parcelize
+@Serializable
 data object HomeScreen : Screen
 
-@Parcelize
+@Serializable
 data class AddFavoritesScreen(val externalId: UUID) : Screen
 ```
+
+Circuit's documentation uses kotlinx-serialization for screens and results by default. The annotation supplies a serializer, but the app must also configure a serializing `CircuitSaver` as described below.
 
 These are used by `Navigator`s (when called from presenters) or `CircuitContent` (when called from
 UIs) to start a new sub-circuit or nested circuit.
@@ -104,22 +105,38 @@ returns null. When the restored value is not the requested type, the helper pass
 `onTypeMismatch`. That callback throws by default; if a custom callback completes normally, the
 helper returns null. `restorePopResult` has the same behavior for `PopResult` subtypes.
 
-The default (`DefaultCircuitSaver`) passes values through unchanged. On Android that means screens
-persist via their `Parcelable` implementations, matching Circuit's historical behavior. Other
-platforms hold saved state in memory only.
+### kotlinx-serialization
 
-### Choosing a strategy
+Circuit uses kotlinx-serialization as the standard persistence strategy. Most examples use `@Serializable` and assume the app has configured a serializing `CircuitSaver` at its root.
 
-Parcelable is the Android default and needs no setup. Annotate screens with `@Parcelize` and the
-default saver persists them. For common-code screens, implement `ParcelableScreen`, which adds
-`Parcelable` on Android and is just a `Screen` elsewhere.
+#### Using `@Serializable`
 
-Use the `circuit-serialization` artifact to persist navigation state with kotlinx serialization. Android screens and pop results must still be Parcelable. A future release will remove this requirement. The saver stores `SavedState` instead of the Parcelable value.
+Annotate each saved screen and result with `@Serializable`.
 
-`@CircuitSerializable` supplies the default kotlinx serializer. Circuit's KSP processor contributes a registration through Metro, Hilt, kotlin-inject-anvil, or Anvil. For example, a Metro graph can declare the registration set and provide the saver like this:
+On JVM and Android, `ReflectiveSerializableCircuitSaver()` finds these serializers from the saved class name, so you do not need to register each type:
 
 ```kotlin
-@Parcelize
+@Serializable
+data object HomeScreen : Screen
+
+val circuitSaver = ReflectiveSerializableCircuitSaver()
+```
+
+The `circuit-serialization-reflect` artifact includes the R8 and ProGuard rules it needs. Minified apps do not need extra configuration.
+
+Kotlin Multiplatform apps that do _not_ use DI can register their `@Serializable` types manually with `SerializableCircuitSaver`. See the `circuit-serialization` README for the full setup.
+
+#### Using `@CircuitSerializable` with DI
+
+Apps using Circuit code generation with Metro, Hilt, kotlin-inject-anvil, or Anvil should replace `@Serializable` with `@CircuitSerializable`.
+
+`@CircuitSerializable` is a _meta-annotation_ (via `@MetaSerializable`) for `@Serializable` that works for both kotlinx-serialization and Circuit's serializer code generation.
+
+Circuit code gen generates a `CircuitSerializerRegistration` for each annotated screen/result and contributes it to the specified DI scope. The application graph collects those registrations into a set, which `SerializableCircuitSaver` uses to register each concrete type for polymorphic `CircuitSaveable` serialization.
+
+For example, a Metro graph can collect the generated registrations and provide `SerializableCircuitSaver`:
+
+```kotlin
 @CircuitSerializable(AppScope::class)
 data object HomeScreen : Screen
 
@@ -132,11 +149,7 @@ fun provideCircuitSaver(
 ): CircuitSaver = SerializableCircuitSaver(registrations)
 ```
 
-Each Gradle module compiles the generated set contributions for its annotated types. The application graph collects contributions from the application module and its dependency modules in the injected `Set<CircuitSerializerRegistration>`. Apps without a supported DI framework can register `@Serializable` types manually in a `SerializersModule`. They can also use the reflective saver. See the [code generation guide](code-gen.md#serialization-registrations) for setup and generated code.
-
-On JVM and Android, `ReflectiveSerializableCircuitSaver()` can resolve serializers from the saved class name. Apps that use it do not need to register each type. The `circuit-serialization-reflect` artifact includes the R8 and ProGuard rules it needs. Minified apps do not need extra configuration.
-
-Both serializing savers can restore navigation state written by Circuit 0.34's default saver. Switching to serialization does not reset that state.
+Each Gradle module compiles the generated set contributions for its annotated types. The application graph collects contributions from the application module and its dependency modules in the injected `Set<CircuitSerializerRegistration>`. See the [code generation guide](code-gen.md#serialization-registrations) for setup and generated code.
 
 When a saved value can no longer be restored:
 
@@ -145,9 +158,22 @@ When a saved value can no longer be restored:
 - Stored back-stack snapshots are discarded if any record is missing.
 - An unrestorable pending pop result clears its expectation, so `awaitResult` returns null.
 
-See the `circuit-serialization` README for the full setup.
+### Android Parcelable option
 
-To disable persistence entirely, use `CircuitSaver.NoOp`. Stacks saved with it restore to their initial state. This changes persistence behavior only. Android `Screen` and `PopResult` implementations must still be `Parcelable` for now.
+Apps that choose Android's `DefaultCircuitSaver` can use `Parcelable`. For common-code values, annotate the class with `@Parcelize` and implement `ParcelableScreen` or `ParcelablePopResult`. These interfaces add `Parcelable` on Android and remain plain `Screen` or `PopResult` subtypes elsewhere.
+
+```kotlin
+@Parcelize
+data object HomeScreen : ParcelableScreen
+```
+
+On Android, `DefaultCircuitSaver` saves only `Parcelable` screens and results. Non-`Parcelable` records do not survive activity recreation or process death. If no records survive, Circuit recreates the stack from its initial value.
+
+On other platforms, `DefaultCircuitSaver` passes values through unchanged.
+
+### No persistence
+
+To disable persistence entirely, use `CircuitSaver.NoOp`. Stacks saved with it restore to their initial state only. Screens and results used with it do not need a persistence format.
 
 ### Wiring
 
@@ -171,9 +197,20 @@ any back stack created inside it.
     `CircuitCompositionLocals`, a saver set on `Circuit.Builder` won't apply to it. Pass the saver
     explicitly or use `ProvideCircuitSaver` above the back stack creation.
 
-### Roadmap
+### Migrating from Circuit 0.36 and earlier
 
-`Screen` and `PopResult` still extend `Parcelable` on Android. A future release will remove those
-supertypes. To prepare, implement `ParcelableScreen` or `ParcelablePopResult` on values that
-should keep using Parcelable, or adopt a serializing `CircuitSaver`. The `circuit-serialization`
-README has the full roadmap.
+`Screen` and `PopResult` no longer extend `Parcelable` on Android. Choose a persistence strategy for every saveable back stack:
+
+- To use kotlinx-serialization, configure one of Circuit's serializing savers and remove `@Parcelize` from the types it saves.
+- To keep the Android default saver, retain `@Parcelize` and change `Screen` to `ParcelableScreen` or `PopResult` to `ParcelablePopResult`.
+- To disable navigation persistence, use `CircuitSaver.NoOp` with plain `Screen` and `PopResult` types.
+
+### Quick reference
+
+| Persistence                                             | Screen or result declaration                                  | Saver setup                                                        |
+|---------------------------------------------------------|---------------------------------------------------------------|--------------------------------------------------------------------|
+| kotlinx-serialization with reflection on JVM or Android | `@Serializable`                                               | `ReflectiveSerializableCircuitSaver()`                             |
+| kotlinx-serialization with generated DI registration    | `@CircuitSerializable(AppScope::class)`                       | Inject the generated registrations into `SerializableCircuitSaver` |
+| kotlinx-serialization with manual registration          | `@Serializable`                                               | Register each type with `SerializableCircuitSaver`                 |
+| Android Parcelable option                               | `@Parcelize` with `ParcelableScreen` or `ParcelablePopResult` | `DefaultCircuitSaver`                                              |
+| No navigation persistence                               | Plain `Screen` or `PopResult`                                 | `CircuitSaver.NoOp`                                                |

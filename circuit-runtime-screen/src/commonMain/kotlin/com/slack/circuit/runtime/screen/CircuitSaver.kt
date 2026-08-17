@@ -7,27 +7,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.slack.circuit.runtime.screen.CircuitSaver.Companion.NoOp
 
 /**
  * Converts [Screen]s and [PopResult]s to and from representations that can be stored in a Compose
  * `SaveableStateRegistry`.
  *
- * Circuit's saveable back/nav stack implementations use this to persist navigation state across
- * configuration changes and process death. On Android, [Screen] and [PopResult] still require
- * `Parcelable` in 0.35. [CircuitSaver] implementations choose the representation that is actually
- * stored; a future release removes the Android `Parcelable` supertype requirement.
- *
- * Available strategies include
- * - Android `Parcelable` (the Android default)
- * - kotlinx-serialization (via the `circuit-serialization` artifact)
- * - no persistence at all ([NoOp]).
- *
- * Returned values must be storable in the platform's `SaveableStateRegistry`. On Android that means
- * Bundle-supported types like `Parcelable` or `SavedState`. Other platforms hold saved state in
- * memory and accept any value, so a saver only matters there if the host app wires its
- * `SaveableStateRegistry` to durable storage. Apps that do should use a serializing saver like
- * `SerializableCircuitSaver` so the stored values are actually encodable.
+ * Circuit's saveable back and nav stack implementations use this to persist navigation state.
+ * Implementations choose the stored representation. Returned values must be supported by the
+ * platform's `SaveableStateRegistry`.
  */
 @Stable
 public abstract class CircuitSaver protected constructor() {
@@ -109,18 +96,16 @@ public inline fun <reified T : PopResult> CircuitSaver.restorePopResult(
 /**
  * The default [CircuitSaver] for the current platform.
  *
- * On Android, screens and results pass through unchanged and are persisted via their `Parcelable`
- * implementations. Other platforms hold saved state in memory, so values also pass through
- * unchanged.
+ * On Android, `Parcelable` screens and results pass through unchanged and other values are omitted.
+ * Other platforms pass values through unchanged.
  */
 public expect val DefaultCircuitSaver: CircuitSaver
 
 /**
  * The [CircuitSaver] used by Circuit's saveable back stack implementations when one is not passed
- * explicitly. Defaults to [DefaultCircuitSaver].
- *
- * Provide this at the app root (see [ProvideCircuitSaver]) so it reaches back stacks created
- * anywhere in the composition, including ones created outside `CircuitCompositionLocals`.
+ * explicitly. Defaults to [DefaultCircuitSaver]. Provide this at the app root (see
+ * [ProvideCircuitSaver]) so it reaches back stacks created anywhere in the composition, including
+ * ones created outside `CircuitCompositionLocals`.
  */
 public val LocalCircuitSaver: ProvidableCompositionLocal<CircuitSaver> = staticCompositionLocalOf {
   DefaultCircuitSaver

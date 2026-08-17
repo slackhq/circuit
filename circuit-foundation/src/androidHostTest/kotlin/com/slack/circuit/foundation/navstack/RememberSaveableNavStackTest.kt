@@ -28,17 +28,17 @@ class RememberSaveableNavStackTest {
     restorationTester.setContent {
       navStack =
         rememberSaveableNavStack(
-          root = TestScreen.RootAlpha,
+          root = PlainRootScreen,
           circuitSaver = CircuitSaver.NoOp,
         )
     }
-    navStack.push(TestScreen.ScreenA)
-    navStack.push(TestScreen.ScreenB)
+    navStack.push(PlainScreenA)
+    navStack.push(PlainScreenB)
 
     restorationTester.emulateSaveAndRestore()
 
     assertEquals(
-      navStackListOf<Screen>(TestScreen.RootAlpha),
+      navStackListOf<Screen>(PlainRootScreen),
       navStack.snapshot()?.transform { it.screen },
     )
   }
@@ -129,3 +129,9 @@ class RememberSaveableNavStackTest {
     assertEquals(expectedState, snapshotState)
   }
 }
+
+private data object PlainRootScreen : Screen
+
+private data object PlainScreenA : Screen
+
+private data object PlainScreenB : Screen

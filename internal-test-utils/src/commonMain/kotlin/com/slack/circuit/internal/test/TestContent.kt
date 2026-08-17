@@ -26,7 +26,8 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.PopResult
+import com.slack.circuit.runtime.screen.ParcelablePopResult
+import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
 import kotlin.reflect.KClass
@@ -63,7 +64,7 @@ fun createTestCircuit(
     .addUiFactory { _, _ -> ui<TestState> { state, modifier -> TestContent(state, modifier) } }
     .build()
 
-sealed class TestScreen(val label: String) : Screen {
+sealed class TestScreen(val label: String) : ParcelableScreen {
   @Parcelize data object ScreenA : TestScreen("A")
 
   @Parcelize data object ScreenB : TestScreen("B")
@@ -75,7 +76,7 @@ sealed class TestScreen(val label: String) : Screen {
   @Parcelize data object RootBeta : TestScreen("Root Beta")
 }
 
-sealed class TestPopResult : PopResult {
+sealed class TestPopResult : ParcelablePopResult {
 
   @Parcelize data object PopResultA : TestPopResult()
 

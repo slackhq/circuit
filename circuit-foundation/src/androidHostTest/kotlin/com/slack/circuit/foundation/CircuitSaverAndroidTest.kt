@@ -5,18 +5,23 @@ package com.slack.circuit.foundation
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.ParcelablePopResult
 import com.slack.circuit.runtime.screen.ParcelableScreen
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.ProvideCircuitSaver
+import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.screen.restorePopResult
 import com.slack.circuit.runtime.screen.restoreScreen
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlinx.parcelize.Parcelize
 import org.junit.Rule
@@ -45,7 +50,7 @@ class CircuitSaverAndroidTest {
   }
 
   @Test
-  fun defaultCircuitSaverPassesThroughParcelableValues() {
+  fun defaultCircuitSaverPassesThroughParcelableMarkerValues() {
     val screen = TestParcelableScreen("screen")
     val result = TestParcelablePopResult(42)
 
@@ -56,6 +61,58 @@ class CircuitSaverAndroidTest {
     assertSame(result, savedResult)
     assertSame(screen, DefaultCircuitSaver.restoreScreen<TestParcelableScreen>(savedScreen!!))
     assertSame(result, DefaultCircuitSaver.restorePopResult<TestParcelablePopResult>(savedResult!!))
+  }
+
+  @Test
+  fun defaultCircuitSaverPassesThroughDirectParcelableValues() {
+    val screen = TestDirectParcelableScreen("screen")
+    val result = TestDirectParcelablePopResult(42)
+
+    val savedScreen = DefaultCircuitSaver.save(screen)
+    val savedResult = DefaultCircuitSaver.save(result)
+
+    assertSame(screen, savedScreen)
+    assertSame(result, savedResult)
+    assertSame(screen, DefaultCircuitSaver.restoreScreen<TestDirectParcelableScreen>(savedScreen!!))
+    assertSame(
+      result,
+      DefaultCircuitSaver.restorePopResult<TestDirectParcelablePopResult>(savedResult!!),
+    )
+  }
+
+  @Test
+  fun defaultCircuitSaverSkipsPlainValues() {
+    assertNull(DefaultCircuitSaver.save(TestPlainScreen))
+    assertNull(DefaultCircuitSaver.save(TestPlainPopResult))
+  }
+
+  @Test
+  fun defaultCircuitSaverRestoresPlainScreenThroughInitialValue() {
+    val restorationTester = StateRestorationTester(composeTestRule)
+    var initializations = 0
+    restorationTester.setContent {
+      rememberSaveableBackStack(TestPlainScreen) {
+        initializations++
+      }
+    }
+
+    restorationTester.emulateSavedInstanceStateRestore()
+
+    assertEquals(2, initializations)
+  }
+
+  @Test
+  fun defaultCircuitSaverRestoresRawValuesAndIgnoresUnrelatedInput() {
+    assertSame(
+      TestPlainScreen,
+      DefaultCircuitSaver.restoreScreen<Screen>(TestPlainScreen),
+    )
+    assertSame(
+      TestPlainPopResult,
+      DefaultCircuitSaver.restorePopResult<PopResult>(TestPlainPopResult),
+    )
+    assertNull(DefaultCircuitSaver.restoreScreen<Screen>(Any()))
+    assertNull(DefaultCircuitSaver.restorePopResult<PopResult>(Any()))
   }
 
   @Test
@@ -126,6 +183,14 @@ private inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? =
 @Parcelize private data class TestParcelableScreen(val value: String) : ParcelableScreen
 
 @Parcelize private data class TestParcelablePopResult(val value: Int) : ParcelablePopResult
+
+@Parcelize private data class TestDirectParcelableScreen(val value: String) : Screen, Parcelable
+
+@Parcelize private data class TestDirectParcelablePopResult(val value: Int) : PopResult, Parcelable
+
+private data object TestPlainScreen : Screen
+
+private data object TestPlainPopResult : PopResult
 
 private class TestCircuitSaver : CircuitSaver() {
   override fun save(value: CircuitSaveable): Any = value

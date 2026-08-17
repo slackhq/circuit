@@ -4,6 +4,14 @@ Changelog
 Unreleased
 ----------
 
+### Changed
+
+- `Screen` and `PopResult` no longer extend `Parcelable` on Android. Use kotlinx-serialization with `SerializableCircuitSaver` or `ReflectiveSerializableCircuitSaver` to persist navigation state. Types saved this way no longer need `@Parcelize`.
+  - `ParcelableScreen` and `ParcelablePopResult` remain available for apps that use Android's `DefaultCircuitSaver`.
+  - `DefaultCircuitSaver` omits non-Parcelable records. Those records can be lost after activity recreation or process death.
+  - Apps that do not persist navigation state can use `CircuitSaver.NoOp`.
+  - This completes the multi-phase removal of the `Parcelable` supertypes of `Screen` and `PopResult` 🎉.
+
 0.36.1
 ------
 
@@ -20,7 +28,7 @@ _2026-08-05_
 
 ### New
 
-- `circuit-codegen` can now generate kotlinx serialization registrations for `Screen` and `PopResult` types. Annotate each type with `@CircuitSerializable(scope)`. The annotation supplies the default kotlinx serializer, and `circuit-codegen` contributes a registration through the selected DI framework. Pass the injected `Set<CircuitSerializerRegistration>` to `SerializableCircuitSaver`.
+- `circuit-codegen` can now generate kotlinx-serialization registrations for `Screen` and `PopResult` types. Annotate each type with `@CircuitSerializable(scope)`. The annotation supplies the default kotlinx serializer, and `circuit-codegen` contributes a registration through the selected DI framework. Pass the injected `Set<CircuitSerializerRegistration>` to `SerializableCircuitSaver`.
 
   A Metro setup looks like this:
 

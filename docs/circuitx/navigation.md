@@ -383,4 +383,3 @@ It will also intercept and consume navigation events for `AndroidScreen` subtype
 - Can be combined with multiple interceptors
 - Provides detailed control over success/failure handling
 - Can be used with navigation event listeners and failure notifiers
-

@@ -16,12 +16,8 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.modules.plus
 
 /**
- * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx serialization. It
+ * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx-serialization. It
  * encodes them to `SavedState` with `androidx.savedstate`.
- *
- * Android [Screen] and [PopResult] implementations must still be `Parcelable`. This saver stores
- * `SavedState` instead of the Parcelable value. A future release will remove the Parcelable
- * requirement.
  *
  * Screens and results must have a kotlinx serializer and be registered for polymorphic
  * serialization against the [CircuitSaveable] base class. Use [Serializable] for manual

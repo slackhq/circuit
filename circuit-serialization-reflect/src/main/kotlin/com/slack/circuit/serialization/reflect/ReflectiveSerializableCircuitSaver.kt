@@ -19,9 +19,6 @@ import kotlinx.serialization.serializer
  * Returns a [CircuitSaver] that persists `@Serializable` [Screen]s and [PopResult]s with
  * kotlinx-serialization, resolving serializers reflectively from the saved class name.
  *
- * In 0.35, Android screens and results must still be `Parcelable`, even though this saver stores
- * serialized `SavedState`. That Android supertype requirement will be removed in a future release.
- *
  * Unlike `SerializableCircuitSaver`, this requires no polymorphic registration in [configuration]'s
  * `serializersModule`. It relies on JVM reflection (`Class.forName`), so it is only available on
  * JVM and Android.

@@ -4,6 +4,10 @@ Changelog
 Unreleased
 ----------
 
+### New
+
+- **circuit-retained:** Add experimental `RetainedValuesStoreProvider` and `RetainedValuesStoreOwner` APIs for preserving AndroidX `retain` values across composition recreation on _non-Android_ platforms. This is temporary cover until androidx's implementation offers a non-android solution. See the [first-party `retain` documentation](circuit-retained/README.md#first-party-retain-interop).
+
 0.36.1
 ------
 

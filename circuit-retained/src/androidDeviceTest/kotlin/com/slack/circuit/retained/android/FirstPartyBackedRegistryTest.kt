@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.autoSaver
@@ -19,6 +20,7 @@ import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.lifecycleRetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedSaveable
+import com.slack.circuit.retained.retain
 import com.slack.circuit.retained.retainSaveable
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
 import org.junit.After
@@ -102,6 +104,65 @@ class FirstPartyBackedRegistryTest {
     }
   }
 
+  @Test
+  fun rememberRetainedSupportsRememberObserver() {
+    runRememberObserverRecreation(useKeyedRetain = false)
+  }
+
+  @Test
+  fun keyedRetainSupportsRememberObserver() {
+    runRememberObserverRecreation(useKeyedRetain = true)
+  }
+
+  private fun runRememberObserverRecreation(useKeyedRetain: Boolean) {
+    val created = mutableListOf<TrackingRememberObserver>()
+    var retainedObserver: TrackingRememberObserver? = null
+    val content =
+      @Composable {
+        CompositionLocalProvider(
+          LocalRetainedStateRegistry provides lifecycleRetainedStateRegistry()
+        ) {
+          retainedObserver =
+            if (useKeyedRetain) {
+              retain(key = "observer") { TrackingRememberObserver().also(created::add) }
+            } else {
+              rememberRetained { TrackingRememberObserver().also(created::add) }
+            }
+        }
+      }
+
+    fun setObserverContent() {
+      scenario.onActivity { activity -> activity.setContent { content() } }
+    }
+
+    setObserverContent()
+    val original = composeTestRule.runOnIdle {
+      assertThat(created).hasSize(1)
+      retainedObserver!!.also {
+        assertThat(it.rememberedCount).isEqualTo(1)
+        assertThat(it.forgottenCount).isEqualTo(0)
+        assertThat(it.abandonedCount).isEqualTo(0)
+      }
+    }
+
+    scenario.recreate()
+    setObserverContent()
+
+    composeTestRule.runOnIdle {
+      assertThat(created).hasSize(1)
+      assertThat(retainedObserver).isSameInstanceAs(original)
+      assertThat(original.rememberedCount).isEqualTo(1)
+      assertThat(original.forgottenCount).isEqualTo(0)
+      assertThat(original.abandonedCount).isEqualTo(0)
+    }
+
+    scenario.close()
+
+    assertThat(original.rememberedCount).isEqualTo(1)
+    assertThat(original.forgottenCount).isEqualTo(1)
+    assertThat(original.abandonedCount).isEqualTo(0)
+  }
+
   private val counts = mutableMapOf<String, Int>()
   private val countSetters = mutableMapOf<String, (Int) -> Unit>()
 
@@ -176,6 +237,29 @@ class FirstPartyBackedRegistryTest {
 
     composeTestRule.runOnIdle {
       assertThat(retainedValues["value"]).isSameInstanceAs(original)
+    }
+  }
+
+  private class TrackingRememberObserver : RememberObserver {
+    var rememberedCount = 0
+      private set
+
+    var forgottenCount = 0
+      private set
+
+    var abandonedCount = 0
+      private set
+
+    override fun onRemembered() {
+      rememberedCount++
+    }
+
+    override fun onForgotten() {
+      forgottenCount++
+    }
+
+    override fun onAbandoned() {
+      abandonedCount++
     }
   }
 }

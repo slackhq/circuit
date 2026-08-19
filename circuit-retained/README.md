@@ -26,24 +26,95 @@ CompositionLocalProvider(
 
 ## First-party `retain` interop
 
-Compose now ships a first-party retain API (`androidx.compose.runtime:runtime-retain`, stable since Compose 1.10) that covers the same core problem as `rememberRetained`. Circuit is migrating toward it in phases.
+Circuit uses Compose's `retain` implementation by default on Android. Existing Circuit calls do not need to change. Calls to `retain {}` inside `NavigableCircuitContent` follow the lifetime of their navigation record.
 
-Circuit uses the first-party backing by default on Android, where Compose UI installs a lifecycle-aware `RetainedValuesStore`. To use the previous ViewModel backing, set the flag before the first composition:
+To use the previous ViewModel backing on Android, set the flag before the first composition:
 
 ```kotlin
 // Set before the first composition, such as in Application.onCreate() or main().
 CircuitRetainedSettings.useFirstParty = false
 ```
 
-Other platforms continue to use their existing Circuit-retained backing by default. On JVM, iOS, macOS, and web, apps that install an appropriate `RetainedValuesStore` can opt in by setting `CircuitRetainedSettings.useFirstParty = true` before the first composition.
+Other platforms continue to use Circuit's previous backing by default. On JVM, iOS, macOS, and web, set `CircuitRetainedSettings.useFirstParty = true` and wrap the Circuit composition in `RetainedValuesStoreProvider` to opt in.
 
-With first-party backing enabled, `lifecycleRetainedStateRegistry()` is backed by a single root-level `retain` call instead of a Circuit-managed hidden `ViewModel`. Survival across configuration changes is then driven by the `RetainedValuesStore` installed in the composition. All `rememberRetained`/`rememberRetainedSaveable` semantics are unchanged. The setting remains experimental (`@ExperimentalCircuitRetainedApi`).
+### Compose Desktop Example
 
-With first-party backing enabled, `NavigableCircuitContent` also scopes a `RetainedValuesStore` to each nav record, so first-party `retain {}` calls inside presenters and UIs get per-record lifetimes side by side with `rememberRetained`: values survive while their record is in the nav stack (including across configuration changes) and are retired when the record is popped.
+Wrap the window content in `RetainedValuesStoreProvider`:
+
+```kotlin
+fun main() {
+  CircuitRetainedSettings.useFirstParty = true
+  val circuit = buildCircuit()
+
+  application {
+    Window(onCloseRequest = ::exitApplication) {
+      RetainedValuesStoreProvider {
+        CircuitCompositionLocals(circuit) {
+          // App content
+        }
+      }
+    }
+  }
+}
+```
+
+Compose Desktop supplies an owner for each window, so no manual cleanup is needed. Pass an explicit `RetainedValuesStoreOwner` only when retained values need to outlive the window that created them.
+
+### iOS Example
+
+Keep the owner outside the view controller factory so retained values survive the SwiftUI integration recreating the `ComposeUIViewController`:
+
+```kotlin
+// Deliberately process-scoped. A new ComposeUIViewController gets a new composition,
+// so the owner must live outside the factory for retained values to survive.
+private val retainedValuesStoreOwner = RetainedValuesStoreOwner()
+private val circuit = buildCircuit()
+
+fun MainViewController(): UIViewController {
+  CircuitRetainedSettings.useFirstParty = true
+  return ComposeUIViewController {
+    RetainedValuesStoreProvider(owner = retainedValuesStoreOwner) {
+      CircuitCompositionLocals(circuit) {
+        // App content
+      }
+    }
+  }
+}
+```
+
+A process-lifetime owner like this one never needs `dispose()`. Omitting the explicit owner also works on iOS because `ComposeUIViewController` provides a `LocalViewModelStoreOwner`, but that `ViewModelStore` is scoped to the view controller, so retention would end whenever the view controller is recreated.
+
+### Web Example
+
+Keep the owner outside `ComposeViewport` so retained values survive the viewport being disposed and recreated:
+
+```kotlin
+fun main() {
+  CircuitRetainedSettings.useFirstParty = true
+  // Page-scoped. main() returns after setup, but the composition's closures
+  // keep these alive for the lifetime of the page.
+  val retainedValuesStoreOwner = RetainedValuesStoreOwner()
+  val circuit = buildCircuit()
+
+  ComposeViewport {
+    RetainedValuesStoreProvider(owner = retainedValuesStoreOwner) {
+      CircuitCompositionLocals(circuit) {
+        // App content
+      }
+    }
+  }
+}
+```
+
+A page-lifetime owner never needs `dispose()`. An app that unmounts the Compose canvas and mounts it again should hold the owner wherever that re-mount logic lives, so both mounts share it. As on iOS, omitting the explicit owner works because `ComposeViewport` provides a `LocalViewModelStoreOwner`, but its `ViewModelStore` is cleared when the viewport is disposed, so retention would end with the viewport instead of the page.
+
+For other non-Android hosts, create the owner outside the composition and call `dispose()` when the host shuts down. This is in-memory retention only and does not survive process death. Follow [the upstream issue](https://issuetracker.google.com/issues/467397537) for first-party non-Android support.
+
+If you only use AndroidX `retain` directly, omit the `CircuitRetainedSettings.useFirstParty` line.
 
 ### Migration Plan
 
-The backing swap changes the retention transport and scopes `retain {}` per record, with no API changes. From here, new unkeyed, non-saveable usages can prefer `retain {}` directly.
+For new unkeyed, non-saveable state, prefer `retain {}` directly.
 
 Circuit APIs without upstream equivalents remain supported. `retain(key = ...)` preserves explicit-key retention, while `retainSaveable` provides the retained-and-saveable hybrid. The unkeyed `rememberRetained`, saveable `rememberRetained` variants, `rememberRetainedSaveable`, and the `produceRetainedState`/`collectAsRetainedState` conveniences remain supported.
 

@@ -87,7 +87,13 @@ kotlin {
       implementation(libs.truth)
     }
 
-    jvmTest { dependencies { commonJvmTest() } }
+    jvmTest {
+      dependencies {
+        commonJvmTest()
+        implementation(libs.compose.ui.test)
+        implementation(compose.desktop.currentOs)
+      }
+    }
 
     getByName("androidDeviceTest") {
       dependencies {

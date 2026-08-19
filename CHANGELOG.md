@@ -4,9 +4,13 @@ Changelog
 Unreleased
 ----------
 
+### New
+
+- **circuit-retained:** Add experimental `RetainedValuesStoreProvider` and `RetainedValuesStoreOwner` APIs for preserving AndroidX `retain` values across composition recreation on _non-Android_ platforms. This is temporary cover until androidx's implementation offers a non-android solution. See the [first-party `retain` documentation](circuit-retained/README.md#first-party-retain-interop).
+
 ### Changed
 
-- **circuit-retained:** Compose's first-party retain backing is now enabled by default on Android. Set `CircuitRetainedSettings.useFirstParty = false` before the first composition to use the previous `ViewModel`-based backing. Defaults on other platforms are unchanged until upstream supports retained behavior on non-Android platforms ([b/467397537](https://issuetracker.google.com/issues/467397537)).
+- **circuit-retained:** Compose's first-party retain backing is now enabled by default on Android. Set `CircuitRetainedSettings.useFirstParty = false` before the first composition to use the previous `ViewModel`-based backing. Other platforms remain opt-in.
 
 0.36.1
 ------

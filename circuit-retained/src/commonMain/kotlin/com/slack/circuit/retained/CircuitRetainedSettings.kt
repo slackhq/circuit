@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.retained
 
+import androidx.compose.runtime.RememberObserver
+import androidx.compose.runtime.retain.RetainObserver
 import kotlin.concurrent.Volatile
 
 /** Global settings for circuit-retained behavior. */
@@ -28,6 +30,14 @@ public object CircuitRetainedSettings {
    * JVM, iOS, macOS, and web.
    */
   @Volatile public var useFirstParty: Boolean = useFirstPartyByDefault
+
+  /**
+   * When true, Circuit retention APIs reject [RememberObserver] values that do not also implement
+   * [RetainObserver], matching AndroidX `retain`.
+   *
+   * Enable this before migrating call sites to AndroidX `retain`. Defaults to false.
+   */
+  @Volatile public var enforceRetainObserverCompatibility: Boolean = false
 }
 
 // Circuit's ViewModel-backed registry survives composition teardown while its ViewModelStore is

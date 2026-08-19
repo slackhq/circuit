@@ -118,6 +118,8 @@ For new unkeyed, non-saveable state, prefer `retain {}` directly.
 
 Circuit APIs without upstream equivalents remain supported. `retain(key = ...)` preserves explicit-key retention, while `retainSaveable` provides the retained-and-saveable hybrid. The unkeyed `rememberRetained`, saveable `rememberRetained` variants, `rememberRetainedSaveable`, and the `produceRetainedState`/`collectAsRetainedState` conveniences remain supported.
 
+Set `CircuitRetainedSettings.enforceRetainObserverCompatibility = true` to find `RememberObserver` values that AndroidX `retain` would reject.
+
 ### Retained + saveable
 
 The first-party API has no equivalent to Circuit's retained-and-saveable APIs, where a value is retained across configuration changes and opportunistically saved for process death. Circuit's two-layer mechanism is unaffected by the backing swap and remains available through `retainSaveable`, the saveable `rememberRetained` variants, and `rememberRetainedSaveable`.

@@ -12,4 +12,9 @@ class CircuitRetainedSettingsTest {
     assertThat(useFirstPartyByDefault).isTrue()
     assertThat(CircuitRetainedSettings.useFirstParty).isTrue()
   }
+
+  @Test
+  fun retainObserverCompatibilityRemainsOptIn() {
+    assertThat(CircuitRetainedSettings.enforceRetainObserverCompatibility).isFalse()
+  }
 }

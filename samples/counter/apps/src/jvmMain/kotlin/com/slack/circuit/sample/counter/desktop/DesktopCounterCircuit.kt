@@ -39,6 +39,9 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
+import com.slack.circuit.retained.CircuitRetainedSettings
+import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
+import com.slack.circuit.retained.RetainedValuesStoreProvider
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
@@ -141,28 +144,35 @@ private fun CounterPreviewNegative() {
   DesktopCounter(CounterScreen.State(-1))
 }
 
-fun main() = application {
-  Window(
-    title = "Counter Circuit (Desktop)",
-    state = WindowState(width = 300.dp, height = 300.dp),
-    onCloseRequest = ::exitApplication,
-  ) {
-    val initialBackStack = listOf<Screen>(CounterScreen)
-    val circuitSaver = remember { buildCircuitSaver() }
-    val backStack = rememberSaveableBackStack(initialBackStack, circuitSaver)
-    val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
-    val circuit =
-      remember(circuitSaver) {
-        buildCircuit(uiFactory = CounterUiFactory(), circuitSaver = circuitSaver)
-      }
+@OptIn(ExperimentalCircuitRetainedApi::class)
+fun main() {
+  CircuitRetainedSettings.useFirstParty = true
+  application {
+    Window(
+      title = "Counter Circuit (Desktop)",
+      state = WindowState(width = 300.dp, height = 300.dp),
+      onCloseRequest = ::exitApplication,
+    ) {
+      RetainedValuesStoreProvider {
+        val initialBackStack = listOf<Screen>(CounterScreen)
+        val circuitSaver = remember { buildCircuitSaver() }
+        val backStack = rememberSaveableBackStack(initialBackStack, circuitSaver)
+        val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
+        val circuit =
+          remember(circuitSaver) {
+            buildCircuit(uiFactory = CounterUiFactory(), circuitSaver = circuitSaver)
+          }
 
-    MaterialTheme {
-      CircuitCompositionLocals(circuit) {
-        NavigableCircuitContent(
-          navigator = navigator,
-          backStack = backStack,
-          modifier = Modifier.backHandler(enabled = backStack.size > 1, onBack = navigator::pop),
-        )
+        MaterialTheme {
+          CircuitCompositionLocals(circuit) {
+            NavigableCircuitContent(
+              navigator = navigator,
+              backStack = backStack,
+              modifier =
+                Modifier.backHandler(enabled = backStack.size > 1, onBack = navigator::pop),
+            )
+          }
+        }
       }
     }
   }

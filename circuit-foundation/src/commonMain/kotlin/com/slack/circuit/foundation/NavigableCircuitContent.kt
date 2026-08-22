@@ -329,6 +329,8 @@ public fun <R : Record> NavigableCircuitContent(
           (values.orEmpty() + circuitProvidedValues.orEmpty()).toTypedArray()
         }
       val localNavStack = contentProviderState.lastNavigator.navStack
+      val navStackRecordContext =
+        remember(localNavStack, record) { NavStackRecordContext(localNavStack, record) }
       val localResultHandler = contentProviderState.lastNavigator.answeringResultHandler
       val localAnsweringNavigatorProvider =
         remember(localNavStack, localResultHandler) {
@@ -337,6 +339,7 @@ public fun <R : Record> NavigableCircuitContent(
       CompositionLocalProvider(
         LocalAnsweringNavigatorProvider provides localAnsweringNavigatorProvider,
         LocalNavStack provides localNavStack,
+        LocalNavStackRecordContext provides navStackRecordContext,
         LocalAnsweringResultHandler provides localResultHandler,
         *providedLocals,
       ) {

@@ -107,6 +107,7 @@ dependencies {
   dokka(projects.circuitx.effects)
   dokka(projects.circuitx.gestureNavigation)
   dokka(projects.circuitx.overlays)
+  dokka(projects.circuitx.tracing)
 }
 
 val circuitCi: TaskProvider<Task> =

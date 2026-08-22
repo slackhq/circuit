@@ -82,7 +82,6 @@ public fun CircuitContent(
 }
 
 @Composable
-@OptIn(InternalCircuitApi::class)
 public fun CircuitContent(
   screen: Screen,
   navigator: Navigator,
@@ -93,13 +92,10 @@ public fun CircuitContent(
   key: Any? = screen,
 ) {
   val parent = LocalCircuitContext.current
-  val navStackRecordContext = LocalNavStackRecordContext.current
+  @OptIn(InternalCircuitApi::class)
   val context =
-    remember(screen, navigator, circuit, parent, navStackRecordContext) {
-      CircuitContext(parent).also {
-        it.circuit = circuit
-        it.putTag(navStackRecordContext)
-      }
+    remember(screen, navigator, circuit, parent) {
+      CircuitContext(parent).also { it.circuit = circuit }
     }
   CompositionLocalProvider(LocalCircuitContext provides context) {
     CircuitContent(screen, modifier, navigator, circuit, unavailableContent, context, key)

@@ -135,7 +135,6 @@ nav:
       - 'Navigation': circuitx/navigation.md
       - 'Overlays': circuitx/overlays.md
       - 'SubCircuit': circuitx/subcircuit.md
-      - 'Tracing': circuitx/tracing.md
   - 'Change Log': changelog.md
   - 'Contributing':
       - 'Contributing': contributing.md

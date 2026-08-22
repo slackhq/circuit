@@ -234,7 +234,6 @@ include(
   ":circuitx:subcircuit-codegen",
   ":circuitx:subcircuit-codegen-annotations",
   ":circuitx:subcircuit-test",
-  ":circuitx:tracing",
   ":samples:bottom-navigation",
   ":samples:bottom-navigation:androidApp",
   ":samples:counter",

@@ -4,11 +4,7 @@ Changelog
 Unreleased
 ----------
 
-### New
-
-- Add `circuitx-tracing`, an Android and desktop JVM artifact that records Circuit content, state, and navigation as AndroidX in-process Perfetto events.
-
-0.37.0
+0.37.1
 ------
 
 _2026-08-22_
@@ -22,6 +18,13 @@ _2026-08-22_
 ### Changed
 
 - **circuit-retained:** Compose's first-party retain backing is now enabled by default on Android. Set `CircuitRetainedSettings.useFirstParty = false` before the first composition to use the previous `ViewModel`-based backing. Other platforms remain opt-in.
+
+0.37.0
+------
+
+_2026-08-22_
+
+Ignore this release, it was accidentally cut with some stale branch changes!
 
 0.36.1
 ------

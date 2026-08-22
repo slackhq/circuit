@@ -20,4 +20,3 @@ These packages differ from Circuit's core artifacts in a few ways:
 | `com.slack.circuit:circuitx-navigation`         | [Navigation](circuitx/navigation.md)                 |
 | `com.slack.circuit:circuitx-overlays`           | [Overlays](circuitx/overlays.md)                     |
 | `com.slack.circuit:circuitx-subcircuit`         | [SubCircuit](circuitx/subcircuit.md)                 |
-| `com.slack.circuit:circuitx-tracing`            | [Tracing](circuitx/tracing.md)                       |

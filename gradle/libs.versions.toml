@@ -6,7 +6,6 @@ androidx-annotation = "1.10.0"
 androidx-appcompat = "1.8.0"
 androidx-browser = "1.10.0"
 androidx-compose = "1.11.4"  # Keep in sync with the androidx version used by jb-compose
-androidx-tracing = "2.0.0"
 anvil = "0.5.4"
 atomicfu = "0.33.0"
 benchmark = "1.5.0-rc01"
@@ -88,8 +87,6 @@ androidx-compose-runtime-rxjava3 = { module = "androidx.compose.runtime:runtime-
 # Compose testing library that should be added as a debugImplementation dependency to add properties to the debug manifest necessary for testing an application
 androidx-compose-ui-testing-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "androidx-compose" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
-androidx-tracing = { module = "androidx.tracing:tracing", version.ref = "androidx-tracing" }
-androidx-tracing-wire = { module = "androidx.tracing:tracing-wire", version.ref = "androidx-tracing" }
 
 # Force a newer version of androidx.loader because Espresso depends on an old and wrong version of it
 androidx-loader = "androidx.loader:loader:1.2.0"

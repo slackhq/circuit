@@ -7,7 +7,8 @@ Unreleased
 ### New
 
 - **circuit-retained:** Add experimental `RetainedValuesStoreProvider` and `RetainedValuesStoreOwner` APIs for preserving AndroidX `retain` values across composition recreation on _non-Android_ platforms. This is temporary cover until androidx's implementation offers a non-android solution. See the [first-party `retain` documentation](circuit-retained/README.md#first-party-retain-interop).
-- **circuit-retained:** Add `CircuitRetainedSettings.enforceRetainObserverCompatibility`, an opt-in check for `RememberObserver` values that AndroidX `retain` would reject.
+- **circuit-retained:** Add `CircuitRetainedSettings.enforceRetainObserverCompatibility`, an opt-in check that retained values implementing `RememberObserver` also implement `RetainObserver`.
+  - Circuit's internal navigation observer now passes this check.
 
 ### Changed
 

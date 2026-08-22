@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.retained
 
+import androidx.compose.runtime.CompositeKeyHashCode
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.retain.ManagedRetainedValuesStore
 
@@ -23,10 +24,10 @@ import androidx.compose.runtime.retain.ManagedRetainedValuesStore
  */
 @ExperimentalCircuitRetainedApi
 public class RetainedValuesStoreOwner {
-  private val slots = mutableMapOf<Long, RetainedValuesStoreSlot>()
+  private val slots = mutableMapOf<CompositeKeyHashCode, RetainedValuesStoreSlot>()
   private var isDisposed = false
 
-  internal fun acquire(location: Long): RetainedValuesStoreLease {
+  internal fun acquire(location: CompositeKeyHashCode): RetainedValuesStoreLease {
     check(!isDisposed) { "Cannot acquire a retained values store from a disposed owner." }
     return slots.getOrPut(location) { RetainedValuesStoreSlot() }.acquire()
   }

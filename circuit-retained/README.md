@@ -26,30 +26,29 @@ CompositionLocalProvider(
 
 ## First-party `retain` interop
 
-To use Compose's `retain` implementation for Circuit's retained APIs, set `CircuitRetainedSettings.useFirstParty = true` before the first composition. Existing Circuit calls do not need to change. Calls to `retain {}` inside `NavigableCircuitContent` follow the lifetime of their navigation record.
+Circuit uses Compose's `retain` implementation by default on Android. Existing Circuit calls do not need to change. Calls to `retain {}` inside `NavigableCircuitContent` follow the lifetime of their navigation record.
 
-Android handles this automatically. On other platforms, wrap your app in `RetainedValuesStoreProvider` so retained values survive composition recreation.
+To use the previous ViewModel backing on Android, set the flag before the first composition:
+
+```kotlin
+// Set before the first composition, such as in Application.onCreate() or main().
+CircuitRetainedSettings.useFirstParty = false
+```
+
+Other platforms continue to use Circuit's previous backing by default. On JVM, iOS, macOS, and web, set `CircuitRetainedSettings.useFirstParty = true` and wrap the Circuit composition in `RetainedValuesStoreProvider` to opt in.
 
 ### Compose Desktop Example
 
-Keep a `RetainedValuesStoreOwner` outside the composition and dispose it when the application closes:
+Wrap the window content in `RetainedValuesStoreProvider`:
 
 ```kotlin
 fun main() {
   CircuitRetainedSettings.useFirstParty = true
-  // Deliberately application-scoped. The owner must outlive every window composition
-  // that should share retained values.
-  val retainedValuesStoreOwner = RetainedValuesStoreOwner()
   val circuit = buildCircuit()
 
   application {
-    Window(
-      onCloseRequest = {
-        retainedValuesStoreOwner.dispose()
-        exitApplication()
-      },
-    ) {
-      RetainedValuesStoreProvider(owner = retainedValuesStoreOwner) {
+    Window(onCloseRequest = ::exitApplication) {
+      RetainedValuesStoreProvider {
         CircuitCompositionLocals(circuit) {
           // App content
         }
@@ -59,7 +58,7 @@ fun main() {
 }
 ```
 
-The explicit owner is required here because Compose Desktop windows do not provide a `LocalViewModelStoreOwner`. Hosts that do provide one, such as apps using Compose Multiplatform navigation, can omit the `owner` parameter and let the provider scope retention to that `ViewModelStore`.
+Compose Desktop supplies an owner for each window, so no manual cleanup is needed. Pass an explicit `RetainedValuesStoreOwner` only when retained values need to outlive the window that created them.
 
 ### iOS Example
 
@@ -118,6 +117,8 @@ If you only use AndroidX `retain` directly, omit the `CircuitRetainedSettings.us
 For new unkeyed, non-saveable state, prefer `retain {}` directly.
 
 Circuit APIs without upstream equivalents remain supported. `retain(key = ...)` preserves explicit-key retention, while `retainSaveable` provides the retained-and-saveable hybrid. The unkeyed `rememberRetained`, saveable `rememberRetained` variants, `rememberRetainedSaveable`, and the `produceRetainedState`/`collectAsRetainedState` conveniences remain supported.
+
+Set `CircuitRetainedSettings.enforceRetainObserverCompatibility = true` to find `RememberObserver` values that AndroidX `retain` would reject.
 
 ### Retained + saveable
 

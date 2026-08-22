@@ -35,6 +35,7 @@ class NavigableCircuitFirstPartyRetainDeviceTest {
 
   private val circuit =
     createTestCircuit(rememberType = TestCountPresenter.RememberType.FirstPartyRetain)
+  private val previousUseFirstParty = CircuitRetainedSettings.useFirstParty
 
   init {
     CircuitRetainedSettings.useFirstParty = true
@@ -42,7 +43,7 @@ class NavigableCircuitFirstPartyRetainDeviceTest {
 
   @After
   fun tearDown() {
-    CircuitRetainedSettings.useFirstParty = false
+    CircuitRetainedSettings.useFirstParty = previousUseFirstParty
   }
 
   @Test

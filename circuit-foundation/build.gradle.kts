@@ -35,6 +35,7 @@ kotlin {
         enabled = false
       }
     }
+    binaries.executable()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {

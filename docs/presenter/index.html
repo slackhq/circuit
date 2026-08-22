@@ -1880,7 +1880,7 @@
 <span class="p">}</span>
 </code></pre></div>
 <p>Assisted injection allows passing on the <code>screen</code> and <code>navigator</code> from the relevant <code>Presenter.Factory</code> to this presenter for further reference.</p>
-<p>When dealing with nested presenters, a presenter could bypass implementing a class entirely by simply being written as a function that other presenters can use. </p>
+<p>When dealing with nested presenters, a presenter could bypass implementing a class entirely by simply being written as a function that other presenters can use.</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// From cashapp/molecule&#39;s README examples</span>
 <span class="nd">@Composable</span>
 <span class="kd">fun</span><span class="w"> </span><span class="nf">ProfilePresenter</span><span class="p">(</span>
@@ -1911,7 +1911,7 @@
 <p>There are three types of composable retention functions used in Circuit.</p>
 <ol>
 <li><code>remember</code> – from Compose, remembers a value across recompositions. Can be any type.</li>
-<li><code>rememberRetained</code> – custom, remembers a value across recompositions, the back stack, and configuration changes. Can be any type, but should not retain leak-able things like <code>Navigator</code> instances or <code>Context</code> instances. Backed by a hidden <code>ViewModel</code> on Android.</li>
+<li><code>rememberRetained</code> – custom, remembers a value across recompositions, the back stack, and configuration changes. Can be any type, but should not retain leak-able things like <code>Navigator</code> instances or <code>Context</code> instances. Backed by Compose&rsquo;s first-party retention store by default on Android.</li>
 <li><code>rememberSaveable</code> – from Compose, remembers a value across recompositions, the back stack, configuration changes, <em>and</em> process death. Must be a primitive, <code>Parcelable</code> (on Android), or implement a custom <code>Saver</code>. This should not retain leakable things like <code>Navigator</code> instances or <code>Context</code> instances and is backed by the framework saved instance state system.</li>
 </ol>
 <p>Developers should use the right tool accordingly depending on their use case. Consider these three examples.</p>

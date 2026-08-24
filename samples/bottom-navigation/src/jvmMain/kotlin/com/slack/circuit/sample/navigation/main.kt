@@ -25,14 +25,14 @@ fun main() {
   application {
     Window(title = "Navigation Sample", onCloseRequest = ::exitApplication) {
       MaterialTheme {
-        val navStack = rememberSaveableNavStack(tabs.first(), circuitSaver)
-        val navigator = rememberCircuitNavigator(navStack) { exitApplication() }
-        // CircuitX Navigation
-        val uriHandler = LocalUriHandler.current
-        val interceptors = remember { listOf(InfoScreenInterceptor(uriHandler)) }
-        val interceptingNavigator =
-          rememberInterceptingNavigator(navigator = navigator, interceptors = interceptors)
         CircuitCompositionLocals(circuit) {
+          val navStack = rememberSaveableNavStack(tabs.first())
+          val navigator = rememberCircuitNavigator(navStack) { exitApplication() }
+          // CircuitX Navigation
+          val uriHandler = LocalUriHandler.current
+          val interceptors = remember { listOf(InfoScreenInterceptor(uriHandler)) }
+          val interceptingNavigator =
+            rememberInterceptingNavigator(navigator = navigator, interceptors = interceptors)
           SharedElementTransitionLayout {
             ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
           }

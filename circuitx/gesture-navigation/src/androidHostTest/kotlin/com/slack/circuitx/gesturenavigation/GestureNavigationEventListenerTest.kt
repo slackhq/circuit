@@ -17,6 +17,7 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_LABEL
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
+import com.slack.circuit.runtime.screen.CircuitSaver
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.junit.Rule
@@ -92,7 +93,7 @@ class GestureNavigationEventListenerTest {
   @Composable
   private fun TestContent() {
     val circuit = createTestCircuit()
-    CircuitCompositionLocals(circuit) {
+    CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
       val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
       val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
       NavigableCircuitContent(

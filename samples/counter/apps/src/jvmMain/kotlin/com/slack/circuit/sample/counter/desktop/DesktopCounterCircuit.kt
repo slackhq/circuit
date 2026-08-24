@@ -149,8 +149,6 @@ fun main() = application {
   ) {
     val initialBackStack = listOf<Screen>(CounterScreen)
     val circuitSaver = remember { buildCircuitSaver() }
-    val backStack = rememberSaveableBackStack(initialBackStack, circuitSaver)
-    val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
     val circuit =
       remember(circuitSaver) {
         buildCircuit(uiFactory = CounterUiFactory(), circuitSaver = circuitSaver)
@@ -158,6 +156,8 @@ fun main() = application {
 
     MaterialTheme {
       CircuitCompositionLocals(circuit) {
+        val backStack = rememberSaveableBackStack(initialBackStack)
+        val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
         NavigableCircuitContent(
           navigator = navigator,
           backStack = backStack,

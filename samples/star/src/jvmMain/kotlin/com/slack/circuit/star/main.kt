@@ -22,6 +22,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.SingletonImageLoader
+import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.star.di.AppGraph
 import java.awt.Desktop
 import java.net.URI
@@ -39,50 +40,48 @@ fun main() {
     var darkMode by remember { mutableStateOf(false) }
     val uriHandler = remember { DesktopUriHandler() }
     CompositionLocalProvider(LocalUriHandler provides uriHandler) {
-      val state =
-        rememberStarAppState(
-          circuitSaver = requireNotNull(appGraph.circuit.circuitSaver),
-          useDarkTheme = darkMode,
-        )
-      Window(
-        title = "STAR",
-        state = windowState,
-        onCloseRequest = ::exitApplication,
-        alwaysOnTop = true,
-        // In lieu of a global shortcut handler, we best-effort with this
-        // https://youtrack.jetbrains.com/issue/CMP-5337
-        onKeyEvent = { event ->
-          when (event.key) {
-            Key.W if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
-              exitApplication()
-              true
-            }
-            Key.U if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
-              darkMode = !darkMode
-              true
-            }
-            // Backpress ish
-            Key.Escape -> {
-              if (state.backStack.size > 1) {
-                state.navigator.pop()
+      CircuitCompositionLocals(appGraph.circuit) {
+        val state = rememberStarAppState(useDarkTheme = darkMode)
+        Window(
+          title = "STAR",
+          state = windowState,
+          onCloseRequest = ::exitApplication,
+          alwaysOnTop = true,
+          // In lieu of a global shortcut handler, we best-effort with this
+          // https://youtrack.jetbrains.com/issue/CMP-5337
+          onKeyEvent = { event ->
+            when (event.key) {
+              Key.W if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
+                exitApplication()
                 true
-              } else {
-                false
+              }
+              Key.U if event.isMetaPressed && event.type == KeyEventType.KeyDown -> {
+                darkMode = !darkMode
+                true
+              }
+              // Backpress ish
+              Key.Escape -> {
+                if (state.backStack.size > 1) {
+                  state.navigator.pop()
+                  true
+                } else {
+                  false
+                }
+              }
+              else -> false
+            }
+          },
+        ) {
+          MenuBar {
+            Menu("Data") {
+              Item("Clear app data and quit") {
+                appGraph.appDirs.clearAll()
+                exitApplication()
               }
             }
-            else -> false
           }
-        },
-      ) {
-        MenuBar {
-          Menu("Data") {
-            Item("Clear app data and quit") {
-              appGraph.appDirs.clearAll()
-              exitApplication()
-            }
-          }
+          StarCircuitApp(state = state)
         }
-        StarCircuitApp(circuit = appGraph.circuit, state = state)
       }
     }
   }

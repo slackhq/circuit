@@ -31,6 +31,7 @@ import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.overlay.ContentWithOverlays
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.common.Strings
@@ -341,6 +342,8 @@ private fun ComposeContentTestRule.setTestContent(
   content: @Composable () -> Unit,
 ) {
   setContent {
-    PreviewSharedElementTransitionLayout { CircuitCompositionLocals(circuit) { content() } }
+    PreviewSharedElementTransitionLayout {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) { content() }
+    }
   }
 }

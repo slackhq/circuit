@@ -3,9 +3,10 @@
 package com.slack.circuit.star
 
 import androidx.compose.ui.window.ComposeUIViewController
+import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.star.di.AppGraph
 import platform.UIKit.UIViewController
 
 fun makeUiViewController(graph: AppGraph): UIViewController = ComposeUIViewController {
-  StarCircuitApp(graph.circuit)
+  CircuitCompositionLocals(graph.circuit) { StarCircuitApp() }
 }

@@ -35,6 +35,7 @@ kotlin {
       dependencies {
         api(projects.samples.counter)
         api(projects.circuitFoundation)
+        implementation(projects.circuitRetained)
       }
     }
     commonTest { dependencies { implementation(libs.kotlin.test) } }

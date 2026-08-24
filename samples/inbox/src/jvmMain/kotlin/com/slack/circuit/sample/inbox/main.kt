@@ -12,19 +12,26 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
+import com.slack.circuit.retained.CircuitRetainedSettings
+import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
+import com.slack.circuit.retained.RetainedValuesStoreProvider
 import com.slack.circuit.sample.inbox.di.InboxAppGraph
 import com.slack.circuit.sample.inbox.home.InboxScreen
 
+@OptIn(ExperimentalCircuitRetainedApi::class)
 fun main() {
+  CircuitRetainedSettings.useFirstParty = true
   val graph = InboxAppGraph.create()
   application {
     val windowState = rememberWindowState(size = DpSize(1100.dp, 800.dp))
     Window(state = windowState, title = "Circuit Inbox", onCloseRequest = ::exitApplication) {
-      MaterialTheme {
-        CircuitCompositionLocals(graph.circuit) {
-          val backStack = rememberSaveableBackStack(InboxScreen)
-          val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
-          NavigableCircuitContent(navigator = navigator, backStack = backStack)
+      RetainedValuesStoreProvider {
+        MaterialTheme {
+          CircuitCompositionLocals(graph.circuit) {
+            val backStack = rememberSaveableBackStack(InboxScreen)
+            val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
+            NavigableCircuitContent(navigator = navigator, backStack = backStack)
+          }
         }
       }
     }

@@ -9,16 +9,11 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.internal.test.TestCountPresenter
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
-import com.slack.circuit.retained.CircuitRetainedSettings
-import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 
-@OptIn(ExperimentalCircuitRetainedApi::class)
 class NavigableCircuitFirstPartyRetainTestActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
-    CircuitRetainedSettings.useFirstParty = true
 
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.FirstPartyRetain)
 

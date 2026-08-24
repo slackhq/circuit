@@ -39,6 +39,28 @@ Unreleased
 - Removed the static `DefaultCircuitSaver`. Use `rememberDefaultCircuitSaver()` inside a composition, a serializing saver, or `CircuitSaver.NoOp`.
 - Removed the deprecated companion `Saver` properties from `SaveableBackStack` and `SaveableNavStack`. Use the `Saver(CircuitSaver)` functions.
 
+0.37.1
+------
+
+_2026-08-22_
+
+### New
+
+- **circuit-retained:** Add experimental `RetainedValuesStoreProvider` and `RetainedValuesStoreOwner` APIs for preserving AndroidX `retain` values across composition recreation on _non-Android_ platforms. This is temporary cover until androidx's implementation offers a non-android solution. See the [first-party `retain` documentation](circuit-retained/README.md#first-party-retain-interop).
+- **circuit-retained:** Add `CircuitRetainedSettings.enforceRetainObserverCompatibility`, an opt-in check that retained values implementing `RememberObserver` also implement `RetainObserver`.
+  - Circuit's internal navigation observer now passes this check.
+
+### Changed
+
+- **circuit-retained:** Compose's first-party retain backing is now enabled by default on Android. Set `CircuitRetainedSettings.useFirstParty = false` before the first composition to use the previous `ViewModel`-based backing. Other platforms remain opt-in.
+
+0.37.0
+------
+
+_2026-08-22_
+
+Ignore this release, it was accidentally cut with some stale branch changes!
+
 0.36.1
 ------
 

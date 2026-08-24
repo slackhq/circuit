@@ -49,6 +49,9 @@ class FirstPartyRetainRecordLifecycleTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   private val events = mutableListOf<String>()
+  private val previousUseFirstParty = CircuitRetainedSettings.useFirstParty
+  private val previousEnforceRetainObserverCompatibility =
+    CircuitRetainedSettings.enforceRetainObserverCompatibility
 
   private inner class Tracked(val label: String) : RetainObserver {
     override fun onRetained() {
@@ -74,7 +77,9 @@ class FirstPartyRetainRecordLifecycleTest {
 
   @After
   fun tearDown() {
-    CircuitRetainedSettings.useFirstParty = false
+    CircuitRetainedSettings.useFirstParty = previousUseFirstParty
+    CircuitRetainedSettings.enforceRetainObserverCompatibility =
+      previousEnforceRetainObserverCompatibility
   }
 
   @Test
@@ -194,6 +199,23 @@ class FirstPartyRetainRecordLifecycleTest {
     composeTestRule.onNodeWithTag(TAG_COUNT).assertTextEquals("0")
     composeTestRule.onNodeWithTag(TAG_INCREASE_COUNT).performClick()
     composeTestRule.onNodeWithTag(TAG_COUNT).assertTextEquals("1")
+  }
+
+  @Test
+  fun navigationInternalsAreRetainObserverCompatible() {
+    CircuitRetainedSettings.useFirstParty = true
+    CircuitRetainedSettings.enforceRetainObserverCompatibility = true
+    val circuit = createTestCircuit()
+
+    composeTestRule.setContent {
+      CircuitCompositionLocals(circuit) {
+        val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
+        val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+        NavigableCircuitContent(navigator = navigator, backStack = backStack)
+      }
+    }
+
+    composeTestRule.onNodeWithTag(TAG_LABEL).assertTextEquals("A")
   }
 
   @Test

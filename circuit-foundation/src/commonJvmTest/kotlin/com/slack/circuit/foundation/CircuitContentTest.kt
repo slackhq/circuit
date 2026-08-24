@@ -21,6 +21,7 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_INCREASE_COUNT
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.runtime.ui.ui
 import org.junit.Rule
@@ -43,7 +44,7 @@ class CircuitContentTest {
             ui<CountScreen.State> { state, modifier -> Count(state, modifier) }
           }
           .build()
-      setContent { CircuitCompositionLocals(circuit) { CountStateBug() } }
+      setContent { CircuitCompositionLocals(circuit, CircuitSaver.NoOp) { CountStateBug() } }
 
       onNodeWithTag(TAG_COUNT).assertTextEquals("0")
       onNodeWithTag(TAG_INCREASE_COUNT).performClick()

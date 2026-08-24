@@ -53,12 +53,14 @@ public final class com/slack/circuit/foundation/Circuit$Builder {
 	public static synthetic fun presentWithLifecycle$default (Lcom/slack/circuit/foundation/Circuit$Builder;ZILjava/lang/Object;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun setAnimatedNavDecoratorFactory (Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun setCircuitSaver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Lcom/slack/circuit/foundation/Circuit$Builder;
+	public final fun setCircuitSaver (Lkotlin/jvm/functions/Function2;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun setDefaultNavDecoration (Lcom/slack/circuit/foundation/NavDecoration;)Lcom/slack/circuit/foundation/Circuit$Builder;
 	public final fun setOnUnavailableContent (Lkotlin/jvm/functions/Function4;)Lcom/slack/circuit/foundation/Circuit$Builder;
 }
 
 public final class com/slack/circuit/foundation/CircuitCompositionLocalsKt {
 	public static final fun CircuitCompositionLocals (Lcom/slack/circuit/foundation/Circuit;Lcom/slack/circuit/retained/RetainedStateRegistry;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+	public static final fun CircuitCompositionLocals (Lcom/slack/circuit/foundation/Circuit;Lcom/slack/circuit/runtime/screen/CircuitSaver;Lcom/slack/circuit/retained/RetainedStateRegistry;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun CircuitPreview (Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
 	public static final fun getLocalCircuit ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
@@ -258,6 +260,10 @@ public final class com/slack/circuit/foundation/RecordLifecycleKt {
 	public static final fun getLocalRecordLifecycle ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
+public final class com/slack/circuit/foundation/RememberDefaultCircuitSaverKt {
+	public static final fun rememberDefaultCircuitSaver (Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/screen/CircuitSaver;
+}
+
 public final class com/slack/circuit/foundation/animation/AnimatedNavDecoration : com/slack/circuit/foundation/NavDecoration {
 	public static final field $stable I
 	public fun <init> (Ljava/util/Map;Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;)V
@@ -388,7 +394,6 @@ public final class com/slack/circuit/foundation/navstack/SaveableNavStack : com/
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStack$Companion {
 	public final fun Saver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Landroidx/compose/runtime/saveable/Saver;
-	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStack$Record : com/slack/circuit/runtime/navigation/NavStack$Record {
@@ -409,7 +414,6 @@ public final class com/slack/circuit/foundation/navstack/SaveableNavStack$Record
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStack$Record$Companion {
 	public final fun Saver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Landroidx/compose/runtime/saveable/Saver;
-	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStack$SaveableNavStackList : com/slack/circuit/runtime/navigation/NavStackList {
@@ -438,7 +442,6 @@ public final class com/slack/circuit/foundation/navstack/SaveableNavStack$Saveab
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStack$SaveableNavStackList$Companion {
 	public final fun Saver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Landroidx/compose/runtime/saveable/Saver;
-	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
 public final class com/slack/circuit/foundation/navstack/SaveableNavStackKt {

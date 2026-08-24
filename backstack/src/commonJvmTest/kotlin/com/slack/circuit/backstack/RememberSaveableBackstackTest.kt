@@ -7,6 +7,7 @@ import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
 import com.slack.circuit.internal.test.TestScreen
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.assertEquals
 import kotlin.test.assertNotSame
@@ -19,7 +20,11 @@ class RememberSaveableBackstackTest {
   @Test
   fun backStackStartsWithRootScreen() = runTest {
     moleculeFlow(RecompositionMode.Immediate) {
-        val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
+        val backStack =
+          rememberSaveableBackStack(
+            TestScreen.ScreenA,
+            circuitSaver = CircuitSaver.NoOp,
+          )
         backStack.toList()
       }
       .test { assertEquals(awaitItem().first().screen, TestScreen.ScreenA) }
@@ -31,7 +36,7 @@ class RememberSaveableBackstackTest {
     var dummyData by mutableStateOf(false)
     moleculeFlow(RecompositionMode.Immediate) {
         @Suppress("UNUSED_EXPRESSION") dummyData
-        rememberSaveableBackStack(rootScreen)
+        rememberSaveableBackStack(rootScreen, circuitSaver = CircuitSaver.NoOp)
       }
       .test {
         val firstStack = awaitItem()
@@ -45,7 +50,9 @@ class RememberSaveableBackstackTest {
   @Test
   fun rememberSaveableBackStackReturnsNewInstanceWithChangedRoot() = runTest {
     var rootScreen by mutableStateOf<Screen>(TestScreen.ScreenA)
-    moleculeFlow(RecompositionMode.Immediate) { rememberSaveableBackStack(rootScreen) }
+    moleculeFlow(RecompositionMode.Immediate) {
+        rememberSaveableBackStack(rootScreen, circuitSaver = CircuitSaver.NoOp)
+      }
       .test {
         val firstStack = awaitItem()
         rootScreen = TestScreen.ScreenB
@@ -60,7 +67,9 @@ class RememberSaveableBackstackTest {
   @Test
   fun rememberSaveableBackStackStartedWithListReturnsNewInstanceWithChangedRoot() = runTest {
     var rootScreens by mutableStateOf<List<Screen>>(listOf(TestScreen.ScreenA))
-    moleculeFlow(RecompositionMode.Immediate) { rememberSaveableBackStack(rootScreens) }
+    moleculeFlow(RecompositionMode.Immediate) {
+        rememberSaveableBackStack(rootScreens, circuitSaver = CircuitSaver.NoOp)
+      }
       .test {
         val firstStack = awaitItem()
         rootScreens = listOf(TestScreen.ScreenB)

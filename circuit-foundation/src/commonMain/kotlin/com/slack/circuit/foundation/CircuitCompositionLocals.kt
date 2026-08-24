@@ -3,7 +3,6 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
@@ -13,28 +12,52 @@ import com.slack.circuit.retained.NoOpRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.lifecycleRetainedStateRegistry
 import com.slack.circuit.runtime.CircuitContext
-import com.slack.circuit.runtime.screen.LocalCircuitSaver
+import com.slack.circuit.runtime.screen.CircuitSaver
+import com.slack.circuit.runtime.screen.InternalCircuitSaverApi
+import com.slack.circuit.runtime.screen.ProvideCircuitSaver
+import com.slack.circuit.runtime.screen.currentProvidedCircuitSaverOrNull
 
 /**
- * Provides the given [circuit] as a [CompositionLocal] to all composables within [content]. Also
- * adds any other composition locals that Circuit needs.
+ * Provides [circuit] and the other composition locals Circuit needs to all composables within
+ * [content].
+ *
+ * This uses a saver configured on [Circuit] when one is present, followed by a saver inherited from
+ * `ProvideCircuitSaver`. Otherwise, it creates a registry-backed saver with
+ * [rememberDefaultCircuitSaver]. Use the overload that accepts a [CircuitSaver] to provide a
+ * different final saver.
  */
+@OptIn(InternalCircuitSaverApi::class)
 @Composable
 public fun CircuitCompositionLocals(
   circuit: Circuit,
   retainedStateRegistry: RetainedStateRegistry = lifecycleRetainedStateRegistry(),
   content: @Composable () -> Unit,
 ) {
-  val circuitSaver = circuit.circuitSaver
-  if (circuitSaver != null) {
-    CompositionLocalProvider(
-      LocalCircuit provides circuit,
-      LocalRetainedStateRegistry provides retainedStateRegistry,
-      LocalCircuitSaver provides circuitSaver,
-    ) {
-      content()
-    }
-  } else {
+  val circuitSaver =
+    circuit.circuitSaver
+      ?: circuit.circuitSaverFactory?.invoke()
+      ?: currentProvidedCircuitSaverOrNull()
+      ?: rememberDefaultCircuitSaver()
+  CircuitCompositionLocals(
+    circuit = circuit,
+    circuitSaver = circuitSaver,
+    retainedStateRegistry = retainedStateRegistry,
+    content = content,
+  )
+}
+
+/**
+ * Provides [circuit], [circuitSaver], and the other composition locals Circuit needs to all
+ * composables within [content].
+ */
+@Composable
+public fun CircuitCompositionLocals(
+  circuit: Circuit,
+  circuitSaver: CircuitSaver,
+  retainedStateRegistry: RetainedStateRegistry = lifecycleRetainedStateRegistry(),
+  content: @Composable () -> Unit,
+) {
+  ProvideCircuitSaver(circuitSaver) {
     CompositionLocalProvider(
       LocalCircuit provides circuit,
       LocalRetainedStateRegistry provides retainedStateRegistry,
@@ -69,6 +92,7 @@ private val EMPTY_CIRCUIT = Circuit.Builder().build()
 public fun CircuitPreview(content: @Composable () -> Unit) {
   CircuitCompositionLocals(
     circuit = EMPTY_CIRCUIT,
+    circuitSaver = CircuitSaver.NoOp,
     retainedStateRegistry = NoOpRetainedStateRegistry,
     content = content,
   )

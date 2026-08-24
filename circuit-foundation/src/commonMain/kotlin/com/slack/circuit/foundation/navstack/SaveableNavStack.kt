@@ -17,7 +17,6 @@ import com.slack.circuit.foundation.navstack.SaveableNavStack.Record
 import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.CircuitSaver
-import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.screen.restoreScreen
@@ -30,8 +29,8 @@ import kotlin.uuid.Uuid
  *
  * If [root] changes, a new nav stack will be created.
  *
- * @param circuitSaver the [CircuitSaver] used to persist screens, defaulting to
- *   [LocalCircuitSaver].
+ * @param circuitSaver defaults to the current [LocalCircuitSaver]. Call this inside
+ *   `CircuitCompositionLocals` or `ProvideCircuitSaver`.
  * @param init optional initializer callback to perform extra initialization logic.
  */
 @Composable
@@ -49,8 +48,8 @@ public fun rememberSaveableNavStack(
  *
  * [initialScreens] must not be empty. If [initialScreens] changes, a new nav stack will be created.
  *
- * @param circuitSaver the [CircuitSaver] used to persist screens, defaulting to
- *   [LocalCircuitSaver].
+ * @param circuitSaver defaults to the current [LocalCircuitSaver]. Call this inside
+ *   `CircuitCompositionLocals` or `ProvideCircuitSaver`.
  */
 @Composable
 public fun rememberSaveableNavStack(
@@ -72,8 +71,8 @@ public fun rememberSaveableNavStack(
  *
  * If [navStackList] changes, a new nav stack will be created.
  *
- * @param circuitSaver the [CircuitSaver] used to persist screens, defaulting to
- *   [LocalCircuitSaver].
+ * @param circuitSaver defaults to the current [LocalCircuitSaver]. Call this inside
+ *   `CircuitCompositionLocals` or `ProvideCircuitSaver`.
  */
 @Composable
 public fun rememberSaveableNavStack(
@@ -273,15 +272,6 @@ internal constructor(
   ) : NavStack.Record {
 
     public companion object {
-      @Deprecated(
-        "Use Saver(CircuitSaver) instead.",
-        ReplaceWith(
-          "Record.Saver(DefaultCircuitSaver)",
-          "com.slack.circuit.runtime.screen.DefaultCircuitSaver",
-        ),
-      )
-      public val Saver: Saver<Record, Any> = Saver(DefaultCircuitSaver)
-
       /** Returns a [Saver] that persists [Record]s with the given [circuitSaver]. */
       public fun Saver(circuitSaver: CircuitSaver): Saver<Record, Any> =
         mapSaver(
@@ -323,15 +313,6 @@ internal constructor(
     }
 
     public companion object {
-      @Deprecated(
-        "Use Saver(CircuitSaver) instead.",
-        ReplaceWith(
-          "SaveableNavStackList.Saver(DefaultCircuitSaver)",
-          "com.slack.circuit.runtime.screen.DefaultCircuitSaver",
-        ),
-      )
-      public val Saver: Saver<SaveableNavStackList, Any> = Saver(DefaultCircuitSaver)
-
       /** Returns a [Saver] that persists [SaveableNavStackList]s with the given [circuitSaver]. */
       public fun Saver(circuitSaver: CircuitSaver): Saver<SaveableNavStackList, Any> {
         val recordSaver = Record.Saver(circuitSaver)
@@ -361,15 +342,6 @@ internal constructor(
   }
 
   public companion object {
-    @Deprecated(
-      "Use Saver(CircuitSaver) instead.",
-      ReplaceWith(
-        "SaveableNavStack.Saver(DefaultCircuitSaver)",
-        "com.slack.circuit.runtime.screen.DefaultCircuitSaver",
-      ),
-    )
-    public val Saver: Saver<SaveableNavStack, Any> = Saver(DefaultCircuitSaver)
-
     /** Returns a [Saver] that persists [SaveableNavStack]s with the given [circuitSaver]. */
     @Suppress("UNCHECKED_CAST")
     public fun Saver(circuitSaver: CircuitSaver): Saver<SaveableNavStack, Any> {

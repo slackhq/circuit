@@ -7,9 +7,8 @@ import androidx.compose.runtime.Immutable
 /**
  * A [Screen] that is also `android.os.Parcelable` on Android.
  *
- * Use this with [DefaultCircuitSaver] to persist a screen through Android saved state. Common code
- * cannot reference `android.os.Parcelable` directly. On all other platforms this is just a
- * [Screen].
+ * Use this when relying on Android's `Parcelable` support to persist a screen. Common code cannot
+ * reference `android.os.Parcelable` directly. On all other platforms this is just a [Screen].
  *
  * ```
  * @Parcelize // Or your own `@CommonParcelize` annotation

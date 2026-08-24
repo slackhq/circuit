@@ -5,22 +5,26 @@ package com.slack.circuit.foundation
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.CircuitSaver
-import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import com.slack.circuit.runtime.screen.LocalCircuitSaver
 import com.slack.circuit.runtime.screen.ParcelablePopResult
 import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.ProvideCircuitSaver
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.plus
 import com.slack.circuit.runtime.screen.restorePopResult
 import com.slack.circuit.runtime.screen.restoreScreen
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlinx.parcelize.Parcelize
@@ -50,50 +54,65 @@ class CircuitSaverAndroidTest {
   }
 
   @Test
-  fun defaultCircuitSaverPassesThroughParcelableMarkerValues() {
+  fun rememberedDefaultSaverPassesThroughParcelableMarkerValues() {
+    val saver = rememberDefaultSaver()
     val screen = TestParcelableScreen("screen")
     val result = TestParcelablePopResult(42)
 
-    val savedScreen = DefaultCircuitSaver.save(screen)
-    val savedResult = DefaultCircuitSaver.save(result)
+    val savedScreen = saver.save(screen)
+    val savedResult = saver.save(result)
 
     assertSame(screen, savedScreen)
     assertSame(result, savedResult)
-    assertSame(screen, DefaultCircuitSaver.restoreScreen<TestParcelableScreen>(savedScreen!!))
-    assertSame(result, DefaultCircuitSaver.restorePopResult<TestParcelablePopResult>(savedResult!!))
+    assertSame(screen, saver.restoreScreen<TestParcelableScreen>(savedScreen!!))
+    assertSame(result, saver.restorePopResult<TestParcelablePopResult>(savedResult!!))
   }
 
   @Test
-  fun defaultCircuitSaverPassesThroughDirectParcelableValues() {
+  fun rememberedDefaultSaverPassesThroughDirectParcelableValues() {
+    val saver = rememberDefaultSaver()
     val screen = TestDirectParcelableScreen("screen")
     val result = TestDirectParcelablePopResult(42)
 
-    val savedScreen = DefaultCircuitSaver.save(screen)
-    val savedResult = DefaultCircuitSaver.save(result)
+    val savedScreen = saver.save(screen)
+    val savedResult = saver.save(result)
 
     assertSame(screen, savedScreen)
     assertSame(result, savedResult)
-    assertSame(screen, DefaultCircuitSaver.restoreScreen<TestDirectParcelableScreen>(savedScreen!!))
+    assertSame(screen, saver.restoreScreen<TestDirectParcelableScreen>(savedScreen!!))
     assertSame(
       result,
-      DefaultCircuitSaver.restorePopResult<TestDirectParcelablePopResult>(savedResult!!),
+      saver.restorePopResult<TestDirectParcelablePopResult>(savedResult!!),
     )
   }
 
   @Test
-  fun defaultCircuitSaverSkipsPlainValues() {
-    assertNull(DefaultCircuitSaver.save(TestPlainScreen))
-    assertNull(DefaultCircuitSaver.save(TestPlainPopResult))
+  fun rememberedDefaultSaverFailsOnPlainValues() {
+    val saver = rememberDefaultSaver()
+
+    val failure = assertFailsWith<IllegalArgumentException> { saver.save(TestPlainScreen) }
+    assertContains(failure.message.orEmpty(), "cannot save")
+    assertFailsWith<IllegalArgumentException> { saver.save(TestPlainPopResult) }
   }
 
   @Test
-  fun defaultCircuitSaverRestoresPlainScreenThroughInitialValue() {
+  fun droppingSaverCanFollowRememberedDefaultSaver() {
+    val dropped = mutableListOf<CircuitSaveable>()
+    val saver = rememberDefaultSaver() + CircuitSaver.Dropping(dropped::add)
+
+    assertNull(saver.save(TestPlainScreen))
+    assertNull(saver.save(TestPlainPopResult))
+    assertEquals(listOf<CircuitSaveable>(TestPlainScreen, TestPlainPopResult), dropped)
+  }
+
+  @Test
+  fun rememberedDroppingSaverRestoresPlainScreenThroughInitialValue() {
     val restorationTester = StateRestorationTester(composeTestRule)
     var initializations = 0
     restorationTester.setContent {
-      rememberSaveableBackStack(TestPlainScreen) {
-        initializations++
-      }
+      val defaultSaver = rememberDefaultCircuitSaver()
+      val saver = remember(defaultSaver) { defaultSaver + CircuitSaver.NoOp }
+      rememberSaveableBackStack(TestPlainScreen, saver) { initializations++ }
     }
 
     restorationTester.emulateSavedInstanceStateRestore()
@@ -102,17 +121,25 @@ class CircuitSaverAndroidTest {
   }
 
   @Test
-  fun defaultCircuitSaverRestoresRawValuesAndIgnoresUnrelatedInput() {
+  fun rememberedDefaultSaverRestoresRawValuesAndIgnoresUnrelatedInput() {
+    val saver = rememberDefaultSaver()
+
     assertSame(
       TestPlainScreen,
-      DefaultCircuitSaver.restoreScreen<Screen>(TestPlainScreen),
+      saver.restoreScreen<Screen>(TestPlainScreen),
     )
     assertSame(
       TestPlainPopResult,
-      DefaultCircuitSaver.restorePopResult<PopResult>(TestPlainPopResult),
+      saver.restorePopResult<PopResult>(TestPlainPopResult),
     )
-    assertNull(DefaultCircuitSaver.restoreScreen<Screen>(Any()))
-    assertNull(DefaultCircuitSaver.restorePopResult<PopResult>(Any()))
+    assertNull(saver.restoreScreen<Screen>(Any()))
+    assertNull(saver.restorePopResult<PopResult>(Any()))
+  }
+
+  private fun rememberDefaultSaver(): CircuitSaver {
+    lateinit var saver: CircuitSaver
+    composeTestRule.setContent { saver = rememberDefaultCircuitSaver() }
+    return composeTestRule.runOnIdle { saver }
   }
 
   @Test
@@ -128,38 +155,63 @@ class CircuitSaverAndroidTest {
   }
 
   @Test
-  fun circuitBuilderSaverCanBeInheritedOverriddenAndCleared() {
-    val outerSaver = TestCircuitSaver()
-    val configuredSaver = TestCircuitSaver()
-    val replacementSaver = TestCircuitSaver()
-    val defaultCircuit = Circuit.Builder().build()
-    val circuit = Circuit.Builder().setCircuitSaver(configuredSaver).build()
-    val inheritedCircuit = circuit.newBuilder().build()
-    val overriddenCircuit = circuit.newBuilder().setCircuitSaver(replacementSaver).build()
-    val clearedCircuit = circuit.newBuilder().setCircuitSaver(null).build()
-    lateinit var default: CircuitSaver
-    lateinit var configured: CircuitSaver
-    lateinit var inherited: CircuitSaver
-    lateinit var overridden: CircuitSaver
-    lateinit var cleared: CircuitSaver
+  fun localCircuitSaverFailsWhenUnprovided() {
+    val error =
+      assertFailsWith<IllegalStateException> {
+        composeTestRule.setContent { LocalCircuitSaver.current }
+      }
+
+    assertContains(error.message.orEmpty(), "No CircuitSaver provided")
+  }
+
+  @Test
+  fun circuitCompositionLocalsProvidesExactSaver() {
+    val circuit = Circuit.Builder().setCircuitSaver(TestCircuitSaver()).build()
+    val saver = TestCircuitSaver()
+    lateinit var observed: CircuitSaver
 
     composeTestRule.setContent {
-      ProvideCircuitSaver(outerSaver) {
-        CircuitCompositionLocals(defaultCircuit) { default = LocalCircuitSaver.current }
-        CircuitCompositionLocals(circuit) { configured = LocalCircuitSaver.current }
-        CircuitCompositionLocals(inheritedCircuit) { inherited = LocalCircuitSaver.current }
-        CircuitCompositionLocals(overriddenCircuit) { overridden = LocalCircuitSaver.current }
-        CircuitCompositionLocals(clearedCircuit) { cleared = LocalCircuitSaver.current }
+      CircuitCompositionLocals(circuit, saver) {
+        observed = LocalCircuitSaver.current
       }
     }
 
-    composeTestRule.runOnIdle {
-      assertSame(outerSaver, default)
-      assertSame(configuredSaver, configured)
-      assertSame(configuredSaver, inherited)
-      assertSame(replacementSaver, overridden)
-      assertSame(outerSaver, cleared)
-    }
+    composeTestRule.runOnIdle { assertSame(saver, observed) }
+  }
+
+  @Test
+  fun circuitBuilderSaverCanBeInheritedOverriddenAndCleared() {
+    val configuredSaver = TestCircuitSaver()
+    val replacementSaver = TestCircuitSaver()
+    val circuit = Circuit.Builder().setCircuitSaver(configuredSaver).build()
+
+    assertNull(Circuit.Builder().build().circuitSaver)
+    assertSame(configuredSaver, circuit.circuitSaver)
+    assertSame(configuredSaver, circuit.newBuilder().build().circuitSaver)
+    assertSame(
+      replacementSaver,
+      circuit.newBuilder().setCircuitSaver(replacementSaver).build().circuitSaver,
+    )
+    assertNull(circuit.newBuilder().setCircuitSaver(null).build().circuitSaver)
+  }
+
+  @Test
+  fun circuitBuilderSaverAndFactoryClearEachOther() {
+    val staticSaver = TestCircuitSaver()
+    val factorySaver = TestCircuitSaver()
+    val factory: @Composable () -> CircuitSaver = { factorySaver }
+
+    val factoryCircuit =
+      Circuit.Builder().setCircuitSaver(staticSaver).setCircuitSaver(factory).build()
+    assertNull(factoryCircuit.circuitSaver)
+    assertSame(factory, factoryCircuit.circuitSaverFactory)
+
+    val inherited = factoryCircuit.newBuilder().build()
+    assertSame(factory, inherited.circuitSaverFactory)
+
+    val staticCircuit = factoryCircuit.newBuilder().setCircuitSaver(staticSaver).build()
+    assertSame(staticSaver, staticCircuit.circuitSaver)
+    assertNull(staticCircuit.circuitSaverFactory)
   }
 }
 
@@ -193,7 +245,11 @@ private data object TestPlainScreen : Screen
 private data object TestPlainPopResult : PopResult
 
 private class TestCircuitSaver : CircuitSaver() {
+  override fun canSave(value: CircuitSaveable): Boolean = true
+
   override fun save(value: CircuitSaveable): Any = value
+
+  override fun canRestore(saved: Any): Boolean = true
 
   override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
 }

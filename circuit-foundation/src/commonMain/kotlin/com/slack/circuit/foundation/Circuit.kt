@@ -62,10 +62,10 @@ import kotlin.reflect.KClass
  * If using navigation, use `NavigableCircuitContent` instead.
  *
  * ```kotlin
- * val backStack = rememberSaveableBackStack(root = HomeScreen)
- * val navigator = rememberCircuitNavigator(backstack, ::onBackPressed)
  * CircuitCompositionLocals(circuit) {
- *   NavigableCircuitContent(navigator, backstack)
+ *   val backStack = rememberSaveableBackStack(root = HomeScreen)
+ *   val navigator = rememberCircuitNavigator(backStack, ::onBackPressed)
+ *   NavigableCircuitContent(navigator, backStack)
  * }
  * ```
  *
@@ -117,13 +117,22 @@ public class Circuit private constructor(builder: Builder) {
     builder.navStackLocalProviders.toList()
 
   /**
-   * An optional [CircuitSaver] provided as `LocalCircuitSaver` by [CircuitCompositionLocals].
+   * An optional app-configured [CircuitSaver].
    *
-   * Note this only reaches saveable back stacks created inside [CircuitCompositionLocals]. For back
-   * stacks created above it, pass the saver explicitly or provide it at the app root via
-   * `ProvideCircuitSaver`.
+   * [CircuitCompositionLocals] provides this when no explicit saver is supplied. If no saver or
+   * composable saver factory is configured, it uses an inherited saver or creates a registry-backed
+   * saver with [rememberDefaultCircuitSaver].
    */
   public val circuitSaver: CircuitSaver? = builder.circuitSaver
+
+  /**
+   * An optional app-configured [CircuitSaver] factory invoked in composition.
+   *
+   * Use this over [circuitSaver] when the saver needs composition access, such as composing with
+   * [rememberDefaultCircuitSaver]. [CircuitCompositionLocals] invokes this when no explicit saver
+   * is supplied. At most one of this and [circuitSaver] is non-null.
+   */
+  internal val circuitSaverFactory: (@Composable () -> CircuitSaver)? = builder.circuitSaverFactory
 
   @OptIn(InternalCircuitApi::class)
   public fun presenter(
@@ -210,6 +219,9 @@ public class Circuit private constructor(builder: Builder) {
     public var circuitSaver: CircuitSaver? = null
       private set
 
+    internal var circuitSaverFactory: (@Composable () -> CircuitSaver)? = null
+      private set
+
     public val navStackLocalProviders: MutableList<NavStackRecordLocalProvider<NavStack.Record>> =
       mutableListOf(ViewModelNavStackRecordLocalProvider)
 
@@ -223,6 +235,7 @@ public class Circuit private constructor(builder: Builder) {
       presentWithLifecycle = circuit.presentWithLifecycle
       lenientNavigationEventDispatcherOwner = circuit.lenientNavigationEventDispatcherOwner
       circuitSaver = circuit.circuitSaver
+      circuitSaverFactory = circuit.circuitSaverFactory
       navStackLocalProviders.clear()
       navStackLocalProviders.addAll(circuit.navStackLocalProviders)
       // Carry over a custom NavDecoration if one was provided, otherwise use AnimatedNavDecoration
@@ -375,10 +388,30 @@ public class Circuit private constructor(builder: Builder) {
     }
 
     /**
-     * Sets the [CircuitSaver] that [CircuitCompositionLocals] provides. See [Circuit.circuitSaver].
+     * Sets the app-configured [CircuitSaver] used by [CircuitCompositionLocals]. Clears any factory
+     * set with the factory overload.
      */
     public fun setCircuitSaver(circuitSaver: CircuitSaver?): Builder = apply {
       this.circuitSaver = circuitSaver
+      this.circuitSaverFactory = null
+    }
+
+    /**
+     * Sets a [CircuitSaver] factory that [CircuitCompositionLocals] invokes in composition. Use
+     * this when the saver needs composition access, such as composing with
+     * [rememberDefaultCircuitSaver]:
+     * ```kotlin
+     * setCircuitSaver {
+     *   val defaultSaver = rememberDefaultCircuitSaver()
+     *   remember(defaultSaver, serializableSaver) { serializableSaver + defaultSaver }
+     * }
+     * ```
+     *
+     * Clears any saver set with the static overload.
+     */
+    public fun setCircuitSaver(factory: @Composable () -> CircuitSaver): Builder = apply {
+      this.circuitSaver = null
+      this.circuitSaverFactory = factory
     }
 
     public fun build(): Circuit {

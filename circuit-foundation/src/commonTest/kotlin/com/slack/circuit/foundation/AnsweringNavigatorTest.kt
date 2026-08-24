@@ -18,6 +18,7 @@ import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.answeringNavigationAvailable as runtimeAnsweringNavigationAvailable
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.rememberAnsweringNavigator as rememberRuntimeAnsweringNavigator
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.ParcelablePopResult
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -83,7 +84,7 @@ class AnsweringNavigatorTest {
         }
         .build()
     setContent {
-      CircuitCompositionLocals(testCircuit) {
+      CircuitCompositionLocals(testCircuit, CircuitSaver.NoOp) {
         val backStack = rememberSaveableBackStack(TestStaticScreen)
         val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
@@ -255,7 +256,7 @@ private open class SuperPopResult : ParcelablePopResult {
 private fun ComposeUiTest.setCircuitContent(circuit: Circuit): SaveableBackStack {
   lateinit var backStack: SaveableBackStack
   setContent {
-    CircuitCompositionLocals(circuit) {
+    CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
       backStack = rememberSaveableBackStack(TestScreen)
       val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
       NavigableCircuitContent(navigator = navigator, backStack = backStack)

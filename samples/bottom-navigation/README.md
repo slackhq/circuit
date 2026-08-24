@@ -16,4 +16,4 @@ _Note that you cannot run the project from the `main()` function in `Main.kt`, a
 Persistence
 -----------
 
-This sample's `buildCircuitSaver()` creates a `SerializableCircuitSaver`. It registers every screen manually under `polymorphic(CircuitSaveable::class)` (because the sample does not use DI). Each platform passes the saver to `rememberSaveableNavStack()`.
+This sample's `buildCircuitSaver()` creates a `SerializableCircuitSaver`. It registers every screen manually under `polymorphic(CircuitSaveable::class)` because the sample does not use DI. Each platform stores the saver on `Circuit`. `CircuitCompositionLocals(circuit)` provides that saver, and `rememberSaveableNavStack()` uses it from the composition.

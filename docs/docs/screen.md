@@ -74,10 +74,21 @@ representations that Compose's `SaveableStateRegistry` can store.
 
 ```kotlin
 abstract class CircuitSaver protected constructor() {
-  abstract fun save(value: CircuitSaveable): Any?
+  protected open fun canSave(value: CircuitSaveable): Boolean = false
+
+  public abstract fun save(value: CircuitSaveable): Any?
+
+  protected open fun canRestore(saved: Any): Boolean = false
 
   protected abstract fun restore(saved: Any): CircuitSaveable?
+
+  companion object {
+    val NoOp: CircuitSaver
+    fun Dropping(onDropped: (CircuitSaveable) -> Unit): CircuitSaver
+  }
 }
+
+operator fun CircuitSaver.plus(other: CircuitSaver): CircuitSaver
 
 inline fun <reified T : Screen> CircuitSaver.restoreScreen(
   saved: Any,
@@ -98,6 +109,8 @@ inline fun <reified T : PopResult> CircuitSaver.restorePopResult(
 
 `restore` is a protected implementation hook for `CircuitSaver` authors. Application code uses the
 reified helpers instead.
+
+`canSave` and `canRestore` are protected routing hooks for ordered composites built with `+`. They default to false, so custom savers override them when they should participate in a composite. The first saver that claims a value owns the operation. Its result is final even when it returns null or throws. Saving through a composite throws when no saver claims the value. Append `CircuitSaver.Dropping { }` when unmatched values should be dropped instead, using its callback to observe each drop. Restoration returns null when no saver claims the saved value, since saved data can come from an older app version and should degrade rather than crash.
 
 The reified type parameter is the concrete expected type: `restoreScreen<HomeScreen>(saved)`
 rejects another `Screen` subtype. When the saver returns null, the helper invokes `onAbsent` and
@@ -158,51 +171,105 @@ When a saved value can no longer be restored:
 - Stored back-stack snapshots are discarded if any record is missing.
 - An unrestorable pending pop result clears its expectation, so `awaitResult` returns null.
 
-### Android Parcelable option
+### Registry-backed persistence
 
-Apps that choose Android's `DefaultCircuitSaver` can use `Parcelable`. For common-code values, annotate the class with `@Parcelize` and implement `ParcelableScreen` or `ParcelablePopResult`. These interfaces add `Parcelable` on Android and remain plain `Screen` or `PopResult` subtypes elsewhere.
+`rememberDefaultCircuitSaver()` creates a saver around the current Compose `SaveableStateRegistry`. It passes a screen or result through only when that registry accepts the value. Create it in the same saveable-state registry scope as the stack that uses it.
+
+On Android, the registry accepts values that can be stored in a `Bundle`. `Parcelable` is one option. For common-code values, annotate the class with `@Parcelize` and implement `ParcelableScreen` or `ParcelablePopResult`. These interfaces add `Parcelable` on Android and remain plain `Screen` or `PopResult` subtypes elsewhere.
 
 ```kotlin
 @Parcelize
 data object HomeScreen : ParcelableScreen
 ```
 
-On Android, `DefaultCircuitSaver` saves only `Parcelable` screens and results. Non-`Parcelable` records do not survive activity recreation or process death. If no records survive, Circuit recreates the stack from its initial value.
+`@Serializable` does not make an object directly acceptable to the platform registry. Use `SerializableCircuitSaver` or `ReflectiveSerializableCircuitSaver` to persist those values.
 
-On other platforms, `DefaultCircuitSaver` passes values through unchanged.
+When used directly, the saver fails the save if there is no registry or the registry rejects a value. Combine it with `CircuitSaver.Dropping` to drop unsupported values instead and optionally report them:
+
+```kotlin
+val defaultSaver = rememberDefaultCircuitSaver()
+val circuitSaver = remember(defaultSaver) {
+  defaultSaver + CircuitSaver.Dropping { log.warn("dropping ${it::class}") }
+}
+```
+
+If no records survive restoration, Circuit creates the stack again from its initial value.
+
+### Combining savers
+
+Use `+` to try multiple persistence strategies in order. Registered serialization should come first so registered types use that representation. The registry-backed saver can handle values supported directly by the current registry, with reflection as a JVM and Android fallback.
+
+```kotlin
+val defaultSaver = rememberDefaultCircuitSaver()
+val circuitSaver =
+  remember(defaultSaver, serializableCircuitSaver) {
+    serializableCircuitSaver +
+      defaultSaver +
+      ReflectiveSerializableCircuitSaver()
+  }
+```
+
+Omit the reflective saver on platforms where `circuit-serialization-reflect` is unavailable. Existing raw, registered, and reflective saved values remain readable. If more than one saver recognizes a saved value, the earlier saver restores it.
 
 ### No persistence
 
 To disable persistence entirely, use `CircuitSaver.NoOp`. Stacks saved with it restore to their initial state only. Screens and results used with it do not need a persistence format.
 
-### Wiring
+### Providing the saver
 
-Pass a saver directly to back stack creation, or provide it once at the app root:
+`CircuitCompositionLocals(circuit)` resolves its saver in this order: a saver configured on `Circuit`, a saver inherited from an outer `ProvideCircuitSaver`, then a registry-backed saver created with `rememberDefaultCircuitSaver()`. Stacks created inside those locals inherit the resolved saver:
 
 ```kotlin
-// Explicit
-val backStack = rememberSaveableBackStack(root = HomeScreen, circuitSaver = saver)
+CircuitCompositionLocals(circuit) {
+  val backStack = rememberSaveableBackStack(root = HomeScreen)
+  val navigator = rememberCircuitNavigator(backStack)
+  NavigableCircuitContent(navigator, backStack)
+}
+```
 
-// Or at the root, reaches all back stacks below it
-ProvideCircuitSaver(saver) {
+`ProvideCircuitSaver` can provide a saver when `CircuitCompositionLocals` is not the right scope:
+
+```kotlin
+ProvideCircuitSaver(circuitSaver) {
+  val backStack = rememberSaveableBackStack(HomeScreen)
   // App content
 }
 ```
 
-`Circuit.Builder.setCircuitSaver(saver)` also provides it via `CircuitCompositionLocals`, reaching
-any back stack created inside it.
+The saveable stack and result-handler remember functions also accept a `CircuitSaver` parameter. Pass it when one instance needs to use a different saver or is created outside either provider.
 
-!!! note "Back stacks created outside `CircuitCompositionLocals`"
-    Composition locals only reach content below their provider. If a back stack is created above
-    `CircuitCompositionLocals`, a saver set on `Circuit.Builder` won't apply to it. Pass the saver
-    explicitly or use `ProvideCircuitSaver` above the back stack creation.
+`Circuit.Builder.setCircuitSaver(saver)` stores an app-configured saver on `Circuit`. `newBuilder()` inherits it, and callers can replace or clear it. The no-saver `CircuitCompositionLocals(circuit)` overload uses this property automatically.
+
+A saver that needs composition access, such as a composite including `rememberDefaultCircuitSaver()`, can be configured with the factory overload. `CircuitCompositionLocals(circuit)` invokes it in composition:
+
+```kotlin
+Circuit.Builder()
+  .setCircuitSaver {
+    val defaultSaver = rememberDefaultCircuitSaver()
+    remember(defaultSaver, serializableCircuitSaver) {
+      serializableCircuitSaver + defaultSaver
+    }
+  }
+  .build()
+```
+
+!!! note "Composition-built savers"
+    A composition-built saver can also be passed to the explicit `CircuitCompositionLocals` overload, which takes precedence over any saver configured on the `Circuit`. Create the stack inside those locals so it uses the same saver:
+
+    ```kotlin
+    CircuitCompositionLocals(circuit, circuitSaver) {
+      val backStack = rememberSaveableBackStack(root = HomeScreen)
+      val navigator = rememberCircuitNavigator(backStack)
+      NavigableCircuitContent(navigator, backStack)
+    }
+    ```
 
 ### Migrating from Circuit 0.36 and earlier
 
 `Screen` and `PopResult` no longer extend `Parcelable` on Android. Choose a persistence strategy for every saveable back stack:
 
 - To use kotlinx-serialization, configure one of Circuit's serializing savers and remove `@Parcelize` from the types it saves.
-- To keep the Android default saver, retain `@Parcelize` and change `Screen` to `ParcelableScreen` or `PopResult` to `ParcelablePopResult`.
+- To use Android's native Parcelable persistence, retain `@Parcelize`, change `Screen` to `ParcelableScreen` or `PopResult` to `ParcelablePopResult`, and use `rememberDefaultCircuitSaver()`.
 - To disable navigation persistence, use `CircuitSaver.NoOp` with plain `Screen` and `PopResult` types.
 
 ### Quick reference
@@ -212,5 +279,5 @@ any back stack created inside it.
 | kotlinx-serialization with reflection on JVM or Android | `@Serializable`                                               | `ReflectiveSerializableCircuitSaver()`                             |
 | kotlinx-serialization with generated DI registration    | `@CircuitSerializable(AppScope::class)`                       | Inject the generated registrations into `SerializableCircuitSaver` |
 | kotlinx-serialization with manual registration          | `@Serializable`                                               | Register each type with `SerializableCircuitSaver`                 |
-| Android Parcelable option                               | `@Parcelize` with `ParcelableScreen` or `ParcelablePopResult` | `DefaultCircuitSaver`                                              |
+| Platform registry, including Android Parcelable values | A type accepted by the current registry                        | `rememberDefaultCircuitSaver()`                                    |
 | No navigation persistence                               | Plain `Screen` or `PopResult`                                 | `CircuitSaver.NoOp`                                                |

@@ -19,11 +19,31 @@ Annotate each saved screen or result with `@Serializable`:
 data class DetailScreen(val itemId: Long) : Screen
 
 val saver = ReflectiveSerializableCircuitSaver()
+val circuit =
+  Circuit.Builder()
+    .setCircuitSaver(saver)
+    // Add presenter and UI factories.
+    .build()
 
-val backStack = rememberSaveableBackStack(root = DetailScreen(itemId = 1), circuitSaver = saver)
+CircuitCompositionLocals(circuit) {
+  val backStack = rememberSaveableBackStack(root = DetailScreen(itemId = 1))
+  val navigator = rememberCircuitNavigator(backStack)
+  NavigableCircuitContent(navigator, backStack)
+}
 ```
 
 No `SerializersModule` setup is needed. See the `circuit-serialization` README for the other ways to wire a `CircuitSaver` up.
+
+The reflective saver can also be the last delegate in an ordered composite:
+
+```kotlin
+val defaultSaver = rememberDefaultCircuitSaver()
+val saver = remember(defaultSaver, serializableSaver) {
+  serializableSaver + defaultSaver + ReflectiveSerializableCircuitSaver()
+}
+```
+
+This prefers registered serialization, then values supported directly by the current registry, and finally reflective serialization.
 
 Use `restoreScreen<T>` and `restorePopResult<T>` to restore a specific type.
 

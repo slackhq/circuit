@@ -122,6 +122,8 @@ dependencies {
 
 ## Migration Guide
 
+The examples below run inside `CircuitCompositionLocals(circuit)`, which provides the saver used by each stack.
+
 ### 1: No migration required
 
 **When:**

@@ -104,21 +104,47 @@ The `circuit-serialization-reflect` artifact provides `ReflectiveSerializableCir
 
 ## Wiring it up
 
-Pass the saver to back stack creation directly:
+Store the saver on `Circuit`. `CircuitCompositionLocals(circuit)` provides it to stacks created inside its content:
 
 ```kotlin
-val backStack = rememberSaveableBackStack(root = HomeScreen, circuitSaver = saver)
-```
+val circuit =
+  Circuit.Builder()
+    .setCircuitSaver(saver)
+    // Add presenter and UI factories.
+    .build()
 
-Or provide it once at the app root so every back stack picks it up:
-
-```kotlin
-ProvideCircuitSaver(saver) {
-  // App content
+CircuitCompositionLocals(circuit) {
+  val backStack = rememberSaveableBackStack(root = HomeScreen)
+  val navigator = rememberCircuitNavigator(backStack)
+  NavigableCircuitContent(navigator, backStack)
 }
 ```
 
-`Circuit.Builder.setCircuitSaver(saver)` also provides the saver through `CircuitCompositionLocals`. It only reaches back stacks created inside those composition locals. Pass the saver directly or use `ProvideCircuitSaver` for a back stack created above them.
+`ProvideCircuitSaver` can provide the same local in another scope. `CircuitCompositionLocals(circuit)` inherits it when the `Circuit` has no configured saver:
+
+```kotlin
+ProvideCircuitSaver(saver) {
+  CircuitCompositionLocals(circuit) {
+    // App content
+  }
+}
+```
+
+`CircuitCompositionLocals(circuit)` uses a saver configured on `Circuit` first, then an inherited `LocalCircuitSaver`, and finally a registry-backed saver created with `rememberDefaultCircuitSaver()`. Its overload that accepts a saver takes precedence over all three. Create saveable stacks inside those locals, or pass the saver directly when a stack is created outside them.
+
+### Combining persistence strategies
+
+Use `+` to route values through multiple savers in order. For example, an Android or JVM app can prefer generated registrations, then values supported directly by the current `SaveableStateRegistry`, then reflective serialization:
+
+```kotlin
+val defaultSaver = rememberDefaultCircuitSaver()
+val saver =
+  remember(defaultSaver, serializableSaver) {
+    serializableSaver + defaultSaver + ReflectiveSerializableCircuitSaver()
+  }
+```
+
+The first saver that claims a value owns the operation. Its null result or failure is final. Append `CircuitSaver.Dropping { value -> ... }` to drop values that none of the earlier savers support and optionally report them.
 
 ## Lenient restoration
 

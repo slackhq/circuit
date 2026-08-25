@@ -22,17 +22,17 @@ takes the intercepting navigator in place of the original.
 ```kotlin
 @Composable
 fun App(circuit: Circuit) {
-  val navStack = rememberSaveableNavStack(HomeScreen)
-  val baseNavigator = rememberCircuitNavigator(navStack) {
-    // Do something when the root screen is popped, usually exiting the app
-  }
-
-  val navigator = rememberInterceptingNavigator(
-    navigator = baseNavigator,
-    interceptors = listOf(AuthInterceptor(authManager), UrlRewriteInterceptor),
-  )
-
   CircuitCompositionLocals(circuit) {
+    val navStack = rememberSaveableNavStack(HomeScreen)
+    val baseNavigator = rememberCircuitNavigator(navStack) {
+      // Do something when the root screen is popped, usually exiting the app
+    }
+
+    val navigator = rememberInterceptingNavigator(
+      navigator = baseNavigator,
+      interceptors = listOf(AuthInterceptor(authManager), UrlRewriteInterceptor),
+    )
+
     NavigableCircuitContent(navigator = navigator, navStack = navStack)
   }
 }

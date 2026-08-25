@@ -15,6 +15,7 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_LABEL
 import com.slack.circuit.internal.test.TestCountPresenter
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import org.junit.Rule
 import org.junit.Test
@@ -30,7 +31,7 @@ class NavigableCircuitChangeRootScreenTest {
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Standard)
     var rootScreen by mutableStateOf<Screen>(TestScreen.ScreenA)
     composeTestRule.setContent {
-      CircuitCompositionLocals(circuit) {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
         val backStack = rememberSaveableBackStack(rootScreen)
         val navigator = rememberCircuitNavigator(backStack = backStack)
         NavigableCircuitContent(navigator = navigator, backStack = backStack)

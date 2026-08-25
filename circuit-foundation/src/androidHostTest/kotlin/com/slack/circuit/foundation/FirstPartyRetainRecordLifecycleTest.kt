@@ -29,6 +29,7 @@ import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.presenterOf
+import com.slack.circuit.runtime.screen.CircuitSaver
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -112,7 +113,7 @@ class FirstPartyRetainRecordLifecycleTest {
 
     composeTestRule.setContent {
       if (showHost) {
-        CircuitCompositionLocals(circuit) {
+        CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
           val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
           navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
           NavigableCircuitContent(navigator = navigator, backStack = backStack)
@@ -163,7 +164,7 @@ class FirstPartyRetainRecordLifecycleTest {
         .build()
 
     composeTestRule.setContent {
-      CircuitCompositionLocals(circuit) {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
@@ -188,7 +189,7 @@ class FirstPartyRetainRecordLifecycleTest {
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.FirstPartyRetain)
 
     composeTestRule.setContent {
-      CircuitCompositionLocals(circuit) {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
@@ -236,7 +237,7 @@ class FirstPartyRetainRecordLifecycleTest {
       )
 
     composeTestRule.setContent {
-      CircuitCompositionLocals(circuit) {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
         val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
         navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
@@ -294,7 +295,7 @@ class FirstPartyRetainRecordLifecycleTest {
       )
 
     composeTestRule.setContent {
-      CircuitCompositionLocals(circuit) {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
         if (useEmptyDecoration) {

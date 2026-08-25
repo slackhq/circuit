@@ -6,7 +6,6 @@ plugins {
   alias(libs.plugins.agp.kmp)
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.compose)
-  alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.kotlin.plugin.serialization)
   id("circuit.base")
 }

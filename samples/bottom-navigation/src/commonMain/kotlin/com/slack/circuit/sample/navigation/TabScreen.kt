@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.foundation.DelicateCircuitFoundationApi
-import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -39,17 +38,16 @@ import com.slack.circuit.runtime.ui.ui
 import kotlin.reflect.KClass
 import kotlinx.serialization.Serializable
 
-@Parcelize
 sealed interface TabScreen : Screen {
   val label: String
 
-  @Parcelize @Serializable data class Root(override val label: String = "Root") : TabScreen
+  @Serializable data class Root(override val label: String = "Root") : TabScreen
 
-  @Parcelize @Serializable data class Screen1(override val label: String = "Screen 1") : TabScreen
+  @Serializable data class Screen1(override val label: String = "Screen 1") : TabScreen
 
-  @Parcelize @Serializable data class Screen2(override val label: String = "Screen 2") : TabScreen
+  @Serializable data class Screen2(override val label: String = "Screen 2") : TabScreen
 
-  @Parcelize @Serializable data class Screen3(override val label: String = "Screen 3") : TabScreen
+  @Serializable data class Screen3(override val label: String = "Screen 3") : TabScreen
 
   fun next(): TabScreen {
     return when (this) {

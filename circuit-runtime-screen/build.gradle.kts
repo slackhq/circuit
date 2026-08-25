@@ -42,7 +42,10 @@ kotlin {
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
 
-  sourceSets { commonMain { dependencies { api(libs.compose.runtime) } } }
+  sourceSets {
+    commonMain { dependencies { api(libs.compose.runtime) } }
+    jvmTest { dependencies { implementation(libs.kotlin.test) } }
+  }
 
   targets.configureEach {
     compilations.configureEach {

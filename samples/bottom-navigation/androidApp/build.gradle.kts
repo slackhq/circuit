@@ -3,7 +3,6 @@
 plugins {
   alias(libs.plugins.agp.application)
   alias(libs.plugins.kotlin.plugin.compose)
-  alias(libs.plugins.kotlin.plugin.parcelize)
   id("circuit.base")
 }
 
@@ -15,7 +14,6 @@ dependencies {
   implementation(projects.circuitx.android)
   implementation(projects.circuitx.gestureNavigation)
   implementation(projects.circuitx.navigation)
-  implementation(projects.internalRuntime)
   implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.appCompat)

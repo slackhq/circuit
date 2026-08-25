@@ -20,6 +20,7 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import org.junit.Rule
 import org.junit.Test
@@ -167,7 +168,7 @@ class KeyedCircuitContentTests {
   private fun ComposeContentTestRule.setUpTestOneContent(screen: Screen = ScreenA(1)): Navigator {
     lateinit var navigator: Navigator
     setContent {
-      CircuitCompositionLocals(circuit) {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
         val backStack = rememberSaveableBackStack(screen)
         navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
         NavigableCircuitContent(navigator = navigator, backStack = backStack)
@@ -180,7 +181,9 @@ class KeyedCircuitContentTests {
     screen: Screen = ScreenA(1)
   ): MutableState<Screen> {
     val screenState = mutableStateOf(screen)
-    setContent { CircuitCompositionLocals(circuit) { CircuitContent(screenState.value) } }
+    setContent {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) { CircuitContent(screenState.value) }
+    }
     return screenState
   }
 
@@ -189,7 +192,7 @@ class KeyedCircuitContentTests {
   ): MutableState<Screen> {
     val screenState = mutableStateOf(screen)
     setContent {
-      CircuitCompositionLocals(circuit) {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
         CircuitContent(screenState.value, key = screenState.value::class)
       }
     }

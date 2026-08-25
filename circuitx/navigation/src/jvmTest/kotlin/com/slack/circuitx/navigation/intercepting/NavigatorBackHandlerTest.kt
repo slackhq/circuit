@@ -34,6 +34,7 @@ import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.popRoot
+import com.slack.circuit.runtime.screen.CircuitSaver
 import kotlin.test.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -53,7 +54,7 @@ class NavigatorBackHandlerTest {
         LocalNavigationEventDispatcherOwner provides BackDispatcher,
         LocalLifecycleOwner provides StartedLifecycleOwner,
       ) {
-        CircuitCompositionLocals(circuit) {
+        CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
           NavigationBackHandler(state = rememberNavigationEventState(NavigationEventInfo.None)) {
             outerBackCount++
           }
@@ -94,7 +95,7 @@ class NavigatorBackHandlerTest {
         LocalNavigationEventDispatcherOwner provides BackDispatcher,
         LocalLifecycleOwner provides StartedLifecycleOwner,
       ) {
-        CircuitCompositionLocals(circuit) {
+        CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
           NavigationBackHandler(state = rememberNavigationEventState(NavigationEventInfo.None)) {
             outerBackCount++
           }

@@ -22,15 +22,14 @@ import com.slack.circuit.sample.inbox.home.InboxScreen
 fun main() {
   CircuitRetainedSettings.useFirstParty = true
   val graph = InboxAppGraph.create()
-  val circuitSaver = requireNotNull(graph.circuit.circuitSaver)
   application {
     val windowState = rememberWindowState(size = DpSize(1100.dp, 800.dp))
     Window(state = windowState, title = "Circuit Inbox", onCloseRequest = ::exitApplication) {
       RetainedValuesStoreProvider {
         MaterialTheme {
-          val backStack = rememberSaveableBackStack(InboxScreen, circuitSaver)
-          val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
           CircuitCompositionLocals(graph.circuit) {
+            val backStack = rememberSaveableBackStack(InboxScreen)
+            val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
             NavigableCircuitContent(navigator = navigator, backStack = backStack)
           }
         }

@@ -77,7 +77,8 @@ class NavigableCircuitFirstPartyRetainDeviceTest {
   private fun setActivityContent() {
     scenario.onActivity { activity ->
       activity.setContent {
-        CircuitCompositionLocals(circuit) {
+        val circuitSaver = rememberDefaultCircuitSaver()
+        CircuitCompositionLocals(circuit, circuitSaver) {
           val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
           val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
           NavigableCircuitContent(navigator = navigator, backStack = backStack)

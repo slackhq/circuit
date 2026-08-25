@@ -17,6 +17,7 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_RESET_ROOT_BETA
 import com.slack.circuit.internal.test.TestCountPresenter.RememberType
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
+import com.slack.circuit.runtime.screen.CircuitSaver
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -43,7 +44,7 @@ class NavigableCircuitRetainedStateTest {
       val circuit = createTestCircuit(useKeys = useKeys, rememberType = RememberType.Retained)
 
       setContent {
-        CircuitCompositionLocals(circuit) {
+        CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
           val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
           val navigator =
             rememberCircuitNavigator(
@@ -114,7 +115,7 @@ class NavigableCircuitRetainedStateTest {
         )
 
       setContent {
-        CircuitCompositionLocals(circuit) {
+        CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
           val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
           val navigator =
             rememberCircuitNavigator(

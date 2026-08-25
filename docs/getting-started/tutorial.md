@@ -26,14 +26,20 @@ This can be run on Android or Desktop.
 First, set up Compose in your project. See the following guides for more information:
 
 - [Android](https://developer.android.com/jetpack/compose/setup)
-    - Also set up [Parcelize](https://developer.android.com/kotlin/parcelize)
 - [Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-getting-started.html)
 
-Next, add the `circuit-foundation` dependency. This includes all the core Circuit artifacts.
+Apply the Kotlin serialization compiler plugin, then add `circuit-foundation` and `circuit-serialization-reflect`.
+
+```kotlin title="build.gradle.kts"
+plugins {
+  kotlin("plugin.serialization")
+}
+```
 
 ```kotlin title="build.gradle.kts"
 dependencies {
   implementation("com.slack.circuit:circuit-foundation:<version>")
+  implementation("com.slack.circuit:circuit-serialization-reflect:<version>")
 }
 ```
 
@@ -45,19 +51,10 @@ The primary entry points in Circuit are `Screen`s ([docs](https://slackhq.github
 
 Let's start with a simple `Screen` that represents an inbox list:
 
-=== "Android"
-    ```kotlin
-    @Parcelize
-    data object InboxScreen : Screen
-    ```
-
-=== "Multiplatform"
-    ```kotlin
-    data object InboxScreen : Screen
-    ```
-
-!!! tip
-    `Screen` is `Parcelable` on Android. You should use the Parcelize plugin to annotate your screens with `@Parcelize`.
+```kotlin
+@Serializable
+data object InboxScreen : Screen
+```
 
 ## Design your state
 
@@ -67,6 +64,7 @@ Conventionally, this is written as a nested `State` class inside your `Screen` a
 
 === "InboxScreen"
     ```kotlin title="InboxScreen.kt" hl_lines="2-4"
+    @Serializable
     data object InboxScreen : Screen {
       data class State(
         val emails: List<Email>
@@ -93,15 +91,15 @@ See the [states and events](../getting-started/states-and-events.md) guide for m
 
 === "Inbox"
     <div class="result" markdown>
-    
+
     ![Preview](../images/tutorial_inbox.png){ align=left width=300 }
-    
-    Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable function that 
+
+    Next, let's define a `Ui` for our `InboxScreen`. A `Ui` is a simple composable function that
     takes `State` and `Modifier` parameters.
 
-    It's responsible for rendering the state. You should write this like a standard composable. In 
+    It's responsible for rendering the state. You should write this like a standard composable. In
     this case, we'll use a `LazyColumn` to render a list of emails.
-    
+
     </div>
 
 ```kotlin title="InboxScreen.kt"
@@ -205,6 +203,7 @@ val circuit: Circuit =
   Circuit.Builder()
     .addPresenter<InboxScreen, InboxScreen.State>(InboxPresenter(emailRepository))
     .addUi<InboxScreen, InboxScreen.State> { state, modifier -> Inbox(state, modifier) }
+    .setCircuitSaver(ReflectiveSerializableCircuitSaver())
     .build()
 ```
 
@@ -213,7 +212,7 @@ This instance should usually live on your application's DI graph.
 !!! note
     This is a simple example that uses the `addPresenter` and `addUi` functions. In a real app, you'd likely use a `Presenter.Factory` and `Ui.Factory` to create your presenters and UIs dynamically.
 
-Once you have this instance, you can plug it into `CircuitCompositionLocals` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit-composition-locals.html)) and be on your way. This is usually a one-time setup in your application at its primary entry point.
+Once you have this instance, you can plug it into `CircuitCompositionLocals` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit-composition-locals.html)) and be on your way. It uses the saver configured on `Circuit`. This is usually a one-time setup in your application at its primary entry point.
 
 === "Android"
     ```kotlin title="MainActivity.kt"
@@ -222,8 +221,9 @@ Once you have this instance, you can plug it into `CircuitCompositionLocals` ([d
         super.onCreate(savedInstanceState)
         val circuit = Circuit.Builder()
           // ...
+          .setCircuitSaver(ReflectiveSerializableCircuitSaver())
           .build()
-    
+
         setContent {
           CircuitCompositionLocals(circuit) {
             // ...
@@ -238,27 +238,11 @@ Once you have this instance, you can plug it into `CircuitCompositionLocals` ([d
     fun main() {
       val circuit = Circuit.Builder()
         // ...
+        .setCircuitSaver(ReflectiveSerializableCircuitSaver())
         .build()
 
       application {
         Window(title = "Inbox", onCloseRequest = ::exitApplication) {
-          CircuitCompositionLocals(circuit) {
-            // ...
-          }
-        }
-      }
-    }
-    ```
-
-=== "JS"
-    ```kotlin title="main.kt"
-    fun main() {
-      val circuit = Circuit.Builder()
-        // ...
-        .build()
-
-      onWasmReady {
-        Window("Inbox") {
           CircuitCompositionLocals(circuit) {
             // ...
           }
@@ -285,6 +269,8 @@ This is the most basic way to render a `Screen`. These can be top-level UIs or n
 
 An app architecture isn't complete without navigation. Circuit provides a simple navigation API that's focused around a simple `BackStack` ([docs](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-back-stack/index.html)) that is navigated via a `Navigator` interface ([docs]()). In most cases, you can use the built-in `SaveableBackStack` implementation ([docs](https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-saveable-back-stack/index.html)), which is saved and restored in accordance with whatever the platform's `rememberSaveable` implementation is.
 
+Create the back stack inside `CircuitCompositionLocals`, as shown in the complete example below. It will use the saver configured on `Circuit`.
+
 ```kotlin title="Creating a backstack and navigator"
 val backStack = rememberSaveableBackStack(root = InboxScreen)
 val navigator = rememberCircuitNavigator(backStack) {
@@ -303,11 +289,11 @@ This composable will automatically manage the backstack and navigation for you, 
 Like with `Circuit`, this is usually a one-time setup in your application at its primary entry point.
 
 ```kotlin title="Putting it all together"
-val backStack = rememberSaveableBackStack(root = InboxScreen)
-val navigator = rememberCircuitNavigator(backStack) {
-  // Do something when the root screen is popped, usually exiting the app
-}
 CircuitCompositionLocals(circuit) {
+  val backStack = rememberSaveableBackStack(root = InboxScreen)
+  val navigator = rememberCircuitNavigator(backStack) {
+    // Do something when the root screen is popped, usually exiting the app
+  }
   NavigableCircuitContent(navigator = navigator, backStack = backStack)
 }
 ```
@@ -318,29 +304,22 @@ CircuitCompositionLocals(circuit) {
     <div class="result" markdown>
 
     ![Preview](../images/tutorial_detail.png){ align=left width=300 }
-    
+
     Now that we have navigation set up, let's add a detail screen to our app to navigate to.
 
-    This screen will show the content of a specific email from the inbox, and in a real app would 
+    This screen will show the content of a specific email from the inbox, and in a real app would
     also show content like the chain history.
-    
+
     </div>
 
 First, let's define a `DetailScreen` and state.
 
-=== "Android"
-    ```kotlin title="DetailScreen.kt"
-    @Parcelize
-    data class DetailScreen(val emailId: String) : Screen {
-      data class State(val email: Email) : CircuitUiState
-    }
-    ```
-=== "Multiplatform"
-    ```kotlin title="DetailScreen.kt"
-    data class DetailScreen(val emailId: String) : Screen {
-      data class State(val email: Email) : CircuitUiState
-    }
-    ```
+```kotlin title="DetailScreen.kt"
+@Serializable
+data class DetailScreen(val emailId: String) : Screen {
+  data class State(val email: Email) : CircuitUiState
+}
+```
 
 Notice that this time we use a `data class` instead of a `data object`. This is because we want to be able to pass in an `emailId` to the screen. We'll use this to fetch the email from our data layer.
 
@@ -388,7 +367,7 @@ class DetailPresenter(...) : Presenter<DetailScreen.State> {
 }
 ```
 
-Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter. 
+Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter.
 
 Note: Circuit assumes that the `create` method will only return presenter instances for screen types it supports. If the screen type isn't supported, it's important to return `null` instead.
 
@@ -405,7 +384,7 @@ val circuit: Circuit =
 
 ## Navigate to the detail screen
 
-Now that we have a detail screen, let's navigate to it from our inbox list. As you can see in our presenter factory above, Circuit also offers access to a `Navigator` in this `create()` call that factories can then pass on to their created presenters. 
+Now that we have a detail screen, let's navigate to it from our inbox list. As you can see in our presenter factory above, Circuit also offers access to a `Navigator` in this `create()` call that factories can then pass on to their created presenters.
 
 Let's add a `Navigator` property to our presenter and create a factory for our inbox screen now.
 
@@ -452,7 +431,8 @@ Let's add an event to our inbox screen for when the user clicks on an email.
 
 Events must implement `CircuitUiEvent` ([docs](https://slackhq.github.io/circuit/api/0.x/circuit-runtime/com.slack.circuit.runtime/-circuit-ui-event/index.html)) and are usually modeled as a `sealed interface` hierarchy, where each subtype is a different event type.
 
-```kotlin title="InboxScreen.kt" hl_lines="4 6-8"
+```kotlin title="InboxScreen.kt" hl_lines="5 7-9"
+@Serializable
 data object InboxScreen : Screen {
   data class State(
     val emails: List<Email>,
@@ -514,7 +494,8 @@ This demonstrates how we can navigate forward in our app and pass data with it. 
 Naturally, navigation can't be just one way. The opposite of `Navigator.goTo()` is `Navigator.pop()`, which pops the back stack back to the previous screen. To use this, let's add a back button to our detail screen and wire it up to a `Navigator`.
 
 === "DetailScreen"
-    ```kotlin title="DetailScreen.kt" hl_lines="4 6-8"
+    ```kotlin title="DetailScreen.kt" hl_lines="5 7-9"
+    @Serializable
     data class DetailScreen(val emailId: String) : Screen {
       data class State(
         val email: Email,

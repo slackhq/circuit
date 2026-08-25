@@ -52,8 +52,6 @@ import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.MarkdownTypography
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
-import com.slack.circuit.internal.runtime.Parcelable
-import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -99,7 +97,6 @@ import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @CircuitSerializable(AppScope::class)
 data class PetDetailScreen(
   val petId: Long,
@@ -107,7 +104,6 @@ data class PetDetailScreen(
   val animal: PartialAnimal? = null,
 ) : Screen {
 
-  @Parcelize
   @Serializable
   data class PartialAnimal(
     val id: Long,
@@ -116,7 +112,7 @@ data class PetDetailScreen(
     val breed: String?,
     val gender: Gender?,
     val size: Size?,
-  ) : Parcelable
+  )
 
   sealed interface State : CircuitUiState {
     data object Loading : State

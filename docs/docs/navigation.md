@@ -10,9 +10,11 @@ A new navigable content surface is handled via the `NavigableCircuitContent` fun
 
 ```kotlin
 setContent {
-  val navStack = rememberSaveableNavStack(root = HomeScreen)
-  val navigator = rememberCircuitNavigator(navStack) { /* do something on root */ }
-  NavigableCircuitContent(navigator, navStack)
+  CircuitCompositionLocals(circuit) {
+    val navStack = rememberSaveableNavStack(root = HomeScreen)
+    val navigator = rememberCircuitNavigator(navStack) { /* do something on root */ }
+    NavigableCircuitContent(navigator, navStack)
+  }
 }
 ```
 
@@ -57,8 +59,9 @@ val takePhotoNavigator = rememberAnsweringNavigator<TakePhotoScreen.Result>(navi
 takePhotoNavigator.goTo(TakePhotoScreen)
 
 // In TakePhotoScreen.kt
+@Serializable
 data object TakePhotoScreen : Screen {
-  @Parcelize
+  @Serializable
   data class Result(val uri: String) : PopResult
 }
 

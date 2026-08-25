@@ -27,8 +27,8 @@ public typealias AnsweringResultHandler = RuntimeAnsweringResultHandler
 /**
  * Returns a saveable [AnsweringResultHandler] for use with [NavigableCircuitContent].
  *
- * @param circuitSaver the [CircuitSaver] used to persist results, defaulting to
- *   [LocalCircuitSaver].
+ * @param circuitSaver defaults to the current [LocalCircuitSaver]. Call this inside
+ *   [CircuitCompositionLocals] or `ProvideCircuitSaver`.
  */
 @ExperimentalCircuitApi
 @Composable

@@ -84,6 +84,7 @@ kotlin {
         api(projects.circuitRuntimeUi)
         api(projects.circuitSharedElements)
         implementation(libs.compose.navigationevent)
+        implementation(libs.compose.runtime.saveable)
       }
     }
     androidMain { dependencies { implementation(libs.androidx.activity.compose) } }

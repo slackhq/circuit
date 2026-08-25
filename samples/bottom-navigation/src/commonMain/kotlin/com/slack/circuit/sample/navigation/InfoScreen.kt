@@ -3,18 +3,15 @@
 package com.slack.circuit.sample.navigation
 
 import androidx.compose.ui.platform.UriHandler
-import com.slack.circuit.internal.runtime.IgnoreOnParcel
-import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.NavigationContext
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 object InfoScreen : Screen {
-  @IgnoreOnParcel const val url = "https://slackhq.github.io/circuit/"
+  const val url = "https://slackhq.github.io/circuit/"
 }
 
 class InfoScreenInterceptor(private val uriHandler: UriHandler) : NavigationInterceptor {

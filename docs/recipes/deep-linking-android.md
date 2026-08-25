@@ -3,7 +3,7 @@
 Deep linking to application is a vast topic and the implementation detail can vary based on your application needs.
 Deep linking strategy can be highly sophisticated or simple based on the use-case.
 
-To keep things very simple and easy to understand, we will be focusing on deep linking to **Android** platform only. 
+To keep things very simple and easy to understand, we will be focusing on deep linking to **Android** platform only.
 You can then extend the idea to other platforms as needed.
 
 !!! info
@@ -40,14 +40,16 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
   setContent {
     MaterialTheme {
-      // When there is no deeplink data in the intent, default to Inbox Screen as root screen
-      var stackedScreens: List<Screen> by remember {
-        mutableStateOf(parseDeepLink(intent) ?: listOf(InboxScreen))
+      CircuitCompositionLocals(circuit) {
+        // When there is no deeplink data in the intent, default to Inbox Screen as root screen
+        var stackedScreens: List<Screen> by remember {
+          mutableStateOf(parseDeepLink(intent) ?: listOf(InboxScreen))
+        }
+        val backStack = rememberSaveableBackStack(stackedScreens)
+        val navigator = rememberCircuitNavigator(backStack)
+
+        // ...
       }
-      val backStack = rememberSaveableBackStack(stackedScreens)
-      val navigator = rememberCircuitNavigator(backStack)
-      
-      // ...
     }
   }
 }
@@ -55,9 +57,9 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 And here is a simple implementation of `parseDeepLink` function that creates the list of screens based on the incoming deep link:
 ```kotlin
-/** 
- * Parses the deep link from the given [Intent.getData] and returns a list of stacked screens 
- * to navigate to when deep link URI is available. 
+/**
+ * Parses the deep link from the given [Intent.getData] and returns a list of stacked screens
+ * to navigate to when deep link URI is available.
  */
 private fun parseDeepLink(intent: Intent): List<Screen>? {
   val dataUri = intent.data ?: return null

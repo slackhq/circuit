@@ -5,22 +5,26 @@ public abstract class com/slack/circuit/runtime/screen/CircuitSaver {
 	public static final field $stable I
 	public static final field Companion Lcom/slack/circuit/runtime/screen/CircuitSaver$Companion;
 	protected fun <init> ()V
+	protected fun canRestore (Ljava/lang/Object;)Z
+	protected fun canSave (Lcom/slack/circuit/runtime/screen/CircuitSaveable;)Z
 	protected abstract fun restore (Ljava/lang/Object;)Lcom/slack/circuit/runtime/screen/CircuitSaveable;
 	public abstract fun save (Lcom/slack/circuit/runtime/screen/CircuitSaveable;)Ljava/lang/Object;
 }
 
 public final class com/slack/circuit/runtime/screen/CircuitSaver$Companion {
+	public final fun Dropping (Lkotlin/jvm/functions/Function1;)Lcom/slack/circuit/runtime/screen/CircuitSaver;
 	public final fun getNoOp ()Lcom/slack/circuit/runtime/screen/CircuitSaver;
 	public final fun restoreForInline (Lcom/slack/circuit/runtime/screen/CircuitSaver;Ljava/lang/Object;)Lcom/slack/circuit/runtime/screen/CircuitSaveable;
 }
 
 public final class com/slack/circuit/runtime/screen/CircuitSaverKt {
 	public static final fun ProvideCircuitSaver (Lcom/slack/circuit/runtime/screen/CircuitSaver;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
+	public static final fun currentProvidedCircuitSaverOrNull (Landroidx/compose/runtime/Composer;I)Lcom/slack/circuit/runtime/screen/CircuitSaver;
 	public static final fun getLocalCircuitSaver ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+	public static final fun plus (Lcom/slack/circuit/runtime/screen/CircuitSaver;Lcom/slack/circuit/runtime/screen/CircuitSaver;)Lcom/slack/circuit/runtime/screen/CircuitSaver;
 }
 
-public final class com/slack/circuit/runtime/screen/CircuitSaver_jvmKt {
-	public static final fun getDefaultCircuitSaver ()Lcom/slack/circuit/runtime/screen/CircuitSaver;
+public abstract interface annotation class com/slack/circuit/runtime/screen/InternalCircuitSaverApi : java/lang/annotation/Annotation {
 }
 
 public abstract interface class com/slack/circuit/runtime/screen/ParcelablePopResult : com/slack/circuit/runtime/screen/PopResult {

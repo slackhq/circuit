@@ -18,6 +18,7 @@ import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.overlay.ContentWithOverlays
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.common.Strings
@@ -103,7 +104,9 @@ class PetDetailTest {
 
     composeTestRule.run {
       setTestContent {
-        ContentWithOverlays { CircuitCompositionLocals(circuit) { PetDetail(success) } }
+        ContentWithOverlays {
+          CircuitCompositionLocals(circuit, CircuitSaver.NoOp) { PetDetail(success) }
+        }
       }
 
       onNodeWithTag(PROGRESS_TAG).assertDoesNotExist()
@@ -148,7 +151,9 @@ class PetDetailTest {
 
     composeTestRule.run {
       setTestContent {
-        ContentWithOverlays { CircuitCompositionLocals(circuit) { PetDetail(success) } }
+        ContentWithOverlays {
+          CircuitCompositionLocals(circuit, CircuitSaver.NoOp) { PetDetail(success) }
+        }
       }
 
       onNodeWithTag(CAROUSEL_TAG).assertIsDisplayed().performTouchInput { swipeUp() }

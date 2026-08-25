@@ -96,9 +96,11 @@ import kotlin.collections.mutableSetOf
  *
  * ```kotlin
  * setContent {
- *   val navStack = rememberSaveableNavStack(root = HomeScreen)
- *   val navigator = rememberCircuitNavigator(navStack)
- *   NavigableCircuitContent(navigator, navStack)
+ *   CircuitCompositionLocals(circuit) {
+ *     val navStack = rememberSaveableNavStack(root = HomeScreen)
+ *     val navigator = rememberCircuitNavigator(navStack)
+ *     NavigableCircuitContent(navigator, navStack)
+ *   }
  * }
  * ```
  *
@@ -198,10 +200,12 @@ public fun <R : BackStack.Record> NavigableCircuitContent(
  *
  * ```kotlin
  * setContent {
- *   val navStack = rememberSaveableNavStack(root = HomeScreen)
- *   val baseNavigator = rememberCircuitNavigator(navStack)
- *   val navigator = rememberAnsweringResultNavigator(baseNavigator, navStack)
- *   NavigableCircuitContent(navigator)
+ *   CircuitCompositionLocals(circuit) {
+ *     val navStack = rememberSaveableNavStack(root = HomeScreen)
+ *     val baseNavigator = rememberCircuitNavigator(navStack)
+ *     val navigator = rememberAnsweringResultNavigator(baseNavigator, navStack)
+ *     NavigableCircuitContent(navigator)
+ *   }
  * }
  * ```
  *

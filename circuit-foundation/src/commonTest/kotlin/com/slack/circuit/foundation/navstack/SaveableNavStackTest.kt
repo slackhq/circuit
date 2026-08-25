@@ -7,7 +7,6 @@ import com.slack.circuit.foundation.navstack.SaveableNavStack.Record
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.CircuitSaver
-import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -71,7 +70,7 @@ class SaveableNavStackTest {
     val saved = save(navStack)
     assertNotNull(saved)
 
-    val restored = SaveableNavStack.Saver(DefaultCircuitSaver).restore(saved)
+    val restored = SaveableNavStack.Saver(PassThroughCircuitSaver).restore(saved)
     assertNotNull(restored)
 
     assertEquals(navStack.entryList.toList(), restored.entryList.toList())
@@ -96,7 +95,7 @@ class SaveableNavStackTest {
     val saved = save(navStack)
     assertNotNull(saved)
 
-    val restored = SaveableNavStack.Saver(DefaultCircuitSaver).restore(saved)
+    val restored = SaveableNavStack.Saver(PassThroughCircuitSaver).restore(saved)
     assertNotNull(restored)
 
     assertEquals(navStack.entryList.toList(), restored.entryList.toList())
@@ -419,7 +418,7 @@ class SaveableNavStackTest {
   }
 }
 
-private fun save(navStack: SaveableNavStack, circuitSaver: CircuitSaver = DefaultCircuitSaver) =
+private fun save(navStack: SaveableNavStack, circuitSaver: CircuitSaver = PassThroughCircuitSaver) =
   with(SaveableNavStack.Saver(circuitSaver)) {
     val scope = SaverScope { true }
     scope.save(navStack)
@@ -427,7 +426,7 @@ private fun save(navStack: SaveableNavStack, circuitSaver: CircuitSaver = Defaul
 
 private fun save(
   navStackList: SaveableNavStack.SaveableNavStackList,
-  circuitSaver: CircuitSaver = DefaultCircuitSaver,
+  circuitSaver: CircuitSaver = PassThroughCircuitSaver,
 ) =
   with(SaveableNavStack.SaveableNavStackList.Saver(circuitSaver)) {
     val scope = SaverScope { true }
@@ -472,7 +471,21 @@ private fun assertRestoreCurrentAfterDropping(
 
 private fun droppingSaver(vararg dropped: CircuitSaveable): CircuitSaver =
   object : CircuitSaver() {
+    override fun canSave(value: CircuitSaveable): Boolean = true
+
     override fun save(value: CircuitSaveable): Any? = value.takeUnless { it in dropped }
+
+    override fun canRestore(saved: Any): Boolean = true
 
     override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
   }
+
+private object PassThroughCircuitSaver : CircuitSaver() {
+  override fun canSave(value: CircuitSaveable): Boolean = true
+
+  override fun save(value: CircuitSaveable): Any = value
+
+  override fun canRestore(saved: Any): Boolean = true
+
+  override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
+}

@@ -37,7 +37,7 @@ interface Navigator {
   // NEW: Access full navigation state
   fun peekNavStack(): NavStackList<Screen>?
 
-  // Discouraged but still works for backwards compatibility  
+  // Discouraged but still works for backwards compatibility
   fun peekBackStack(): ImmutableList<Screen>
 }
 ```
@@ -110,17 +110,19 @@ dependencies {
 
       fun push(screen: Screen): Boolean
       fun pop(): R?
-    
+
       // NEW: Bidirectional navigation
       fun forward(): Boolean   // Move toward topRecord
       fun backward(): Boolean  // Move toward rootRecord
-    
+
       // NEW: Immutable snapshot
       fun snapshot(): NavStackList<R>?
     }
     ```
 
 ## Migration Guide
+
+The examples below run inside `CircuitCompositionLocals(circuit)`, which provides the saver used by each stack.
 
 ### 1: No migration required
 
@@ -242,7 +244,7 @@ class MyInterceptor : NavigationInterceptor {
   override fun forward(context: NavigationContext): InterceptedResult {
     return InterceptedResult.Skipped
   }
-  
+
   override fun backward(context: NavigationContext): InterceptedResult {
     return InterceptedResult.Skipped
   }
@@ -292,7 +294,7 @@ All interception methods can now use a unified `InterceptedResult.Rewrite`:
     override fun goTo(...): InterceptedGoToResult {
       return InterceptedGoToResult.Rewrite(NewScreen)
     }
-    
+
     override fun resetRoot(...): InterceptedResetRootResult {
       return InterceptedResetRootResult.Rewrite(NewRoot, StateOptions.Default)
     }
@@ -304,13 +306,13 @@ All interception methods can now use a unified `InterceptedResult.Rewrite`:
     override fun goTo(...): InterceptedResult {
       return InterceptedResult.Rewrite(NavEvent.GoTo(NewScreen))
     }
-    
+
     override fun resetRoot(...): InterceptedResult {
       return InterceptedResult.Rewrite(
         NavEvent.ResetRoot(NewRoot, options = StateOptions.Default)
       )
     }
-    
+
     // Can even rewrite to different navigation types
     override fun pop(...): InterceptedResult {
       // Rewrite a pop to a goTo instead

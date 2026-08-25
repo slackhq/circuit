@@ -32,6 +32,7 @@ import com.slack.circuit.internal.test.TestState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.resetRoot
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
 import kotlin.test.Test
@@ -80,7 +81,7 @@ class BackNavigationTest {
   private fun ComposeUiTest.setCircuitContent(useIntegratedBackHandler: Boolean) {
     val circuit = createTestBackCircuit()
     setContent {
-      CircuitCompositionLocals(circuit) {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
         val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
         val navigator: Navigator
         if (useIntegratedBackHandler) {

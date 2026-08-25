@@ -62,10 +62,10 @@ import kotlin.reflect.KClass
  * If using navigation, use `NavigableCircuitContent` instead.
  *
  * ```kotlin
- * val backStack = rememberSaveableBackStack(root = HomeScreen)
- * val navigator = rememberCircuitNavigator(backstack, ::onBackPressed)
  * CircuitCompositionLocals(circuit) {
- *   NavigableCircuitContent(navigator, backstack)
+ *   val backStack = rememberSaveableBackStack(root = HomeScreen)
+ *   val navigator = rememberCircuitNavigator(backStack, ::onBackPressed)
+ *   NavigableCircuitContent(navigator, backStack)
  * }
  * ```
  *
@@ -117,13 +117,23 @@ public class Circuit private constructor(builder: Builder) {
     builder.navStackLocalProviders.toList()
 
   /**
-   * An optional [CircuitSaver] provided as `LocalCircuitSaver` by [CircuitCompositionLocals].
+   * An optional app-configured [CircuitSaver].
    *
-   * Note this only reaches saveable back stacks created inside [CircuitCompositionLocals]. For back
-   * stacks created above it, pass the saver explicitly or provide it at the app root via
-   * `ProvideCircuitSaver`.
+   * [CircuitCompositionLocals] provides this when no explicit saver is supplied. If no saver or
+   * saver transform is configured, it uses an inherited saver or creates a registry-backed saver
+   * with [rememberDefaultCircuitSaver].
    */
   public val circuitSaver: CircuitSaver? = builder.circuitSaver
+
+  /**
+   * An optional app-configured transform applied to the inherited or registry-backed fallback
+   * [CircuitSaver].
+   *
+   * [CircuitCompositionLocals] applies this when no explicit saver is supplied. At most one of this
+   * and [circuitSaver] is non-null.
+   */
+  internal val circuitSaverTransform: ((CircuitSaver) -> CircuitSaver)? =
+    builder.circuitSaverTransform
 
   @OptIn(InternalCircuitApi::class)
   public fun presenter(
@@ -210,6 +220,9 @@ public class Circuit private constructor(builder: Builder) {
     public var circuitSaver: CircuitSaver? = null
       private set
 
+    internal var circuitSaverTransform: ((CircuitSaver) -> CircuitSaver)? = null
+      private set
+
     public val navStackLocalProviders: MutableList<NavStackRecordLocalProvider<NavStack.Record>> =
       mutableListOf(ViewModelNavStackRecordLocalProvider)
 
@@ -223,6 +236,7 @@ public class Circuit private constructor(builder: Builder) {
       presentWithLifecycle = circuit.presentWithLifecycle
       lenientNavigationEventDispatcherOwner = circuit.lenientNavigationEventDispatcherOwner
       circuitSaver = circuit.circuitSaver
+      circuitSaverTransform = circuit.circuitSaverTransform
       navStackLocalProviders.clear()
       navStackLocalProviders.addAll(circuit.navStackLocalProviders)
       // Carry over a custom NavDecoration if one was provided, otherwise use AnimatedNavDecoration
@@ -375,10 +389,31 @@ public class Circuit private constructor(builder: Builder) {
     }
 
     /**
-     * Sets the [CircuitSaver] that [CircuitCompositionLocals] provides. See [Circuit.circuitSaver].
+     * Sets the app-configured [CircuitSaver] used by [CircuitCompositionLocals]. Clears any
+     * transform set with the transform overload.
      */
     public fun setCircuitSaver(circuitSaver: CircuitSaver?): Builder = apply {
       this.circuitSaver = circuitSaver
+      this.circuitSaverTransform = null
+    }
+
+    /**
+     * Sets a transform that combines the inherited or registry-backed fallback [CircuitSaver] with
+     * app-configured savers:
+     * ```kotlin
+     * setCircuitSaver { fallbackSaver ->
+     *   serializableSaver + fallbackSaver
+     * }
+     * ```
+     *
+     * The transform must preserve compatible saved formats, registrations, and delegate order
+     * across restoration.
+     *
+     * Clears any saver set with the static overload.
+     */
+    public fun setCircuitSaver(transform: (CircuitSaver) -> CircuitSaver): Builder = apply {
+      this.circuitSaver = null
+      this.circuitSaverTransform = transform
     }
 
     public fun build(): Circuit {

@@ -14,6 +14,7 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.serialization.Serializable
 import me.tatarka.inject.annotations.Assisted
@@ -31,7 +32,7 @@ fun main() = application {
 @Inject
 @Composable
 fun KotlinInjectApp(circuit: Circuit) {
-  CircuitCompositionLocals(circuit) { CircuitContent(MyScreen("Circuit")) }
+  CircuitCompositionLocals(circuit, CircuitSaver.NoOp) { CircuitContent(MyScreen("Circuit")) }
 }
 
 @CircuitInject(MyScreen::class, AppScope::class)

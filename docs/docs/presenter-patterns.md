@@ -156,6 +156,7 @@ When a presenter grows too large, you have options. Here are three patterns for 
 
     ```kotlin
     // Screen with navigation parameter
+    @Serializable
     data class OrderDetailsScreen(val orderId: String) : Screen
 
     // State
@@ -238,6 +239,7 @@ When a presenter grows too large, you have options. Here are three patterns for 
       }
     }
 
+    @Serializable
     data object DashboardScreen : Screen
 
     sealed interface DashboardState : CircuitUiState {
@@ -294,6 +296,7 @@ When a presenter grows too large, you have options. Here are three patterns for 
       }
     }
 
+    @Serializable
     data object ProfileScreen : Screen
 
     sealed interface ProfileState : CircuitUiState {
@@ -339,6 +342,7 @@ When a presenter grows too large, you have options. Here are three patterns for 
       }
     }
 
+    @Serializable
     data object SettingsScreen : Screen
 
     data class SettingsState(
@@ -459,6 +463,7 @@ When a presenter grows too large, you have options. Here are three patterns for 
       }
     }
 
+    @Serializable
     data class ProductDetailsScreen(val productId: String) : Screen
 
     sealed interface ProductDetailsState : CircuitUiState {
@@ -474,6 +479,7 @@ When a presenter grows too large, you have options. Here are three patterns for 
       data object AddToCart : ProductDetailsEvent
     }
 
+    @Serializable
     data object CartScreen : Screen
     ```
 
@@ -668,7 +674,10 @@ This example brings together multiple patterns: decomposed observation functions
 
     ```kotlin
     // Screens
+    @Serializable
     data class CheckoutScreen(val orderId: String) : Screen
+
+    @Serializable
     data class OrderConfirmationScreen(val orderId: String) : Screen
 
     // State

@@ -99,7 +99,6 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.retained.produceRetainedState
 import com.slack.circuit.retained.rememberRetained
@@ -149,7 +148,6 @@ import io.ktor.util.PlatformUtils
 import io.ktor.util.platform
 import kotlinx.coroutines.flow.map
 
-@Parcelize
 @CircuitSerializable(AppScope::class)
 data object PetListScreen : Screen {
 

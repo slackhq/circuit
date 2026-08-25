@@ -23,6 +23,7 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.ui.ui
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -53,7 +54,7 @@ class GestureNavigationCrashTest {
 
       lateinit var navigator: Navigator
       setContent {
-        CircuitCompositionLocals(circuit) {
+        CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
           val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
           navigator = rememberCircuitNavigator(backStack = backStack)
           NavigableCircuitContent(

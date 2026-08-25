@@ -36,26 +36,6 @@ pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
         }
       }
   }
-  // todo Robolectric: targetSdk on host test compilations is not getting set on the manifest??
-  tasks
-    .matching { it.name == "processAndroidHostTestManifest" }
-    .configureEach {
-      val sdkVersion = targetSdkVersion
-      doLast {
-        val manifestDir = outputs.files.files.first { it.isDirectory }
-        val manifest = File(manifestDir, "AndroidManifest.xml")
-        if (manifest.exists()) {
-          manifest.writeText(
-            manifest
-              .readText()
-              .replace(
-                Regex("""android:targetSdkVersion="\d+""""),
-                """android:targetSdkVersion="$sdkVersion"""",
-              )
-          )
-        }
-      }
-    }
   pluginManager.withPlugin("com.google.devtools.ksp") {
     // TODO Remove when KSP preserves the task dependency for generated Android host-test
     //  sources used by lint. https://github.com/google/ksp/issues/3128

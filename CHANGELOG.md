@@ -12,17 +12,14 @@ Unreleased
   ```kotlin
   val circuit =
     Circuit.Builder()
-      .setCircuitSaver {
-        val defaultSaver = rememberDefaultCircuitSaver()
-        remember(defaultSaver, serializableSaver) {
-          serializableSaver + defaultSaver
-        }
+      .setCircuitSaver { fallbackSaver ->
+        serializableSaver + fallbackSaver
       }
       .build()
   ```
 
 - `CircuitSaver.Dropping(onDropped)` claims every value and persists none of them, reporting each drop. Append it to a composite to drop values no earlier saver supports instead of failing the save.
-- `Circuit.Builder.setCircuitSaver { }` accepts a composable factory, so a saver that needs composition access can be configured on the `Circuit` directly.
+- `Circuit.Builder.setCircuitSaver { fallbackSaver -> }` accepts a transform that combines app-configured savers with an inherited or registry-backed fallback. The transform must preserve compatible saved formats, registrations, and delegate order across restoration.
 
 ### Changed
 
@@ -30,7 +27,7 @@ Unreleased
   - `ParcelableScreen` and `ParcelablePopResult` remain available for apps that use `rememberDefaultCircuitSaver()` on Android.
   - Apps that do not persist navigation state can use `CircuitSaver.NoOp`.
   - This completes the multi-phase removal of the `Parcelable` supertypes of `Screen` and `PopResult` 🎉.
-- `CircuitCompositionLocals(circuit)` first uses a saver configured with `Circuit.Builder.setCircuitSaver()`, then a saver inherited from an outer `ProvideCircuitSaver`, and finally a registry-backed saver created with `rememberDefaultCircuitSaver()`. The overload that accepts a saver takes precedence over all three.
+- `CircuitCompositionLocals(circuit)` uses a static saver configured on `Circuit` when one is present. Otherwise, it chooses an outer `ProvideCircuitSaver` or a registry-backed saver as the fallback, then applies any configured saver transform. The overload that accepts a saver takes precedence.
 - `CircuitSaver.canSave` and `canRestore` are protected routing hooks that default to false. Custom savers override them when they should participate in a composite.
 - Unsupported values fail at save time by default instead of being silently dropped, both in composites with no claiming saver and in `rememberDefaultCircuitSaver()`. Append `CircuitSaver.Dropping { value -> ... }` to opt into dropping unsupported values and optionally report them. Restoration still degrades to the stack's initial state, since saved data can come from an older app version.
 

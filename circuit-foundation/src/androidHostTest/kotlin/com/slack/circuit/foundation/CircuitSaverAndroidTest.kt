@@ -5,10 +5,10 @@ package com.slack.circuit.foundation
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.CircuitSaver
@@ -25,6 +25,7 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotSame
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlinx.parcelize.Parcelize
@@ -121,6 +122,48 @@ class CircuitSaverAndroidTest {
   }
 
   @Test
+  fun saverTransformRestoresWithNewSaverInstancesAndRegistry() {
+    val restorationTester = StateRestorationTester(composeTestRule)
+    val fallbackSavers = mutableListOf<CircuitSaver>()
+    val envelopeSavers = mutableListOf<TestEnvelopeCircuitSaver>()
+    val rawScreen = TestDirectParcelableScreen("raw")
+    val circuit =
+      Circuit.Builder()
+        .setCircuitSaver { fallbackSaver ->
+          fallbackSavers += fallbackSaver
+          val envelopeSaver = TestEnvelopeCircuitSaver()
+          envelopeSavers += envelopeSaver
+          envelopeSaver + fallbackSaver
+        }
+        .build()
+    lateinit var backStack: SaveableBackStack
+
+    restorationTester.setContent {
+      CircuitCompositionLocals(circuit) {
+        backStack = rememberSaveableBackStack(listOf(rawScreen, TestPlainScreen))
+      }
+    }
+
+    lateinit var originalFallbackSaver: CircuitSaver
+    lateinit var originalEnvelopeSaver: TestEnvelopeCircuitSaver
+    composeTestRule.runOnIdle {
+      assertEquals(listOf(TestPlainScreen, rawScreen), backStack.map { it.screen })
+      originalFallbackSaver = fallbackSavers.single()
+      originalEnvelopeSaver = envelopeSavers.single()
+    }
+
+    restorationTester.emulateSavedInstanceStateRestore()
+
+    composeTestRule.runOnIdle {
+      assertEquals(listOf(TestPlainScreen, rawScreen), backStack.map { it.screen })
+      assertEquals(2, fallbackSavers.size)
+      assertEquals(2, envelopeSavers.size)
+      assertNotSame(originalFallbackSaver, fallbackSavers.last())
+      assertNotSame(originalEnvelopeSaver, envelopeSavers.last())
+    }
+  }
+
+  @Test
   fun rememberedDefaultSaverRestoresRawValuesAndIgnoresUnrelatedInput() {
     val saver = rememberDefaultSaver()
 
@@ -196,22 +239,22 @@ class CircuitSaverAndroidTest {
   }
 
   @Test
-  fun circuitBuilderSaverAndFactoryClearEachOther() {
+  fun circuitBuilderSaverAndTransformClearEachOther() {
     val staticSaver = TestCircuitSaver()
-    val factorySaver = TestCircuitSaver()
-    val factory: @Composable () -> CircuitSaver = { factorySaver }
+    val transformedSaver = TestCircuitSaver()
+    val transform: (CircuitSaver) -> CircuitSaver = { transformedSaver }
 
-    val factoryCircuit =
-      Circuit.Builder().setCircuitSaver(staticSaver).setCircuitSaver(factory).build()
-    assertNull(factoryCircuit.circuitSaver)
-    assertSame(factory, factoryCircuit.circuitSaverFactory)
+    val transformedCircuit =
+      Circuit.Builder().setCircuitSaver(staticSaver).setCircuitSaver(transform).build()
+    assertNull(transformedCircuit.circuitSaver)
+    assertSame(transform, transformedCircuit.circuitSaverTransform)
 
-    val inherited = factoryCircuit.newBuilder().build()
-    assertSame(factory, inherited.circuitSaverFactory)
+    val inherited = transformedCircuit.newBuilder().build()
+    assertSame(transform, inherited.circuitSaverTransform)
 
-    val staticCircuit = factoryCircuit.newBuilder().setCircuitSaver(staticSaver).build()
+    val staticCircuit = transformedCircuit.newBuilder().setCircuitSaver(staticSaver).build()
     assertSame(staticSaver, staticCircuit.circuitSaver)
-    assertNull(staticCircuit.circuitSaverFactory)
+    assertNull(staticCircuit.circuitSaverTransform)
   }
 }
 
@@ -243,6 +286,18 @@ private inline fun <reified T : Parcelable> Bundle.parcelable(key: String): T? =
 private data object TestPlainScreen : Screen
 
 private data object TestPlainPopResult : PopResult
+
+private class TestEnvelopeCircuitSaver : CircuitSaver() {
+  protected override fun canSave(value: CircuitSaveable): Boolean = value === TestPlainScreen
+
+  override fun save(value: CircuitSaveable): Any =
+    Bundle().apply { putBoolean("test-envelope", true) }
+
+  protected override fun canRestore(saved: Any): Boolean =
+    saved is Bundle && saved.containsKey("test-envelope")
+
+  protected override fun restore(saved: Any): CircuitSaveable = TestPlainScreen
+}
 
 private class TestCircuitSaver : CircuitSaver() {
   override fun canSave(value: CircuitSaveable): Boolean = true

@@ -5,7 +5,6 @@ package com.slack.circuit.foundation
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.runtime.setValue
@@ -81,10 +80,17 @@ class RememberDefaultCircuitSaverTest {
   }
 
   @Test
-  fun compositionLocalsUsesSaverFactoryConfiguredOnCircuit() {
-    val factorySaver = testCircuitSaver()
+  fun compositionLocalsAppliesSaverTransformToInheritedSaver() {
+    val transformedSaver = testCircuitSaver()
     val inheritedSaver = testCircuitSaver()
-    val circuit = Circuit.Builder().setCircuitSaver { factorySaver }.build()
+    lateinit var observedFallbackSaver: CircuitSaver
+    val circuit =
+      Circuit.Builder()
+        .setCircuitSaver { fallbackSaver ->
+          observedFallbackSaver = fallbackSaver
+          transformedSaver
+        }
+        .build()
     lateinit var observedSaver: CircuitSaver
 
     composeTestRule.setContent {
@@ -93,11 +99,14 @@ class RememberDefaultCircuitSaverTest {
       }
     }
 
-    composeTestRule.runOnIdle { assertSame(factorySaver, observedSaver) }
+    composeTestRule.runOnIdle {
+      assertSame(inheritedSaver, observedFallbackSaver)
+      assertSame(transformedSaver, observedSaver)
+    }
   }
 
   @Test
-  fun saverFactoryCanComposeWithRegistryBackedSaver() {
+  fun saverTransformCanComposeWithRegistryBackedSaver() {
     val accepted = RegistryTestScreen("accepted")
     val registry = SaveableStateRegistry(emptyMap()) { it === accepted }
     val serializingSaver =
@@ -112,10 +121,7 @@ class RememberDefaultCircuitSaverTest {
       }
     val circuit =
       Circuit.Builder()
-        .setCircuitSaver {
-          val defaultSaver = rememberDefaultCircuitSaver()
-          remember(defaultSaver, serializingSaver) { serializingSaver + defaultSaver }
-        }
+        .setCircuitSaver { fallbackSaver -> serializingSaver + fallbackSaver }
         .build()
     var recomposeTrigger by mutableStateOf(0)
     lateinit var observedSaver: CircuitSaver

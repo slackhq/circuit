@@ -130,7 +130,7 @@ ProvideCircuitSaver(saver) {
 }
 ```
 
-`CircuitCompositionLocals(circuit)` uses a saver configured on `Circuit` first, then an inherited `LocalCircuitSaver`, and finally a registry-backed saver created with `rememberDefaultCircuitSaver()`. Its overload that accepts a saver takes precedence over all three. Create saveable stacks inside those locals, or pass the saver directly when a stack is created outside them.
+`CircuitCompositionLocals(circuit)` uses a static saver configured on `Circuit` when one is present. Otherwise, it chooses an inherited `LocalCircuitSaver` or a registry-backed saver as the fallback, then applies any configured saver transform. Its overload that accepts a saver takes precedence. Create saveable stacks inside those locals, or pass the saver directly when a stack is created outside them.
 
 ### Combining persistence strategies
 
@@ -145,6 +145,8 @@ val saver =
 ```
 
 The first saver that claims a value owns the operation. Its null result or failure is final. Append `CircuitSaver.Dropping { value -> ... }` to drop values that none of the earlier savers support and optionally report them.
+
+The default saver captures the nearest registry where it is created. If a custom nested registry accepts different values, create and pass a saver from that registry's scope.
 
 ## Lenient restoration
 

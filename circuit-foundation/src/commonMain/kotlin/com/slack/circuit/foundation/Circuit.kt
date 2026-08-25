@@ -120,19 +120,20 @@ public class Circuit private constructor(builder: Builder) {
    * An optional app-configured [CircuitSaver].
    *
    * [CircuitCompositionLocals] provides this when no explicit saver is supplied. If no saver or
-   * composable saver factory is configured, it uses an inherited saver or creates a registry-backed
-   * saver with [rememberDefaultCircuitSaver].
+   * saver transform is configured, it uses an inherited saver or creates a registry-backed saver
+   * with [rememberDefaultCircuitSaver].
    */
   public val circuitSaver: CircuitSaver? = builder.circuitSaver
 
   /**
-   * An optional app-configured [CircuitSaver] factory invoked in composition.
+   * An optional app-configured transform applied to the inherited or registry-backed fallback
+   * [CircuitSaver].
    *
-   * Use this over [circuitSaver] when the saver needs composition access, such as composing with
-   * [rememberDefaultCircuitSaver]. [CircuitCompositionLocals] invokes this when no explicit saver
-   * is supplied. At most one of this and [circuitSaver] is non-null.
+   * [CircuitCompositionLocals] applies this when no explicit saver is supplied. At most one of this
+   * and [circuitSaver] is non-null.
    */
-  internal val circuitSaverFactory: (@Composable () -> CircuitSaver)? = builder.circuitSaverFactory
+  internal val circuitSaverTransform: ((CircuitSaver) -> CircuitSaver)? =
+    builder.circuitSaverTransform
 
   @OptIn(InternalCircuitApi::class)
   public fun presenter(
@@ -219,7 +220,7 @@ public class Circuit private constructor(builder: Builder) {
     public var circuitSaver: CircuitSaver? = null
       private set
 
-    internal var circuitSaverFactory: (@Composable () -> CircuitSaver)? = null
+    internal var circuitSaverTransform: ((CircuitSaver) -> CircuitSaver)? = null
       private set
 
     public val navStackLocalProviders: MutableList<NavStackRecordLocalProvider<NavStack.Record>> =
@@ -235,7 +236,7 @@ public class Circuit private constructor(builder: Builder) {
       presentWithLifecycle = circuit.presentWithLifecycle
       lenientNavigationEventDispatcherOwner = circuit.lenientNavigationEventDispatcherOwner
       circuitSaver = circuit.circuitSaver
-      circuitSaverFactory = circuit.circuitSaverFactory
+      circuitSaverTransform = circuit.circuitSaverTransform
       navStackLocalProviders.clear()
       navStackLocalProviders.addAll(circuit.navStackLocalProviders)
       // Carry over a custom NavDecoration if one was provided, otherwise use AnimatedNavDecoration
@@ -388,30 +389,31 @@ public class Circuit private constructor(builder: Builder) {
     }
 
     /**
-     * Sets the app-configured [CircuitSaver] used by [CircuitCompositionLocals]. Clears any factory
-     * set with the factory overload.
+     * Sets the app-configured [CircuitSaver] used by [CircuitCompositionLocals]. Clears any
+     * transform set with the transform overload.
      */
     public fun setCircuitSaver(circuitSaver: CircuitSaver?): Builder = apply {
       this.circuitSaver = circuitSaver
-      this.circuitSaverFactory = null
+      this.circuitSaverTransform = null
     }
 
     /**
-     * Sets a [CircuitSaver] factory that [CircuitCompositionLocals] invokes in composition. Use
-     * this when the saver needs composition access, such as composing with
-     * [rememberDefaultCircuitSaver]:
+     * Sets a transform that combines the inherited or registry-backed fallback [CircuitSaver] with
+     * app-configured savers:
      * ```kotlin
-     * setCircuitSaver {
-     *   val defaultSaver = rememberDefaultCircuitSaver()
-     *   remember(defaultSaver, serializableSaver) { serializableSaver + defaultSaver }
+     * setCircuitSaver { fallbackSaver ->
+     *   serializableSaver + fallbackSaver
      * }
      * ```
      *
+     * The transform must preserve compatible saved formats, registrations, and delegate order
+     * across restoration.
+     *
      * Clears any saver set with the static overload.
      */
-    public fun setCircuitSaver(factory: @Composable () -> CircuitSaver): Builder = apply {
+    public fun setCircuitSaver(transform: (CircuitSaver) -> CircuitSaver): Builder = apply {
       this.circuitSaver = null
-      this.circuitSaverFactory = factory
+      this.circuitSaverTransform = transform
     }
 
     public fun build(): Circuit {

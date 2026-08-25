@@ -173,7 +173,7 @@ When a saved value can no longer be restored:
 
 ### Registry-backed persistence
 
-`rememberDefaultCircuitSaver()` creates a saver around the current Compose `SaveableStateRegistry`. It passes a screen or result through only when that registry accepts the value. Create it in the same saveable-state registry scope as the stack that uses it.
+`rememberDefaultCircuitSaver()` captures the nearest Compose `SaveableStateRegistry` and passes a screen or result through only when that registry accepts the value. The captured registry only decides which values the saver handles. Each stack's `rememberSaveable` call still registers with the registry at the stack's call site. Standard saveable-state holder child registries delegate this check to their parent. If a custom nested registry accepts different values, create and pass a saver from that registry's scope.
 
 On Android, the registry accepts values that can be stored in a `Bundle`. `Parcelable` is one option. For common-code values, annotate the class with `@Parcelize` and implement `ParcelableScreen` or `ParcelablePopResult`. These interfaces add `Parcelable` on Android and remain plain `Screen` or `PopResult` subtypes elsewhere.
 
@@ -217,7 +217,7 @@ To disable persistence entirely, use `CircuitSaver.NoOp`. Stacks saved with it r
 
 ### Providing the saver
 
-`CircuitCompositionLocals(circuit)` resolves its saver in this order: a saver configured on `Circuit`, a saver inherited from an outer `ProvideCircuitSaver`, then a registry-backed saver created with `rememberDefaultCircuitSaver()`. Stacks created inside those locals inherit the resolved saver:
+`CircuitCompositionLocals(circuit)` uses a static saver configured on `Circuit` when one is present. Otherwise, it chooses a saver inherited from an outer `ProvideCircuitSaver` or creates a registry-backed fallback with `rememberDefaultCircuitSaver()`, then applies any saver transform configured on `Circuit`. Stacks created inside those locals inherit the result:
 
 ```kotlin
 CircuitCompositionLocals(circuit) {
@@ -240,18 +240,17 @@ The saveable stack and result-handler remember functions also accept a `CircuitS
 
 `Circuit.Builder.setCircuitSaver(saver)` stores an app-configured saver on `Circuit`. `newBuilder()` inherits it, and callers can replace or clear it. The no-saver `CircuitCompositionLocals(circuit)` overload uses this property automatically.
 
-A saver that needs composition access, such as a composite including `rememberDefaultCircuitSaver()`, can be configured with the factory overload. `CircuitCompositionLocals(circuit)` invokes it in composition:
+The transform overload receives the inherited or registry-backed fallback saver, so the final composite can also remain configured on `Circuit`:
 
 ```kotlin
 Circuit.Builder()
-  .setCircuitSaver {
-    val defaultSaver = rememberDefaultCircuitSaver()
-    remember(defaultSaver, serializableCircuitSaver) {
-      serializableCircuitSaver + defaultSaver
-    }
+  .setCircuitSaver { fallbackSaver ->
+    serializableCircuitSaver + fallbackSaver
   }
   .build()
 ```
+
+Fresh equivalent saver instances are safe across recreation because restoration routes from the saved representation. The transform must preserve compatible saved formats, registrations, and delegate order. Do not use transient state or feature flags to add, remove, or reorder savers.
 
 !!! note "Composition-built savers"
     A composition-built saver can also be passed to the explicit `CircuitCompositionLocals` overload, which takes precedence over any saver configured on the `Circuit`. Create the stack inside those locals so it uses the same saver:

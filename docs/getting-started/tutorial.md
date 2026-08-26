@@ -209,6 +209,8 @@ val circuit: Circuit =
 
 This instance should usually live on your application's DI graph.
 
+This tutorial uses kotlinx-serialization with reflection. See [Saving navigation state](../docs/navigation-persistence.md) for the other persistence strategies and their setup.
+
 !!! note
     This is a simple example that uses the `addPresenter` and `addUi` functions. In a real app, you'd likely use a `Presenter.Factory` and `Ui.Factory` to create your presenters and UIs dynamically.
 

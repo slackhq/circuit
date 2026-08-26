@@ -18,3 +18,18 @@
   public static <1> INSTANCE;
   kotlinx.serialization.KSerializer serializer(...);
 }
+
+# CircuitSerializable is a meta-annotation for Serializable, so it needs equivalent rules.
+-if @com.slack.circuit.serialization.CircuitSerializable class ** implements com.slack.circuit.runtime.screen.CircuitSaveable
+-keepclassmembers class <1> {
+  static <1>$Companion Companion;
+}
+-if @com.slack.circuit.serialization.CircuitSerializable class ** implements com.slack.circuit.runtime.screen.CircuitSaveable
+-keepclassmembers class <1>$Companion {
+  kotlinx.serialization.KSerializer serializer(...);
+}
+-if @com.slack.circuit.serialization.CircuitSerializable class ** implements com.slack.circuit.runtime.screen.CircuitSaveable
+-keepclassmembers class <1> {
+  public static <1> INSTANCE;
+  kotlinx.serialization.KSerializer serializer(...);
+}

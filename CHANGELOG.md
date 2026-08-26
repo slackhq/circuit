@@ -4,37 +4,50 @@ Changelog
 Unreleased
 ----------
 
-### New
-
-- `rememberDefaultCircuitSaver()` creates a saver around the current Compose `SaveableStateRegistry`. It saves screens and results that the registry accepts, including Parcelable values on Android. Values the registry rejects fail the save by default.
-- `CircuitSaver` instances can be combined with `+`. The first saver that claims a value owns the save or restore operation. Custom savers can override the protected `canSave` and `canRestore` functions to participate in routing.
-
-  ```kotlin
-  val circuit =
-    Circuit.Builder()
-      .setCircuitSaver { fallbackSaver ->
-        serializableSaver + fallbackSaver
-      }
-      .build()
-  ```
-
-- `CircuitSaver.Dropping(onDropped)` claims every value and persists none of them, reporting each drop. Append it to a composite to drop values no earlier saver supports instead of failing the save.
-- `Circuit.Builder.setCircuitSaver { fallbackSaver -> }` accepts a transform that combines app-configured savers with an inherited or registry-backed fallback. The transform must preserve compatible saved formats, registrations, and delegate order across restoration.
-
 ### Changed
 
-- `Screen` and `PopResult` no longer extend `Parcelable` on Android. Use kotlinx-serialization with `SerializableCircuitSaver` or `ReflectiveSerializableCircuitSaver` to persist navigation state. Types saved this way no longer need `@Parcelize`.
-  - `ParcelableScreen` and `ParcelablePopResult` remain available for apps that use `rememberDefaultCircuitSaver()` on Android.
-  - Apps that do not persist navigation state can use `CircuitSaver.NoOp`.
-  - This completes the multi-phase removal of the `Parcelable` supertypes of `Screen` and `PopResult` 🎉.
-- `CircuitCompositionLocals(circuit)` uses a static saver configured on `Circuit` when one is present. Otherwise, it chooses an outer `ProvideCircuitSaver` or a registry-backed saver as the fallback, then applies any configured saver transform. The overload that accepts a saver takes precedence.
-- `CircuitSaver.canSave` and `canRestore` are protected routing hooks that default to false. Custom savers override them when they should participate in a composite.
-- Unsupported values fail at save time by default instead of being silently dropped, both in composites with no claiming saver and in `rememberDefaultCircuitSaver()`. Append `CircuitSaver.Dropping { value -> ... }` to opt into dropping unsupported values and optionally report them. Restoration still degrades to the stack's initial state, since saved data can come from an older app version.
+#### `Screen` and `PopResult` are no longer Parcelable
+
+`Screen` and `PopResult` no longer extend `Parcelable` on Android. Apps upgrading to this release should choose the persistence strategy that fits each type
+
+- **Already using kotlinx-serialization**
+  - Keep the existing `SerializableCircuitSaver` or `ReflectiveSerializableCircuitSaver` setup. Remove `@Parcelize`, and use `Screen` or `PopResult` directly instead of the Parcelable marker interfaces.
+- **Keep Android Parcelable persistence**
+  - Retain `@Parcelize` and change the type to implement `ParcelableScreen` or `ParcelablePopResult`. The registry-backed default saver accepts these types on Android.
+- **Migrate gradually**
+  - Put the serializing saver first and retain the registry-backed saver as a fallback for Parcelable types:
+
+    ```kotlin
+    val circuit =
+      Circuit.Builder()
+        .setCircuitSaver { fallbackSaver ->
+          serializableSaver + fallbackSaver
+        }
+        .build()
+    ```
+
+- **Do not persist navigation state**
+  - Configure `CircuitSaver.NoOp`. Restored stacks start again from their initial value.
+
+See [Saving navigation state](https://slackhq.github.io/circuit/navigation-persistence/) for complete setup and migration examples.
+
+Saving an unsupported value now fails instead of silently dropping it. To intentionally drop values that no earlier saver supports, append `CircuitSaver.Dropping { value -> ... }` to the saver chain. Use `CircuitSaver.NoOp` as the final saver when dropped values do not need to be reported.
+
+### New
+
+- `rememberDefaultCircuitSaver()` creates a saver backed by the current Compose `SaveableStateRegistry`. `CircuitCompositionLocals(circuit)` uses it automatically when no static or inherited saver is available.
+- Combine `CircuitSaver` instances with `+`. Savers are tried from left to right, and the first saver that supports a value owns the save or restore operation.
+- `Circuit.Builder.setCircuitSaver { fallbackSaver -> ... }` combines an app saver with the saver inherited from the composition or created from its registry.
+- Custom savers can override `canSave` and `canRestore` to participate in a composite.
 
 ### Removed
 
-- Removed the static `DefaultCircuitSaver`. Use `rememberDefaultCircuitSaver()` inside a composition, a serializing saver, or `CircuitSaver.NoOp`.
+- Removed `DefaultCircuitSaver`. `CircuitCompositionLocals(circuit)` now creates a registry-backed saver when needed. Call `rememberDefaultCircuitSaver()` when a saver must be passed explicitly.
 - Removed the deprecated companion `Saver` properties from `SaveableBackStack` and `SaveableNavStack`. Use the `Saver(CircuitSaver)` functions.
+
+### Fixed
+
+- Fixed R8 failures in apps using `@CircuitSerializable` or `@CircuitInject` without Hilt on the runtime classpath.
 
 0.37.1
 ------

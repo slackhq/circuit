@@ -55,7 +55,7 @@ fun provideCircuitSaver(
 ): CircuitSaver = SerializableCircuitSaver(registrations)
 ```
 
-Each Gradle module compiles the generated set contributions for its annotated types. The application graph collects contributions from the application module and its dependency modules in the injected `Set<CircuitSerializerRegistration>`. Serialization code generation uses the same `circuit.codegen.mode` setting as `@CircuitInject`. See the code generation guide for mode-specific setup and generated code examples.
+Each Gradle module compiles the generated set contributions for its annotated types. The application graph collects contributions from the application module and its dependency modules in the injected `Set<CircuitSerializerRegistration>`. Serialization code generation uses the same `circuit.codegen.mode` setting as `@CircuitInject`. See the [code generation guide](https://slackhq.github.io/circuit/code-gen/#serialization-registrations) for mode-specific setup and generated code examples.
 
 For an expect/actual screen or result, annotate the `expect` declaration and every `actual` declaration with `@CircuitSerializable` using the same scope. The annotation supplies the default serializer in every compilation. The processor generates one registration from the `expect` declaration.
 
@@ -100,7 +100,7 @@ Use `restoreScreen<T>` and `restorePopResult<T>` to restore a specific type. The
 
 ## Skipping registration on JVM/Android
 
-The `circuit-serialization-reflect` artifact provides `ReflectiveSerializableCircuitSaver`. It resolves serializers from the saved class name, so apps do not need to register each type. The artifact includes the R8 and ProGuard rules it needs. Minified apps do not need extra configuration. See its README for details.
+The `circuit-serialization-reflect` artifact provides `ReflectiveSerializableCircuitSaver`. It resolves serializers from the saved class name, so apps do not need to register each type. The artifact includes the R8 and ProGuard rules it needs. Minified apps do not need extra configuration. See its [README](https://github.com/slackhq/circuit/tree/main/circuit-serialization-reflect) for details.
 
 ## Wiring it up
 
@@ -130,29 +130,4 @@ ProvideCircuitSaver(saver) {
 }
 ```
 
-`CircuitCompositionLocals(circuit)` uses a static saver configured on `Circuit` when one is present. Otherwise, it chooses an inherited `LocalCircuitSaver` or a registry-backed saver as the fallback, then applies any configured saver transform. Its overload that accepts a saver takes precedence. Create saveable stacks inside those locals, or pass the saver directly when a stack is created outside them.
-
-### Combining persistence strategies
-
-Use `+` to route values through multiple savers in order. For example, an Android or JVM app can prefer generated registrations, then values supported directly by the current `SaveableStateRegistry`, then reflective serialization:
-
-```kotlin
-val defaultSaver = rememberDefaultCircuitSaver()
-val saver =
-  remember(defaultSaver, serializableSaver) {
-    serializableSaver + defaultSaver + ReflectiveSerializableCircuitSaver()
-  }
-```
-
-The first saver that claims a value owns the operation. Its null result or failure is final. Append `CircuitSaver.Dropping { value -> ... }` to drop values that none of the earlier savers support and optionally report them.
-
-The default saver captures the nearest registry where it is created. If a custom nested registry accepts different values, create and pass a saver from that registry's scope.
-
-## Lenient restoration
-
-When a saved value can no longer be restored:
-
-- `SaveableBackStack` drops the affected record. If none survive, it starts from its initial value.
-- `SaveableNavStack` discards incomplete forward history. If the active screen or its back history is missing, it starts from its initial value.
-- Stored back-stack snapshots are discarded if any record is missing.
-- An unrestorable pending pop result clears its expectation, so `awaitResult` returns null.
+See [Saving navigation state](https://slackhq.github.io/circuit/docs/navigation-persistence/) for saver selection, composition, provisioning, and restoration behavior.

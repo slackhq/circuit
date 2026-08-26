@@ -976,6 +976,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../docs/navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../docs/navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -2252,7 +2280,7 @@
 <ul>
 <li>Don&rsquo;t need direct navigation access</li>
 <li>Delegate cross-cutting concerns (navigation, dialogs) to a parent</li>
-<li>Don&rsquo;t require <code>Parcelable</code> screen serialization</li>
+<li>Are not stored as navigation records</li>
 <li>Compose into larger Circuit screens as building blocks</li>
 </ul>
 <p>Common use cases include list items that trigger navigation, embedded widgets reused across features, and renderable UI blocks that emit events to their container.</p>
@@ -2270,11 +2298,6 @@
 <td>Navigation</td>
 <td>Delegated via <code>outerEventSink</code></td>
 <td>Direct via <code>Navigator</code></td>
-</tr>
-<tr>
-<td>Screen serialization</td>
-<td>None required</td>
-<td><code>Parcelable</code></td>
 </tr>
 <tr>
 <td>Use case</td>
@@ -2317,7 +2340,7 @@
 <tbody>
 <tr>
 <td><code>SubScreen&lt;OuterEvent&gt;</code></td>
-<td>Marker interface for screens (no <code>Parcelable</code> requirement)</td>
+<td>Marker interface for embedded components</td>
 </tr>
 <tr>
 <td><code>SubPresenter&lt;OuterEvent, State&gt;</code></td>

@@ -979,6 +979,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -2110,6 +2138,7 @@ annotated, the type&rsquo;s corresponding factory will be generated and keyed wi
 <span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">LegacyScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">value</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 </code></pre></div>
 <p>Apps without a supported DI framework can build a <code>SerializersModule</code> manually. On JVM and Android, they can use <code>ReflectiveSerializableCircuitSaver</code> instead.</p>
+<p>See <a href="../navigation-persistence/">Saving navigation state</a> for how to provide the resulting saver or combine it with other persistence strategies.</p>
 <h2 id="classes">Classes<a class="headerlink" href="#classes" title="Permanent link">&para;</a></h2>
 <p><code>Presenter</code> and <code>Ui</code> classes can be annotated and have their corresponding <code>Presenter.Factory</code> or
 <code>Ui.Factory</code> classes generated for them. The annotated class <em>must</em> be injectable — either

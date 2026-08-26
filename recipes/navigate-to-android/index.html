@@ -970,6 +970,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../docs/navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../docs/navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -1788,12 +1816,12 @@ the share sheet, a custom tab.</p>
 <span class="w">  </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">:</span><span class="w"> </span><span class="n">Bundle?)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="k">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">)</span>
 <span class="w">    </span><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">navStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableNavStack</span><span class="p">(</span><span class="n">HomeScreen</span><span class="p">)</span>
-<span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberAndroidScreenAwareNavigator</span><span class="p">(</span>
-<span class="w">        </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">navStack</span><span class="p">),</span><span class="w">   </span><span class="c1">// the Circuit navigator it wraps</span>
-<span class="w">        </span><span class="k">this</span><span class="nd">@MainActivity</span><span class="p">,</span><span class="w">                     </span><span class="c1">// Context used to start activities</span>
-<span class="w">      </span><span class="p">)</span>
 <span class="w">      </span><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">navStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableNavStack</span><span class="p">(</span><span class="n">HomeScreen</span><span class="p">)</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberAndroidScreenAwareNavigator</span><span class="p">(</span>
+<span class="w">          </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">navStack</span><span class="p">),</span><span class="w">   </span><span class="c1">// the Circuit navigator it wraps</span>
+<span class="w">          </span><span class="k">this</span><span class="nd">@MainActivity</span><span class="p">,</span><span class="w">                     </span><span class="c1">// Context used to start activities</span>
+<span class="w">        </span><span class="p">)</span>
 <span class="w">        </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">navStack</span><span class="p">)</span>
 <span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>

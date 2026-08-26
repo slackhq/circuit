@@ -970,6 +970,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../docs/navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../docs/navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -1794,12 +1822,10 @@
 the calling screen — surviving process death.</p>
 <p>Call <code>rememberAnsweringNavigator&lt;R&gt;</code> with the caller&rsquo;s <code>Navigator</code> and handle the result in its callback. The target screen pops a <code>PopResult</code>, which Circuit delivers only to the caller that requested it. <code>NavigableCircuitContent</code> provides result delivery, and presenters can call the API through <code>circuit-runtime-presenter</code>.</p>
 <h2 id="1-define-the-result">1. Define the result<a class="headerlink" href="#1-define-the-result" title="Permanent link">&para;</a></h2>
-<p><code>PopResult</code> extends <code>Parcelable</code>, so results survive process death. <code>@Parcelize</code> is the easy way to
-satisfy that.</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">EditNameScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 
-<span class="nd">@Parcelize</span>
+<span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">EditNameResult</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">name</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">PopResult</span>
 </code></pre></div>
 <h2 id="2-caller-request-and-receive">2. Caller: request and receive<a class="headerlink" href="#2-caller-request-and-receive" title="Permanent link">&para;</a></h2>

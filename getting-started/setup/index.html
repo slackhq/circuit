@@ -1070,6 +1070,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../docs/navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../docs/navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -1905,7 +1933,7 @@
 <span class="w">  </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
 </code></pre></div>
 <p>This configuration can be rebuilt via <code>newBuilder()</code> and usually would live in your program&rsquo;s DI graph.</p>
-<p>Once you have a configuration ready, the simplest way to get going with Circuit is via <code>CircuitCompositionLocals</code>. This automatically exposes the config to all child Circuit composables and allows you to get off the ground quickly with <code>CircuitContent</code>, <code>NavigableCircuitContent</code>, etc.</p>
+<p>Once you have a configuration ready, the simplest way to get going with Circuit is via <code>CircuitCompositionLocals</code>. This exposes the configuration and a <code>CircuitSaver</code> to child Circuit composables. It uses the saver configured on <code>Circuit</code>, then a saver inherited from an outer <code>ProvideCircuitSaver</code>, or creates a registry-backed default when neither is available. See <a href="../../docs/navigation-persistence/">Saving navigation state</a> for the available persistence strategies and explicit overrides.</p>
 <div class="highlight"><pre><span></span><code><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">CircuitContent</span><span class="p">(</span><span class="n">AddFavoritesScreen</span><span class="p">())</span>
 <span class="p">}</span>

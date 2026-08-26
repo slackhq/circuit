@@ -16,7 +16,7 @@
         <link rel="prev" href="../factories/">
       
       
-        <link rel="next" href="../navigation-navstack-migration/">
+        <link rel="next" href="../navigation-persistence/">
       
       
         
@@ -1059,6 +1059,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -1874,10 +1902,13 @@
 <li>A <code>Navigator</code>, which is a simple interface that we can point at a <code>NavStack</code> and offers simple <code>goTo(&lt;screen&gt;)</code>/<code>pop()</code> semantics. These are offered to presenters to perform navigation as needed to other screens.</li>
 </ol>
 <p>A new navigable content surface is handled via the <code>NavigableCircuitContent</code> functions. If you want to have custom behavior for when back is pressed on the root screen (i.e. <code>navStack.isAtRoot</code>), perform this in the lambda passed to <code>rememberCircuitNavigator</code>&rsquo;s <code>onRootPop</code>.</p>
+<p>See <a href="../navigation-persistence/">Saving navigation state</a> to choose how the stack persists its screens and results.</p>
 <div class="highlight"><pre><span></span><code><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableNavStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">)</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">navStack</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* do something on root */</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">navStack</span><span class="p">)</span>
+<span class="w">  </span><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">navStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableNavStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HomeScreen</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">navStack</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* do something on root */</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">navStack</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
 <div class="admonition warning">
@@ -1910,8 +1941,9 @@
 <span class="n">takePhotoNavigator</span><span class="p">.</span><span class="na">goTo</span><span class="p">(</span><span class="n">TakePhotoScreen</span><span class="p">)</span>
 
 <span class="c1">// In TakePhotoScreen.kt</span>
+<span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">TakePhotoScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nd">@Parcelize</span>
+<span class="w">  </span><span class="nd">@Serializable</span>
 <span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Result</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">uri</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">PopResult</span>
 <span class="p">}</span>
 
@@ -2004,13 +2036,13 @@
         
         
           
-          <a href="../navigation-navstack-migration/" class="md-footer__link md-footer__link--next" aria-label="Next: NavStack migration">
+          <a href="../navigation-persistence/" class="md-footer__link md-footer__link--next" aria-label="Next: Saving navigation state">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                NavStack migration
+                Saving navigation state
               </div>
             </div>
             <div class="md-footer__button md-icon">

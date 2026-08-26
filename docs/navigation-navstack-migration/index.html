@@ -13,7 +13,7 @@
       
       
       
-        <link rel="prev" href="../navigation/">
+        <link rel="prev" href="../navigation-persistence/">
       
       
         <link rel="next" href="../overlays/">
@@ -959,6 +959,34 @@
     
   
     Usage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
   
 
     
@@ -2234,7 +2262,7 @@
 </span><span class="hll"><span class="w">  </span><span class="c1">// NEW: Access full navigation state</span>
 </span><span class="hll"><span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">peekNavStack</span><span class="p">():</span><span class="w"> </span><span class="n">NavStackList</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;?</span>
 </span>
-<span class="w">  </span><span class="c1">// Discouraged but still works for backwards compatibility  </span>
+<span class="w">  </span><span class="c1">// Discouraged but still works for backwards compatibility</span>
 <span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">peekBackStack</span><span class="p">():</span><span class="w"> </span><span class="n">ImmutableList</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -2342,6 +2370,7 @@
 </div>
 </div>
 <h2 id="migration-guide">Migration Guide<a class="headerlink" href="#migration-guide" title="Permanent link">&para;</a></h2>
+<p>The examples below run inside <code>CircuitCompositionLocals(circuit)</code>, which provides the saver used by each stack.</p>
 <h3 id="1-no-migration-required">1: No migration required<a class="headerlink" href="#1-no-migration-required" title="Permanent link">&para;</a></h3>
 <p><strong>When:</strong></p>
 <ul>
@@ -2578,7 +2607,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../navigation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Usage">
+          <a href="../navigation-persistence/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Saving navigation state">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2588,7 +2617,7 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Usage
+                Saving navigation state
               </div>
             </div>
           </a>

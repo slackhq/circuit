@@ -979,6 +979,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -1984,13 +2012,13 @@
 <h3 id="1-wrap-your-content-with-sharedelementtransitionlayout">1: Wrap your content with <code>SharedElementTransitionLayout</code><a class="headerlink" href="#1-wrap-your-content-with-sharedelementtransitionlayout" title="Permanent link">&para;</a></h3>
 <p>To start we need to integrate the <code>SharedElementTransitionLayout</code> into the project, as <code>SharedElementTransitionLayout</code> is the root layout required for shared element transitions. It creates and provides a <code>SharedElementTransitionScope</code> which is required to use the core shared elements APIs.</p>
 <p>Modify the apps main entry point to wrap <code>NavigableCircuitContent</code> with a <code>SharedElementTransitionLayout</code></p>
-<div class="highlight"><span class="filename">Add SharedElementTransitionLayout</span><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">InboxScreen</span><span class="p">)</span>
-<span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
-<span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<div class="highlight"><span class="filename">Add SharedElementTransitionLayout</span><pre><span></span><code><span class="hll"><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">InboxScreen</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
 <span class="hll"><span class="w">  </span><span class="n">SharedElementTransitionLayout</span><span class="w"> </span><span class="p">{</span>
-</span><span class="w">    </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span><span class="w"> </span>
-<span class="hll"><span class="w">  </span><span class="p">}</span>
-</span><span class="p">}</span>
+</span><span class="w">    </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
 <h3 id="2-accessing-the-sharedtransitionscope">2. Accessing the <code>SharedTransitionScope</code><a class="headerlink" href="#2-accessing-the-sharedtransitionscope" title="Permanent link">&para;</a></h3>
 <p>In order to use the <code>sharedElement()</code> and <code>sharedBounds()</code> compose <code>Modifier</code>s we now need to access the <code>SharedTransitionScope</code> that is created by the root <code>SharedElementTransitionLayout</code>.</p>
@@ -2010,10 +2038,10 @@
 </span><span class="w">  </span><span class="n">Column</span><span class="p">(</span><span class="n">modifier</span><span class="p">.</span><span class="na">padding</span><span class="p">(</span><span class="m">16.</span><span class="n">dp</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// ..</span>
 </code></pre></div>
-<p>The <code>SharedElementTransitionScope</code> can be placed anywhere in the Ui tree. It simply provides access to the underlying <code>SharedTransitionScope</code> so that the shared element modifiers are visible. This approach means you don&rsquo;t have to worry about passing the scope as a context receiver or with a <code>CompositionLocal</code>. </p>
+<p>The <code>SharedElementTransitionScope</code> can be placed anywhere in the Ui tree. It simply provides access to the underlying <code>SharedTransitionScope</code> so that the shared element modifiers are visible. This approach means you don&rsquo;t have to worry about passing the scope as a context receiver or with a <code>CompositionLocal</code>.</p>
 <h3 id="3-optional-create-shared-element-keys">3. (Optional) Create shared element keys<a class="headerlink" href="#3-optional-create-shared-element-keys" title="Permanent link">&para;</a></h3>
 <p>Now we can start using Compose shared elements across the Inbox and Detail screens. We&rsquo;re going to add shared elements to transition the email sender, email title, and email body.</p>
-<p>It is recommended to create a unique key to safely match the shared elements against each other. </p>
+<p>It is recommended to create a unique key to safely match the shared elements against each other.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>Using the Circuit <code>SharedTransitionKey</code> is optional, it is simply a marker type that can be helpful when grouping shared transition keys.</p>
@@ -2119,7 +2147,7 @@
 </div>
 </div>
 <h3 id="5-adding-modifiersharedbounds">5. Adding <code>Modifier.sharedBounds()</code><a class="headerlink" href="#5-adding-modifiersharedbounds" title="Permanent link">&para;</a></h3>
-<p>As the remaining shared items are all <code>Text</code> Composable we will use <code>Modifier.sharedBounds()</code>. 
+<p>As the remaining shared items are all <code>Text</code> Composable we will use <code>Modifier.sharedBounds()</code>.
 Initially the <code>sharedBounds()</code> setup should be the same for each type of <code>Text</code> in <code>EmailItem</code> and in <code>EmailDetailContent</code>.</p>
 <div class="highlight"><span class="filename">Sender Text</span><pre><span></span><code><span class="n">Text</span><span class="p">(</span>
 <span class="w">  </span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">email</span><span class="p">.</span><span class="na">sender</span><span class="p">,</span>
@@ -2187,7 +2215,7 @@ Initially the <code>sharedBounds()</code> setup should be the same for each type
 </div>
 <p>At this point you can customize the enter and exit transitions, or any of the other parameters of <code>sharedBounds()</code>, to further improve the animation.</p>
 <h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
-<p>You should now be able to integrate Circuit Shared Elements into your existing app! 
+<p>You should now be able to integrate Circuit Shared Elements into your existing app!
 Circuit Shared Elements provides easy access to the needed <code>SharedTransitionScope</code> with <code>SharedElementTransitionScope</code> directly where it is needed. The <code>SharedElementTransitionScope</code> will then provide easy access to the <code>AnimatedVisibilityScope</code> used by Circuit for <code>Navigation</code>. Once setup this will let you use the standard Compose Shared Element transitions for any <code>Screen</code> to <code>Screen</code> transition.</p>
 
 

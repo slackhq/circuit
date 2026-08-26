@@ -1056,6 +1056,34 @@
   
   
     <li class="md-nav__item">
+      <a href="docs/navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="docs/navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -1904,7 +1932,7 @@
 <p>This is a very simple case of a Counter screen that displays the count and has buttons to increment and decrement.</p>
 <p><img alt="image" src="https://user-images.githubusercontent.com/1361086/193662421-575dcaa9-4990-42e6-b265-9099a007296e.png" /></p>
 <p>There’s some glue code missing from this example that&rsquo;s covered in the <a href="docs/code-gen/">Code Gen</a> section later.</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">CounterScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">CounterState</span><span class="p">(</span>
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">count</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="p">,</span>

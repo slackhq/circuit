@@ -970,6 +970,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../docs/navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../docs/navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -1771,9 +1799,7 @@
 <p><strong>Problem:</strong> you have a UI block reused across screens (a profile card, a list row, an embedded
 widget) that emits events — but it shouldn&rsquo;t own navigation. The host screen should decide what a tap
 means.</p>
-<p>Use <code>SubCircuit</code> for embedded components. The child gets no <code>Navigator</code>; it sends navigation and other
-host-owned events through an <code>outerEventSink</code>. That&rsquo;s almost always what you want when one screen&rsquo;s
-content is composed <em>inside</em> another.</p>
+<p>Use <code>SubCircuit</code> for embedded components. The child gets no <code>Navigator</code> and is not stored as a navigation record. It sends navigation and other host-owned events through an <code>outerEventSink</code>. That&rsquo;s almost always what you want when one screen&rsquo;s content is composed <em>inside</em> another.</p>
 <p>Pick based on how independent the component is
 (<a href="https://github.com/slackhq/circuit/pull/2727#issuecomment-4636017793">background</a>):</p>
 <table>
@@ -1799,8 +1825,7 @@ content is composed <em>inside</em> another.</p>
 </tbody>
 </table>
 <h2 id="subcircuit-the-default-for-embedding">SubCircuit: the default for embedding<a class="headerlink" href="#subcircuit-the-default-for-embedding" title="Permanent link">&para;</a></h2>
-<p>A <code>SubPresenter</code> receives an <code>outerEventSink</code> instead of a <code>Navigator</code>. The child needs no
-<code>Parcelable</code> screen.</p>
+<p>A <code>SubPresenter</code> receives an <code>outerEventSink</code> instead of a <code>Navigator</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// 1. Outer events the parent handles, plus a SubScreen key.</span>
 <span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">ProfileCardOuterEvent</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">SubCircuitOuterEvent</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">OpenProfile</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">userId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProfileCardOuterEvent</span>

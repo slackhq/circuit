@@ -1287,6 +1287,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -2483,6 +2511,7 @@
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="c1">// Screen with navigation parameter</span>
+<span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">OrderDetailsScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">orderId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 
 <span class="c1">// State</span>
@@ -2564,6 +2593,7 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 
+<span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">DashboardScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 
 <span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">DashboardState</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span><span class="w"> </span><span class="p">{</span>
@@ -2618,6 +2648,7 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 
+<span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">ProfileScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 
 <span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">ProfileState</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span><span class="w"> </span><span class="p">{</span>
@@ -2661,6 +2692,7 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 
+<span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">SettingsScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 
 <span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">SettingsState</span><span class="p">(</span>
@@ -2780,6 +2812,7 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 
+<span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">ProductDetailsScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">productId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 
 <span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">ProductDetailsState</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span><span class="w"> </span><span class="p">{</span>
@@ -2795,6 +2828,7 @@
 <span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">AddToCart</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">ProductDetailsEvent</span>
 <span class="p">}</span>
 
+<span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">CartScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 </code></pre></div>
 </div>
@@ -2979,7 +3013,10 @@
 </div>
 <div class="tabbed-block">
 <div class="highlight"><pre><span></span><code><span class="c1">// Screens</span>
+<span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">CheckoutScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">orderId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
+
+<span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">OrderConfirmationScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">orderId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 
 <span class="c1">// State</span>

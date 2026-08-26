@@ -970,6 +970,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../docs/navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../docs/navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -1759,10 +1787,8 @@
 <h1 id="recipe-tabs-with-independent-back-stacks"><a href="../">Recipe</a>: Tabs with independent back stacks<a class="headerlink" href="#recipe-tabs-with-independent-back-stacks" title="Permanent link">&para;</a></h1>
 <p><strong>Problem:</strong> a bottom-navigation app where each tab keeps its own navigation history — switching tabs
 and coming back lands you where you left off, not at the tab&rsquo;s root.</p>
-<p>Make the tab host a Circuit UI that owns its own <code>NavStack</code>, <code>Navigator</code>, and
-<code>NavigableCircuitContent</code>. Switch tabs with <code>resetRoot(..., StateOptions.SaveAndRestore)</code> so each
-tab keeps its stack.</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span>
+<p>Make the tab host a Circuit UI that owns its own <code>NavStack</code>, <code>Navigator</code>, and <code>NavigableCircuitContent</code>. Switch tabs with <code>resetRoot(..., StateOptions.SaveAndRestore)</code> so each tab keeps its stack.</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">HomeScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 
 <span class="c1">// One entry per tab. Each knows its root Screen and how to render in the bottom bar.</span>

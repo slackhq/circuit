@@ -1208,6 +1208,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../docs/navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../docs/navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -2183,49 +2211,38 @@
 <h3 id="2-start-from-scratch">2. Start from scratch<a class="headerlink" href="#2-start-from-scratch" title="Permanent link">&para;</a></h3>
 <p>First, set up Compose in your project. See the following guides for more information:</p>
 <ul>
-<li><a href="https://developer.android.com/jetpack/compose/setup">Android</a><ul>
-<li>Also set up <a href="https://developer.android.com/kotlin/parcelize">Parcelize</a></li>
-</ul>
-</li>
+<li><a href="https://developer.android.com/jetpack/compose/setup">Android</a></li>
 <li><a href="https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-getting-started.html">Multiplatform</a></li>
 </ul>
-<p>Next, add the <code>circuit-foundation</code> dependency. This includes all the core Circuit artifacts.</p>
+<p>Apply the Kotlin serialization compiler plugin, then add <code>circuit-foundation</code> and <code>circuit-serialization-reflect</code>.</p>
+<div class="highlight"><span class="filename">build.gradle.kts</span><pre><span></span><code><span class="n">plugins</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">kotlin</span><span class="p">(</span><span class="s">&quot;plugin.serialization&quot;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
 <div class="highlight"><span class="filename">build.gradle.kts</span><pre><span></span><code><span class="n">dependencies</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-foundation:&lt;version&gt;&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="n">implementation</span><span class="p">(</span><span class="s">&quot;com.slack.circuit:circuit-serialization-reflect:&lt;version&gt;&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 <p>See <a href="../setup/">setup docs</a> for more information.</p>
 <h2 id="create-a-screen">Create a <code>Screen</code><a class="headerlink" href="#create-a-screen" title="Permanent link">&para;</a></h2>
 <p>The primary entry points in Circuit are <code>Screen</code>s (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-runtime-screen/com.slack.circuit.runtime.screen/-screen/index.html">docs</a>). These are the navigational building blocks of your app. A <code>Screen</code> is a simple data class or data object that represents a unique location in your app. For example, a <code>Screen</code> could represent an inbox list, an email detail, or a settings screen.</p>
 <p>Let&rsquo;s start with a simple <code>Screen</code> that represents an inbox list:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Android</label><label for="__tabbed_1_2">Multiplatform</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="nd">@Parcelize</span>
+<div class="highlight"><pre><span></span><code><span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">InboxScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
 </code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">InboxScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span>
-</code></pre></div>
-</div>
-</div>
-</div>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p><code>Screen</code> is <code>Parcelable</code> on Android. You should use the Parcelize plugin to annotate your screens with <code>@Parcelize</code>.</p>
-</div>
 <h2 id="design-your-state">Design your state<a class="headerlink" href="#design-your-state" title="Permanent link">&para;</a></h2>
 <p>Next, let&rsquo;s define some state for our <code>InboxScreen</code>. Circuit uses unidirectional data flow (UDF) to ensure strong separation between presentation logic and UI. States should be <a href="https://developer.android.com/jetpack/compose/performance/stability"><em>stable</em> or <em>immutable</em></a>, and directly renderable by your UIs. As such, you should design them to be as simple as possible.</p>
 <p>Conventionally, this is written as a nested <code>State</code> class inside your <code>Screen</code> and <em>must</em> extend <code>CircuitUiState</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-runtime/com.slack.circuit.runtime/-circuit-ui-state/index.html">docs</a>).</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">InboxScreen</label><label for="__tabbed_2_2">Email</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">InboxScreen</label><label for="__tabbed_1_2">Email</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">InboxScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
-<span class="hll"><span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span>
+<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="nd">@Serializable</span>
+<span class="hll"><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">InboxScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
+</span><span class="hll"><span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span>
 </span><span class="hll"><span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">emails</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Email</span><span class="o">&gt;</span>
-</span><span class="hll"><span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
-</span><span class="p">}</span>
+</span><span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
+<span class="p">}</span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -2244,14 +2261,14 @@
 </div>
 <p>See the <a href="../states-and-events/">states and events</a> guide for more information.</p>
 <h2 id="create-your-ui">Create your UI<a class="headerlink" href="#create-your-ui" title="Permanent link">&para;</a></h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:1"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Inbox</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Inbox</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="result" markdown>
 <p><img align="left" alt="Preview" src="../../images/tutorial_inbox.png" width="300" /></p>
-<p>Next, let&rsquo;s define a <code>Ui</code> for our <code>InboxScreen</code>. A <code>Ui</code> is a simple composable function that 
+<p>Next, let&rsquo;s define a <code>Ui</code> for our <code>InboxScreen</code>. A <code>Ui</code> is a simple composable function that
 takes <code>State</code> and <code>Modifier</code> parameters.</p>
-<p>It&rsquo;s responsible for rendering the state. You should write this like a standard composable. In 
+<p>It&rsquo;s responsible for rendering the state. You should write this like a standard composable. In
 this case, we&rsquo;ll use a <code>LazyColumn</code> to render a list of emails.</p>
 </div>
 </div>
@@ -2339,15 +2356,17 @@ this case, we&rsquo;ll use a <code>LazyColumn</code> to render a list of emails.
 <span class="w">  </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
 <span class="w">    </span><span class="p">.</span><span class="na">addPresenter</span><span class="o">&lt;</span><span class="n">InboxScreen</span><span class="p">,</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="p">(</span><span class="n">InboxPresenter</span><span class="p">(</span><span class="n">emailRepository</span><span class="p">))</span>
 <span class="w">    </span><span class="p">.</span><span class="na">addUi</span><span class="o">&lt;</span><span class="n">InboxScreen</span><span class="p">,</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">.</span><span class="na">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Inbox</span><span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">.</span><span class="na">setCircuitSaver</span><span class="p">(</span><span class="n">ReflectiveSerializableCircuitSaver</span><span class="p">())</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
 </code></pre></div>
 <p>This instance should usually live on your application&rsquo;s DI graph.</p>
+<p>This tutorial uses kotlinx-serialization with reflection. See <a href="../../docs/navigation-persistence/">Saving navigation state</a> for the other persistence strategies and their setup.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This is a simple example that uses the <code>addPresenter</code> and <code>addUi</code> functions. In a real app, you&rsquo;d likely use a <code>Presenter.Factory</code> and <code>Ui.Factory</code> to create your presenters and UIs dynamically.</p>
 </div>
-<p>Once you have this instance, you can plug it into <code>CircuitCompositionLocals</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit-composition-locals.html">docs</a>) and be on your way. This is usually a one-time setup in your application at its primary entry point.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:3"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><input id="__tabbed_4_3" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Android</label><label for="__tabbed_4_2">Desktop</label><label for="__tabbed_4_3">JS</label></div>
+<p>Once you have this instance, you can plug it into <code>CircuitCompositionLocals</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit-composition-locals.html">docs</a>) and be on your way. It uses the saver configured on <code>Circuit</code>. This is usually a one-time setup in your application at its primary entry point.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Android</label><label for="__tabbed_3_2">Desktop</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><span class="filename">MainActivity.kt</span><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">MainActivity</span><span class="w"> </span><span class="p">{</span>
@@ -2355,6 +2374,7 @@ this case, we&rsquo;ll use a <code>LazyColumn</code> to render a list of emails.
 <span class="w">    </span><span class="k">super</span><span class="p">.</span><span class="na">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">)</span>
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
 <span class="w">      </span><span class="c1">// ...</span>
+<span class="w">      </span><span class="p">.</span><span class="na">setCircuitSaver</span><span class="p">(</span><span class="n">ReflectiveSerializableCircuitSaver</span><span class="p">())</span>
 <span class="w">      </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
 
 <span class="w">    </span><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
@@ -2370,26 +2390,11 @@ this case, we&rsquo;ll use a <code>LazyColumn</code> to render a list of emails.
 <div class="highlight"><span class="filename">main.kt</span><pre><span></span><code><span class="kd">fun</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
 <span class="w">    </span><span class="c1">// ...</span>
+<span class="w">    </span><span class="p">.</span><span class="na">setCircuitSaver</span><span class="p">(</span><span class="n">ReflectiveSerializableCircuitSaver</span><span class="p">())</span>
 <span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
 
 <span class="w">  </span><span class="n">application</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">Window</span><span class="p">(</span><span class="n">title</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Inbox&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">onCloseRequest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">::</span><span class="n">exitApplication</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="c1">// ...</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><span class="filename">main.kt</span><pre><span></span><code><span class="kd">fun</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Circuit</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
-<span class="w">    </span><span class="c1">// ...</span>
-<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
-
-<span class="w">  </span><span class="n">onWasmReady</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">Window</span><span class="p">(</span><span class="s">&quot;Inbox&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">        </span><span class="c1">// ...</span>
 <span class="w">      </span><span class="p">}</span>
@@ -2410,6 +2415,7 @@ this case, we&rsquo;ll use a <code>LazyColumn</code> to render a list of emails.
 <p>This is the most basic way to render a <code>Screen</code>. These can be top-level UIs or nested within other UIs. You can even have multiple <code>CircuitContent</code> instances in the same composition.</p>
 <h2 id="adding-navigation-to-our-app">Adding navigation to our app<a class="headerlink" href="#adding-navigation-to-our-app" title="Permanent link">&para;</a></h2>
 <p>An app architecture isn&rsquo;t complete without navigation. Circuit provides a simple navigation API that&rsquo;s focused around a simple <code>BackStack</code> (<a href="https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-back-stack/index.html">docs</a>) that is navigated via a <code>Navigator</code> interface (<a href="">docs</a>). In most cases, you can use the built-in <code>SaveableBackStack</code> implementation (<a href="https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-saveable-back-stack/index.html">docs</a>), which is saved and restored in accordance with whatever the platform&rsquo;s <code>rememberSaveable</code> implementation is.</p>
+<p>Create the back stack inside <code>CircuitCompositionLocals</code>, as shown in the complete example below. It will use the saver configured on <code>Circuit</code>.</p>
 <div class="highlight"><span class="filename">Creating a backstack and navigator</span><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">)</span>
 <span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="c1">// Do something when the root screen is popped, usually exiting the app</span>
@@ -2420,52 +2426,40 @@ this case, we&rsquo;ll use a <code>LazyColumn</code> to render a list of emails.
 </code></pre></div>
 <p>This composable will automatically manage the backstack and navigation for you, essentially rendering the &ldquo;top&rdquo; of the back stack as your <em>navigator</em> navigates it. This also handles transitions between screens (<a href="https://slackhq.github.io/circuit/api/0.x/backstack/com.slack.circuit.backstack/-nav-decoration/index.html"><code>NavDecoration</code></a>) and fallback behavior with <code>Circuit.Builder.onUnavailableRoute</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-foundation/com.slack.circuit.foundation/-circuit/on-unavailable-content.html">docs</a>).</p>
 <p>Like with <code>Circuit</code>, this is usually a one-time setup in your application at its primary entry point.</p>
-<div class="highlight"><span class="filename">Putting it all together</span><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">)</span>
-<span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="c1">// Do something when the root screen is popped, usually exiting the app</span>
-<span class="p">}</span>
-<span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<div class="highlight"><span class="filename">Putting it all together</span><pre><span></span><code><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">InboxScreen</span><span class="p">)</span>
+<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Do something when the root screen is popped, usually exiting the app</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="add-a-detail-screen">Add a detail screen<a class="headerlink" href="#add-a-detail-screen" title="Permanent link">&para;</a></h2>
-<div class="tabbed-set tabbed-alternate" data-tabs="5:1"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Detail</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:1"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Detail</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="result" markdown>
 <p><img align="left" alt="Preview" src="../../images/tutorial_detail.png" width="300" /></p>
 <p>Now that we have navigation set up, let&rsquo;s add a detail screen to our app to navigate to.</p>
-<p>This screen will show the content of a specific email from the inbox, and in a real app would 
+<p>This screen will show the content of a specific email from the inbox, and in a real app would
 also show content like the chain history.</p>
 </div>
 </div>
 </div>
 </div>
 <p>First, let&rsquo;s define a <code>DetailScreen</code> and state.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Android</label><label for="__tabbed_6_2">Multiplatform</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="nd">@Parcelize</span>
+<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">DetailScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">emailId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">email</span><span class="p">:</span><span class="w"> </span><span class="n">Email</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
 <span class="p">}</span>
 </code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">DetailScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">emailId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">email</span><span class="p">:</span><span class="w"> </span><span class="n">Email</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span>
-<span class="p">}</span>
-</code></pre></div>
-</div>
-</div>
-</div>
 <p>Notice that this time we use a <code>data class</code> instead of a <code>data object</code>. This is because we want to be able to pass in an <code>emailId</code> to the screen. We&rsquo;ll use this to fetch the email from our data layer.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>You should keep <code>Screen</code> parameters as simple as possible and derive any additional data you need from your data layer instead.</p>
 </div>
 <p>Next, let&rsquo;s define a Presenter and UI for this screen.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">Presenter</label><label for="__tabbed_7_2">UI</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Presenter</label><label for="__tabbed_5_2">UI</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">DetailPresenter</span><span class="p">(</span>
@@ -2503,7 +2497,7 @@ also show content like the chain history.</p>
 </span><span class="hll"><span class="w">  </span><span class="p">}</span>
 </span><span class="p">}</span>
 </code></pre></div>
-<p>Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter. </p>
+<p>Here we have access to the screen and dynamically create the presenter we need. It can then pass the screen on to the presenter.</p>
 <p>Note: Circuit assumes that the <code>create</code> method will only return presenter instances for screen types it supports. If the screen type isn&rsquo;t supported, it&rsquo;s important to return <code>null</code> instead.</p>
 <p>We can then wire these detail components to our <code>Circuit</code> instance too.</p>
 <div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">circuit</span><span class="p">:</span><span class="w"> </span><span class="n">Circuit</span><span class="w"> </span><span class="o">=</span>
@@ -2514,9 +2508,9 @@ also show content like the chain history.</p>
 </span><span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">()</span>
 </code></pre></div>
 <h2 id="navigate-to-the-detail-screen">Navigate to the detail screen<a class="headerlink" href="#navigate-to-the-detail-screen" title="Permanent link">&para;</a></h2>
-<p>Now that we have a detail screen, let&rsquo;s navigate to it from our inbox list. As you can see in our presenter factory above, Circuit also offers access to a <code>Navigator</code> in this <code>create()</code> call that factories can then pass on to their created presenters. </p>
+<p>Now that we have a detail screen, let&rsquo;s navigate to it from our inbox list. As you can see in our presenter factory above, Circuit also offers access to a <code>Navigator</code> in this <code>create()</code> call that factories can then pass on to their created presenters.</p>
 <p>Let&rsquo;s add a <code>Navigator</code> property to our presenter and create a factory for our inbox screen now.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">InboxPresenter</label><label for="__tabbed_8_2">Circuit instance</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">InboxPresenter</label><label for="__tabbed_6_2">Circuit instance</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">InboxPresenter</span><span class="p">(</span>
@@ -2554,7 +2548,8 @@ also show content like the chain history.</p>
 <p>This provides many benefits, see the <a href="../states-and-events/">events</a> guide for more information.</p>
 <p>Let&rsquo;s add an event to our inbox screen for when the user clicks on an email.</p>
 <p>Events must implement <code>CircuitUiEvent</code> (<a href="https://slackhq.github.io/circuit/api/0.x/circuit-runtime/com.slack.circuit.runtime/-circuit-ui-event/index.html">docs</a>) and are usually modeled as a <code>sealed interface</code> hierarchy, where each subtype is a different event type.</p>
-<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">InboxScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
+<div class="highlight"><span class="filename">InboxScreen.kt</span><pre><span></span><code><span class="nd">@Serializable</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">InboxScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span>
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">emails</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Email</span><span class="o">&gt;</span><span class="p">,</span>
 <span class="hll"><span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">Event</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span>
@@ -2604,10 +2599,11 @@ also show content like the chain history.</p>
 <p>This demonstrates how we can navigate forward in our app and pass data with it. Let&rsquo;s see how we can navigate back.</p>
 <h2 id="navigating-back">Navigating back<a class="headerlink" href="#navigating-back" title="Permanent link">&para;</a></h2>
 <p>Naturally, navigation can&rsquo;t be just one way. The opposite of <code>Navigator.goTo()</code> is <code>Navigator.pop()</code>, which pops the back stack back to the previous screen. To use this, let&rsquo;s add a back button to our detail screen and wire it up to a <code>Navigator</code>.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="9:3"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><input id="__tabbed_9_3" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">DetailScreen</label><label for="__tabbed_9_2">DetailContent</label><label for="__tabbed_9_3">DetailPresenter</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:3"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><input id="__tabbed_7_3" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">DetailScreen</label><label for="__tabbed_7_2">DetailContent</label><label for="__tabbed_7_3">DetailPresenter</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">DetailScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">emailId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
+<div class="highlight"><span class="filename">DetailScreen.kt</span><pre><span></span><code><span class="nd">@Serializable</span>
+<span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">DetailScreen</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">emailId</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">State</span><span class="p">(</span>
 <span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">email</span><span class="p">:</span><span class="w"> </span><span class="n">Email</span><span class="p">,</span>
 <span class="hll"><span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">eventSink</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">Event</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="kt">Unit</span>

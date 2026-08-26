@@ -976,6 +976,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../docs/navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../docs/navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -2242,6 +2270,7 @@ fail, be skipped, or be rewritten to navigate somewhere else. There&rsquo;s also
 if you just want to know when navigation happens without changing it.
 This system is handy for advanced routing, blocking navigation, or tracking navigation events
 for analytics.</p>
+<p>The examples on this page run inside <code>CircuitCompositionLocals(circuit)</code>, which provides the saver used by their back stacks.</p>
 <h2 id="intercepting-overview">Intercepting Overview<a class="headerlink" href="#intercepting-overview" title="Permanent link">&para;</a></h2>
 <p>Navigation interceptors are useful in several scenarios:</p>
 <ul>
@@ -2353,20 +2382,19 @@ failure notifier.</p>
 
 <span class="nd">@Composable</span>
 <span class="kd">fun</span><span class="w"> </span><span class="nf">App</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">HomeScreen</span><span class="p">)</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">baseNavigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
-
-<span class="w">  </span><span class="c1">// Create the intercepting navigator with all our interceptors</span>
-<span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">rememberInterceptingNavigator</span><span class="p">(</span>
-<span class="w">      </span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">baseNavigator</span><span class="p">,</span>
-<span class="w">      </span><span class="n">interceptors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">interceptors</span><span class="p">,</span>
-<span class="w">      </span><span class="n">eventListeners</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eventListeners</span><span class="p">,</span>
-<span class="w">      </span><span class="n">notifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">notifier</span><span class="p">,</span>
-<span class="w">    </span><span class="p">)</span>
-
-<span class="w">  </span><span class="c1">// Use the navigator with your Circuit</span>
 <span class="w">  </span><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">HomeScreen</span><span class="p">)</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">baseNavigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
+
+<span class="w">    </span><span class="c1">// Create the intercepting navigator with all our interceptors</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">rememberInterceptingNavigator</span><span class="p">(</span>
+<span class="w">        </span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">baseNavigator</span><span class="p">,</span>
+<span class="w">        </span><span class="n">interceptors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">interceptors</span><span class="p">,</span>
+<span class="w">        </span><span class="n">eventListeners</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eventListeners</span><span class="p">,</span>
+<span class="w">        </span><span class="n">notifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">notifier</span><span class="p">,</span>
+<span class="w">      </span><span class="p">)</span>
+
 <span class="w">    </span><span class="n">NavigableCircuitContent</span><span class="p">(</span><span class="n">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">backStack</span><span class="p">)</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>

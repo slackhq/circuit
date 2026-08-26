@@ -229,7 +229,7 @@ limitations under the License.</code></pre>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div><span class="brief-comment">
-              <p class="paragraph">kotlinx serialization support for persisting Circuit navigation state. This artifact provides <code class="lang-kotlin">CircuitSaver</code> implementations that encode <code class="lang-kotlin">Screen</code>s and <code class="lang-kotlin">PopResult</code>s to <code class="lang-kotlin">SavedState</code> with <code class="lang-kotlin">androidx.savedstate</code>. Saveable back stacks can survive configuration changes and process death without storing Parcelable values. Android screens and results must still be <code class="lang-kotlin">Parcelable</code>. A future release will remove this requirement.</p>
+              <p class="paragraph">kotlinx-serialization support for persisting Circuit navigation state. This artifact provides <code class="lang-kotlin">CircuitSaver</code> implementations that encode <code class="lang-kotlin">Screen</code>s and <code class="lang-kotlin">PopResult</code>s to <code class="lang-kotlin">SavedState</code> with <code class="lang-kotlin">androidx.savedstate</code>. Saveable back stacks can survive configuration changes and process death without storing Parcelable values.</p>
             </span></div>
         </div>
       </div>
@@ -242,7 +242,7 @@ limitations under the License.</code></pre>
                 <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
               </span></span></div>
           <div><span class="brief-comment">
-              <p class="paragraph">A JVM/Android companion to <code class="lang-kotlin">circuit-serialization</code> that persists <code class="lang-kotlin">@Serializable</code> screens without requiring polymorphic registration. <code class="lang-kotlin">ReflectiveSerializableCircuitSaver</code> records each class's fully qualified name in saved state and resolves its serializer reflectively on restore.</p>
+              <p class="paragraph">A JVM/Android companion to <code class="lang-kotlin">circuit-serialization</code> that persists <code class="lang-kotlin">@Serializable</code> screens and pop results without requiring polymorphic registration. <code class="lang-kotlin">ReflectiveSerializableCircuitSaver</code> records each class's fully qualified name in saved state and resolves its serializer reflectively on restore.</p>
             </span></div>
         </div>
       </div>

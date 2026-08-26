@@ -970,6 +970,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../docs/navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../docs/navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -1770,7 +1798,7 @@
 <h1 id="recipe-deep-linking-using-circuit"><a href="../">Recipe</a>: Deep-linking using Circuit<a class="headerlink" href="#recipe-deep-linking-using-circuit" title="Permanent link">&para;</a></h1>
 <p>Deep linking to application is a vast topic and the implementation detail can vary based on your application needs.
 Deep linking strategy can be highly sophisticated or simple based on the use-case.</p>
-<p>To keep things very simple and easy to understand, we will be focusing on deep linking to <strong>Android</strong> platform only. 
+<p>To keep things very simple and easy to understand, we will be focusing on deep linking to <strong>Android</strong> platform only.
 You can then extend the idea to other platforms as needed.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
@@ -1805,22 +1833,24 @@ You can then extend the idea to other platforms as needed.</p>
 
 <span class="w">  </span><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">MaterialTheme</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="c1">// When there is no deeplink data in the intent, default to Inbox Screen as root screen</span>
-<span class="w">      </span><span class="kd">var</span><span class="w"> </span><span class="nv">stackedScreens</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">remember</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">mutableStateOf</span><span class="p">(</span><span class="n">parseDeepLink</span><span class="p">(</span><span class="n">intent</span><span class="p">)</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="n">InboxScreen</span><span class="p">))</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">stackedScreens</span><span class="p">)</span>
-<span class="w">      </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
+<span class="w">      </span><span class="n">CircuitCompositionLocals</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// When there is no deeplink data in the intent, default to Inbox Screen as root screen</span>
+<span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nv">stackedScreens</span><span class="p">:</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">remember</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="n">mutableStateOf</span><span class="p">(</span><span class="n">parseDeepLink</span><span class="p">(</span><span class="n">intent</span><span class="p">)</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="n">InboxScreen</span><span class="p">))</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">backStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberSaveableBackStack</span><span class="p">(</span><span class="n">stackedScreens</span><span class="p">)</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">navigator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rememberCircuitNavigator</span><span class="p">(</span><span class="n">backStack</span><span class="p">)</span>
 
-<span class="w">      </span><span class="c1">// ...</span>
+<span class="w">        </span><span class="c1">// ...</span>
+<span class="w">      </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div></p>
 <p>And here is a simple implementation of <code>parseDeepLink</code> function that creates the list of screens based on the incoming deep link:
-<div class="highlight"><pre><span></span><code><span class="cm">/** </span>
-<span class="cm"> * Parses the deep link from the given [Intent.getData] and returns a list of stacked screens </span>
-<span class="cm"> * to navigate to when deep link URI is available. </span>
+<div class="highlight"><pre><span></span><code><span class="cm">/**</span>
+<span class="cm"> * Parses the deep link from the given [Intent.getData] and returns a list of stacked screens</span>
+<span class="cm"> * to navigate to when deep link URI is available.</span>
 <span class="cm"> */</span>
 <span class="kd">private</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">parseDeepLink</span><span class="p">(</span><span class="n">intent</span><span class="p">:</span><span class="w"> </span><span class="n">Intent</span><span class="p">):</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Screen</span><span class="o">&gt;?</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">dataUri</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">intent</span><span class="p">.</span><span class="na">data</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span>

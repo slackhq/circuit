@@ -979,6 +979,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../navigation-persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Saving navigation state
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../navigation-navstack-migration/" class="md-nav__link">
         
   
@@ -1949,7 +1977,7 @@
 <p>Testing a Circuit Presenter and UI is a breeze! Consider the following example:</p>
 <div class="highlight"><pre><span></span><code><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Favorite</span><span class="p">(</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="kt">Long</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span>
 
-<span class="nd">@Parcelable</span>
+<span class="nd">@Serializable</span>
 <span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">FavoritesScreen</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Screen</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">State</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">CircuitUiState</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">Loading</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">State</span>
@@ -2011,7 +2039,7 @@
 <span class="w">    </span><span class="n">onClick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">eventSink</span><span class="p">(</span><span class="n">ClickFavorite</span><span class="p">(</span><span class="n">favorite</span><span class="p">.</span><span class="na">id</span><span class="p">))</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">Image</span><span class="p">(</span>
-<span class="w">      </span><span class="n">drawable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">favorite</span><span class="p">.</span><span class="na">drawable</span><span class="p">,</span><span class="w"> </span>
+<span class="w">      </span><span class="n">drawable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">favorite</span><span class="p">.</span><span class="na">drawable</span><span class="p">,</span>
 <span class="w">      </span><span class="n">contentDescription</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stringResource</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="na">string</span><span class="p">.</span><span class="na">favorite_image_desc</span><span class="p">)</span>
 <span class="w">    </span><span class="p">)</span>
 <span class="w">    </span><span class="n">Text</span><span class="p">(</span><span class="n">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">favorite</span><span class="p">.</span><span class="na">name</span><span class="p">)</span>
@@ -2021,7 +2049,7 @@
 </code></pre></div>
 <h3 id="presenter-unit-tests">Presenter Unit Tests<a class="headerlink" href="#presenter-unit-tests" title="Permanent link">&para;</a></h3>
 <p>Here’s a test to verify presenter emissions using the <code>Presenter.test()</code> helper. This function acts as a shorthand over Molecule + Turbine to give you a <code>CircuitReceiveTurbine.() -&gt; Unit</code> lambda.</p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Test</span><span class="w"> </span>
+<div class="highlight"><pre><span></span><code><span class="nd">@Test</span>
 <span class="kd">fun</span><span class="w"> </span><span class="nf">`present - emit loading state then list of favorites`</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runTest</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">favorites</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="n">Favorite</span><span class="p">(</span><span class="m">1L</span><span class="p">,</span><span class="w"> </span><span class="p">...))</span>
 
@@ -2035,8 +2063,8 @@
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>The same helper can be used when testing how the presenter responds to incoming events: </p>
-<div class="highlight"><pre><span></span><code><span class="nd">@Test</span><span class="w"> </span>
+<p>The same helper can be used when testing how the presenter responds to incoming events:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Test</span>
 <span class="kd">fun</span><span class="w"> </span><span class="nf">`present - navigate to favorite screen`</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runTest</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">repo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TestFavoritesRepository</span><span class="p">(</span><span class="n">Favorite</span><span class="p">(</span><span class="m">123L</span><span class="p">))</span>
 <span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">presenter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FavoritesPresenter</span><span class="p">(</span><span class="n">navigator</span><span class="p">,</span><span class="w"> </span><span class="n">repo</span><span class="p">)</span>
@@ -2063,7 +2091,7 @@
 <span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="nv">events</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TestEventSink</span><span class="o">&lt;</span><span class="n">FavoriteScreen</span><span class="p">.</span><span class="na">Event</span><span class="o">&gt;</span><span class="p">()</span>
 
 <span class="w">  </span><span class="n">composeTestRule</span><span class="p">.</span><span class="na">run</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">setContent</span><span class="w"> </span><span class="p">{</span><span class="w"> </span>
+<span class="w">    </span><span class="n">setContent</span><span class="w"> </span><span class="p">{</span>
 <span class="w">      </span><span class="c1">// bootstrap the UI in the desired state</span>
 <span class="w">      </span><span class="n">FavoritesList</span><span class="p">(</span>
 <span class="w">        </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FavoriteScreen</span><span class="p">.</span><span class="na">State</span><span class="p">.</span><span class="na">Results</span><span class="p">(</span><span class="n">favorites</span><span class="p">,</span><span class="w"> </span><span class="n">events</span><span class="p">)</span>

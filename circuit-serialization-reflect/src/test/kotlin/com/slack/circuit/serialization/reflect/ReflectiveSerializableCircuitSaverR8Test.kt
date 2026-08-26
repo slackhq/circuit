@@ -8,12 +8,15 @@ import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.screen.restorePopResult
 import com.slack.circuit.runtime.screen.restoreScreen
+import com.slack.circuit.serialization.CircuitSerializable
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlinx.serialization.Serializable
 
-@Serializable data class R8DataScreen(val value: String) : Screen
+private object R8Scope
+
+@CircuitSerializable(R8Scope::class) data class R8DataScreen(val value: String) : Screen
 
 @Serializable data object R8ObjectScreen : Screen
 

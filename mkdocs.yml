@@ -65,6 +65,7 @@ plugins:
         presenter-patterns.md: docs/presenter-patterns.md
         ui.md: docs/ui.md
         navigation.md: docs/navigation.md
+        navigation-persistence.md: docs/navigation-persistence.md
         navigation-navstack-migration.md: docs/navigation-navstack-migration.md
         overlays.md: docs/overlays.md
         shared-elements.md: docs/shared-elements.md
@@ -119,6 +120,7 @@ nav:
       - 'Factories': docs/factories.md
       - 'Navigation':
           - 'Usage': docs/navigation.md
+          - 'Saving navigation state': docs/navigation-persistence.md
           - 'NavStack migration': docs/navigation-navstack-migration.md
       - 'Overlays': docs/overlays.md
       - 'Shared Elements':

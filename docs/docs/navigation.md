@@ -8,6 +8,8 @@ For navigable contents, navigation becomes two parts:
 
 A new navigable content surface is handled via the `NavigableCircuitContent` functions. If you want to have custom behavior for when back is pressed on the root screen (i.e. `navStack.isAtRoot`), perform this in the lambda passed to `rememberCircuitNavigator`'s `onRootPop`.
 
+See [Saving navigation state](navigation-persistence.md) to choose how the stack persists its screens and results.
+
 ```kotlin
 setContent {
   CircuitCompositionLocals(circuit) {

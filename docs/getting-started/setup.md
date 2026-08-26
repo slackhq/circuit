@@ -26,7 +26,7 @@ val circuit = Circuit.Builder()
 
 This configuration can be rebuilt via `newBuilder()` and usually would live in your program's DI graph.
 
-Once you have a configuration ready, the simplest way to get going with Circuit is via `CircuitCompositionLocals`. This exposes the configuration and a `CircuitSaver` to child Circuit composables. It uses the saver configured on `Circuit`, then a saver inherited from an outer `ProvideCircuitSaver`, or creates a registry-backed default when neither is available. The [Screen guide](../docs/screen.md#saving-and-restoring) explains the available persistence strategies and explicit overrides.
+Once you have a configuration ready, the simplest way to get going with Circuit is via `CircuitCompositionLocals`. This exposes the configuration and a `CircuitSaver` to child Circuit composables. It uses the saver configured on `Circuit`, then a saver inherited from an outer `ProvideCircuitSaver`, or creates a registry-backed default when neither is available. See [Saving navigation state](../docs/navigation-persistence.md) for the available persistence strategies and explicit overrides.
 
 ```kotlin
 CircuitCompositionLocals(circuit) {

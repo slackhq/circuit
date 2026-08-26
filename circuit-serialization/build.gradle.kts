@@ -17,6 +17,14 @@ kotlin {
   // region KMP Targets
   android {
     namespace = "com.slack.circuit.serialization"
+    optimization.consumerKeepRules.apply {
+      publish = true
+      file(
+        layout.projectDirectory.file(
+          "src/commonJvmMain/resources/META-INF/proguard/circuit-serialization.pro"
+        )
+      )
+    }
     withHostTest {
       isIncludeAndroidResources = true
     }

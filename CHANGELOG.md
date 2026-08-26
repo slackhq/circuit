@@ -4,9 +4,12 @@ Changelog
 Unreleased
 ----------
 
-### Changed
+0.38.0
+------
 
-#### `Screen` and `PopResult` are no longer Parcelable
+_2026-08-26_
+
+### `Screen` and `PopResult` are no longer Parcelable
 
 `Screen` and `PopResult` no longer extend `Parcelable` on Android. Apps upgrading to this release should choose the persistence strategy that fits each type
 

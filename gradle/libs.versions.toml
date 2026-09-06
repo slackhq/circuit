@@ -217,7 +217,7 @@ rxjava = "io.reactivex.rxjava3:rxjava:3.1.12"
 # SavedState Multiplatform
 savedstate = { module = "org.jetbrains.androidx.savedstate:savedstate", version.ref = "jb-savedstate" }
 
-slf4jNop = "org.slf4j:slf4j-nop:2.0.18"
+slf4jNop = "org.slf4j:slf4j-nop:2.0.19"
 
 sqldelight-async = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqldelight" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }

@@ -7,14 +7,11 @@ Call `rememberAnsweringNavigator<R>` with the caller's `Navigator` and handle th
 
 ## 1. Define the result
 
-`PopResult` extends `Parcelable`, so results survive process death. `@Parcelize` is the easy way to
-satisfy that.
-
 ```kotlin
-@Parcelize
+@Serializable
 data object EditNameScreen : Screen
 
-@Parcelize
+@Serializable
 data class EditNameResult(val name: String) : PopResult
 ```
 

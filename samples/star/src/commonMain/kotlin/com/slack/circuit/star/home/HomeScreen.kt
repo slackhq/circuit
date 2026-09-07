@@ -50,7 +50,6 @@ import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.foundation.rememberCircuitNavigator
-import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -72,7 +71,6 @@ import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.AppScope
 import kotlin.math.roundToInt
 
-@Parcelize
 @CircuitSerializable(AppScope::class)
 data object HomeScreen : Screen {
 

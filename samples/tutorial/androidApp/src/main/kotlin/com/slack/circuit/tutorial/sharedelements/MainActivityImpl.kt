@@ -29,9 +29,9 @@ fun MainActivity.sharedElementsTutorialOnCreate() {
       .build()
   setContent {
     MaterialTheme {
-      val backStack = rememberSaveableBackStack(root = InboxScreen, circuitSaver = circuitSaver)
-      val navigator = rememberCircuitNavigator(backStack)
       CircuitCompositionLocals(circuit) {
+        val backStack = rememberSaveableBackStack(root = InboxScreen)
+        val navigator = rememberCircuitNavigator(backStack)
         SharedElementTransitionLayout {
           NavigableCircuitContent(navigator = navigator, backStack = backStack)
         }

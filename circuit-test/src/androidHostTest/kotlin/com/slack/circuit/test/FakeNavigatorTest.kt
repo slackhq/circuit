@@ -3,7 +3,7 @@
 package com.slack.circuit.test
 
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.test.FakeNavigator.GoToEvent
 import com.slack.circuit.test.FakeNavigator.ResetRootEvent
 import kotlinx.coroutines.test.runTest
@@ -60,8 +60,8 @@ class FakeNavigatorTest {
   }
 }
 
-@Parcelize private data object TestScreen1 : Screen
+@Parcelize private data object TestScreen1 : ParcelableScreen
 
-@Parcelize private data object TestScreen2 : Screen
+@Parcelize private data object TestScreen2 : ParcelableScreen
 
-@Parcelize private data object TestScreen3 : Screen
+@Parcelize private data object TestScreen3 : ParcelableScreen

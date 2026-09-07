@@ -44,7 +44,6 @@ public final class com/slack/circuit/backstack/SaveableBackStack : com/slack/cir
 
 public final class com/slack/circuit/backstack/SaveableBackStack$Companion {
 	public final fun Saver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Landroidx/compose/runtime/saveable/Saver;
-	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
 public final class com/slack/circuit/backstack/SaveableBackStack$Record : com/slack/circuit/backstack/BackStack$Record {
@@ -67,7 +66,6 @@ public final class com/slack/circuit/backstack/SaveableBackStack$Record : com/sl
 
 public final class com/slack/circuit/backstack/SaveableBackStack$Record$Companion {
 	public final fun Saver (Lcom/slack/circuit/runtime/screen/CircuitSaver;)Landroidx/compose/runtime/saveable/Saver;
-	public final fun getSaver ()Landroidx/compose/runtime/saveable/Saver;
 }
 
 public final class com/slack/circuit/backstack/SaveableBackStackKt {

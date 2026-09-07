@@ -4,6 +4,76 @@ Changelog
 Unreleased
 ----------
 
+0.38.0
+------
+
+_2026-08-26_
+
+### `Screen` and `PopResult` are no longer Parcelable
+
+`Screen` and `PopResult` no longer extend `Parcelable` on Android. Apps upgrading to this release should choose the persistence strategy that fits each type
+
+- **Already using kotlinx-serialization**
+  - Keep the existing `SerializableCircuitSaver` or `ReflectiveSerializableCircuitSaver` setup. Remove `@Parcelize`, and use `Screen` or `PopResult` directly instead of the Parcelable marker interfaces.
+- **Keep Android Parcelable persistence**
+  - Retain `@Parcelize` and change the type to implement `ParcelableScreen` or `ParcelablePopResult`. The registry-backed default saver accepts these types on Android.
+- **Migrate gradually**
+  - Put the serializing saver first and retain the registry-backed saver as a fallback for Parcelable types:
+
+    ```kotlin
+    val circuit =
+      Circuit.Builder()
+        .setCircuitSaver { fallbackSaver ->
+          serializableSaver + fallbackSaver
+        }
+        .build()
+    ```
+
+- **Do not persist navigation state**
+  - Configure `CircuitSaver.NoOp`. Restored stacks start again from their initial value.
+
+See [Saving navigation state](https://slackhq.github.io/circuit/navigation-persistence/) for complete setup and migration examples.
+
+Saving an unsupported value now fails instead of silently dropping it. To intentionally drop values that no earlier saver supports, append `CircuitSaver.Dropping { value -> ... }` to the saver chain. Use `CircuitSaver.NoOp` as the final saver when dropped values do not need to be reported.
+
+### New
+
+- `rememberDefaultCircuitSaver()` creates a saver backed by the current Compose `SaveableStateRegistry`. `CircuitCompositionLocals(circuit)` uses it automatically when no static or inherited saver is available.
+- Combine `CircuitSaver` instances with `+`. Savers are tried from left to right, and the first saver that supports a value owns the save or restore operation.
+- `Circuit.Builder.setCircuitSaver { fallbackSaver -> ... }` combines an app saver with the saver inherited from the composition or created from its registry.
+- Custom savers can override `canSave` and `canRestore` to participate in a composite.
+
+### Removed
+
+- Removed `DefaultCircuitSaver`. `CircuitCompositionLocals(circuit)` now creates a registry-backed saver when needed. Call `rememberDefaultCircuitSaver()` when a saver must be passed explicitly.
+- Removed the deprecated companion `Saver` properties from `SaveableBackStack` and `SaveableNavStack`. Use the `Saver(CircuitSaver)` functions.
+
+### Fixed
+
+- Fixed R8 failures in apps using `@CircuitSerializable` or `@CircuitInject` without Hilt on the runtime classpath.
+
+0.37.1
+------
+
+_2026-08-22_
+
+### New
+
+- **circuit-retained:** Add experimental `RetainedValuesStoreProvider` and `RetainedValuesStoreOwner` APIs for preserving AndroidX `retain` values across composition recreation on _non-Android_ platforms. This is temporary cover until androidx's implementation offers a non-android solution. See the [first-party `retain` documentation](circuit-retained/README.md#first-party-retain-interop).
+- **circuit-retained:** Add `CircuitRetainedSettings.enforceRetainObserverCompatibility`, an opt-in check that retained values implementing `RememberObserver` also implement `RetainObserver`.
+  - Circuit's internal navigation observer now passes this check.
+
+### Changed
+
+- **circuit-retained:** Compose's first-party retain backing is now enabled by default on Android. Set `CircuitRetainedSettings.useFirstParty = false` before the first composition to use the previous `ViewModel`-based backing. Other platforms remain opt-in.
+
+0.37.0
+------
+
+_2026-08-22_
+
+Ignore this release, it was accidentally cut with some stale branch changes!
+
 0.36.1
 ------
 
@@ -20,7 +90,7 @@ _2026-08-05_
 
 ### New
 
-- `circuit-codegen` can now generate kotlinx serialization registrations for `Screen` and `PopResult` types. Annotate each type with `@CircuitSerializable(scope)`. The annotation supplies the default kotlinx serializer, and `circuit-codegen` contributes a registration through the selected DI framework. Pass the injected `Set<CircuitSerializerRegistration>` to `SerializableCircuitSaver`.
+- `circuit-codegen` can now generate kotlinx-serialization registrations for `Screen` and `PopResult` types. Annotate each type with `@CircuitSerializable(scope)`. The annotation supplies the default kotlinx serializer, and `circuit-codegen` contributes a registration through the selected DI framework. Pass the injected `Set<CircuitSerializerRegistration>` to `SerializableCircuitSaver`.
 
   A Metro setup looks like this:
 

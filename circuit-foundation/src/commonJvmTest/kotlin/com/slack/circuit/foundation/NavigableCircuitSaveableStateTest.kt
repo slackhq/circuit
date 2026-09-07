@@ -53,7 +53,8 @@ class NavigableCircuitSaveableStateTest {
         )
 
       setContent {
-        CircuitCompositionLocals(circuit) {
+        val circuitSaver = rememberDefaultCircuitSaver()
+        CircuitCompositionLocals(circuit, circuitSaver) {
           val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
           val navigator =
             rememberCircuitNavigator(
@@ -124,7 +125,8 @@ class NavigableCircuitSaveableStateTest {
         )
 
       setContent {
-        CircuitCompositionLocals(circuit) {
+        val circuitSaver = rememberDefaultCircuitSaver()
+        CircuitCompositionLocals(circuit, circuitSaver) {
           val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
           val navigator =
             rememberCircuitNavigator(
@@ -220,14 +222,15 @@ class NavigableCircuitSaveableStateTest {
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Saveable)
     val saveableStateRegistry = SaveableStateRegistry(emptyMap(), { true })
     composeTestRule.setContent {
-      CircuitCompositionLocals(circuit) {
-        val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
-        val navigator =
-          rememberCircuitNavigator(
-            backStack = backStack,
-            onRootPop = {}, // no-op for tests
-          )
-        CompositionLocalProvider(LocalSaveableStateRegistry provides saveableStateRegistry) {
+      CompositionLocalProvider(LocalSaveableStateRegistry provides saveableStateRegistry) {
+        val circuitSaver = rememberDefaultCircuitSaver()
+        CircuitCompositionLocals(circuit, circuitSaver) {
+          val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
+          val navigator =
+            rememberCircuitNavigator(
+              backStack = backStack,
+              onRootPop = {}, // no-op for tests
+            )
           NavigableCircuitContent(navigator = navigator, backStack = backStack)
         }
       }
@@ -281,14 +284,15 @@ class NavigableCircuitSaveableStateTest {
     lateinit var backStack: SaveableBackStack
 
     composeTestRule.setContent {
-      CircuitCompositionLocals(circuit) {
-        backStack = rememberSaveableBackStack(TestScreen.ScreenA)
-        val navigator =
-          rememberCircuitNavigator(
-            backStack = backStack,
-            onRootPop = {}, // no-op for tests
-          )
-        CompositionLocalProvider(LocalSaveableStateRegistry provides saveableStateRegistry) {
+      CompositionLocalProvider(LocalSaveableStateRegistry provides saveableStateRegistry) {
+        val circuitSaver = rememberDefaultCircuitSaver()
+        CircuitCompositionLocals(circuit, circuitSaver) {
+          backStack = rememberSaveableBackStack(TestScreen.ScreenA)
+          val navigator =
+            rememberCircuitNavigator(
+              backStack = backStack,
+              onRootPop = {}, // no-op for tests
+            )
           NavigableCircuitContent(navigator = navigator, backStack = backStack)
         }
       }

@@ -16,6 +16,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -30,6 +31,7 @@ import com.google.common.truth.Truth.assertThat
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.overlay.ContentWithOverlays
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.sample.coil.test.CoilRule
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuit.star.common.Strings
@@ -214,6 +216,7 @@ class PetDetailUiTest {
   @Test
   @Config(qualifiers = "w640dp-h360dp-land")
   fun petDetail_scrollsCompactLandscapeDetails() {
+    val descriptionParagraph = "Baxter is looking for a quiet home and a patient family."
     val success =
       Full(
         id = 1,
@@ -223,7 +226,7 @@ class PetDetailUiTest {
         name = "Baxter",
         descriptionMarkdown =
           buildString {
-            repeat(30) { append("Baxter is looking for a quiet home and a patient family.\n\n") }
+            repeat(30) { append("$descriptionParagraph\n\n") }
           },
         tags = listOf("dog"),
         attributes = emptyList(),
@@ -234,6 +237,10 @@ class PetDetailUiTest {
     composeTestRule.run {
       setTestContent(circuit) { ContentWithOverlays { PetDetail(success) } }
 
+      // Markdown parsing runs off the main thread, so wait for its rendered content first.
+      waitUntil(timeoutMillis = 5_000) {
+        onAllNodesWithText(descriptionParagraph).fetchSemanticsNodes().isNotEmpty()
+      }
       onNodeWithTag(FULL_BIO_TAG).performScrollTo().assertIsDisplayed()
     }
   }
@@ -335,6 +342,8 @@ private fun ComposeContentTestRule.setTestContent(
   content: @Composable () -> Unit,
 ) {
   setContent {
-    PreviewSharedElementTransitionLayout { CircuitCompositionLocals(circuit) { content() } }
+    PreviewSharedElementTransitionLayout {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) { content() }
+    }
   }
 }

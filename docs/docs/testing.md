@@ -37,7 +37,7 @@ Testing a Circuit Presenter and UI is a breeze! Consider the following example:
 ```kotlin
 data class Favorite(id: Long, ...)
 
-@Parcelable
+@Serializable
 data object FavoritesScreen : Screen {
   sealed interface State : CircuitUiState {
     data object Loading : State
@@ -47,7 +47,7 @@ data object FavoritesScreen : Screen {
       val eventSink: (Event) -> Unit
     ) : State
   }
-  
+
   sealed interface Event : CircuitUiEvent {
     data class ClickFavorite(id: Long): Event
   }
@@ -61,7 +61,7 @@ class FavoritesPresenter @Inject constructor(
     val favorites by produceState<List<Favorites>?>(null) {
       value = repo.getFavorites()
     }
-    
+
     return when {
       favorites == null -> Loading
       favorites.isEmpty() -> NoFavorites
@@ -99,7 +99,7 @@ private fun Favorite(favorite: Favorite, eventSink: (FavoritesScreen.Event) -> U
     onClick = { eventSink(ClickFavorite(favorite.id)) }
   ) {
     Image(
-      drawable = favorite.drawable, 
+      drawable = favorite.drawable,
       contentDescription = stringResource(R.string.favorite_image_desc)
     )
     Text(text = favorite.name)
@@ -113,13 +113,13 @@ private fun Favorite(favorite: Favorite, eventSink: (FavoritesScreen.Event) -> U
 Here’s a test to verify presenter emissions using the `Presenter.test()` helper. This function acts as a shorthand over Molecule + Turbine to give you a `CircuitReceiveTurbine.() -> Unit` lambda.
 
 ```kotlin
-@Test 
+@Test
 fun `present - emit loading state then list of favorites`() = runTest {
   val favorites = listOf(Favorite(1L, ...))
 
   val repo = TestFavoritesRepository(favorites)
   val presenter = FavoritesPresenter(navigator, repo)
-  
+
   presenter.test {
     assertThat(awaitItem()).isEqualTo(FavoritesScreen.State.Loading)
     val resultsItem = awaitItem() as Results
@@ -128,23 +128,23 @@ fun `present - emit loading state then list of favorites`() = runTest {
 }
 ```
 
-The same helper can be used when testing how the presenter responds to incoming events: 
+The same helper can be used when testing how the presenter responds to incoming events:
 
 ```kotlin
-@Test 
+@Test
 fun `present - navigate to favorite screen`() = runTest {
   val repo = TestFavoritesRepository(Favorite(123L))
   val presenter = FavoritesPresenter(navigator, repo)
-  
+
   presenter.test {
     assertThat(awaitItem()).isEqualTo(FavoritesScreen.State.Loading)
     val resultsItem = awaitItem() as Results
     assertThat(resultsItem.favorites).isEqualTo(favorites)
     val clickFavorite = FavoriteScreen.Event.ClickFavorite(123L)
-    
+
     // simulate user tapping favorite in UI
     resultsItem.eventSink(clickFavorite)
-    
+
     assertThat(navigator.awaitNextScreen()).isEqualTo(FavoriteScreen(clickFavorite.id))
   }
 }
@@ -163,7 +163,7 @@ fun favoritesList_show_favorites_for_result_state() = runTest {
   val events = TestEventSink<FavoriteScreen.Event>()
 
   composeTestRule.run {
-    setContent { 
+    setContent {
       // bootstrap the UI in the desired state
       FavoritesList(
         state = FavoriteScreen.State.Results(favorites, events)
@@ -175,7 +175,7 @@ fun favoritesList_show_favorites_for_result_state() = runTest {
     onAllNodesWithTag("favorite").assertCountEquals(1)
       .get(1)
       .performClick()
-    
+
     events.assertEvent(FavoriteScreen.Event.ClickFavorite(1L))
   }
 }

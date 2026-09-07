@@ -4,13 +4,16 @@ package com.slack.circuit.serialization
 
 import androidx.savedstate.SavedState
 import androidx.savedstate.read
+import androidx.savedstate.savedState
 import androidx.savedstate.serialization.ClassDiscriminatorMode
 import androidx.savedstate.serialization.SavedStateConfiguration
 import androidx.savedstate.serialization.decodeFromSavedState
 import androidx.savedstate.serialization.encodeToSavedState
 import com.slack.circuit.runtime.screen.CircuitSaveable
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.plus
 import com.slack.circuit.runtime.screen.restorePopResult
 import com.slack.circuit.runtime.screen.restoreScreen
 import kotlin.test.Test
@@ -69,6 +72,8 @@ object CustomStringScreenSerializer : KSerializer<CustomStringScreen> {
 }
 
 data class UnregisteredScreen(val value: String) : Screen
+
+data class FailingScreen(val value: String) : Screen
 
 class SerializableCircuitSaverTest {
 
@@ -337,6 +342,72 @@ class SerializableCircuitSaverTest {
   }
 
   @Test
+  fun composite_uses_registered_saver_before_fallback() {
+    val fallback = RecordingCircuitSaver(saveResult = "fallback")
+    val composite = saver + fallback
+    val screen = StringScreen("hello")
+
+    val saved = assertIs<SavedState>(composite.save(screen))
+
+    assertEquals(screen, composite.restoreScreen<StringScreen>(saved))
+    assertTrue(fallback.savedValues.isEmpty())
+    assertEquals(0, fallback.restoreCalls)
+  }
+
+  @Test
+  fun composite_falls_back_for_unregistered_values() {
+    val screen = UnregisteredScreen("fallback")
+    val fallback = RecordingCircuitSaver(saveResult = "fallback", restoreResult = screen)
+    val composite = saver + fallback
+
+    assertEquals("fallback", composite.save(screen))
+    assertEquals(listOf<CircuitSaveable>(screen), fallback.savedValues)
+    assertEquals(screen, composite.restoreScreen<UnregisteredScreen>("fallback"))
+    assertEquals(1, fallback.restoreCalls)
+  }
+
+  @Test
+  fun composite_does_not_retry_a_registered_save_error() {
+    val registeredSaver =
+      SerializableCircuitSaver(listOf(registration(FailingScreen::class, FailingScreenSerializer)))
+    val fallback = RecordingCircuitSaver(saveResult = "fallback")
+    val composite = registeredSaver + fallback
+
+    assertFailsWith<IllegalArgumentException> { composite.save(FailingScreen("failure")) }
+    assertTrue(fallback.savedValues.isEmpty())
+  }
+
+  @Test
+  fun composite_claims_raw_values_before_fallback() {
+    val fallback = RecordingCircuitSaver()
+    val composite = saver + fallback
+    val screen = UnregisteredScreen("legacy")
+
+    assertEquals(screen, composite.restoreScreen<UnregisteredScreen>(screen))
+    assertEquals(0, fallback.restoreCalls)
+  }
+
+  @Test
+  fun composite_reports_a_registered_restore_error_once() {
+    val errors = mutableListOf<Throwable>()
+    val registeredSaver =
+      SerializableCircuitSaver(
+        registrations = listOf(registration(StringScreen::class, StringScreen.serializer())),
+        onRestoreError = errors::add,
+      )
+    val fallback = RecordingCircuitSaver()
+    val composite = registeredSaver + fallback
+    val saved = savedState {
+      putString("type", StringScreen.serializer().descriptor.serialName)
+      putSavedState("value", savedState {})
+    }
+
+    assertNull(composite.restoreScreen<StringScreen>(saved))
+    assertEquals(1, errors.size)
+    assertEquals(0, fallback.restoreCalls)
+  }
+
+  @Test
   fun screen_cannot_restore_as_pop_result() {
     val screen = StringScreen("hello")
     val saved = assertNotNull(saver.save(screen))
@@ -413,6 +484,19 @@ class SerializableCircuitSaverTest {
 private object AlternateStringScreenSerializer :
   KSerializer<StringScreen> by StringScreen.serializer()
 
+private object FailingScreenSerializer : KSerializer<FailingScreen> {
+  override val descriptor: SerialDescriptor =
+    PrimitiveSerialDescriptor("FailingScreen", PrimitiveKind.STRING)
+
+  override fun serialize(encoder: Encoder, value: FailingScreen) {
+    throw SerializationException("Expected test failure.")
+  }
+
+  override fun deserialize(decoder: Decoder): FailingScreen {
+    throw SerializationException("Expected test failure.")
+  }
+}
+
 private object DefaultScreenPolymorphicSerializer : KSerializer<Screen> {
   override val descriptor: SerialDescriptor = DefaultScreen.serializer().descriptor
 
@@ -422,6 +506,28 @@ private object DefaultScreenPolymorphicSerializer : KSerializer<Screen> {
 
   override fun deserialize(decoder: Decoder): Screen {
     return decoder.decodeSerializableValue(DefaultScreen.serializer())
+  }
+}
+
+private class RecordingCircuitSaver(
+  private val saveResult: Any? = null,
+  private val restoreResult: CircuitSaveable? = null,
+) : CircuitSaver() {
+  val savedValues = mutableListOf<CircuitSaveable>()
+  var restoreCalls = 0
+
+  override fun save(value: CircuitSaveable): Any? {
+    savedValues += value
+    return saveResult
+  }
+
+  override fun canSave(value: CircuitSaveable): Boolean = true
+
+  override fun canRestore(saved: Any): Boolean = true
+
+  protected override fun restore(saved: Any): CircuitSaveable? {
+    restoreCalls++
+    return restoreResult
   }
 }
 

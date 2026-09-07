@@ -22,7 +22,7 @@ Use SubCircuit when you need nested, reusable UI components that:
 
 - Don't need direct navigation access
 - Delegate cross-cutting concerns (navigation, dialogs) to a parent
-- Don't require `Parcelable` screen serialization
+- Are not stored as navigation records
 - Compose into larger Circuit screens as building blocks
 
 Common use cases include list items that trigger navigation, embedded widgets reused across features, and renderable UI blocks that emit events to their container.
@@ -32,7 +32,6 @@ Common use cases include list items that trigger navigation, embedded widgets re
 | Aspect | SubCircuit | Circuit |
 |--------|------------|---------|
 | Navigation | Delegated via `outerEventSink` | Direct via `Navigator` |
-| Screen serialization | None required | `Parcelable` |
 | Use case | Nested/embedded components | Top-level screens |
 | DI wiring | `@SubCircuitInject` | `@CircuitInject` |
 
@@ -59,16 +58,16 @@ Common use cases include list items that trigger navigation, embedded widgets re
 
 ## Core Types
 
-| Type | Description |
-|------|-------------|
-| `SubScreen<OuterEvent>` | Marker interface for screens (no `Parcelable` requirement) |
-| `SubPresenter<OuterEvent, State>` | Presenter that receives `outerEventSink` |
-| `SubUi<State>` | UI component that renders state |
-| `SubCircuit` | Registry for presenter and UI factories |
-| `SubCircuitContent` | Composable that renders a SubScreen |
-| `SubCircuitOuterEvent` | Marker for events delegated to the outer component |
-| `SubCircuitUiState` | Marker for UI state types |
-| `@SubCircuitInject` | Annotation for code generation |
+| Type                              | Description                                        |
+|-----------------------------------|----------------------------------------------------|
+| `SubScreen<OuterEvent>`           | Marker interface for embedded components           |
+| `SubPresenter<OuterEvent, State>` | Presenter that receives `outerEventSink`           |
+| `SubUi<State>`                    | UI component that renders state                    |
+| `SubCircuit`                      | Registry for presenter and UI factories            |
+| `SubCircuitContent`               | Composable that renders a SubScreen                |
+| `SubCircuitOuterEvent`            | Marker for events delegated to the outer component |
+| `SubCircuitUiState`               | Marker for UI state types                          |
+| `@SubCircuitInject`               | Annotation for code generation                     |
 
 ## Usage
 

@@ -14,13 +14,11 @@ import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.serializer
+import kotlinx.serialization.serializerOrNull
 
 /**
  * Returns a [CircuitSaver] that persists `@Serializable` [Screen]s and [PopResult]s with
  * kotlinx-serialization, resolving serializers reflectively from the saved class name.
- *
- * In 0.35, Android screens and results must still be `Parcelable`, even though this saver stores
- * serialized `SavedState`. That Android supertype requirement will be removed in a future release.
  *
  * Unlike `SerializableCircuitSaver`, this requires no polymorphic registration in [configuration]'s
  * `serializersModule`. It relies on JVM reflection (`Class.forName`), so it is only available on
@@ -52,19 +50,22 @@ private class ReflectiveCircuitSaver(
 
   override fun save(value: CircuitSaveable): Any? = encode(value)
 
+  protected override fun canSave(value: CircuitSaveable): Boolean =
+    serializerOrNull(value.javaClass) != null
+
+  protected override fun canRestore(saved: Any): Boolean =
+    saved is CircuitSaveable ||
+      (saved as? SavedState)?.read { getStringOrNull(TYPE_KEY) != null } == true
+
   protected override fun restore(saved: Any): CircuitSaveable? =
     saved as? CircuitSaveable ?: decode(saved) as? CircuitSaveable
 
   private fun encode(value: Any): SavedState {
     val serializer =
-      try {
-        serializer(value.javaClass)
-      } catch (e: SerializationException) {
-        throw IllegalArgumentException(
-          "Unable to save ${value::class}. Ensure it is @Serializable.",
-          e,
+      serializerOrNull(value.javaClass)
+        ?: throw IllegalArgumentException(
+          "Unable to save ${value::class}. Ensure it is @Serializable."
         )
-      }
     val encoded = encodeToSavedState(serializer, value, configuration)
     return savedState {
       putString(TYPE_KEY, value.javaClass.name)

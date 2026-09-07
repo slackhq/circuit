@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.runtime.screen.Screen
 import kotlinx.parcelize.Parcelize
 
@@ -34,7 +35,8 @@ public interface AndroidScreen : Screen
  * of this.
  */
 @Parcelize
-public data class IntentScreen(val intent: Intent, val options: Bundle? = null) : AndroidScreen {
+public data class IntentScreen(val intent: Intent, val options: Bundle? = null) :
+  AndroidScreen, ParcelableScreen {
   public fun startWith(context: Context): Boolean {
     context.startActivity(intent, options)
     return true

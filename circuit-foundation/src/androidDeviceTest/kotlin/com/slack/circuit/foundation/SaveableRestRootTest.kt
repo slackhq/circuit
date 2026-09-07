@@ -73,7 +73,10 @@ class SaveableRestRootTest {
   private fun ComposeContentTestRule.setTestContent(content: @Composable () -> Unit) {
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Saveable)
     setContent {
-      PreviewSharedElementTransitionLayout { CircuitCompositionLocals(circuit) { content() } }
+      val circuitSaver = rememberDefaultCircuitSaver()
+      PreviewSharedElementTransitionLayout {
+        CircuitCompositionLocals(circuit, circuitSaver) { content() }
+      }
     }
   }
 }

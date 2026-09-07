@@ -58,7 +58,7 @@ class NavigationTest {
       lateinit var navStack: NavStack<out NavStack.Record>
       lateinit var navigator: Navigator
       stateRestorationTester.setTestContent(tabs, circuitSaver) {
-        navStack = rememberSaveableNavStack(tabs.first(), circuitSaver)
+        navStack = rememberSaveableNavStack(tabs.first())
         navigator = rememberCircuitNavigator(navStack)
         ContentScaffold(navStack, navigator, tabs, Modifier.fillMaxSize())
       }
@@ -158,7 +158,9 @@ class NavigationTest {
         .setAnimatedNavDecoratorFactory(CrossFadeNavDecoratorFactory(ANIMATION_DURATION))
         .build()
     setContent {
-      PreviewSharedElementTransitionLayout { CircuitCompositionLocals(circuit) { content() } }
+      PreviewSharedElementTransitionLayout {
+        CircuitCompositionLocals(circuit, circuitSaver) { content() }
+      }
     }
   }
 }

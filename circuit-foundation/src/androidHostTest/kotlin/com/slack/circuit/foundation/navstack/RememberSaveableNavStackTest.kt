@@ -6,6 +6,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.StateRestorationTester
 import androidx.compose.ui.test.v2.runComposeUiTest
 import com.slack.circuit.foundation.ComposeUiTestRunner
+import com.slack.circuit.foundation.rememberDefaultCircuitSaver
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.navigation.navStackListOf
@@ -28,17 +29,17 @@ class RememberSaveableNavStackTest {
     restorationTester.setContent {
       navStack =
         rememberSaveableNavStack(
-          root = TestScreen.RootAlpha,
+          root = PlainRootScreen,
           circuitSaver = CircuitSaver.NoOp,
         )
     }
-    navStack.push(TestScreen.ScreenA)
-    navStack.push(TestScreen.ScreenB)
+    navStack.push(PlainScreenA)
+    navStack.push(PlainScreenB)
 
     restorationTester.emulateSaveAndRestore()
 
     assertEquals(
-      navStackListOf<Screen>(TestScreen.RootAlpha),
+      navStackListOf<Screen>(PlainRootScreen),
       navStack.snapshot()?.transform { it.screen },
     )
   }
@@ -48,7 +49,10 @@ class RememberSaveableNavStackTest {
   fun test_saveable_save_and_restore() = runComposeUiTest {
     val restorationTester = StateRestorationTester(this)
     lateinit var navStack: NavStack<*>
-    restorationTester.setContent { navStack = rememberSaveableNavStack(TestScreen.RootAlpha) }
+    restorationTester.setContent {
+      val circuitSaver = rememberDefaultCircuitSaver()
+      navStack = rememberSaveableNavStack(TestScreen.RootAlpha, circuitSaver)
+    }
     navStack.push(TestScreen.ScreenA)
     navStack.push(TestScreen.ScreenB)
     navStack.backward()
@@ -76,7 +80,10 @@ class RememberSaveableNavStackTest {
         activeItem = TestScreen.ScreenA,
         backwardItems = listOf(TestScreen.RootBeta, TestScreen.RootAlpha),
       )
-    restorationTester.setContent { navStack = rememberSaveableNavStack(navStackList) }
+    restorationTester.setContent {
+      val circuitSaver = rememberDefaultCircuitSaver()
+      navStack = rememberSaveableNavStack(navStackList, circuitSaver)
+    }
 
     // Verify the items are set correctly
     assertEquals(TestScreen.ScreenA, navStack.currentRecord?.screen)
@@ -98,7 +105,10 @@ class RememberSaveableNavStackTest {
   fun test_saveable_save_and_restore_with_navstack_state() = runComposeUiTest {
     val restorationTester = StateRestorationTester(this)
     lateinit var navStack: NavStack<*>
-    restorationTester.setContent { navStack = rememberSaveableNavStack(TestScreen.RootAlpha) }
+    restorationTester.setContent {
+      val circuitSaver = rememberDefaultCircuitSaver()
+      navStack = rememberSaveableNavStack(TestScreen.RootAlpha, circuitSaver)
+    }
 
     navStack.push(TestScreen.ScreenA)
     navStack.push(TestScreen.ScreenB)
@@ -129,3 +139,9 @@ class RememberSaveableNavStackTest {
     assertEquals(expectedState, snapshotState)
   }
 }
+
+private data object PlainRootScreen : Screen
+
+private data object PlainScreenA : Screen
+
+private data object PlainScreenB : Screen

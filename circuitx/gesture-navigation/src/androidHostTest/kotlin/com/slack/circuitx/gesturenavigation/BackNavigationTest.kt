@@ -31,6 +31,7 @@ import com.slack.circuit.internal.test.TestState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
 import org.junit.Rule
@@ -50,7 +51,7 @@ class BackNavigationTest(private val androidNavigator: Boolean) {
     composeTestRule.run {
       val circuit = createTestBackCircuit()
       setContent {
-        CircuitCompositionLocals(circuit) {
+        CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
           val backStack = rememberSaveableBackStack(TestScreen.RootAlpha)
           val navigator: Navigator
           if (androidNavigator) {

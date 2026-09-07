@@ -10,7 +10,7 @@ public abstract interface class com/slack/circuitx/android/AndroidScreenStarter 
 	public abstract fun start (Lcom/slack/circuitx/android/AndroidScreen;)Z
 }
 
-public final class com/slack/circuitx/android/IntentScreen : com/slack/circuitx/android/AndroidScreen {
+public final class com/slack/circuitx/android/IntentScreen : com/slack/circuitx/android/AndroidScreen, com/slack/circuit/runtime/screen/ParcelableScreen {
 	public static final field $stable I
 	public static final field CREATOR Landroid/os/Parcelable$Creator;
 	public fun <init> (Landroid/content/Intent;Landroid/os/Bundle;)V

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.inbox.home
 
-import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
@@ -12,7 +11,6 @@ import com.slack.circuit.serialization.CircuitSerializable
 import dev.zacsweers.metro.AppScope
 
 /** Root screen for the adaptive inbox surface. */
-@Parcelize
 @CircuitSerializable(AppScope::class)
 data object InboxScreen : Screen {
   data class State(

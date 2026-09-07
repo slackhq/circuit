@@ -36,11 +36,13 @@ kotlin {
   js {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
+    binaries.executable()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
+    binaries.executable()
   }
   // endregion
 
@@ -87,7 +89,13 @@ kotlin {
       implementation(libs.truth)
     }
 
-    jvmTest { dependencies { commonJvmTest() } }
+    jvmTest {
+      dependencies {
+        commonJvmTest()
+        implementation(libs.compose.ui.test)
+        implementation(compose.desktop.currentOs)
+      }
+    }
 
     getByName("androidDeviceTest") {
       dependencies {

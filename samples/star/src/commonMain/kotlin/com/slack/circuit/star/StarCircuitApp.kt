@@ -19,13 +19,10 @@ import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.rememberNavigationEventDispatcherOwner
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
-import com.slack.circuit.foundation.Circuit
-import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.overlay.ContentWithOverlays
 import com.slack.circuit.runtime.Navigator
-import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
@@ -67,10 +64,8 @@ private class StarAppStateImpl(
 
 @Composable
 fun rememberStarAppState(
-  circuitSaver: CircuitSaver,
   useDarkTheme: Boolean = isSystemInDarkTheme(),
-  backStack: BackStack<*> =
-    rememberSaveableBackStack(listOf(HomeScreen), circuitSaver = circuitSaver),
+  backStack: BackStack<*> = rememberSaveableBackStack(listOf(HomeScreen)),
   onRootPop: (PopResult?) -> Unit = {},
   navigator: Navigator = rememberCircuitNavigator(backStack, onRootPop = onRootPop),
 ): StarAppState {
@@ -103,23 +98,20 @@ fun rememberStarAppState(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun StarCircuitApp(
-  circuit: Circuit,
   modifier: Modifier = Modifier,
-  state: StarAppState = rememberStarAppState(requireNotNull(circuit.circuitSaver)),
+  state: StarAppState = rememberStarAppState(),
 ) {
   StarTheme(state.useDarkTheme) {
     // TODO why isn't the windowBackground enough so we don't need to do this?
     Surface(modifier, color = MaterialTheme.colorScheme.background) {
-      CircuitCompositionLocals(circuit) {
-        ProvideNavigationEventDispatcherOwnerIfNeeded {
-          SharedElementTransitionLayout {
-            ContentWithOverlays {
-              NavigableCircuitContent(
-                navigator = state.navigator,
-                backStack = state.backStack,
-                decoratorFactory = remember { GestureNavigationDecorationFactory() },
-              )
-            }
+      ProvideNavigationEventDispatcherOwnerIfNeeded {
+        SharedElementTransitionLayout {
+          ContentWithOverlays {
+            NavigableCircuitContent(
+              navigator = state.navigator,
+              backStack = state.backStack,
+              decoratorFactory = remember { GestureNavigationDecorationFactory() },
+            )
           }
         }
       }

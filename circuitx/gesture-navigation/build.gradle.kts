@@ -23,11 +23,13 @@ kotlin {
   js {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser { testTask { enabled = false } }
+    binaries.executable()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser { testTask { enabled = false } }
+    binaries.executable()
   }
   // endregion
 

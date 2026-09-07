@@ -10,6 +10,7 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.tacos.repository.IngredientsRepositoryImpl
@@ -31,7 +32,9 @@ class MainActivity : AppCompatActivity() {
         .build()
 
     setContent {
-      TacoTheme { CircuitCompositionLocals(circuit) { CircuitContent(OrderTacosScreen) } }
+      TacoTheme {
+        CircuitCompositionLocals(circuit, CircuitSaver.NoOp) { CircuitContent(OrderTacosScreen) }
+      }
     }
   }
 }

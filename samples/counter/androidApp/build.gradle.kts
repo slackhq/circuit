@@ -3,7 +3,6 @@
 plugins {
   alias(libs.plugins.agp.application)
   alias(libs.plugins.kotlin.plugin.compose)
-  alias(libs.plugins.kotlin.plugin.parcelize)
   id("circuit.base")
 }
 

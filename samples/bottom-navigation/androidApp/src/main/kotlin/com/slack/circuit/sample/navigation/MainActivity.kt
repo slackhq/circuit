@@ -46,17 +46,17 @@ class MainActivity : AppCompatActivity() {
     val circuit = buildCircuitForTabs(tabs, circuitSaver)
     setContent {
       MaterialTheme {
-        val navStack = rememberSaveableNavStack(tabs.first(), circuitSaver)
-        val navigator = rememberCircuitNavigator(navStack = navStack)
-        // Build the delegate Navigator.
-        val interceptingNavigator =
-          rememberInterceptingNavigator(
-            navigator = navigator,
-            interceptors = interceptors,
-            eventListeners = eventListeners,
-            notifier = notifier,
-          )
         CircuitCompositionLocals(circuit) {
+          val navStack = rememberSaveableNavStack(tabs.first())
+          val navigator = rememberCircuitNavigator(navStack = navStack)
+          // Build the delegate Navigator.
+          val interceptingNavigator =
+            rememberInterceptingNavigator(
+              navigator = navigator,
+              interceptors = interceptors,
+              eventListeners = eventListeners,
+              notifier = notifier,
+            )
           ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
         }
       }

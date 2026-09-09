@@ -4,16 +4,16 @@ package com.slack.circuit.star.di
 
 import coil3.PlatformContext
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
-interface BaseUiModule {
-  companion object {
-    @ApplicationContext
-    @SingleIn(AppScope::class)
-    @Provides
-    fun provideAppContext(): PlatformContext = PlatformContext.INSTANCE
-  }
+@BindingContainer
+object BaseUiModule {
+  @ApplicationContext
+  @SingleIn(AppScope::class)
+  @Provides
+  fun provideAppContext(): PlatformContext = PlatformContext.INSTANCE
 }

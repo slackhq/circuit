@@ -3,6 +3,7 @@
 package com.slack.circuit.star.data
 
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
@@ -14,7 +15,8 @@ import platform.Foundation.NSURLCache
 import platform.Foundation.NSURLSessionConfiguration
 
 @ContributesTo(AppScope::class)
-interface IosNetworkProviders {
+@BindingContainer
+object IosNetworkProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideHttpClientEngineFactory(appDirs: StarAppDirs): HttpClientEngineFactory<*> =

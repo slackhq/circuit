@@ -18,7 +18,7 @@ import dev.zacsweers.metro.createGraphFactory
  * generated child factories.
  */
 @DependencyGraph(scope = AppScope::class)
-interface InboxTestGraph {
+interface InboxTestGraph : InboxCommonAppGraph {
   val circuitSaver: CircuitSaver
   val inboxListFactory: InboxListPresenter.Factory
   val emailDetailFactory: EmailDetailPresenter.Factory

@@ -15,7 +15,7 @@ This `impression` will run only once until it is forgotten based on the current 
 
 ```kotlin
 ImpressionEffect {
-  // Impression 
+  // Impression
 }
 ```
 
@@ -26,7 +26,7 @@ suspendable `impression` once until it is forgotten based on the `RetainedStateR
 
 ```kotlin
 LaunchedImpressionEffect {
-  // Impression 
+  // Impression
 }
 ```
 

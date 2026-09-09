@@ -9,12 +9,14 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.serialization.CircuitSerializerRegistration
 import com.slack.circuit.serialization.SerializableCircuitSaver
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
 @ContributesTo(AppScope::class)
+@BindingContainer
 interface CircuitProviders {
   @Multibinds fun presenterFactories(): Set<Presenter.Factory>
 
@@ -22,22 +24,24 @@ interface CircuitProviders {
 
   @Multibinds fun circuitSerializerRegistrations(): Set<CircuitSerializerRegistration>
 
-  @SingleIn(AppScope::class)
-  @Provides
-  fun provideCircuitSaver(registrations: Set<CircuitSerializerRegistration>): CircuitSaver =
-    SerializableCircuitSaver(registrations)
+  companion object {
+    @SingleIn(AppScope::class)
+    @Provides
+    fun provideCircuitSaver(registrations: Set<CircuitSerializerRegistration>): CircuitSaver =
+      SerializableCircuitSaver(registrations)
 
-  @SingleIn(AppScope::class)
-  @Provides
-  fun provideCircuit(
-    presenterFactories: Set<Presenter.Factory>,
-    uiFactories: Set<Ui.Factory>,
-    circuitSaver: CircuitSaver,
-  ): Circuit {
-    return Circuit.Builder()
-      .addPresenterFactories(presenterFactories)
-      .addUiFactories(uiFactories)
-      .setCircuitSaver(circuitSaver)
-      .build()
+    @SingleIn(AppScope::class)
+    @Provides
+    fun provideCircuit(
+      presenterFactories: Set<Presenter.Factory>,
+      uiFactories: Set<Ui.Factory>,
+      circuitSaver: CircuitSaver,
+    ): Circuit {
+      return Circuit.Builder()
+        .addPresenterFactories(presenterFactories)
+        .addUiFactories(uiFactories)
+        .setCircuitSaver(circuitSaver)
+        .build()
+    }
   }
 }

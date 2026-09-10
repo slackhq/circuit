@@ -3,7 +3,6 @@
 package com.slack.circuitx.navstage
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.runtime.navigation.NavArgument
 
 /**
@@ -29,7 +29,7 @@ public interface PaneTransition {
   public fun <T : NavArgument> AnimatedPaneContent(
     targetItem: T,
     paneKey: Any,
-    navEvent: PaneNavEvent,
+    navEvent: AnimatedNavEvent,
     modifier: Modifier = Modifier,
     content: @Composable (T) -> Unit,
   )
@@ -41,11 +41,12 @@ public interface PaneTransition {
         override fun <T : NavArgument> AnimatedPaneContent(
           targetItem: T,
           paneKey: Any,
-          navEvent: PaneNavEvent,
+          navEvent: AnimatedNavEvent,
           modifier: Modifier,
           content: @Composable (T) -> Unit,
         ) {
-          val isForward = navEvent == PaneNavEvent.GoTo || navEvent == PaneNavEvent.Forward
+          val isForward =
+            navEvent == AnimatedNavEvent.GoTo || navEvent == AnimatedNavEvent.Forward
           AnimatedContent(
             targetState = targetItem,
             contentKey = { it.key },
@@ -73,7 +74,7 @@ public interface PaneTransition {
         override fun <T : NavArgument> AnimatedPaneContent(
           targetItem: T,
           paneKey: Any,
-          navEvent: PaneNavEvent,
+          navEvent: AnimatedNavEvent,
           modifier: Modifier,
           content: @Composable (T) -> Unit,
         ) {
@@ -87,22 +88,21 @@ public interface PaneTransition {
         override fun <T : NavArgument> AnimatedPaneContent(
           targetItem: T,
           paneKey: Any,
-          navEvent: PaneNavEvent,
+          navEvent: AnimatedNavEvent,
           modifier: Modifier,
           content: @Composable (T) -> Unit,
         ) {
-          Crossfade(targetState = targetItem.key, modifier = modifier) { content(targetItem) }
+          // Each slot renders its own item. Rendering the incoming item in both would compose the
+          // same record twice and defeat the crossfade.
+          AnimatedContent(
+            targetState = targetItem,
+            contentKey = { it.key },
+            modifier = modifier,
+            transitionSpec = { fadeIn().togetherWith(fadeOut()) },
+          ) { item ->
+            content(item)
+          }
         }
       }
   }
-}
-
-/** The type of navigation event, used by [PaneTransition] to determine animation direction. */
-@ExperimentalNavStageApi
-public enum class PaneNavEvent {
-  GoTo,
-  Pop,
-  RootReset,
-  Forward,
-  Backward,
 }

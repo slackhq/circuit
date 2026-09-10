@@ -16,6 +16,13 @@ import com.slack.circuit.runtime.navigation.NavArgument
 @Stable
 @ExperimentalNavStageApi
 public interface NavStagePaneScope<T : NavArgument> {
+  /**
+   * Renders [item] in a pane.
+   *
+   * [key] identifies the pane itself, not the item, and is passed to [transition] so it can keep
+   * per-pane animation state. Two panes in the same stage must not be given the same [key], nor the
+   * same [item].
+   */
   @Composable
   public fun Pane(
     key: Any,

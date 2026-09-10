@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navstage
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
@@ -20,48 +22,70 @@ import com.slack.circuit.runtime.screen.Screen
 @ExperimentalNavStageApi public interface DetailPane
 
 /**
- * Strategy that activates [ListDetailNavStage] on medium+ width screens when the active screen is a
- * detail pane and the back stack contains a list pane.
+ * Strategy that activates [ListDetailNavStage] when [isMultiPane] is true, the active screen is a
+ * detail pane, and the back stack contains a list pane.
+ *
+ * [isMultiPane] defaults to a medium-or-wider window width. Override it to supply your own
+ * breakpoint, which also avoids pulling in the default window-size-class dependency.
  */
 @ExperimentalNavStageApi
 public class ListDetailNavStageStrategy(
   private val isListPane: (Screen) -> Boolean = { it is ListPane },
   private val isDetailPane: (Screen) -> Boolean = { it is DetailPane },
+  private val isMultiPane: @Composable () -> Boolean = { DefaultIsMultiPane() },
 ) : NavStageStrategy {
 
-  @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   @Composable
   override fun <T : NavArgument> calculateStage(args: NavStackList<T>): NavStage<T>? {
-    val windowSizeClass = calculateWindowSizeClass()
-    if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) return null
+    if (!isMultiPane()) return null
+    if (!isDetailPane(args.active.screen)) return null
+    if (args.backwardItems.none { isListPane(it.screen) }) return null
+    // Remembered so the stage keeps a stable identity while this layout is in use.
+    return remember { ListDetailNavStage<T>(isListPane) }
+  }
 
-    val hasDetail = isDetailPane(args.active.screen)
-    val hasList = args.backwardItems.any { isListPane(it.screen) }
-    if (!hasDetail || !hasList) return null
-
-    return ListDetailNavStage(isListPane = isListPane)
+  public companion object {
+    /** The default multi-pane gate: any window at least [WindowWidthSizeClass.Medium] wide. */
+    @Composable
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+    public fun DefaultIsMultiPane(): Boolean =
+      calculateWindowSizeClass().widthSizeClass != WindowWidthSizeClass.Compact
   }
 }
 
 /**
  * Dual-pane stage that renders a list pane (40%) beside a detail pane (60%) in a horizontal row.
+ *
+ * Falls back to rendering only the active item when the stack holds no list pane, which happens
+ * while a transition renders an older stack than the one this stage was resolved from.
  */
 @ExperimentalNavStageApi
 public class ListDetailNavStage<T : NavArgument>(private val isListPane: (Screen) -> Boolean) :
   NavStage<T> {
-  override val key: Any = "list-detail"
+  override val key: Any = STAGE_KEY
+
+  override fun visibleItems(args: NavStackList<T>): List<T> {
+    val listItem =
+      args.backwardItems.firstOrNull { isListPane(it.screen) } ?: return listOf(args.active)
+    return listOf(listItem, args.active)
+  }
 
   @Composable
   override fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
-    val detailItem = args.active
-    val listItem = args.backwardItems.first { isListPane(it.screen) }
-
-    // TODO Problems
-    //   - If the list item moves between here and Single it blows up (key was used multiple times)
-    //   - This needs to animate content panes in/out, can use the Compose component for this too.
-    Row(modifier.fillMaxSize()) {
-      paneScope.Pane(key = "list", item = listItem, modifier = Modifier.weight(0.4f))
-      paneScope.Pane(key = "detail", item = detailItem, modifier = Modifier.weight(0.6f))
+    val items = visibleItems(args)
+    if (items.size < 2) {
+      Box(modifier.fillMaxSize()) { paneScope.Pane(key = DETAIL_PANE_KEY, item = items.single()) }
+      return
     }
+    Row(modifier.fillMaxSize()) {
+      paneScope.Pane(key = LIST_PANE_KEY, item = items[0], modifier = Modifier.weight(0.4f))
+      paneScope.Pane(key = DETAIL_PANE_KEY, item = items[1], modifier = Modifier.weight(0.6f))
+    }
+  }
+
+  private companion object {
+    const val STAGE_KEY = "com.slack.circuitx.navstage.list-detail"
+    const val LIST_PANE_KEY = "com.slack.circuitx.navstage.list-detail.list"
+    const val DETAIL_PANE_KEY = "com.slack.circuitx.navstage.list-detail.detail"
   }
 }

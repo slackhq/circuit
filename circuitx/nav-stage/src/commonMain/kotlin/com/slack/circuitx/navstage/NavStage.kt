@@ -24,6 +24,15 @@ public interface NavStage<T : NavArgument> {
   public val key: Any
 
   /**
+   * The items this stage renders for [args], in pane order.
+   *
+   * Must be pure and must agree with the [NavStagePaneScope.Pane] calls [Content] makes for the same
+   * [args]. An item must not appear twice: the navigation host composes each record once, so two
+   * panes sharing a record fails in its state registry.
+   */
+  public fun visibleItems(args: NavStackList<T>): List<T>
+
+  /**
    * Renders the stage layout, using [paneScope] to place individual navigation items into panes.
    */
   @Composable

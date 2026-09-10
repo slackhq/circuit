@@ -13,10 +13,7 @@ plugins {
 
 kotlin {
   // region KMP Targets
-  android {
-    namespace = "com.slack.circuitx.navstage"
-    compileSdk = 36
-  }
+  android { namespace = "com.slack.circuitx.navstage" }
   jvm { testRuns["test"].executionTask.configure { enabled = false } }
   iosArm64()
   iosSimulatorArm64()

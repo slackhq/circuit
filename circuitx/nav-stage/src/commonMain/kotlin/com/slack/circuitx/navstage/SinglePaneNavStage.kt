@@ -14,10 +14,18 @@ import com.slack.circuit.runtime.navigation.NavStackList
  */
 @ExperimentalNavStageApi
 public class SinglePaneNavStage<T : NavArgument> : NavStage<T> {
-  override val key: Any = "single-pane"
+  override val key: Any = STAGE_KEY
+
+  override fun visibleItems(args: NavStackList<T>): List<T> = listOf(args.active)
 
   @Composable
   override fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
-    Box(modifier) { paneScope.Pane(key = "single", item = args.active) }
+    Box(modifier) { paneScope.Pane(key = PANE_KEY, item = args.active) }
+  }
+
+  private companion object {
+    // Qualified so a third-party stage cannot collide and silently suppress stage transitions.
+    const val STAGE_KEY = "com.slack.circuitx.navstage.single-pane"
+    const val PANE_KEY = "com.slack.circuitx.navstage.single-pane.pane"
   }
 }

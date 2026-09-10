@@ -33,6 +33,8 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.slack.circuit.foundation.LocalCircuit
+import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
@@ -47,35 +49,42 @@ import com.slack.circuitx.navstage.NavStage
 import com.slack.circuitx.navstage.NavStageDecoration
 import com.slack.circuitx.navstage.NavStageFrame
 
-@Suppress("ComposeModifierReused")
+/**
+ * The [NavStageDecoration] this sample demos. Passed explicitly so that a caller wanting the
+ * circuit's own decoration, and with it any `setAnimatedNavDecoratorFactory`, can just omit it.
+ */
 @OptIn(ExperimentalNavStageApi::class)
+@Composable
+fun rememberNavStageDecoration(navigator: Navigator): NavDecoration =
+  remember(navigator) {
+    NavStageDecoration(
+      strategies = listOf(ListDetailNavStageStrategy()),
+      stageTransition = GestureNavStageTransition(onBack = { navigator.pop() }),
+      frame =
+        object : NavStageFrame {
+          @Suppress("ComposeModifierReused")
+          @Composable
+          override fun <T : NavArgument> Content(
+            modifier: Modifier,
+            stage: NavStage<T>,
+            args: NavStackList<T>,
+            stageContent: @Composable (() -> Unit),
+          ) {
+            Box(modifier.background(Color.LightGray).padding(8.dp)) { stageContent() }
+          }
+        },
+    )
+  }
+
+@Suppress("ComposeModifierReused")
 @Composable
 fun ContentScaffold(
   navStack: NavStack<out Record>,
   navigator: Navigator,
   tabs: List<TabScreen>,
   modifier: Modifier = Modifier,
+  decoration: NavDecoration = requireNotNull(LocalCircuit.current).defaultNavDecoration,
 ) {
-  val decoration =
-    remember(navigator) {
-      NavStageDecoration(
-        strategies = listOf(ListDetailNavStageStrategy()),
-        stageTransition = GestureNavStageTransition(onBack = { navigator.pop() }),
-        frame =
-          object : NavStageFrame {
-            @Suppress("ComposeModifierReused")
-            @Composable
-            override fun <T : NavArgument> Content(
-              modifier: Modifier,
-              stage: NavStage<T>,
-              args: NavStackList<T>,
-              stageContent: @Composable (() -> Unit),
-            ) {
-              Box(modifier.background(Color.LightGray).padding(8.dp)) { stageContent() }
-            }
-          },
-      )
-    }
   Scaffold(
     modifier = modifier.testTag(ContentTags.TAG_SCAFFOLD).fillMaxSize(),
     bottomBar = { BottomTabRow(tabs, navStack, navigator) },

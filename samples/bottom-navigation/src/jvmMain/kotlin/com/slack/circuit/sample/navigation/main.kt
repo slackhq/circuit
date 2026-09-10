@@ -34,7 +34,13 @@ fun main() {
           rememberInterceptingNavigator(navigator = navigator, interceptors = interceptors)
         CircuitCompositionLocals(circuit) {
           SharedElementTransitionLayout {
-            ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
+            ContentScaffold(
+              navStack,
+              interceptingNavigator,
+              tabs,
+              Modifier.fillMaxSize(),
+              rememberNavStageDecoration(interceptingNavigator),
+            )
           }
         }
       }

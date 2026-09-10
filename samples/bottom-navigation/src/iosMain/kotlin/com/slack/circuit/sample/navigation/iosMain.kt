@@ -48,6 +48,7 @@ fun MainViewController(): UIViewController {
           notifier = notifier,
         )
       CircuitCompositionLocals(circuit) {
+        // No decoration override, so iOS keeps the gesture decorator from buildCircuitForTabs.
         ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
       }
     }

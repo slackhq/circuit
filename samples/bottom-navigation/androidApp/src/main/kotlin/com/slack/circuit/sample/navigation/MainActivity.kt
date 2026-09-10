@@ -57,7 +57,13 @@ class MainActivity : AppCompatActivity() {
             notifier = notifier,
           )
         CircuitCompositionLocals(circuit) {
-          ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
+          ContentScaffold(
+            navStack,
+            interceptingNavigator,
+            tabs,
+            Modifier.fillMaxSize(),
+            rememberNavStageDecoration(interceptingNavigator),
+          )
         }
       }
     }

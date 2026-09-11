@@ -23,7 +23,7 @@ pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
       .withType(KotlinMultiplatformAndroidLibraryTarget::class.java)
       .configureEach {
         compileSdk = compileSdkVersion
-        minSdk = 23
+        minSdk = 24
         compilations.withType(KotlinMultiplatformAndroidHostTestCompilation::class.java) {
           targetSdk { release(targetSdkVersion) }
         }
@@ -84,7 +84,7 @@ pluginManager.withPlugin("com.android.library") {
       targetCompatibility = JavaVersion.toVersion(jvmTargetVersion)
     }
 
-    defaultConfig { minSdk = 23 }
+    defaultConfig { minSdk = 24 }
 
     lint {
       // https://issuetracker.google.com/issues/243267012
@@ -114,7 +114,7 @@ pluginManager.withPlugin("com.android.application") {
     }
 
     defaultConfig {
-      minSdk = 23
+      minSdk = 24
       targetSdk = targetSdkVersion
     }
 

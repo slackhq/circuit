@@ -3,11 +3,6 @@
 package com.slack.circuit.retained
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.currentCompositeKeyHashCode
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.retain.ForgetfulRetainedValuesStore
-import androidx.compose.runtime.retain.LocalRetainedValuesStore
-import androidx.compose.runtime.retain.LocalRetainedValuesStoreProvider
 
 /**
  * Installs a retained-values store that survives composition recreation for the lifetime of its
@@ -32,15 +27,7 @@ public fun RetainedValuesStoreProvider(
   owner: RetainedValuesStoreOwner? = null,
   content: @Composable () -> Unit,
 ) {
-  if (LocalRetainedValuesStore.current !== ForgetfulRetainedValuesStore) {
-    content()
-    return
-  }
-
-  val resolvedOwner = resolveRetainedValuesStoreOwner(owner) { automaticRetainedValuesStoreOwner() }
-  val location = currentCompositeKeyHashCode
-  val lease = remember(resolvedOwner, location) { resolvedOwner.acquire(location) }
-  LocalRetainedValuesStoreProvider(lease.store, content)
+  me.stagg.retainx.RetainedValuesStoreProvider(owner?.delegate, content)
 }
 
 @OptIn(ExperimentalCircuitRetainedApi::class)

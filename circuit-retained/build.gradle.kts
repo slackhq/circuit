@@ -63,6 +63,7 @@ kotlin {
         api(libs.compose.runtime.retain)
         api(libs.compose.runtime.saveable)
         api(libs.coroutines)
+        api(libs.retainx)
       }
     }
 

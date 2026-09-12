@@ -44,6 +44,7 @@ picnic = "0.7.0"
 r8 = "9.1.31"
 robolectric = "4.16.1"
 roborazzi = "1.73.0"
+retainx = "0.1.0-SNAPSHOT"
 sqldelight = "2.3.2"
 telephoto = "0.19.0"
 testParameterInjector = "1.22"
@@ -206,6 +207,7 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 okio-fakefilesystem = { module = "com.squareup.okio:okio-fakefilesystem", version.ref = "okio" }
 picnic = { module = "com.jakewharton.picnic:picnic", version.ref = "picnic" }
 r8 = { module = "com.android.tools:r8", version.ref = "r8" }
+retainx = { module = "me.stagg.retainx:retainx", version.ref = "retainx" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }

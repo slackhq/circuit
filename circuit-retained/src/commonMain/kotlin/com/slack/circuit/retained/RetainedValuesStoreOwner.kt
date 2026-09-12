@@ -2,10 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.retained
 
-import androidx.compose.runtime.CompositeKeyHashCode
-import androidx.compose.runtime.RememberObserver
-import androidx.compose.runtime.retain.ManagedRetainedValuesStore
-
 /**
  * Owns the retained-value stores used by [RetainedValuesStoreProvider] to preserve values across
  * composition recreation.
@@ -24,13 +20,7 @@ import androidx.compose.runtime.retain.ManagedRetainedValuesStore
  */
 @ExperimentalCircuitRetainedApi
 public class RetainedValuesStoreOwner {
-  private val slots = mutableMapOf<CompositeKeyHashCode, RetainedValuesStoreSlot>()
-  private var isDisposed = false
-
-  internal fun acquire(location: CompositeKeyHashCode): RetainedValuesStoreLease {
-    check(!isDisposed) { "Cannot acquire a retained values store from a disposed owner." }
-    return slots.getOrPut(location) { RetainedValuesStoreSlot() }.acquire()
-  }
+  internal val delegate = me.stagg.retainx.RetainedValuesStoreOwner()
 
   /**
    * Permanently releases every retained value held by this owner.
@@ -39,100 +29,6 @@ public class RetainedValuesStoreOwner {
    * again.
    */
   public fun dispose() {
-    if (isDisposed) return
-    isDisposed = true
-
-    slots.values.forEach(RetainedValuesStoreSlot::dispose)
-    slots.clear()
-  }
-}
-
-private class RetainedValuesStoreSlot {
-  private val entries = mutableListOf<RetainedValuesStoreEntry>()
-  private var isDisposed = false
-
-  fun acquire(): RetainedValuesStoreLease {
-    check(!isDisposed) { "Cannot acquire a retained values store from a disposed slot." }
-
-    val entry =
-      entries.firstOrNull { !it.isInUse } ?: RetainedValuesStoreEntry().also { entries += it }
-    val leaseToken = Any()
-    entry.activeLeaseToken = leaseToken
-    return RetainedValuesStoreLease(
-      store = entry.store,
-      establish = { establish(entry, leaseToken) },
-      releaseEntry = { release(entry, leaseToken) },
-    )
-  }
-
-  fun dispose() {
-    if (isDisposed) return
-    isDisposed = true
-    val entriesToDispose = entries.toList()
-    entriesToDispose.forEach { it.isDisposed = true }
-    entries.clear()
-    entriesToDispose.forEach { entry -> entry.store.dispose() }
-  }
-
-  private fun establish(entry: RetainedValuesStoreEntry, leaseToken: Any) {
-    if (isDisposed || entry.activeLeaseToken !== leaseToken) return
-    entry.isEstablished = true
-  }
-
-  private fun release(entry: RetainedValuesStoreEntry, leaseToken: Any) {
-    if (entry.activeLeaseToken !== leaseToken) return
-    entry.activeLeaseToken = null
-    if (isDisposed || entry.isDisposed) return
-
-    if (!entry.isEstablished) {
-      dispose(entry)
-    }
-  }
-
-  private fun dispose(entry: RetainedValuesStoreEntry) {
-    if (entry.isDisposed) return
-    entry.isDisposed = true
-    entries.remove(entry)
-    entry.store.dispose()
-  }
-}
-
-private class RetainedValuesStoreEntry {
-  val store = ManagedRetainedValuesStore()
-  var isEstablished = false
-  var isDisposed = false
-  var activeLeaseToken: Any? = null
-
-  val isInUse: Boolean
-    get() = activeLeaseToken != null
-}
-
-internal class RetainedValuesStoreLease(
-  val store: ManagedRetainedValuesStore,
-  private val establish: () -> Unit,
-  private val releaseEntry: () -> Unit,
-) : RememberObserver {
-  private var state = State.Pending
-
-  override fun onRemembered() {
-    if (state != State.Pending) return
-    state = State.Remembered
-    establish()
-  }
-
-  override fun onForgotten() = release()
-
-  override fun onAbandoned() = release()
-
-  private fun release() {
-    if (state == State.Released) return
-    state = State.Released
-    releaseEntry()
-  }
-
-  private enum class State {
-    Pending,
-    Remembered,
-    Released,
+    delegate.dispose()
   }
 }

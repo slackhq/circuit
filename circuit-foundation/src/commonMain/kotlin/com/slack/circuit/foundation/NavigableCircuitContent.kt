@@ -313,7 +313,10 @@ public fun <R : Record> NavigableCircuitContent(
           this.recordRetainedValuesStoreRegistry = recordRetainedValuesStoreRegistry
         }
     val activeContentProviders =
-      buildCircuitContentProviders(navStack = navigator.navStack) ?: return@CompositionLocalProvider
+      buildCircuitContentProviders(
+        navStack = navigator.navStack,
+        contentProviderState = contentProviderState,
+      ) ?: return@CompositionLocalProvider
     val circuitProvidedValues =
       providedValuesForNavStack(navigator.navStack, circuit.navStackLocalProviders)
     navDecoration.DecoratedContent(
@@ -430,7 +433,8 @@ public class RecordContentProvider<R : Record>(
 @ExperimentalCircuitApi
 @Composable
 private fun <R : Record> buildCircuitContentProviders(
-  navStack: NavStack<R>
+  navStack: NavStack<R>,
+  contentProviderState: ContentProviderState<R>,
 ): NavStackList<RecordContentProvider<R>>? {
   val previousContentProviders = remember { mutableMapOf<String, RecordContentProvider<R>>() }
   val activeRecordKeys = remember { mutableSetOf<String>() }
@@ -438,6 +442,7 @@ private fun <R : Record> buildCircuitContentProviders(
   val navStackList = navStack.snapshot()
   val recordKeys = remember(navStackList) { buildSet { navStackList?.forEach { add(it.key) } } }
   val latestNavStack by rememberUpdatedState(navStack)
+  val latestContentProviderState by rememberUpdatedState(contentProviderState)
   DisposableEffect(recordKeys) {
     // Delay cleanup until the next navstack change.
     // - Any record in composition is considered active
@@ -457,7 +462,11 @@ private fun <R : Record> buildCircuitContentProviders(
           latestNavStack.isRecordReachable(key = it, depth = 1, includeSaved = true) ||
             it in activeRecordKeys
         }
-        .forEach { previousContentProviders.remove(it) }
+        .forEach { key ->
+          previousContentProviders.remove(key)
+          // RecordContent's own cleanup can't run for records disposed before leaving the navstack.
+          latestContentProviderState.removeRecordState(recordRegistryKey(key))
+        }
     }
   }
   return navStackList?.transform { record ->
@@ -490,6 +499,13 @@ public class ContentProviderState<R : Record>(
   internal var lastCircuit by mutableStateOf(circuit)
   internal var lastUnavailableRoute by mutableStateOf(unavailableRoute)
   internal var recordRetainedValuesStoreRegistry: RetainedValuesStoreRegistry? = null
+
+  /** Removes all held state for a record that has permanently left the navstack. */
+  internal fun removeRecordState(registryKey: String) {
+    retainedStateHolder.removeState(registryKey)
+    saveableStateHolder.removeState(registryKey)
+    recordRetainedValuesStoreRegistry?.clearChild(registryKey)
+  }
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true
@@ -588,8 +604,10 @@ private fun <R : Record> RecordContent(record: R, contentProviderState: ContentP
 /** The maximum radix available for conversion to and from strings. */
 private const val MaxSupportedRadix = 36
 
+private fun recordRegistryKey(key: String): String = "_registry_$key"
+
 private val Record.registryKey: String
-  get() = "_registry_${key}"
+  get() = recordRegistryKey(key)
 
 /** Default values and common alternatives used by navigable composables. */
 public object NavigatorDefaults {

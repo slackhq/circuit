@@ -121,6 +121,10 @@ internal class RetainedStateRegistryViewModel :
     delegate.forgetUnclaimedValues()
   }
 
+  override fun forgetValue(key: String) {
+    delegate.forgetValue(key)
+  }
+
   override fun onCleared() {
     delegate.forgetUnclaimedValues()
     delegate.valueProviders.clear()

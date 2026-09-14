@@ -17,6 +17,8 @@ public object NoOpRetainedStateRegistry : RetainedStateRegistry {
 
   override fun forgetUnclaimedValues() {}
 
+  override fun forgetValue(key: String) {}
+
   private object NoOpEntry : RetainedStateRegistry.Entry {
     override fun unregister(): Boolean = true
   }

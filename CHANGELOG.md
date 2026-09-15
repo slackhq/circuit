@@ -4,6 +4,15 @@ Changelog
 Unreleased
 ----------
 
+### New
+
+- **circuit-retained:** Add `RetainedStateRegistry.forgetValue(key)`, the single-key counterpart to `forgetUnclaimedValues()`. Custom `RetainedStateRegistry` implementations will need to implement it.
+
+### Fixed
+
+- **circuit-foundation:** `NavigableCircuitContent` now clears saved and retained state for records truncated out of the navstack while not composed.
+- **circuit-retained:** `RetainedStateHolder.removeState` now retires removed values instead of dropping them silently.
+
 0.38.0
 ------
 

@@ -35,6 +35,7 @@ public final class com/slack/circuit/retained/NoOpRetainedStateRegistry : com/sl
 	public static final field INSTANCE Lcom/slack/circuit/retained/NoOpRetainedStateRegistry;
 	public fun consumeValue (Ljava/lang/String;)Ljava/lang/Object;
 	public fun forgetUnclaimedValues ()V
+	public fun forgetValue (Ljava/lang/String;)V
 	public fun registerValue (Ljava/lang/String;Lcom/slack/circuit/retained/RetainedValueProvider;)Lcom/slack/circuit/retained/RetainedStateRegistry$Entry;
 	public fun saveAll ()Ljava/util/Map;
 	public fun saveValue (Ljava/lang/String;)V
@@ -72,6 +73,7 @@ public final class com/slack/circuit/retained/RetainedStateHolderKt {
 public abstract interface class com/slack/circuit/retained/RetainedStateRegistry {
 	public abstract fun consumeValue (Ljava/lang/String;)Ljava/lang/Object;
 	public abstract fun forgetUnclaimedValues ()V
+	public abstract fun forgetValue (Ljava/lang/String;)V
 	public abstract fun registerValue (Ljava/lang/String;Lcom/slack/circuit/retained/RetainedValueProvider;)Lcom/slack/circuit/retained/RetainedStateRegistry$Entry;
 	public abstract fun saveAll ()Ljava/util/Map;
 	public abstract fun saveValue (Ljava/lang/String;)V

@@ -65,7 +65,8 @@ private class RetainedStateHolderImpl(private var canRetainChecker: CanRetainChe
     if (entry != null) {
       entry.shouldSave = false
     } else {
-      registry.consumeValue(key)
+      // No live entry, so nothing else will retire the saved value.
+      registry.forgetValue(key)
     }
   }
 
@@ -90,6 +91,10 @@ private class RetainedStateHolderImpl(private var canRetainChecker: CanRetainChe
 
   override fun forgetUnclaimedValues() {
     registry.forgetUnclaimedValues()
+  }
+
+  override fun forgetValue(key: String) {
+    registry.forgetValue(key)
   }
 
   override fun canRetain(): Boolean {

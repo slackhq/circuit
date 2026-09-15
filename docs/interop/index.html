@@ -1930,7 +1930,7 @@
 
 
 <h1 id="interop">Interop<a class="headerlink" href="#interop" title="Permanent link">&para;</a></h1>
-<p>Circuit can interop anywhere that Compose can interop. This includes common cases like Android 
+<p>Circuit can interop anywhere that Compose can interop. This includes common cases like Android
 <code>Views</code>, RxJava, Kotlin <code>Flow</code>, and more.</p>
 <h2 id="presenter"><code>Presenter</code><a class="headerlink" href="#presenter" title="Permanent link">&para;</a></h2>
 <p>Lean on first-party interop-APIs where possible! See examples of interop with different libraries in the <code>:samples:interop</code> project.</p>
@@ -1938,7 +1938,7 @@
 <h3 id="ui-view"><code>Ui</code> -&gt; <code>View</code><a class="headerlink" href="#ui-view" title="Permanent link">&para;</a></h3>
 <p>Just embed the Circuit in a <code>ComposeView</code> like any other Compose UI.</p>
 <h3 id="view-ui"><code>View</code> -&gt; <code>Ui</code><a class="headerlink" href="#view-ui" title="Permanent link">&para;</a></h3>
-<p>You can wrap your view in an <code>AndroidView</code> in a custom <code>Ui</code> implementation. </p>
+<p>You can wrap your view in an <code>AndroidView</code> in a custom <code>Ui</code> implementation.</p>
 <div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">ExistingCustomViewUi</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Ui</span><span class="o">&lt;</span><span class="n">State</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="nd">@Composable</span>
 <span class="w">  </span><span class="kd">fun</span><span class="w"> </span><span class="nf">Content</span><span class="p">(</span><span class="n">state</span><span class="p">:</span><span class="w"> </span><span class="n">State</span><span class="p">,</span><span class="w"> </span><span class="n">modifier</span><span class="p">:</span><span class="w"> </span><span class="n">Modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>

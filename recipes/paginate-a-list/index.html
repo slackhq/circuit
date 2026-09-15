@@ -1816,8 +1816,8 @@ without firing duplicate requests or losing accumulated items across recompositi
 <li>an in-flight flag</li>
 <li>an end-of-list flag</li>
 </ul>
-<p>Keep them in a small <strong>presentation state holder</strong> (the same idea as <code>EmailFieldState</code> in 
-<a href="../../docs/presenter-patterns/#use-cases-separating-business-logic">Scaling Presenters</a>). The presenter creates the holder with <code>rememberRetained</code> and drives 
+<p>Keep them in a small <strong>presentation state holder</strong> (the same idea as <code>EmailFieldState</code> in
+<a href="../../docs/presenter-patterns/#use-cases-separating-business-logic">Scaling Presenters</a>). The presenter creates the holder with <code>rememberRetained</code> and drives
 loading from an effect and events.</p>
 <h2 id="the-holder">The holder<a class="headerlink" href="#the-holder" title="Permanent link">&para;</a></h2>
 <p>A plain <code>@Stable</code> class with private-set state and one suspend <code>loadNext()</code>. It&rsquo;s reusable across any

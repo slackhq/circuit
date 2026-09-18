@@ -23,7 +23,6 @@ dependencies {
   implementation(projects.circuitCodegenAnnotations)
   implementation(projects.circuitFoundation)
 
-  implementation(compose.desktop.currentOs)
   implementation(libs.compose.foundation)
   implementation(libs.compose.runtime)
   implementation(libs.compose.material.material3)

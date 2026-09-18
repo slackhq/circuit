@@ -53,7 +53,6 @@ kotlin {
     jvmMain {
       dependencies {
         implementation(libs.compose.ui.tooling.preview)
-        implementation(compose.desktop.currentOs)
       }
     }
     iosMain {}

@@ -4,6 +4,10 @@ Changelog
 Unreleased
 ----------
 
+### Fixed
+
+- **circuit-serialization-reflect:** Compile an Android variant against Android SavedState to avoid a `NoSuchMethodError` when saving screens.
+
 0.39.0
 ------
 

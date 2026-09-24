@@ -1,22 +1,51 @@
 // Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+import com.android.build.api.withAndroid
 import java.nio.file.FileSystems
 import kotlin.io.path.deleteIfExists
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.gradle.language.base.plugins.LifecycleBasePlugin.BUILD_GROUP
 import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.Companion.TEST_COMPILATION_NAME
 
 plugins {
-  kotlin("jvm")
+  alias(libs.plugins.agp.kmp)
+  alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.kotlin.plugin.serialization)
   id("circuit.base")
   id("circuit.publish")
 }
 
-dependencies {
-  api(projects.circuitSerialization)
+kotlin {
+  android {
+    namespace = "com.slack.circuit.serialization.reflect"
+    optimization.consumerKeepRules.apply {
+      publish = true
+      file(
+        layout.projectDirectory.file(
+          "src/commonJvmMain/resources/META-INF/proguard/circuit-serialization-reflect.pro"
+        )
+      )
+    }
+    withHostTest {}
+  }
+  jvm()
 
-  testImplementation(libs.kotlin.test)
+  @OptIn(ExperimentalKotlinGradlePluginApi::class)
+  applyDefaultHierarchyTemplate {
+    common {
+      group("commonJvm") {
+        withAndroid()
+        withJvm()
+      }
+    }
+  }
+
+  sourceSets {
+    commonMain { dependencies { api(projects.circuitSerialization) } }
+    commonTest { dependencies { implementation(libs.kotlin.test) } }
+    getByName("androidHostTest") { dependencies { implementation(libs.robolectric) } }
+  }
 }
 
 val r8Configuration: Configuration =
@@ -105,7 +134,7 @@ abstract class R8Task : BaseR8Task() {
   }
 }
 
-kotlin.target {
+kotlin.targets.named("jvm") {
   val target = this
   val testCompilation = target.compilations.named(TEST_COMPILATION_NAME)
 

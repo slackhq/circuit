@@ -4,6 +4,10 @@ Changelog
 Unreleased
 ----------
 
+### Changed
+
+- Update to Kotlin `2.5.0-RC`.
+
 ### Fixed
 
 - **circuit-foundation:** A record in a nested `NavigableCircuitContent` is now only active (`LocalRecordLifecycle.isActive`) while its parent record is active, unless a `NavDecoration` provides its own lifecycle.

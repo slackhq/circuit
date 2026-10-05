@@ -4,6 +4,10 @@ Changelog
 Unreleased
 ----------
 
+### Changed
+
+- Update to Kotlin `2.5.0-Beta1`.
+
 ### Fixed
 
 - **circuit-serialization-reflect:** Compile an Android variant against Android SavedState to avoid a `NoSuchMethodError` when saving screens.

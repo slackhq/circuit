@@ -9,6 +9,10 @@ Unreleased
 - **circuit-foundation:** Add experimental `RecordLifecycle.isVisible` and a `ProvideRecordLifecycle(isActive, isVisible)` overload, so a decoration can report whether a record is shown separately from whether it's active.
 - **circuitx-gesture-navigation:** Add `SlideOverNavDecoration`, an iOS-style slide-over `NavDecoration` with forward and backward swipes and optional off-screen warming of adjacent screens.
 
+### Changed
+
+- Update to Kotlin `2.5.0-RC`.
+
 ### Fixed
 
 - **circuit-foundation:** A record in a nested `NavigableCircuitContent` is now only active (`LocalRecordLifecycle.isActive`) while its parent record is active, unless a `NavDecoration` provides its own lifecycle.

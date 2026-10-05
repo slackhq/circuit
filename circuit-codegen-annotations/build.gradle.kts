@@ -28,7 +28,6 @@ kotlin {
   // Anvil/Dagger does not support iOS targets
   iosArm64()
   iosSimulatorArm64()
-  watchosArm32()
   watchosArm64()
   watchosSimulatorArm64()
   tvosArm64()

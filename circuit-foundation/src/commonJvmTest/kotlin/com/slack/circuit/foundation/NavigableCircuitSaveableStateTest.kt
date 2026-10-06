@@ -3,6 +3,7 @@
 package com.slack.circuit.foundation
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.ui.test.assertTextEquals
@@ -11,6 +12,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.backstack.SaveableBackStack
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.foundation.navstack.SaveableNavStack
 import com.slack.circuit.internal.test.TestContentTags.TAG_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_INCREASE_COUNT
@@ -298,14 +300,6 @@ class NavigableCircuitSaveableStateTest {
       }
     }
 
-    fun Any?.containsRegistryKey(key: String): Boolean =
-      when (this) {
-        is Map<*, *> -> key in keys || values.any { it.containsRegistryKey(key) }
-        is Iterable<*> -> any { it.containsRegistryKey(key) }
-        is Array<*> -> any { it.containsRegistryKey(key) }
-        else -> false
-      }
-
     composeTestRule.run {
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
 
@@ -329,6 +323,64 @@ class NavigableCircuitSaveableStateTest {
       )
     }
   }
+
+  @Test
+  fun saveableStateRemovesTruncatedForwardRecordState() {
+    val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Saveable)
+    val saveableStateRegistry = SaveableStateRegistry(emptyMap(), { true })
+    lateinit var navStack: SaveableNavStack
+
+    composeTestRule.setContent {
+      CompositionLocalProvider(LocalSaveableStateRegistry provides saveableStateRegistry) {
+        val circuitSaver = rememberDefaultCircuitSaver()
+        CircuitCompositionLocals(circuit, circuitSaver) {
+          navStack = remember { SaveableNavStack(TestScreen.ScreenA) }
+          val navigator =
+            rememberCircuitNavigator(
+              navStack = navStack,
+              onRootPop = {}, // no-op for tests
+            )
+          NavigableCircuitContent(navigator = navigator, navStack = navStack)
+        }
+      }
+    }
+
+    composeTestRule.run {
+      onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+
+      onNodeWithTag(TAG_GO_NEXT).performClick()
+      onNodeWithTag(TAG_LABEL).assertTextEquals("B")
+      val forwardRegistryKey = "_registry_${navStack.currentRecord!!.key}"
+
+      // Moves B into forward history, disposing its content while it is still reachable.
+      runOnIdle { navStack.backward() }
+      onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+      assertTrue(
+        saveableStateRegistry.performSave().takeSnapshot().containsRegistryKey(forwardRegistryKey),
+        "Expected forward record state $forwardRegistryKey to be kept while it is still reachable.",
+      )
+
+      // Truncates B, which RecordContent can no longer clean up itself.
+      runOnIdle { navStack.push(TestScreen.ScreenC) }
+      onNodeWithTag(TAG_LABEL).assertTextEquals("C")
+      // Cleanup is deferred to the next navstack change.
+      runOnIdle { navStack.pop() }
+      waitForIdle()
+
+      assertFalse(
+        saveableStateRegistry.performSave().takeSnapshot().containsRegistryKey(forwardRegistryKey),
+        "Expected truncated record state $forwardRegistryKey to be removed from saved state.",
+      )
+    }
+  }
+
+  private fun Any?.containsRegistryKey(key: String): Boolean =
+    when (this) {
+      is Map<*, *> -> key in keys || values.any { it.containsRegistryKey(key) }
+      is Iterable<*> -> any { it.containsRegistryKey(key) }
+      is Array<*> -> any { it.containsRegistryKey(key) }
+      else -> false
+    }
 
   private fun Map<String, List<Any?>>.takeSnapshot(): Map<String, List<Any?>> {
     fun copy(value: Any?): Any? =

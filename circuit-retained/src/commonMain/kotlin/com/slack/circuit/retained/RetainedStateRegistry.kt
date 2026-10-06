@@ -50,6 +50,17 @@ public interface RetainedStateRegistry {
   /** Releases all currently unconsumed values. Useful as a GC mechanism for the registry. */
   public fun forgetUnclaimedValues()
 
+  /**
+   * Releases the values stored under [key], dispatching forget callbacks to any that observe them.
+   * The single-key counterpart to [forgetUnclaimedValues].
+   *
+   * Unlike [consumeValue] the values are retired rather than handed back, so this is the correct
+   * call when a key will never be restored again.
+   *
+   * @param key Key used to save the values
+   */
+  public fun forgetValue(key: String)
+
   /** The registry entry which you get when you use [registerValue]. */
   public interface Entry {
     /**
@@ -200,19 +211,23 @@ internal class RetainedStateRegistryImpl(
   }
 
   override fun forgetUnclaimedValues() {
-    fun clearValue(value: Any?) {
-      when (value) {
-        // If we get a RetainedHolder value, need to unwrap and call again
-        is RetainedValueHolder<*> -> clearValue(value.value)
-        // Dispatch the call to nested registries
-        is RetainedStateRegistry -> value.forgetUnclaimedValues()
-        // Dispatch onForgotten calls if the value is a RememberObserver
-        is RememberObserver -> value.onForgotten()
-      }
-    }
-
     retained.values.forEach { it.forEach(::clearValue) }
     retained.clear()
+  }
+
+  override fun forgetValue(key: String) {
+    retained.remove(key)?.forEach(::clearValue)
+  }
+
+  private fun clearValue(value: Any?) {
+    when (value) {
+      // If we get a RetainedHolder value, need to unwrap and call again
+      is RetainedValueHolder<*> -> clearValue(value.value)
+      // Dispatch the call to nested registries
+      is RetainedStateRegistry -> value.forgetUnclaimedValues()
+      // Dispatch onForgotten calls if the value is a RememberObserver
+      is RememberObserver -> value.onForgotten()
+    }
   }
 
   fun update(canRetainChecker: CanRetainChecker) {

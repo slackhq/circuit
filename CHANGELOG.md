@@ -4,6 +4,32 @@ Changelog
 Unreleased
 ----------
 
+### Fixed
+
+- **circuit-serialization-reflect:** Compile an Android variant against Android SavedState to avoid a `NoSuchMethodError` when saving screens.
+
+0.39.0
+------
+
+_2026-09-15_
+
+### New
+
+- **circuit-retained:** Add `RetainedStateRegistry.forgetValue(key)`, the single-key counterpart to `forgetUnclaimedValues()`. Custom `RetainedStateRegistry` implementations will need to implement it.
+
+### Changed
+
+- Update to Kotlin `2.4.20`.
+- Update Compose Multiplatform to `1.12.0`.
+- Update androidx Compose (including Compose Runtime) to `1.12.1`.
+- Update AGP to `9.4.0`.
+- [code gen] Update to KotlinPoet `2.4.0`.
+
+### Fixed
+
+- **circuit-foundation:** `NavigableCircuitContent` now clears saved and retained state for records truncated out of the navstack while not composed.
+- **circuit-retained:** `RetainedStateHolder.removeState` now retires removed values instead of dropping them silently.
+
 0.38.0
 ------
 

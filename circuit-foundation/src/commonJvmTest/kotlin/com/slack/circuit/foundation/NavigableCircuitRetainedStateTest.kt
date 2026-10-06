@@ -2,11 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.RememberObserver
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.slack.circuit.backstack.rememberSaveableBackStack
+import com.slack.circuit.foundation.navstack.SaveableNavStack
 import com.slack.circuit.internal.test.TestContentTags.TAG_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_INCREASE_COUNT
@@ -17,7 +23,13 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_RESET_ROOT_BETA
 import com.slack.circuit.internal.test.TestCountPresenter.RememberType
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
+import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.CircuitSaver
+import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.ui.ui
+import kotlin.test.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -203,6 +215,82 @@ class NavigableCircuitRetainedStateTest {
       // Root Beta should now be active. The top record for Root Beta  is Screen A: (count: 2)
       onNodeWithTag(TAG_LABEL).assertTextEquals("A")
       onNodeWithTag(TAG_COUNT).assertTextEquals("2")
+    }
+  }
+
+  @Test
+  fun retainedStateIsForgottenForTruncatedForwardRecord() {
+    val forgotten = mutableListOf<String>()
+    val circuit =
+      Circuit.Builder()
+        .addPresenterFactory { screen, _, _ -> ProbePresenter(screen as ProbeScreen, forgotten) }
+        .addUiFactory { _, _ ->
+          ui<ProbeScreen.State> { state, modifier ->
+            BasicText(text = state.id, modifier = modifier.testTag(TAG_LABEL))
+          }
+        }
+        .build()
+    lateinit var navStack: SaveableNavStack
+
+    composeTestRule.setContent {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
+        navStack = remember { SaveableNavStack(ProbeScreen("A")) }
+        val navigator =
+          rememberCircuitNavigator(
+            navStack = navStack,
+            onRootPop = {}, // no-op for tests
+          )
+        NavigableCircuitContent(navigator = navigator, navStack = navStack)
+      }
+    }
+
+    composeTestRule.run {
+      onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+      runOnIdle { navStack.push(ProbeScreen("B")) }
+      onNodeWithTag(TAG_LABEL).assertTextEquals("B")
+
+      // Moves B into forward history, disposing its content while it is still reachable.
+      runOnIdle { navStack.backward() }
+      onNodeWithTag(TAG_LABEL).assertTextEquals("A")
+      assertTrue(forgotten.isEmpty(), "Expected B to still be retained, got $forgotten")
+
+      // Truncates B, which RecordContent can no longer clean up itself.
+      runOnIdle { navStack.push(ProbeScreen("C")) }
+      onNodeWithTag(TAG_LABEL).assertTextEquals("C")
+      // Cleanup is deferred to the next navstack change.
+      runOnIdle { navStack.pop() }
+      waitForIdle()
+
+      assertTrue("B" in forgotten, "Expected B's retained value to be forgotten, got $forgotten")
+    }
+  }
+
+  private data class ProbeScreen(val id: String) : Screen {
+    data class State(val id: String) : CircuitUiState
+  }
+
+  private class ProbePresenter(
+    private val screen: ProbeScreen,
+    private val forgotten: MutableList<String>,
+  ) : Presenter<ProbeScreen.State> {
+    @Composable
+    override fun present(): ProbeScreen.State {
+      rememberRetained { ForgetProbe(screen.id, forgotten) }
+      return ProbeScreen.State(screen.id)
+    }
+  }
+
+  /** Records the id it was retained under once its retained value is released. */
+  private class ForgetProbe(private val id: String, private val forgotten: MutableList<String>) :
+    RememberObserver {
+    override fun onRemembered() {}
+
+    override fun onForgotten() {
+      forgotten += id
+    }
+
+    override fun onAbandoned() {
+      forgotten += id
     }
   }
 }

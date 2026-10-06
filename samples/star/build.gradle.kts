@@ -156,7 +156,6 @@ kotlin {
     }
     jvmMain {
       dependencies {
-        implementation(compose.desktop.currentOs)
         implementation(libs.appDirs)
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.coroutines.swing)

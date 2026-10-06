@@ -110,7 +110,7 @@ kotlin {
     }
     jvmTest {
       dependencies {
-        implementation(compose.desktop.currentOs)
+        implementation(libs.compose.material.material)
         implementation(libs.picnic)
       }
     }

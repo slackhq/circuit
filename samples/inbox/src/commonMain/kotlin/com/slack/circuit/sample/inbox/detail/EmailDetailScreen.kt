@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.inbox.detail
 
-import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.screen.Screen
@@ -10,7 +9,6 @@ import com.slack.circuit.sample.inbox.data.Email
 import com.slack.circuit.serialization.CircuitSerializable
 import dev.zacsweers.metro.AppScope
 
-@Parcelize
 @CircuitSerializable(AppScope::class)
 data class EmailDetailScreen(val emailId: String) : Screen {
   sealed interface State : CircuitUiState {

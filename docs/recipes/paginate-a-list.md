@@ -10,8 +10,8 @@ Pagination has several moving parts:
 - an in-flight flag
 - an end-of-list flag
 
-Keep them in a small **presentation state holder** (the same idea as `EmailFieldState` in 
-[Scaling Presenters](../docs/presenter-patterns.md#use-cases-separating-business-logic)). The presenter creates the holder with `rememberRetained` and drives 
+Keep them in a small **presentation state holder** (the same idea as `EmailFieldState` in
+[Scaling Presenters](../docs/presenter-patterns.md#use-cases-separating-business-logic)). The presenter creates the holder with `rememberRetained` and drives
 loading from an effect and events.
 
 ## The holder

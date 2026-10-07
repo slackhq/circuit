@@ -1,13 +1,11 @@
 // Copyright (C) 2025 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.agp.kmp)
   alias(libs.plugins.compose)
-  alias(libs.plugins.kotlin.plugin.parcelize)
   alias(libs.plugins.kotlin.plugin.serialization)
   id("circuit.base")
 }
@@ -40,8 +38,6 @@ kotlin {
         implementation(projects.circuitx.gestureNavigation)
         implementation(projects.circuitx.navStage)
         implementation(projects.circuitx.navigation)
-        implementation(projects.internalRuntime)
-        implementation(libs.windowSizeClass)
       }
     }
     androidMain {}
@@ -68,20 +64,6 @@ kotlin {
         freeCompilerArgs.add("-Xexpect-actual-classes")
         optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
         optIn.add("com.slack.circuitx.navstage.ExperimentalNavStageApi")
-      }
-    }
-  }
-  targets.configureEach {
-    if (platformType == KotlinPlatformType.androidJvm) {
-      compilations.configureEach {
-        compileTaskProvider.configure {
-          compilerOptions {
-            freeCompilerArgs.addAll(
-              "-P",
-              "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=com.slack.circuit.internal.runtime.Parcelize",
-            )
-          }
-        }
       }
     }
   }

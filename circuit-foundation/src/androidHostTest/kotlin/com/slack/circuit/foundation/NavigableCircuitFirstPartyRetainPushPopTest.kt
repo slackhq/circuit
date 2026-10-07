@@ -11,25 +11,16 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_INCREASE_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_LABEL
 import com.slack.circuit.internal.test.TestContentTags.TAG_POP
-import com.slack.circuit.retained.CircuitRetainedSettings
-import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 /** Isolates push/pop (no recreation) for first-party retain scoped per record. */
-@OptIn(ExperimentalCircuitRetainedApi::class)
 @RunWith(ComposeUiTestRunner::class)
 class NavigableCircuitFirstPartyRetainPushPopTest {
 
   @get:Rule
   val composeTestRule = createAndroidComposeRule<NavigableCircuitFirstPartyRetainTestActivity>()
-
-  @After
-  fun tearDown() {
-    CircuitRetainedSettings.useFirstParty = false
-  }
 
   @Test
   fun retainSurvivesPushAndPop() {

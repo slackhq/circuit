@@ -21,10 +21,8 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.tutorial.common.Email
 import com.slack.circuit.tutorial.common.EmailRepository
 import com.slack.circuit.tutorial.common.intro.EmailItem
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data object InboxScreen : Screen {
   data class State(val emails: List<Email>, val eventSink: (Event) -> Unit) : CircuitUiState

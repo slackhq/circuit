@@ -27,6 +27,7 @@ import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.sharedelements.PreviewSharedElementTransitionLayout
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import kotlinx.coroutines.test.runTest
@@ -95,7 +96,9 @@ class GestureSaveableRestRootTest {
         .setAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory())
         .build()
     setContent {
-      PreviewSharedElementTransitionLayout { CircuitCompositionLocals(circuit) { content() } }
+      PreviewSharedElementTransitionLayout {
+        CircuitCompositionLocals(circuit, CircuitSaver.NoOp) { content() }
+      }
     }
   }
 }

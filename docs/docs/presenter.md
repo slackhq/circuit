@@ -19,7 +19,7 @@ A very simple presenter can look like this:
 class FavoritesPresenter(...) : Presenter<State> {
   @Composable override fun present(): State {
     var favorites by remember { mutableStateOf(<initial>) }
-    
+
     return State(favorites) { event -> ... }
   }
 }
@@ -47,7 +47,7 @@ class FavoritesPresenter @AssistedInject constructor(
 
 Assisted injection allows passing on the `screen` and `navigator` from the relevant `Presenter.Factory` to this presenter for further reference.
 
-When dealing with nested presenters, a presenter could bypass implementing a class entirely by simply being written as a function that other presenters can use. 
+When dealing with nested presenters, a presenter could bypass implementing a class entirely by simply being written as a function that other presenters can use.
 
 ```kotlin
 // From cashapp/molecule's README examples
@@ -85,7 +85,7 @@ Presenter logic should _not_ emit any Compose UI. They are purely for presentati
 There are three types of composable retention functions used in Circuit.
 
 1. `remember` – from Compose, remembers a value across recompositions. Can be any type.
-2. `rememberRetained` – custom, remembers a value across recompositions, the back stack, and configuration changes. Can be any type, but should not retain leak-able things like `Navigator` instances or `Context` instances. Backed by a hidden `ViewModel` on Android.
+2. `rememberRetained` – custom, remembers a value across recompositions, the back stack, and configuration changes. Can be any type, but should not retain leak-able things like `Navigator` instances or `Context` instances. Backed by Compose's first-party retention store by default on Android.
 3. `rememberSaveable` – from Compose, remembers a value across recompositions, the back stack, configuration changes, _and_ process death. Must be a primitive, `Parcelable` (on Android), or implement a custom `Saver`. This should not retain leakable things like `Navigator` instances or `Context` instances and is backed by the framework saved instance state system.
 
 Developers should use the right tool accordingly depending on their use case. Consider these three examples.

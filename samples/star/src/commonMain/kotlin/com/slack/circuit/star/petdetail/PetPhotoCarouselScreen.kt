@@ -57,7 +57,6 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.overlay.LocalOverlayState
 import com.slack.circuit.overlay.OverlayEffect
 import com.slack.circuit.overlay.OverlayState.UNAVAILABLE
@@ -84,7 +83,6 @@ import kotlinx.coroutines.launch
 /** Default aspect ratio to use when photo metadata is not available (4:3) */
 private const val DEFAULT_ASPECT_RATIO = 4f / 3f
 
-@Parcelize
 @CircuitSerializable(AppScope::class)
 data class PetPhotoCarouselScreen(
   val id: Long,

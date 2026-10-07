@@ -8,6 +8,7 @@ import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.RetainObserver
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -160,14 +161,14 @@ internal class BackStackRecordLocalProviderViewModel : ViewModel() {
 }
 
 /**
- * A [RememberObserver] that triggers [onCompletelyForgotten] only when both its nested UI and stack
- * observers have been forgotten.
+ * A [RememberObserver] and [RetainObserver] that triggers [onCompletelyForgotten] only when both
+ * its nested UI and stack observers have released the record.
  *
  * This is used to clear a [ViewModelStore] associated with a back stack record only when that
  * record is truly gone from both the UI composition and the back stack state.
  */
 private class NestedRememberObserver(private val onCompletelyForgotten: () -> Unit) :
-  RememberObserver {
+  RememberObserver, RetainObserver {
   private var isRememberedForStack: Boolean = false
     set(value) {
       field = value
@@ -208,4 +209,14 @@ private class NestedRememberObserver(private val onCompletelyForgotten: () -> Un
   override fun onForgotten() {
     isRememberedForStack = false
   }
+
+  override fun onRetained() = onRemembered()
+
+  override fun onEnteredComposition() = Unit
+
+  override fun onExitedComposition() = Unit
+
+  override fun onRetired() = onForgotten()
+
+  override fun onUnused() = onAbandoned()
 }

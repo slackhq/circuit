@@ -15,7 +15,7 @@ Circuit is a simple, lightweight, and extensible framework for building Kotlin a
 
 !!! info "Compose Runtime vs. Compose UI"
     Compose itself is essentially two libraries – Compose Compiler and Compose UI. Most folks usually think of Compose UI, but the compiler (and associated runtime) are actually not specific to UI at all and offer powerful state management APIs.
-    
+
     Jake Wharton has an excellent post about this: https://jakewharton.com/a-jetpack-compose-by-any-other-name/
 
 It builds upon core principles we already know like Presenters and UDF, and adds native support in its framework for all the other requirements we set out for above. It’s heavily influenced by Cash App’s Broadway architecture ([talked about at Droidcon NYC](https://youtu.be/NAWq8VWiK5g), also very derived from our conversations with them).
@@ -32,7 +32,7 @@ Circuit’s core components are its `Presenter` and `Ui` interfaces.
 
 !!! note "Screens"
     The pairing of a `Presenter` and `Ui` for a given `Screen` key is what we semantically call a “screen".
-    
+
     * Your application is composed of “screens".
     * A simple counter `Presenter` + `Ui` pairing would be a “counter screen".
     * Nested presenter/UIs would be “nested circuits” or “sub screen".
@@ -50,7 +50,7 @@ This is a very simple case of a Counter screen that displays the count and has b
 There’s some glue code missing from this example that's covered in the [Code Gen](docs/code-gen.md) section later.
 
 ```kotlin
-@Parcelize
+@Serializable
 data object CounterScreen : Screen {
   data class CounterState(
     val count: Int,

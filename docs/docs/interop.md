@@ -1,7 +1,7 @@
 Interop
 =======
 
-Circuit can interop anywhere that Compose can interop. This includes common cases like Android 
+Circuit can interop anywhere that Compose can interop. This includes common cases like Android
 `Views`, RxJava, Kotlin `Flow`, and more.
 
 ## `Presenter`
@@ -16,7 +16,7 @@ Just embed the Circuit in a `ComposeView` like any other Compose UI.
 
 ### `View` -> `Ui`
 
-You can wrap your view in an `AndroidView` in a custom `Ui` implementation. 
+You can wrap your view in an `AndroidView` in a custom `Ui` implementation.
 
 ```kotlin
 class ExistingCustomViewUi : Ui<State> {

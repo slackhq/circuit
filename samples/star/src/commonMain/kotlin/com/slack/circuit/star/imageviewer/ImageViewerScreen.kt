@@ -37,7 +37,6 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest.Builder
 import coil3.request.crossfade
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -58,7 +57,6 @@ import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 
-@Parcelize
 @CircuitSerializable(AppScope::class)
 data class ImageViewerScreen(
   val id: Long,

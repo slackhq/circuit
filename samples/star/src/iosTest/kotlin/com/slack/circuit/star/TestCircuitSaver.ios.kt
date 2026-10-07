@@ -3,12 +3,13 @@
 package com.slack.circuit.star
 
 import com.slack.circuit.runtime.screen.CircuitSaver
+import com.slack.circuit.star.di.CommonAppGraph
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.createGraph
 
 @DependencyGraph(scope = AppScope::class)
-interface StarTestGraph {
+interface StarTestGraph : CommonAppGraph {
   val circuitSaver: CircuitSaver
 }
 

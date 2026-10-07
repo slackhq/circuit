@@ -32,17 +32,22 @@ kotlin {
   js {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
+    binaries.executable()
   }
   @OptIn(ExperimentalWasmDsl::class)
   wasmJs {
     outputModuleName = property("POM_ARTIFACT_ID").toString()
     browser()
+    binaries.executable()
   }
   // endregion
 
   @OptIn(ExperimentalKotlinGradlePluginApi::class) applyDefaultHierarchyTemplate()
 
-  sourceSets { commonMain { dependencies { api(libs.compose.runtime) } } }
+  sourceSets {
+    commonMain { dependencies { api(libs.compose.runtime) } }
+    jvmTest { dependencies { implementation(libs.kotlin.test) } }
+  }
 
   targets.configureEach {
     compilations.configureEach {

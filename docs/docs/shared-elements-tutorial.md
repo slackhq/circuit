@@ -23,12 +23,12 @@ To start we need to integrate the `SharedElementTransitionLayout` into the proje
 
 Modify the apps main entry point to wrap `NavigableCircuitContent` with a `SharedElementTransitionLayout`
 
-```kotlin title="Add SharedElementTransitionLayout" hl_lines="4 6"
-val backStack = rememberSaveableBackStack(InboxScreen)
-val navigator = rememberCircuitNavigator(backStack)
-CircuitCompositionLocals(circuit) { 
+```kotlin title="Add SharedElementTransitionLayout" hl_lines="1 4"
+CircuitCompositionLocals(circuit) {
+  val backStack = rememberSaveableBackStack(InboxScreen)
+  val navigator = rememberCircuitNavigator(backStack)
   SharedElementTransitionLayout {
-    NavigableCircuitContent(navigator = navigator, backStack = backStack) 
+    NavigableCircuitContent(navigator = navigator, backStack = backStack)
   }
 }
 ```
@@ -61,14 +61,14 @@ fun EmailDetailContent(email: Email, modifier: Modifier = Modifier) = SharedElem
     // ..
 ```
 
-The `SharedElementTransitionScope` can be placed anywhere in the Ui tree. It simply provides access to the underlying `SharedTransitionScope` so that the shared element modifiers are visible. This approach means you don't have to worry about passing the scope as a context receiver or with a `CompositionLocal`. 
+The `SharedElementTransitionScope` can be placed anywhere in the Ui tree. It simply provides access to the underlying `SharedTransitionScope` so that the shared element modifiers are visible. This approach means you don't have to worry about passing the scope as a context receiver or with a `CompositionLocal`.
 
 
 ### 3. (Optional) Create shared element keys
 
 Now we can start using Compose shared elements across the Inbox and Detail screens. We're going to add shared elements to transition the email sender, email title, and email body.
 
-It is recommended to create a unique key to safely match the shared elements against each other. 
+It is recommended to create a unique key to safely match the shared elements against each other.
 
 !!! info
     Using the Circuit `SharedTransitionKey` is optional, it is simply a marker type that can be helpful when grouping shared transition keys.
@@ -88,7 +88,7 @@ data class EmailSharedTransitionKey(val id: String, val type: ElementType) : Sha
 }
 ```
 
-### 4. Adding a `Modifier.sharedElement()` 
+### 4. Adding a `Modifier.sharedElement()`
 
 
 Now we can add `Modifier.sharedElement()` to the modifier chains of two matching Composable's. We will start with the sender's image, which can be found in the `EmailItem` on the Inbox screen, and the `EmailDetailContent` in the Detail screen.
@@ -189,9 +189,9 @@ The call to `requireAnimatedScope` is accessing a `AnimatedVisibilityScope` that
     With that we now have a shared element transition where the sender image transitions across the two screens!
     </div>
 
-### 5. Adding `Modifier.sharedBounds()` 
+### 5. Adding `Modifier.sharedBounds()`
 
-As the remaining shared items are all `Text` Composable we will use `Modifier.sharedBounds()`. 
+As the remaining shared items are all `Text` Composable we will use `Modifier.sharedBounds()`.
 Initially the `sharedBounds()` setup should be the same for each type of `Text` in `EmailItem` and in `EmailDetailContent`.
 
 ```kotlin title="Sender Text"
@@ -271,6 +271,5 @@ At this point you can customize the enter and exit transitions, or any of the ot
 
 ## Conclusion
 
-You should now be able to integrate Circuit Shared Elements into your existing app! 
+You should now be able to integrate Circuit Shared Elements into your existing app!
 Circuit Shared Elements provides easy access to the needed `SharedTransitionScope` with `SharedElementTransitionScope` directly where it is needed. The `SharedElementTransitionScope` will then provide easy access to the `AnimatedVisibilityScope` used by Circuit for `Navigation`. Once setup this will let you use the standard Compose Shared Element transitions for any `Screen` to `Screen` transition.
-

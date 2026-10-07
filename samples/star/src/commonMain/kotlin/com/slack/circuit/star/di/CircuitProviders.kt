@@ -12,6 +12,7 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.serialization.CircuitSerializerRegistration
 import com.slack.circuit.serialization.SerializableCircuitSaver
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.MapKey
 import dev.zacsweers.metro.Multibinds
@@ -23,6 +24,7 @@ import kotlin.reflect.KClass
   ExperimentalCircuitApi::class // For AnimatedScreenTransform
 )
 @ContributesTo(AppScope::class)
+@BindingContainer
 interface CircuitProviders {
   @Multibinds fun presenterFactories(): Set<Presenter.Factory>
 
@@ -34,25 +36,27 @@ interface CircuitProviders {
   @Multibinds(allowEmpty = true)
   fun circuitSerializerRegistrations(): Set<CircuitSerializerRegistration>
 
-  @SingleIn(AppScope::class)
-  @Provides
-  fun provideCircuitSaver(registrations: Set<CircuitSerializerRegistration>): CircuitSaver =
-    SerializableCircuitSaver(registrations)
+  companion object {
+    @SingleIn(AppScope::class)
+    @Provides
+    fun provideCircuitSaver(registrations: Set<CircuitSerializerRegistration>): CircuitSaver =
+      SerializableCircuitSaver(registrations)
 
-  @SingleIn(AppScope::class)
-  @Provides
-  fun provideCircuit(
-    presenterFactories: Set<Presenter.Factory>,
-    uiFactories: Set<Ui.Factory>,
-    animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
-    circuitSaver: CircuitSaver,
-  ): Circuit {
-    return Circuit.Builder()
-      .addPresenterFactories(presenterFactories)
-      .addUiFactories(uiFactories)
-      .addAnimatedScreenTransforms(animatedScreenTransforms)
-      .setCircuitSaver(circuitSaver)
-      .build()
+    @SingleIn(AppScope::class)
+    @Provides
+    fun provideCircuit(
+      presenterFactories: Set<Presenter.Factory>,
+      uiFactories: Set<Ui.Factory>,
+      animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
+      circuitSaver: CircuitSaver,
+    ): Circuit {
+      return Circuit.Builder()
+        .addPresenterFactories(presenterFactories)
+        .addUiFactories(uiFactories)
+        .addAnimatedScreenTransforms(animatedScreenTransforms)
+        .setCircuitSaver(circuitSaver)
+        .build()
+    }
   }
 }
 

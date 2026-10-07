@@ -7,32 +7,41 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.slack.circuit.runtime.screen.CircuitSaver.Companion.NoOp
 
 /**
  * Converts [Screen]s and [PopResult]s to and from representations that can be stored in a Compose
  * `SaveableStateRegistry`.
  *
- * Circuit's saveable back/nav stack implementations use this to persist navigation state across
- * configuration changes and process death. On Android, [Screen] and [PopResult] still require
- * `Parcelable` in 0.35. [CircuitSaver] implementations choose the representation that is actually
- * stored; a future release removes the Android `Parcelable` supertype requirement.
+ * Circuit's saveable back and nav stack implementations use this to persist navigation state.
+ * Implementations choose the stored representation. Returned values must be supported by the
+ * platform's `SaveableStateRegistry`.
  *
- * Available strategies include
- * - Android `Parcelable` (the Android default)
- * - kotlinx-serialization (via the `circuit-serialization` artifact)
- * - no persistence at all ([NoOp]).
- *
- * Returned values must be storable in the platform's `SaveableStateRegistry`. On Android that means
- * Bundle-supported types like `Parcelable` or `SavedState`. Other platforms hold saved state in
- * memory and accept any value, so a saver only matters there if the host app wires its
- * `SaveableStateRegistry` to durable storage. Apps that do should use a serializing saver like
- * `SerializableCircuitSaver` so the stored values are actually encodable.
+ * Savers fail fast at save time when handed a value they do not support, since the developer can
+ * fix the value's type immediately. Restoration degrades instead. Saved data can come from an older
+ * app version, so unrestorable values restore as null and stacks fall back to their initial state.
  */
 @Stable
 public abstract class CircuitSaver protected constructor() {
+  /**
+   * Returns true when this saver handles saving [value].
+   *
+   * Composite savers select the first saver whose [canSave] returns true. That saver's [save]
+   * result is final, even when it returns null or throws. The default is false so existing savers
+   * do not claim values when used in a composite unless they opt in.
+   */
+  protected open fun canSave(value: CircuitSaveable): Boolean = false
+
   /** Returns a saveable representation of [value], or null to skip persisting it. */
   public abstract fun save(value: CircuitSaveable): Any?
+
+  /**
+   * Returns true when this saver handles restoring [saved].
+   *
+   * Composite savers select the first saver whose [canRestore] returns true. That saver's
+   * restoration result is final, even when it returns null or throws. The default is false so
+   * existing savers do not claim saved values when used in a composite unless they opt in.
+   */
+  protected open fun canRestore(saved: Any): Boolean = false
 
   /**
    * Restores a [CircuitSaveable] previously returned by [save], or null if it cannot be restored.
@@ -40,6 +49,14 @@ public abstract class CircuitSaver protected constructor() {
   protected abstract fun restore(saved: Any): CircuitSaveable?
 
   public companion object {
+    internal fun canSaveForComposite(
+      saver: CircuitSaver,
+      value: CircuitSaveable,
+    ): Boolean = saver.canSave(value)
+
+    internal fun canRestoreForComposite(saver: CircuitSaver, saved: Any): Boolean =
+      saver.canRestore(saved)
+
     @PublishedApi
     internal fun restoreForInline(
       saver: CircuitSaver,
@@ -50,8 +67,60 @@ public abstract class CircuitSaver protected constructor() {
      * A [CircuitSaver] that persists nothing. Stacks saved with this restore to their initial
      * state.
      */
-    public val NoOp: CircuitSaver = NoOpCircuitSaver
+    public val NoOp: CircuitSaver = DroppingCircuitSaver {}
+
+    /**
+     * Returns a [CircuitSaver] that claims every value and persists none of them, reporting each
+     * dropped value to [onDropped].
+     *
+     * Append this to a composite to drop values that no earlier saver supports instead of failing
+     * the save. Use [NoOp] when the drops do not need to be observed.
+     */
+    public fun Dropping(onDropped: (CircuitSaveable) -> Unit): CircuitSaver =
+      DroppingCircuitSaver(onDropped)
   }
+}
+
+/**
+ * Returns a saver that tries this saver and then [other].
+ *
+ * The first saver that claims a value is the only saver invoked. Saving throws if neither saver
+ * claims the value, while restoration returns null. Append [CircuitSaver.NoOp] to silently drop
+ * values that no earlier saver supports, or use [CircuitSaver.Dropping] to observe those drops.
+ */
+public operator fun CircuitSaver.plus(other: CircuitSaver): CircuitSaver =
+  CompositeCircuitSaver(delegates + other.delegates)
+
+private val CircuitSaver.delegates: List<CircuitSaver>
+  get() =
+    if (this is CompositeCircuitSaver) {
+      delegates
+    } else {
+      listOf(this)
+    }
+
+private class CompositeCircuitSaver(val delegates: List<CircuitSaver>) : CircuitSaver() {
+  override fun save(value: CircuitSaveable): Any? {
+    val delegate =
+      delegates.firstOrNull { canSaveForComposite(it, value) }
+        ?: throw IllegalArgumentException(
+          "No CircuitSaver in this composite can save ${value::class}. " +
+            "Add a saver that supports this type, append CircuitSaver.NoOp to drop it, or " +
+            "append CircuitSaver.Dropping { ... } to observe the drop."
+        )
+    return delegate.save(value)
+  }
+
+  protected override fun canSave(value: CircuitSaveable): Boolean = delegates.any {
+    canSaveForComposite(it, value)
+  }
+
+  protected override fun canRestore(saved: Any): Boolean = delegates.any {
+    canRestoreForComposite(it, saved)
+  }
+
+  protected override fun restore(saved: Any): CircuitSaveable? =
+    delegates.firstOrNull { canRestoreForComposite(it, saved) }?.let { restoreForInline(it, saved) }
 }
 
 /**
@@ -107,40 +176,45 @@ public inline fun <reified T : PopResult> CircuitSaver.restorePopResult(
 }
 
 /**
- * The default [CircuitSaver] for the current platform.
+ * The default [CircuitSaver] used by Circuit's saveable back stacks and result handlers.
  *
- * On Android, screens and results pass through unchanged and are persisted via their `Parcelable`
- * implementations. Other platforms hold saved state in memory, so values also pass through
- * unchanged.
- */
-public expect val DefaultCircuitSaver: CircuitSaver
-
-/**
- * The [CircuitSaver] used by Circuit's saveable back stack implementations when one is not passed
- * explicitly. Defaults to [DefaultCircuitSaver].
- *
- * Provide this at the app root (see [ProvideCircuitSaver]) so it reaches back stacks created
- * anywhere in the composition, including ones created outside `CircuitCompositionLocals`.
+ * `CircuitCompositionLocals` provides this for normal app usage. Use [ProvideCircuitSaver] in
+ * another composition scope, or pass a saver directly to the remember API.
  */
 public val LocalCircuitSaver: ProvidableCompositionLocal<CircuitSaver> = staticCompositionLocalOf {
-  DefaultCircuitSaver
+  error(
+    "No CircuitSaver provided. Wrap this content in CircuitCompositionLocals or " +
+      "ProvideCircuitSaver, or pass a CircuitSaver directly to the remember API."
+  )
 }
+
+private val LocalProvidedCircuitSaver = staticCompositionLocalOf<CircuitSaver?> { null }
+
+/** Returns the saver installed by [ProvideCircuitSaver], or null when none is installed. */
+@InternalCircuitSaverApi
+@Composable
+public fun currentProvidedCircuitSaverOrNull(): CircuitSaver? = LocalProvidedCircuitSaver.current
 
 /** Provides [circuitSaver] as [LocalCircuitSaver] to [content]. */
 @Composable
 public fun ProvideCircuitSaver(circuitSaver: CircuitSaver, content: @Composable () -> Unit) {
-  CompositionLocalProvider(LocalCircuitSaver provides circuitSaver, content = content)
+  CompositionLocalProvider(
+    LocalCircuitSaver provides circuitSaver,
+    LocalProvidedCircuitSaver provides circuitSaver,
+    content = content,
+  )
 }
 
-/** Passes values through unchanged. */
-internal object PassThroughCircuitSaver : CircuitSaver() {
-  override fun save(value: CircuitSaveable): Any = value
+private class DroppingCircuitSaver(private val onDropped: (CircuitSaveable) -> Unit) :
+  CircuitSaver() {
+  protected override fun canSave(value: CircuitSaveable): Boolean = true
 
-  override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
-}
+  override fun save(value: CircuitSaveable): Any? {
+    onDropped(value)
+    return null
+  }
 
-private object NoOpCircuitSaver : CircuitSaver() {
-  override fun save(value: CircuitSaveable): Any? = null
+  protected override fun canRestore(saved: Any): Boolean = true
 
-  override fun restore(saved: Any): CircuitSaveable? = null
+  protected override fun restore(saved: Any): CircuitSaveable? = null
 }

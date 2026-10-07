@@ -15,6 +15,7 @@ import com.slack.circuit.retained.retain
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -72,7 +73,7 @@ class RecordLifeCycleTest {
 @OptIn(ExperimentalTestApi::class)
 private fun ComposeUiTest.setCircuitContent(circuit: Circuit) {
   setContent {
-    CircuitCompositionLocals(circuit) {
+    CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
       val backStack = rememberSaveableBackStack(TestScreen)
       val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
       NavigableCircuitContent(navigator = navigator, backStack = backStack)

@@ -13,12 +13,12 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
-      val navStack = rememberSaveableNavStack(HomeScreen)
-      val navigator = rememberAndroidScreenAwareNavigator(
-        rememberCircuitNavigator(navStack),   // the Circuit navigator it wraps
-        this@MainActivity,                     // Context used to start activities
-      )
       CircuitCompositionLocals(circuit) {
+        val navStack = rememberSaveableNavStack(HomeScreen)
+        val navigator = rememberAndroidScreenAwareNavigator(
+          rememberCircuitNavigator(navStack),   // the Circuit navigator it wraps
+          this@MainActivity,                     // Context used to start activities
+        )
         NavigableCircuitContent(navigator, navStack)
       }
     }

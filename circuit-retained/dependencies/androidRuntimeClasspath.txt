@@ -90,6 +90,8 @@ org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-savedstate
 org.jetbrains.androidx.lifecycle:lifecycle-viewmodel
 org.jetbrains.androidx.savedstate:savedstate-compose
 org.jetbrains.androidx.savedstate:savedstate
+org.jetbrains.compose.runtime:runtime-android
+org.jetbrains.compose.runtime:runtime-saveable-android
 org.jetbrains.compose.runtime:runtime-saveable
 org.jetbrains.compose.runtime:runtime
 org.jetbrains.kotlin:kotlin-bom

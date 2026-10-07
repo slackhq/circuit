@@ -42,6 +42,7 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.rememberPresenter
 import com.slack.circuit.foundation.rememberUi
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 
@@ -74,7 +75,7 @@ internal fun buildCircuit(): Circuit {
 @Composable
 fun InteropSample(modifier: Modifier = Modifier) {
   val circuit = remember { buildCircuit() }
-  CircuitCompositionLocals(circuit) {
+  CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
     var selectedPresenterIndex by remember { mutableIntStateOf(0) }
     var selectedUiIndex by remember { mutableIntStateOf(0) }
     var count by remember { mutableIntStateOf(0) }

@@ -18,7 +18,8 @@ class NavigableCircuitSaveableStateTestActivity : ComponentActivity() {
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Saveable)
 
     setContent {
-      CircuitCompositionLocals(circuit) {
+      val circuitSaver = rememberDefaultCircuitSaver()
+      CircuitCompositionLocals(circuit, circuitSaver) {
         val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
         val navigator =
           rememberCircuitNavigator(

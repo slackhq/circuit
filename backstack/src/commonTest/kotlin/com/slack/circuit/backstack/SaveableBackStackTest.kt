@@ -12,7 +12,6 @@ import assertk.assertions.isNotNull
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.CircuitSaver
-import com.slack.circuit.runtime.screen.DefaultCircuitSaver
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -74,7 +73,7 @@ class SaveableBackStackTest {
     assertThat(saved).isNotNull()
     saved!!
 
-    val restored = SaveableBackStack.Saver(DefaultCircuitSaver).restore(saved)
+    val restored = SaveableBackStack.Saver(PassThroughCircuitSaver).restore(saved)
     assertThat(restored).isNotNull()
     restored!!
 
@@ -99,7 +98,7 @@ class SaveableBackStackTest {
     assertThat(saved).isNotNull()
     saved!!
 
-    val restored = SaveableBackStack.Saver(DefaultCircuitSaver).restore(saved)
+    val restored = SaveableBackStack.Saver(PassThroughCircuitSaver).restore(saved)
     assertThat(restored).isNotNull()
     restored!!
 
@@ -222,7 +221,7 @@ class SaveableBackStackTest {
 
 private fun save(
   backStack: SaveableBackStack,
-  circuitSaver: CircuitSaver = DefaultCircuitSaver,
+  circuitSaver: CircuitSaver = PassThroughCircuitSaver,
 ) =
   with(SaveableBackStack.Saver(circuitSaver)) {
     val scope = SaverScope { true }
@@ -231,7 +230,21 @@ private fun save(
 
 private fun droppingSaver(vararg dropped: CircuitSaveable): CircuitSaver =
   object : CircuitSaver() {
+    override fun canSave(value: CircuitSaveable): Boolean = true
+
     override fun save(value: CircuitSaveable): Any? = value.takeUnless { it in dropped }
+
+    override fun canRestore(saved: Any): Boolean = true
 
     override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
   }
+
+private object PassThroughCircuitSaver : CircuitSaver() {
+  override fun canSave(value: CircuitSaveable): Boolean = true
+
+  override fun save(value: CircuitSaveable): Any = value
+
+  override fun canRestore(saved: Any): Boolean = true
+
+  override fun restore(saved: Any): CircuitSaveable? = saved as? CircuitSaveable
+}

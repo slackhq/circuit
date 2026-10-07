@@ -45,6 +45,8 @@ fun buildCircuitSaver(): CircuitSaver =
           subclass(TabScreen.Screen2::class)
           subclass(TabScreen.Screen3::class)
           subclass(InfoScreen::class)
+          subclass(ItemListScreen::class)
+          subclass(ItemDetailScreen::class)
         }
       }
     }

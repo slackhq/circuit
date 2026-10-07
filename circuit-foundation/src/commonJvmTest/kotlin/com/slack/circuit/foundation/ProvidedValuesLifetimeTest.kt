@@ -28,6 +28,7 @@ import com.slack.circuit.internal.test.TestState
 import com.slack.circuit.internal.test.createTestCircuit
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -47,7 +48,7 @@ class ProvidedValuesLifetimeTest {
         )
 
       setContent {
-        CircuitCompositionLocals(circuit) {
+        CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
           val backStack = rememberSaveableBackStack(TestScreen.ScreenA)
           val navigator =
             rememberCircuitNavigator(

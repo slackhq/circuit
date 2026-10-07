@@ -10,7 +10,7 @@ import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
-import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.ParcelableScreen
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
@@ -30,7 +30,7 @@ class CircuitCounterPresenter(private val initialCount: Int) : Presenter<Counter
 
 @Parcelize
 @Serializable
-data object CounterScreen : Screen {
+data object CounterScreen : ParcelableScreen {
   data class State(val count: Int, val eventSink: (Event) -> Unit = {}) : CircuitUiState
 
   sealed interface Event : CircuitUiEvent {

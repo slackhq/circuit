@@ -35,6 +35,7 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.rememberAnsweringNavigator as rememberRuntimeAnsweringNavigator
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.fail
@@ -115,7 +116,7 @@ class NavResultTest {
     lateinit var answeringResultHandler: RuntimeAnsweringResultHandler
     composeTestRule.run {
       setContent {
-        CircuitCompositionLocals(circuit) {
+        CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
           backStack = rememberSaveableBackStack(WrapperScreen)
           answeringResultHandler = rememberAnsweringResultHandler()
           val navigator =
@@ -142,7 +143,7 @@ class NavResultTest {
     lateinit var backStack: SaveableBackStack
     lateinit var answeringResultHandler: RuntimeAnsweringResultHandler
     setContent {
-      CircuitCompositionLocals(circuit) {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
         backStack = rememberSaveableBackStack(TestResultScreen("root", answer = false))
         answeringResultHandler = rememberAnsweringResultHandler()
         val navigator =

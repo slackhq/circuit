@@ -3,6 +3,7 @@
 package com.slack.circuit.star.data
 
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
@@ -14,7 +15,8 @@ import okhttp3.Cache
 import okhttp3.OkHttpClient
 
 @ContributesTo(AppScope::class)
-interface JvmNetworkProviders {
+@BindingContainer
+object JvmNetworkProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideHttpCache(appDirs: StarAppDirs): Cache =

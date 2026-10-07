@@ -12,20 +12,15 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_GO_NEXT
 import com.slack.circuit.internal.test.TestContentTags.TAG_INCREASE_COUNT
 import com.slack.circuit.internal.test.TestContentTags.TAG_LABEL
 import com.slack.circuit.internal.test.TestContentTags.TAG_POP
-import com.slack.circuit.retained.CircuitRetainedSettings
-import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 /**
  * Mirrors NavigableCircuitRetainedStateAndroidTest with first-party `retain {}` in the presenter
- * and [CircuitRetainedSettings.useFirstParty] enabled: retained values are scoped per record,
- * survive recreation while their record is in the nav stack, and are cleared when the record is
- * popped.
+ * and the default first-party backing: retained values are scoped per record, survive recreation
+ * while their record is in the nav stack, and are cleared when the record is popped.
  */
-@OptIn(ExperimentalCircuitRetainedApi::class)
 @RunWith(ComposeUiTestRunner::class)
 class NavigableCircuitFirstPartyRetainAndroidTest {
 
@@ -34,11 +29,6 @@ class NavigableCircuitFirstPartyRetainAndroidTest {
 
   private val scenario: ActivityScenario<NavigableCircuitFirstPartyRetainTestActivity>
     get() = composeTestRule.activityRule.scenario
-
-  @After
-  fun tearDown() {
-    CircuitRetainedSettings.useFirstParty = false
-  }
 
   @Test
   fun retainScopedToBackstackWithRecreations() {

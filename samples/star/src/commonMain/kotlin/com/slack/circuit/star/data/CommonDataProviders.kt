@@ -3,6 +3,7 @@
 package com.slack.circuit.star.data
 
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
@@ -16,7 +17,8 @@ import okio.FileSystem
 import okio.SYSTEM
 
 @ContributesTo(AppScope::class)
-interface CommonDataProviders {
+@BindingContainer
+object CommonDataProviders {
   @Provides
   @SingleIn(AppScope::class)
   fun provideJson(): Json {
@@ -40,10 +42,8 @@ interface CommonDataProviders {
 
   @Provides @SingleIn(AppScope::class) fun provideFileSystem(): FileSystem = FileSystem.SYSTEM
 
-  companion object {
-    const val MEMORY_CACHE_SIZE = 1024L * 1024L * 4L // 4 MB
-    const val MAX_CACHE_SIZE = 1024L * 1024L * 25L // 25 MB
+  const val MEMORY_CACHE_SIZE = 1024L * 1024L * 4L // 4 MB
+  const val MAX_CACHE_SIZE = 1024L * 1024L * 25L // 25 MB
 
-    fun httpCacheDir(appDirs: StarAppDirs) = appDirs.userCache / "http_cache"
-  }
+  fun httpCacheDir(appDirs: StarAppDirs) = appDirs.userCache / "http_cache"
 }

@@ -8,11 +8,15 @@ For navigable contents, navigation becomes two parts:
 
 A new navigable content surface is handled via the `NavigableCircuitContent` functions. If you want to have custom behavior for when back is pressed on the root screen (i.e. `navStack.isAtRoot`), perform this in the lambda passed to `rememberCircuitNavigator`'s `onRootPop`.
 
+See [Saving navigation state](navigation-persistence.md) to choose how the stack persists its screens and results.
+
 ```kotlin
 setContent {
-  val navStack = rememberSaveableNavStack(root = HomeScreen)
-  val navigator = rememberCircuitNavigator(navStack) { /* do something on root */ }
-  NavigableCircuitContent(navigator, navStack)
+  CircuitCompositionLocals(circuit) {
+    val navStack = rememberSaveableNavStack(root = HomeScreen)
+    val navigator = rememberCircuitNavigator(navStack) { /* do something on root */ }
+    NavigableCircuitContent(navigator, navStack)
+  }
 }
 ```
 
@@ -57,8 +61,9 @@ val takePhotoNavigator = rememberAnsweringNavigator<TakePhotoScreen.Result>(navi
 takePhotoNavigator.goTo(TakePhotoScreen)
 
 // In TakePhotoScreen.kt
+@Serializable
 data object TakePhotoScreen : Screen {
-  @Parcelize
+  @Serializable
   data class Result(val uri: String) : PopResult
 }
 

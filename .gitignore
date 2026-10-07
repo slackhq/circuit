@@ -74,5 +74,6 @@ fastlane/report.xml
 
 # AI Stuff
 /.claude/settings.local.json
+/.claude/worktrees/
 /CLAUDE.local.md
 .ai

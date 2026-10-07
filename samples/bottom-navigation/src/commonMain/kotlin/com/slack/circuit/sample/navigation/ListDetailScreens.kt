@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.internal.runtime.Parcelize
 import com.slack.circuit.runtime.CircuitContext
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -26,10 +25,11 @@ import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuitx.navstage.DetailPane
 import com.slack.circuitx.navstage.ListPane
+import kotlinx.serialization.Serializable
 
-@Parcelize data object ItemListScreen : Screen, ListPane
+@Serializable data object ItemListScreen : Screen, ListPane
 
-@Parcelize data class ItemDetailScreen(val itemId: Int) : Screen, DetailPane
+@Serializable data class ItemDetailScreen(val itemId: Int) : Screen, DetailPane
 
 data class ItemListState(val items: List<String>, val eventSink: (ItemListEvent) -> Unit) :
   CircuitUiState

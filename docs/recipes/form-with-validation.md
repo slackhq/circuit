@@ -27,7 +27,7 @@ class FieldState(private val validate: (String) -> String?) {
     value = newValue
     error = validate(newValue)
   }
-  
+
   private fun validate(newValue: String): String? {
     // returns an error message or null, so each field can use its own rule
   }

@@ -134,5 +134,9 @@ class RetainedStateRestorationTester(private val composeTestRule: ComposeContent
     override fun forgetUnclaimedValues() {
       currentRegistry.forgetUnclaimedValues()
     }
+
+    override fun forgetValue(key: String) {
+      currentRegistry.forgetValue(key)
+    }
   }
 }

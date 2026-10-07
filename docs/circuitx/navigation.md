@@ -9,6 +9,8 @@ if you just want to know when navigation happens without changing it.
 This system is handy for advanced routing, blocking navigation, or tracking navigation events
 for analytics.
 
+The examples on this page run inside `CircuitCompositionLocals(circuit)`, which provides the saver used by their back stacks.
+
 ## Intercepting Overview
 
 Navigation interceptors are useful in several scenarios:
@@ -143,20 +145,19 @@ val circuit = buildCircuit()
 
 @Composable
 fun App() {
-  val backStack = rememberSaveableBackStack(HomeScreen)
-  val baseNavigator = rememberCircuitNavigator(backStack)
-
-  // Create the intercepting navigator with all our interceptors
-  val navigator =
-    rememberInterceptingNavigator(
-      navigator = baseNavigator,
-      interceptors = interceptors,
-      eventListeners = eventListeners,
-      notifier = notifier,
-    )
-
-  // Use the navigator with your Circuit
   CircuitCompositionLocals(circuit) {
+    val backStack = rememberSaveableBackStack(HomeScreen)
+    val baseNavigator = rememberCircuitNavigator(backStack)
+
+    // Create the intercepting navigator with all our interceptors
+    val navigator =
+      rememberInterceptingNavigator(
+        navigator = baseNavigator,
+        interceptors = interceptors,
+        eventListeners = eventListeners,
+        notifier = notifier,
+      )
+
     NavigableCircuitContent(navigator = navigator, backStack = backStack)
   }
 }
@@ -383,4 +384,3 @@ It will also intercept and consume navigation events for `AndroidScreen` subtype
 - Can be combined with multiple interceptors
 - Provides detailed control over success/failure handling
 - Can be used with navigation event listeners and failure notifiers
-

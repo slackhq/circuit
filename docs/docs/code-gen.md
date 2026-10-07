@@ -137,6 +137,8 @@ data class LegacyScreen(val value: String) : Screen
 
 Apps without a supported DI framework can build a `SerializersModule` manually. On JVM and Android, they can use `ReflectiveSerializableCircuitSaver` instead.
 
+See [Saving navigation state](navigation-persistence.md) for how to provide the resulting saver or combine it with other persistence strategies.
+
 ## Classes
 
 `Presenter` and `Ui` classes can be annotated and have their corresponding `Presenter.Factory` or

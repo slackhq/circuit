@@ -3,15 +3,15 @@
 package com.slack.circuit.serialization
 
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.slack.circuit.runtime.screen.CircuitSaveable
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.runtime.screen.restorePopResult
 import com.slack.circuit.runtime.screen.restoreScreen
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -35,33 +35,39 @@ class SerializableCircuitSaverAndroidTest {
       SavedStateConfiguration {
         serializersModule = SerializersModule {
           polymorphic(CircuitSaveable::class) {
-            subclass(SerializableParcelableScreen::class)
+            subclass(SerializableScreen::class)
+            subclass(SerializablePopResult::class)
           }
         }
       }
     )
 
   @Test
-  fun saveUsesSavedStateInsteadOfPassingThroughParcelable() {
-    val screen = SerializableParcelableScreen("value")
+  fun saveUsesSavedStateForPlainScreenAndPopResult() {
+    val screen = SerializableScreen("value")
+    val result = SerializablePopResult(42)
 
-    val saved = saver.save(screen)
+    val savedScreen = saver.save(screen)
+    val savedResult = saver.save(result)
 
-    assertIs<Bundle>(saved)
-    assertNotSame<Any>(screen, saved)
-    assertEquals(screen, saver.restoreScreen<SerializableParcelableScreen>(saved))
+    assertIs<Bundle>(savedScreen)
+    assertIs<Bundle>(savedResult)
+    assertNotSame<Any>(screen, savedScreen)
+    assertNotSame<Any>(result, savedResult)
+    assertEquals(screen, saver.restoreScreen<SerializableScreen>(savedScreen))
+    assertEquals(result, saver.restorePopResult<SerializablePopResult>(savedResult))
   }
 
   @Test
   fun rememberSaveableRestoresFromSerializedSavedState() {
     val restorationTester = StateRestorationTester(composeTestRule)
-    val initialScreen = SerializableParcelableScreen("restored")
+    val initialScreen = SerializableScreen("restored")
     var initialCalls = 0
-    lateinit var screen: SerializableParcelableScreen
+    lateinit var screen: SerializableScreen
     val screenSaver =
-      Saver<SerializableParcelableScreen, Any>(
+      Saver<SerializableScreen, Any>(
         save = { saver.save(it) },
-        restore = { saver.restoreScreen<SerializableParcelableScreen>(it) },
+        restore = { saver.restoreScreen<SerializableScreen>(it) },
       )
     restorationTester.setContent {
       screen =
@@ -79,18 +85,6 @@ class SerializableCircuitSaverAndroidTest {
   }
 }
 
-@Serializable
-private data class SerializableParcelableScreen(val value: String) : Screen {
-  override fun describeContents(): Int = 0
+@Serializable private data class SerializableScreen(val value: String) : Screen
 
-  override fun writeToParcel(dest: Parcel, flags: Int) {
-    dest.writeString(value)
-  }
-
-  companion object CREATOR : Parcelable.Creator<SerializableParcelableScreen> {
-    override fun createFromParcel(source: Parcel): SerializableParcelableScreen =
-      SerializableParcelableScreen(checkNotNull(source.readString()))
-
-    override fun newArray(size: Int): Array<SerializableParcelableScreen?> = arrayOfNulls(size)
-  }
-}
+@Serializable private data class SerializablePopResult(val value: Int) : PopResult

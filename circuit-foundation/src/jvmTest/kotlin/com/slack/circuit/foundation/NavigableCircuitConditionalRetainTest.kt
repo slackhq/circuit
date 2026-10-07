@@ -21,6 +21,7 @@ import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
+import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import org.junit.Rule
 import org.junit.Test
@@ -198,7 +199,7 @@ class NavigableCircuitConditionalRetainTest {
   private fun ComposeContentTestRule.setUpTestContent(circuit: Circuit, screen: Screen): Navigator {
     lateinit var navigator: Navigator
     setContent {
-      CircuitCompositionLocals(circuit) {
+      CircuitCompositionLocals(circuit, CircuitSaver.NoOp) {
         val backStack = rememberSaveableBackStack(screen)
         navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
         NavigableCircuitContent(navigator = navigator, backStack = backStack)

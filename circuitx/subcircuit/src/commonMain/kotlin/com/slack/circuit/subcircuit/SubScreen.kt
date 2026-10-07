@@ -7,9 +7,8 @@ import androidx.compose.runtime.Stable
 /**
  * Marker interface for screens used in SubCircuits.
  *
- * Unlike Circuit's Screen, this does NOT require Parcelable and are therefore not natively
- * saveable. SubScreens are designed to be used within a parent component that handles navigation
- * and other cross-cutting concerns.
+ * SubScreens are not navigation records, and SubCircuit does not persist them. They are designed to
+ * be used within a parent component that handles navigation and other cross-cutting concerns.
  *
  * @param OuterEvent The type of events that will be sent to the outer event sink. Should implement
  *   [SubCircuitOuterEvent].

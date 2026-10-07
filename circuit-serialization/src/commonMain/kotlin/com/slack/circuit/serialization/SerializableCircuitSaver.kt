@@ -3,6 +3,7 @@
 package com.slack.circuit.serialization
 
 import androidx.savedstate.SavedState
+import androidx.savedstate.read
 import androidx.savedstate.serialization.SavedStateConfiguration
 import androidx.savedstate.serialization.decodeFromSavedState
 import androidx.savedstate.serialization.encodeToSavedState
@@ -10,18 +11,15 @@ import com.slack.circuit.runtime.screen.CircuitSaveable
 import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.modules.plus
 
 /**
- * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx serialization. It
+ * Returns a [CircuitSaver] that persists [CircuitSaveable] types with kotlinx-serialization. It
  * encodes them to `SavedState` with `androidx.savedstate`.
- *
- * Android [Screen] and [PopResult] implementations must still be `Parcelable`. This saver stores
- * `SavedState` instead of the Parcelable value. A future release will remove the Parcelable
- * requirement.
  *
  * Screens and results must have a kotlinx serializer and be registered for polymorphic
  * serialization against the [CircuitSaveable] base class. Use [Serializable] for manual
@@ -91,8 +89,17 @@ private class SavedStateCircuitSaver(
 ) : CircuitSaver() {
   private val circuitSaveableSerializer = PolymorphicSerializer(CircuitSaveable::class)
 
-  override fun save(value: CircuitSaveable): Any {
-    return encode(circuitSaveableSerializer, value)
+  override fun save(value: CircuitSaveable): Any = encode(circuitSaveableSerializer, value)
+
+  @OptIn(ExperimentalSerializationApi::class)
+  protected override fun canSave(value: CircuitSaveable): Boolean =
+    configuration.serializersModule.getPolymorphic(CircuitSaveable::class, value) != null
+
+  @OptIn(ExperimentalSerializationApi::class)
+  protected override fun canRestore(saved: Any): Boolean {
+    if (saved is CircuitSaveable) return true
+    val type = (saved as? SavedState)?.read { getStringOrNull("type") } ?: return false
+    return configuration.serializersModule.getPolymorphic(CircuitSaveable::class, type) != null
   }
 
   protected override fun restore(saved: Any): CircuitSaveable? =

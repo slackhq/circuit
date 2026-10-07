@@ -4,6 +4,7 @@ package com.slack.circuitx.navstage
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -19,8 +20,8 @@ import com.slack.circuit.runtime.navigation.NavStackList
  * Composes a [NavStageTransition] around the stage content and an optional [NavStageFrame] around
  * everything. When no strategy matches, falls back to [SinglePaneNavStage].
  *
- * This is a sibling of `AnimatedNavDecoration` rather than an extension of it, so shared element
- * transitions and `Circuit.Builder.addAnimatedScreenTransform` are not available to stage content.
+ * This is a sibling of `AnimatedNavDecoration` rather than an extension of it, so
+ * `Circuit.Builder.addAnimatedScreenTransform` is not applied to stage content.
  */
 @Stable
 @ExperimentalNavStageApi
@@ -39,7 +40,7 @@ public class NavStageDecoration(
   ) {
     val stage = rememberStage(strategies, args)
     frame.Content(modifier, stage, args) {
-      NavStageContent(strategies, stage, args, stageTransition, content)
+      NavStageContent(strategies, stage, args, stageTransition, navigator, content)
     }
   }
 }
@@ -54,13 +55,19 @@ private fun <T : NavArgument> rememberStage(
   strategies: List<NavStageStrategy>,
   args: NavStackList<T>,
 ): NavStage<T> {
-  val fallback = remember { SinglePaneNavStage<T>() }
   val resolved =
     strategies
       .mapIndexed { index, strategy -> key(index) { strategy.calculateStage(args) } }
       .firstNotNullOfOrNull { it }
-  return resolved ?: fallback
+  return resolved ?: SinglePaneNavStage.get()
 }
+
+/**
+ * CompositionLocal indicating whether the current composition is the primary (target) state. Set to
+ * `false` by transitions that overlay a secondary composition (e.g. [GestureNavStageTransition]
+ * showing the previous state behind the current one).
+ */
+internal val LocalNavStagePrimary = compositionLocalOf { true }
 
 @OptIn(ExperimentalNavStageApi::class)
 @Composable
@@ -69,6 +76,7 @@ internal fun <T : NavArgument> NavStageContent(
   stage: NavStage<T>,
   args: NavStackList<T>,
   stageTransition: NavStageTransition,
+  navigator: Navigator,
   content: @Composable (T) -> Unit,
 ) {
   val navEvent = rememberNavEvent(args)
@@ -77,11 +85,31 @@ internal fun <T : NavArgument> NavStageContent(
   stageTransition.AnimatedStageContent(
     targetState = targetState,
     stateFor = { stack -> rememberTransitionState(rememberStage(strategies, stack), stack) },
+    navigator = navigator,
   ) { state ->
     // Resolve against the stack actually being rendered. A transition may hand back a stack other
     // than the one the outer stage was resolved from, and that stage's panes would not fit it.
     val stateStage = rememberStage(strategies, state.args)
-    val paneScope = NavStagePaneScopeImpl(content = content, navEvent = navEvent)
+    val isPrimary = LocalNavStagePrimary.current && state == targetState
+    // Records the target already composes render as shared-bounds placeholders here, since a
+    // record can only be composed in one place at a time.
+    val placeholderKeys =
+      remember(isPrimary, state, targetState) {
+        if (isPrimary) {
+          emptySet()
+        } else {
+          val targetKeys = targetState.visibleItems.mapTo(HashSet()) { it.key }
+          state.visibleItems.mapNotNullTo(HashSet()) { item ->
+            item.key.takeIf { it in targetKeys }
+          }
+        }
+      }
+    val paneScope =
+      NavStagePaneScopeImpl(
+        content = content,
+        navEvent = navEvent,
+        placeholderItemKeys = placeholderKeys,
+      )
     stateStage.Content(state.args, paneScope, Modifier)
   }
 }
@@ -91,19 +119,20 @@ internal fun <T : NavArgument> NavStageContent(
 private fun <T : NavArgument> rememberTransitionState(
   stage: NavStage<T>,
   args: NavStackList<T>,
-): NavStageTransitionState<T> = remember(stage, args) {
-  val visibleItems = stage.visibleItems(args)
-  // Two panes sharing a record fails deep inside the navigation host's state registry with a message
-  // that names neither the stage nor the pane, so fail here where the offending stage is nameable.
-  val seen = HashSet<Any>(visibleItems.size)
-  visibleItems.forEach { item ->
-    require(seen.add(item.key)) {
-      "NavStage '${stage.key}' returned item key '${item.key}' twice from visibleItems. " +
-        "Each pane must render a distinct record."
+): NavStageTransitionState<T> =
+  remember(stage, args) {
+    val visibleItems = stage.visibleItems(args)
+    // Two panes sharing a record fails deep inside the navigation host's state registry with a
+    // message that names neither the stage nor the pane, so fail here where the stage is nameable.
+    val seen = HashSet<Any>(visibleItems.size)
+    visibleItems.forEach { item ->
+      require(seen.add(item.key)) {
+        "NavStage '${stage.key}' returned item key '${item.key}' twice from visibleItems. " +
+          "Each pane must render a distinct record."
+      }
     }
+    NavStageTransitionState(stage.key, args, visibleItems)
   }
-  NavStageTransitionState(stage.key, args, visibleItems)
-}
 
 /**
  * Classifies the navigation that produced [args], mirroring how `AnimatedNavDecoration` derives its

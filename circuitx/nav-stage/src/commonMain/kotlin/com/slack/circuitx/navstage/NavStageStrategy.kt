@@ -10,8 +10,8 @@ import com.slack.circuit.runtime.navigation.NavStackList
 /**
  * Determines which [NavStage] to use for a given navigation stack state.
  *
- * Returns `null` to decline, in which case the next strategy is consulted and [SinglePaneNavStage] is
- * the final fallback. Implementations typically inspect window size class and stack contents to
+ * Returns `null` to decline, in which case the next strategy is consulted and [SinglePaneNavStage]
+ * is the final fallback. Implementations typically inspect window size class and stack contents to
  * decide between single-pane and multi-pane layouts.
  *
  * Every strategy in a [NavStageDecoration] is invoked on each pass and the first non-null result

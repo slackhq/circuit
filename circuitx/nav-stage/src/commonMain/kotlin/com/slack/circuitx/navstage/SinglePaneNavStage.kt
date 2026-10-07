@@ -13,7 +13,7 @@ import com.slack.circuit.runtime.navigation.NavStackList
  * strategy matches.
  */
 @ExperimentalNavStageApi
-public class SinglePaneNavStage<T : NavArgument> : NavStage<T> {
+public class SinglePaneNavStage<T : NavArgument> private constructor() : NavStage<T> {
   override val key: Any = STAGE_KEY
 
   override fun visibleItems(args: NavStackList<T>): List<T> = listOf(args.active)
@@ -23,9 +23,15 @@ public class SinglePaneNavStage<T : NavArgument> : NavStage<T> {
     Box(modifier) { paneScope.Pane(key = PANE_KEY, item = args.active) }
   }
 
-  private companion object {
+  public companion object {
     // Qualified so a third-party stage cannot collide and silently suppress stage transitions.
-    const val STAGE_KEY = "com.slack.circuitx.navstage.single-pane"
-    const val PANE_KEY = "com.slack.circuitx.navstage.single-pane.pane"
+    private const val STAGE_KEY = "com.slack.circuitx.navstage.single-pane"
+    private const val PANE_KEY = "com.slack.circuitx.navstage.single-pane.pane"
+
+    private val SinglePaneNavStageInstance = SinglePaneNavStage<NavArgument>()
+
+    @Suppress("UNCHECKED_CAST")
+    public fun <T : NavArgument> get(): SinglePaneNavStage<T> =
+      SinglePaneNavStageInstance as SinglePaneNavStage<T>
   }
 }

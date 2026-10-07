@@ -3,20 +3,28 @@
 package com.slack.circuitx.navstage
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
+import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 
 /**
  * Controls the animation when transitioning between different [NavStage] layouts.
  *
  * Stage transitions animate the outer boundary when the layout type changes (e.g. single-pane to
  * dual-pane). This is distinct from [PaneTransition] which animates individual items within a pane.
+ *
+ * All built-in transitions automatically provide the [Navigation] `AnimatedVisibilityScope` so that
+ * [NavStagePaneScope.Pane] calls can use shared element bounds to animate pane positions between
+ * stage layouts.
  */
 @Stable
 @ExperimentalNavStageApi
@@ -32,28 +40,38 @@ public interface NavStageTransition {
   public fun <T : NavArgument> AnimatedStageContent(
     targetState: NavStageTransitionState<T>,
     stateFor: @Composable (NavStackList<T>) -> NavStageTransitionState<T>,
+    navigator: Navigator,
     content: @Composable (NavStageTransitionState<T>) -> Unit,
   )
 
   public companion object {
+    /** Instant swap with no animation. No shared element animation is applied. */
     public val None: NavStageTransition =
       object : NavStageTransition {
         @Composable
         override fun <T : NavArgument> AnimatedStageContent(
           targetState: NavStageTransitionState<T>,
           stateFor: @Composable (NavStackList<T>) -> NavStageTransitionState<T>,
+          navigator: Navigator,
           content: @Composable (NavStageTransitionState<T>) -> Unit,
         ) {
           content(targetState)
         }
       }
 
+    /**
+     * Crossfade between stage layouts using [AnimatedContent]. Provides the [Navigation]
+     * `AnimatedVisibilityScope` so shared element bounds can animate pane positions during the
+     * transition.
+     */
     public val Crossfade: NavStageTransition =
       object : NavStageTransition {
+        @OptIn(ExperimentalSharedTransitionApi::class)
         @Composable
         override fun <T : NavArgument> AnimatedStageContent(
           targetState: NavStageTransitionState<T>,
           stateFor: @Composable (NavStackList<T>) -> NavStageTransitionState<T>,
+          navigator: Navigator,
           content: @Composable (NavStageTransitionState<T>) -> Unit,
         ) {
           // Keyed on the stage layout so only a layout change animates, and each slot renders its
@@ -63,7 +81,7 @@ public interface NavStageTransition {
             contentKey = { it.stageKey },
             transitionSpec = { fadeIn().togetherWith(fadeOut()) },
           ) { state ->
-            content(state)
+            ProvideAnimatedTransitionScope(Navigation, this@AnimatedContent) { content(state) }
           }
         }
       }

@@ -3,6 +3,8 @@
 package com.slack.circuitx.navstage
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,6 +17,16 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.runtime.navigation.NavArgument
+import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
+import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
+
+/**
+ * A custom [SharedElementTransitionScope.AnimatedScope] for shared element transitions within or
+ * between panes.
+ */
+@ExperimentalNavStageApi public object Pane : SharedElementTransitionScope.AnimatedScope
 
 /**
  * Controls the animation when the content within a single pane changes.
@@ -37,6 +49,7 @@ public interface PaneTransition {
   public companion object {
     public val Default: PaneTransition =
       object : PaneTransition {
+        @OptIn(ExperimentalSharedTransitionApi::class)
         @Composable
         override fun <T : NavArgument> AnimatedPaneContent(
           targetItem: T,
@@ -45,8 +58,7 @@ public interface PaneTransition {
           modifier: Modifier,
           content: @Composable (T) -> Unit,
         ) {
-          val isForward =
-            navEvent == AnimatedNavEvent.GoTo || navEvent == AnimatedNavEvent.Forward
+          val isForward = navEvent == AnimatedNavEvent.GoTo || navEvent == AnimatedNavEvent.Forward
           AnimatedContent(
             targetState = targetItem,
             contentKey = { it.key },
@@ -63,7 +75,7 @@ public interface PaneTransition {
               }
             },
           ) { item ->
-            content(item)
+            ProvideAnimatedTransitionScope(Pane, this@AnimatedContent) { content(item) }
           }
         }
       }
@@ -105,4 +117,13 @@ public interface PaneTransition {
         }
       }
   }
+}
+
+/**
+ * Extension on [SharedElementTransitionScope] to dynamically resolve the active stage, pane, or
+ * overlay transition scope.
+ */
+@ExperimentalNavStageApi
+public fun SharedElementTransitionScope.findActiveStageScope(): AnimatedVisibilityScope? {
+  return findAnimatedScope(Pane) ?: findAnimatedScope(Navigation) ?: findAnimatedScope(Overlay)
 }

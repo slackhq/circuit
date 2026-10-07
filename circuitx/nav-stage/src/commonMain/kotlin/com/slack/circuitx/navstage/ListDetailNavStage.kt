@@ -33,6 +33,8 @@ public class ListDetailNavStageStrategy(
   private val isListPane: (Screen) -> Boolean = { it is ListPane },
   private val isDetailPane: (Screen) -> Boolean = { it is DetailPane },
   private val isMultiPane: @Composable () -> Boolean = { DefaultIsMultiPane() },
+  private val listTransition: (Screen) -> PaneTransition = { PaneTransition.None },
+  private val detailTransition: (Screen) -> PaneTransition = { PaneTransition.Default },
 ) : NavStageStrategy {
 
   @Composable
@@ -41,7 +43,13 @@ public class ListDetailNavStageStrategy(
     if (!isDetailPane(args.active.screen)) return null
     if (args.backwardItems.none { isListPane(it.screen) }) return null
     // Remembered so the stage keeps a stable identity while this layout is in use.
-    return remember { ListDetailNavStage<T>(isListPane) }
+    return remember(isListPane, listTransition, detailTransition) {
+      ListDetailNavStage(
+        isListPane = isListPane,
+        listTransition = listTransition,
+        detailTransition = detailTransition,
+      )
+    }
   }
 
   public companion object {
@@ -60,8 +68,11 @@ public class ListDetailNavStageStrategy(
  * while a transition renders an older stack than the one this stage was resolved from.
  */
 @ExperimentalNavStageApi
-public class ListDetailNavStage<T : NavArgument>(private val isListPane: (Screen) -> Boolean) :
-  NavStage<T> {
+public class ListDetailNavStage<T : NavArgument>(
+  private val isListPane: (Screen) -> Boolean,
+  private val listTransition: (Screen) -> PaneTransition = { PaneTransition.None },
+  private val detailTransition: (Screen) -> PaneTransition = { PaneTransition.Default },
+) : NavStage<T> {
   override val key: Any = STAGE_KEY
 
   override fun visibleItems(args: NavStackList<T>): List<T> {
@@ -74,12 +85,30 @@ public class ListDetailNavStage<T : NavArgument>(private val isListPane: (Screen
   override fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
     val items = visibleItems(args)
     if (items.size < 2) {
-      Box(modifier.fillMaxSize()) { paneScope.Pane(key = DETAIL_PANE_KEY, item = items.single()) }
+      val detailItem = items.single()
+      Box(modifier.fillMaxSize()) {
+        paneScope.Pane(
+          key = DETAIL_PANE_KEY,
+          item = detailItem,
+          transition = detailTransition(detailItem.screen),
+        )
+      }
       return
     }
+    val (listItem, detailItem) = items
     Row(modifier.fillMaxSize()) {
-      paneScope.Pane(key = LIST_PANE_KEY, item = items[0], modifier = Modifier.weight(0.4f))
-      paneScope.Pane(key = DETAIL_PANE_KEY, item = items[1], modifier = Modifier.weight(0.6f))
+      paneScope.Pane(
+        key = LIST_PANE_KEY,
+        item = listItem,
+        modifier = Modifier.weight(0.4f),
+        transition = listTransition(listItem.screen),
+      )
+      paneScope.Pane(
+        key = DETAIL_PANE_KEY,
+        item = detailItem,
+        modifier = Modifier.weight(0.6f),
+        transition = detailTransition(detailItem.screen),
+      )
     }
   }
 

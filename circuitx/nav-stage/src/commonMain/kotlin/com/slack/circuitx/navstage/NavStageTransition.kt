@@ -27,7 +27,7 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
  * All built-in transitions provide the [Navigation] `AnimatedVisibilityScope` so that
  * [NavStagePaneScope.Pane] calls can use shared element bounds to animate pane positions between
  * stage layouts. This scope follows stage changes, not navigation within a pane. Content that
- * animates with in-pane navigation should use [findActiveStageScope] or the [Pane] scope.
+ * animates with in-pane navigation should use [findActiveStageScope] or [PaneAnimatedScope].
  */
 @Stable
 @ExperimentalNavStageApi
@@ -38,6 +38,10 @@ public interface NavStageTransition {
    * To render a stack other than the target's, build its state with [stateFor] rather than
    * constructing one directly: [stateFor] resolves the [NavStage] that stack actually needs, where
    * reusing the target's stage would render a layout against a stack it was never validated for.
+   *
+   * Pass [targetState] itself to [content] for the slot showing the target, and to only one slot.
+   * Records it shows move into that slot, and every other slot renders them as placeholders.
+   * [navigator] routes calls through the stage's [NavStage.navigationPolicy], so pop through it.
    */
   @Composable
   public fun <T : NavArgument> AnimatedStageContent(
@@ -108,6 +112,9 @@ public interface NavStageTransition {
  * Instances come from [NavStageTransition.AnimatedStageContent]: its `targetState`, or `stateFor`
  * for other stacks. Each carries the [NavStage] it was resolved with, so it always renders exactly
  * its [visibleItems] even if the stage for [args] would resolve differently now.
+ *
+ * Compared by identity: the decoration composes the records of the `targetState` instance it passed
+ * in, so render that instance, in one slot, rather than an equal copy.
  */
 @Immutable
 @ExperimentalNavStageApi
@@ -120,18 +127,8 @@ internal constructor(
   public val stageKey: Any
     get() = stage.key
 
-  override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (other !is NavStageTransitionState<*>) return false
-    return stageKey == other.stageKey && args == other.args && visibleItems == other.visibleItems
-  }
-
-  override fun hashCode(): Int {
-    var result = stageKey.hashCode()
-    result = 31 * result + args.hashCode()
-    result = 31 * result + visibleItems.hashCode()
-    return result
-  }
+  internal fun hasSameContent(other: NavStageTransitionState<*>): Boolean =
+    stageKey == other.stageKey && args == other.args && visibleItems == other.visibleItems
 
   override fun toString(): String =
     "NavStageTransitionState(stageKey=$stageKey, args=$args, visibleItems=$visibleItems)"

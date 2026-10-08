@@ -19,9 +19,10 @@ public interface NavStagePaneScope<T : NavArgument> {
   /**
    * Renders [item] in a pane.
    *
-   * [key] identifies the pane itself, not the item, and is passed to [transition] so it can keep
-   * per-pane animation state. Two panes in the same stage must not be given the same [key], nor the
-   * same [item].
+   * [key] identifies the pane itself, not the item. The pane's own state, including its
+   * [transition], is scoped to it, so a pane given a new [key] starts fresh rather than animating
+   * from the previous item. Two panes in the same stage must not be given the same [key], nor the
+   * same [item], and [item] must be one of the items passed to [NavStage.Content].
    */
   @Composable
   public fun Pane(

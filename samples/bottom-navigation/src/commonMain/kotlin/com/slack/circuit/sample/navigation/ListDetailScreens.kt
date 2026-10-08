@@ -24,13 +24,11 @@ import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.Ui
 import com.slack.circuit.runtime.ui.ui
-import com.slack.circuitx.navstage.DetailPane
-import com.slack.circuitx.navstage.ListPane
 import kotlinx.serialization.Serializable
 
-@Serializable data object ItemListScreen : Screen, ListPane
+@Serializable data object ItemListScreen : Screen
 
-@Serializable data class ItemDetailScreen(val itemId: Int) : Screen, DetailPane
+@Serializable data class ItemDetailScreen(val itemId: Int) : Screen
 
 data class ItemListState(
   val items: List<String>,

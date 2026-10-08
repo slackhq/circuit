@@ -71,7 +71,14 @@ class NavStageDecorationTest {
     setNavContent(
       listOf(ItemList, Detail1),
       NavStageDecoration(
-        strategies = listOf(ListDetailNavStageStrategy(isMultiPane = { multiPane })),
+        strategies =
+          listOf(
+            ListDetailNavStageStrategy(
+              isListPane = { it is TestListPane },
+              isDetailPane = { it is TestDetailPane },
+              isMultiPane = { multiPane },
+            )
+          ),
         stageTransition = NavStageTransition.Crossfade,
       ),
     )
@@ -91,7 +98,15 @@ class NavStageDecorationTest {
     val navigator =
       setNavContent(
         listOf(ItemList, Detail1),
-        NavStageDecoration(listOf(ListDetailNavStageStrategy(isMultiPane = { true }))),
+        NavStageDecoration(
+          listOf(
+            ListDetailNavStageStrategy(
+              isListPane = { it is TestListPane },
+              isDetailPane = { it is TestDetailPane },
+              isMultiPane = { true },
+            )
+          )
+        ),
       )
     assertComposedOnce(ItemList, Detail1)
 
@@ -142,7 +157,13 @@ class NavStageDecorationTest {
       setNavContent(
         listOf(ItemList, Detail1),
         NavStageDecoration(
-          listOf(ListDetailNavStageStrategy(isMultiPane = { true })),
+          listOf(
+            ListDetailNavStageStrategy(
+              isListPane = { it is TestListPane },
+              isDetailPane = { it is TestDetailPane },
+              isMultiPane = { true },
+            )
+          ),
           GestureNavStageTransition(),
         ),
         sharedElements = true,
@@ -213,7 +234,13 @@ class NavStageDecorationTest {
     setNavContent(
       listOf(ItemList, Detail1, Detail2),
       NavStageDecoration(
-        listOf(ListDetailNavStageStrategy(isMultiPane = { true })),
+        listOf(
+          ListDetailNavStageStrategy(
+            isListPane = { it is TestListPane },
+            isDetailPane = { it is TestDetailPane },
+            isMultiPane = { true },
+          )
+        ),
         GestureNavStageTransition(),
       ),
       sharedElements = true,
@@ -290,8 +317,8 @@ private class TaggedStage<T : NavArgument>(private val tag: String) : NavStage<T
   override fun visibleItems(args: NavStackList<T>): List<T> = listOf(args.active)
 
   @Composable
-  override fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
-    Box(modifier.testTag(tag)) { paneScope.Pane(key = "main", item = args.active) }
+  override fun Content(items: List<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
+    Box(modifier.testTag(tag)) { paneScope.Pane(key = "main", item = items.single()) }
   }
 }
 
@@ -301,8 +328,8 @@ private sealed class LabelScreen(val label: String) : Screen
 
 private data object Root : LabelScreen("root")
 
-private data object ItemList : LabelScreen("list"), ListPane
+private data object ItemList : LabelScreen("list"), TestListPane
 
-private data object Detail1 : LabelScreen("detail1"), DetailPane
+private data object Detail1 : LabelScreen("detail1"), TestDetailPane
 
-private data object Detail2 : LabelScreen("detail2"), DetailPane
+private data object Detail2 : LabelScreen("detail2"), TestDetailPane

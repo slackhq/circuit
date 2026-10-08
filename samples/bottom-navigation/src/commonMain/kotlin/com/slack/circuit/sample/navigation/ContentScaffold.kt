@@ -57,7 +57,13 @@ import com.slack.circuitx.navstage.NavStageFrame
 @Composable
 fun rememberNavStageDecoration(): NavDecoration = remember {
   NavStageDecoration(
-    strategies = listOf(ListDetailNavStageStrategy()),
+    strategies =
+      listOf(
+        ListDetailNavStageStrategy(
+          isListPane = { it is ItemListScreen },
+          isDetailPane = { it is ItemDetailScreen },
+        )
+      ),
     stageTransition = GestureNavStageTransition(),
     frame =
       object : NavStageFrame {

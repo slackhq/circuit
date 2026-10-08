@@ -48,8 +48,8 @@ import kotlinx.coroutines.CancellationException
  * During the gesture the current stage scales down and translates in the swipe direction while the
  * stage for the popped stack is shown behind it. Records the current stage already shows render as
  * shared-bounds placeholders in the previous stage. The gesture seeks a [SeekableTransitionState]
- * so shared elements track it. Calls [onBack] when the gesture completes, or [Navigator.pop] if
- * [onBack] is null. The preview assumes the stack is popped, so [onBack] should pop too.
+ * so shared elements track it. Completing the gesture pops through the [Navigator] it's given, so
+ * back goes through the stage's [NavStage.navigationPolicy].
  *
  * When the popped stack keeps the same stage layout, only the panes whose item changes move, so a
  * list stays put while its detail is swiped away. Other navigation within a stage is left to each
@@ -59,8 +59,7 @@ import kotlinx.coroutines.CancellationException
  * Material treatment applies on every platform, not just Android.
  */
 @ExperimentalNavStageApi
-public class GestureNavStageTransition(private val onBack: (() -> Unit)? = null) :
-  NavStageTransition {
+public class GestureNavStageTransition : NavStageTransition {
 
   @OptIn(InternalCircuitApi::class, ExperimentalSharedTransitionApi::class)
   @Composable
@@ -128,11 +127,7 @@ public class GestureNavStageTransition(private val onBack: (() -> Unit)? = null)
       onBackCompleted = {
         swipeProgress = 0f
         completedGestures++
-        if (onBack != null) {
-          onBack()
-        } else {
-          navigator.pop()
-        }
+        navigator.pop()
       },
     )
 
@@ -166,7 +161,9 @@ public class GestureNavStageTransition(private val onBack: (() -> Unit)? = null)
     ) { slot ->
       // An exiting slot can hold a state equal to the current one after a stage is left and
       // re-entered mid-transition. Both would compose its records, so only the current slot does.
-      if (slot.id != currentSlot.id && slot.state == currentSlot.state) return@AnimatedContent
+      if (slot.id != currentSlot.id && slot.state.hasSameContent(currentSlot.state)) {
+        return@AnimatedContent
+      }
       // Gives the seek a duration to cover and the motion its progress, linear so it tracks the
       // finger while seeking.
       val exitProgress by
@@ -220,7 +217,7 @@ private class SlotHistory<T : NavArgument> {
     val preview = seekedPreview
     val current = current
     return when {
-      preview != null && preview.state == state -> preview.copy(state = state)
+      preview != null && preview.state.hasSameContent(state) -> preview.copy(state = state)
       current != null && current.state.stageKey == state.stageKey -> current.copy(state = state)
       else -> StageSlot(state, nextId++, current?.zIndex ?: 0f)
     }

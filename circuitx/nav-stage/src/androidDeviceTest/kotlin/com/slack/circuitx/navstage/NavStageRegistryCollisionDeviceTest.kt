@@ -227,7 +227,14 @@ private fun FuzzHost(
         decoration =
           remember {
             NavStageDecoration(
-              strategies = listOf(ListDetailNavStageStrategy(isMultiPane = { multiPane.value })),
+              strategies =
+                listOf(
+                  ListDetailNavStageStrategy(
+                    isListPane = { it is TestListPane },
+                    isDetailPane = { it is TestDetailPane },
+                    isMultiPane = { multiPane.value },
+                  )
+                ),
               stageTransition = GestureNavStageTransition(),
             )
           },
@@ -295,9 +302,9 @@ private sealed interface FuzzScreen : Screen {
   val id: Int
 }
 
-private data class FuzzList(override val id: Int) : FuzzScreen, ListPane
+private data class FuzzList(override val id: Int) : FuzzScreen, TestListPane
 
-private data class FuzzDetail(override val id: Int) : FuzzScreen, DetailPane
+private data class FuzzDetail(override val id: Int) : FuzzScreen, TestDetailPane
 
 private data object FuzzState : CircuitUiState
 
@@ -317,3 +324,7 @@ private const val ROW_COUNT = 16
 private const val NEST_DEPTH = 4
 private const val LEAF_FANOUT = 4
 private const val BURN_ITERATIONS = 30
+
+private interface TestListPane
+
+private interface TestDetailPane

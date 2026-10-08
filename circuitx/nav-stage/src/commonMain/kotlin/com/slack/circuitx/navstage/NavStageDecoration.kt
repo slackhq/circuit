@@ -3,6 +3,7 @@
 package com.slack.circuitx.navstage
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -10,10 +11,14 @@ import androidx.compose.ui.Modifier
 import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
 import com.slack.circuit.foundation.animation.determineAnimatedNavEvent
+import com.slack.circuit.foundation.internal.PredictiveBackEventHandler
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
+import com.slack.circuit.runtime.screen.PopResult
+import com.slack.circuit.runtime.screen.Screen
 
 /**
  * A [NavDecoration] that delegates layout to a [NavStageStrategy]-resolved [NavStage].
@@ -39,9 +44,11 @@ public class NavStageDecoration(
     modifier: Modifier,
     content: @Composable (T) -> Unit,
   ) {
-    val stage = rememberStage(strategies, args)
-    frame.Content(modifier, stage, args) {
-      NavStageContent(strategies, stage, args, stageTransition, navigator, content)
+    ProvidePaneWindowInfo(modifier) {
+      val stage = rememberStage(strategies, args)
+      frame.Content(Modifier, stage, args) {
+        NavStageContent(strategies, stage, args, stageTransition, navigator, content)
+      }
     }
   }
 }
@@ -60,10 +67,10 @@ private fun <T : NavArgument> rememberStage(
     strategies
       .mapIndexed { index, strategy -> key(index) { strategy.calculateStage(args) } }
       .firstNotNullOfOrNull { it }
-  return resolved ?: SinglePaneNavStage.get()
+  return resolved ?: SinglePaneNavStage()
 }
 
-@OptIn(ExperimentalNavStageApi::class)
+@OptIn(ExperimentalNavStageApi::class, InternalCircuitApi::class)
 @Composable
 internal fun <T : NavArgument> NavStageContent(
   strategies: List<NavStageStrategy>,
@@ -78,26 +85,73 @@ internal fun <T : NavArgument> NavStageContent(
   val targetItemKeys =
     remember(targetState) { targetState.visibleItems.mapTo(HashSet()) { it.key } }
   val composedRecords = remember { ComposedRecords() }
+  val paneNavigators = remember { PaneNavigators<T>() }
+  paneNavigators.host = navigator
+  paneNavigators.args = args
+  SideEffect {
+    paneNavigators.prune { key ->
+      depthOf(args, key) >= 0 ||
+        args.forwardItems.any { it.key == key } ||
+        composedRecords.isClaimed(key)
+    }
+  }
+
+  val policy = stage.navigationPolicy
+  val stageNavigator = remember(paneNavigators) { StageNavigator(paneNavigators) }
+  if (policy !== NavStageNavigationPolicy.Passthrough) {
+    PredictiveBackEventHandler(
+      isEnabled = args.backwardItems.any(),
+      onBackProgress = { _, _ -> },
+      onBackCancelled = {},
+      onBackCompleted = { stageNavigator.pop() },
+    )
+  }
 
   stageTransition.AnimatedStageContent(
     targetState = targetState,
     stateFor = { stack -> rememberTransitionState(rememberStage(strategies, stack), stack) },
-    navigator = navigator,
-  ) { slotState ->
-    val isPrimary = slotState == targetState
-    val state = if (isPrimary) targetState else slotState
-    val owner = remember { Any() }
+    navigator = stageNavigator,
+  ) { state ->
+    val isPrimary = state === targetState
+    val itemKeys = remember(state) { state.visibleItems.mapTo(HashSet()) { it.key } }
     val paneScope =
       NavStagePaneScopeImpl(
         content = content,
         navEvent = navEvent,
-        owner = owner,
+        stageKey = state.stageKey,
+        itemKeys = itemKeys,
         isPrimary = isPrimary,
         targetItemKeys = targetItemKeys,
         composedRecords = composedRecords,
+        paneNavigators = paneNavigators,
+        navigationPolicy = state.stage.navigationPolicy,
       )
-    state.stage.Content(state.args, paneScope, Modifier)
+    state.stage.Content(state.visibleItems, paneScope, Modifier)
   }
+}
+
+/** Routes calls through the active record's navigator, so they come from the top pane. */
+private class StageNavigator<T : NavArgument>(private val navigators: PaneNavigators<T>) :
+  Navigator {
+  private val top: Navigator
+    get() = navigators.args?.let { navigators.navigatorFor(it.active.key) } ?: navigators.host
+
+  override fun goTo(screen: Screen): Boolean = top.goTo(screen)
+
+  override fun pop(result: PopResult?): Screen? = top.pop(result)
+
+  override fun resetRoot(newRoot: Screen, options: StateOptions): List<Screen> =
+    top.resetRoot(newRoot, options)
+
+  override fun forward(): Boolean = top.forward()
+
+  override fun backward(): Boolean = top.backward()
+
+  override fun peek(): Screen? = navigators.host.peek()
+
+  override fun peekBackStack(): List<Screen> = navigators.host.peekBackStack()
+
+  override fun peekNavStack(): NavStackList<Screen>? = navigators.host.peekNavStack()
 }
 
 @OptIn(ExperimentalNavStageApi::class)

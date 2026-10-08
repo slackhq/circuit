@@ -9,29 +9,30 @@ import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 
 /**
- * Default stage that renders only the active item in a single pane. Used as the fallback when no
- * strategy matches.
+ * Returns the default stage that renders only the active item in a single pane. Used as the
+ * fallback when no strategy matches.
  */
 @ExperimentalNavStageApi
-public class SinglePaneNavStage<T : NavArgument> private constructor() : NavStage<T> {
-  override val key: Any = STAGE_KEY
+@Suppress("UNCHECKED_CAST")
+public fun <T : NavArgument> SinglePaneNavStage(): NavStage<T> =
+  SinglePaneNavStageImpl as NavStage<T>
 
-  override fun visibleItems(args: NavStackList<T>): List<T> = listOf(args.active)
+@OptIn(ExperimentalNavStageApi::class)
+private object SinglePaneNavStageImpl : NavStage<NavArgument> {
+  // Qualified so a third-party stage cannot collide and silently suppress stage transitions.
+  override val key: Any = "com.slack.circuitx.navstage.single-pane"
+
+  override fun visibleItems(args: NavStackList<NavArgument>): List<NavArgument> =
+    listOf(args.active)
 
   @Composable
-  override fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
-    Box(modifier) { paneScope.Pane(key = PANE_KEY, item = args.active) }
+  override fun Content(
+    items: List<NavArgument>,
+    paneScope: NavStagePaneScope<NavArgument>,
+    modifier: Modifier,
+  ) {
+    Box(modifier) { paneScope.Pane(key = PANE_KEY, item = items.single()) }
   }
 
-  public companion object {
-    // Qualified so a third-party stage cannot collide and silently suppress stage transitions.
-    private const val STAGE_KEY = "com.slack.circuitx.navstage.single-pane"
-    private const val PANE_KEY = "com.slack.circuitx.navstage.single-pane.pane"
-
-    private val SinglePaneNavStageInstance = SinglePaneNavStage<NavArgument>()
-
-    @Suppress("UNCHECKED_CAST")
-    public fun <T : NavArgument> get(): SinglePaneNavStage<T> =
-      SinglePaneNavStageInstance as SinglePaneNavStage<T>
-  }
+  private const val PANE_KEY = "com.slack.circuitx.navstage.single-pane.pane"
 }

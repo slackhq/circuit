@@ -162,7 +162,14 @@ class NavStageRecordRetentionTest {
 
   private val decoration =
     NavStageDecoration(
-      strategies = listOf(ListDetailNavStageStrategy(isMultiPane = { multiPane })),
+      strategies =
+        listOf(
+          ListDetailNavStageStrategy(
+            isListPane = { it is TestListPane },
+            isDetailPane = { it is TestDetailPane },
+            isMultiPane = { multiPane },
+          )
+        ),
       stageTransition = GestureNavStageTransition(),
     )
 
@@ -200,8 +207,8 @@ private data class RecordState(val label: String, val retained: Int) : CircuitUi
 
 private sealed class RecordScreen(val label: String) : Screen
 
-private data object ListRecord : RecordScreen("list"), ListPane
+private data object ListRecord : RecordScreen("list"), TestListPane
 
-private data object DetailRecord1 : RecordScreen("detail1"), DetailPane
+private data object DetailRecord1 : RecordScreen("detail1"), TestDetailPane
 
-private data object DetailRecord2 : RecordScreen("detail2"), DetailPane
+private data object DetailRecord2 : RecordScreen("detail2"), TestDetailPane

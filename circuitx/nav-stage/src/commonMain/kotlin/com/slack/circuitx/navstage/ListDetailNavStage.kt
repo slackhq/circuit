@@ -5,12 +5,11 @@ package com.slack.circuitx.navstage
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.unit.dp
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
@@ -26,7 +25,7 @@ import com.slack.circuit.runtime.screen.Screen
  * detail pane, and the back stack contains a list pane.
  *
  * [isMultiPane] defaults to a medium-or-wider window width. Override it to supply your own
- * breakpoint, which also avoids pulling in the default window-size-class dependency.
+ * breakpoint.
  */
 @ExperimentalNavStageApi
 public class ListDetailNavStageStrategy(
@@ -53,11 +52,10 @@ public class ListDetailNavStageStrategy(
   }
 
   public companion object {
-    /** The default multi-pane gate: any window at least [WindowWidthSizeClass.Medium] wide. */
+    /** The default multi-pane gate: any window at least 600dp wide. */
     @Composable
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     public fun DefaultIsMultiPane(): Boolean =
-      calculateWindowSizeClass().widthSizeClass != WindowWidthSizeClass.Compact
+      LocalWindowInfo.current.containerDpSize.width >= 600.dp
   }
 }
 

@@ -58,20 +58,23 @@ public interface PaneTransition {
           modifier: Modifier,
           content: @Composable (T) -> Unit,
         ) {
-          val isForward = navEvent == AnimatedNavEvent.GoTo || navEvent == AnimatedNavEvent.Forward
           AnimatedContent(
             targetState = targetItem,
             contentKey = { it.key },
             modifier = modifier,
             transitionSpec = {
-              if (isForward) {
-                (slideInHorizontally(tween()) { it / 4 } + fadeIn(tween())).togetherWith(
-                  slideOutHorizontally(tween()) { -it / 4 } + fadeOut(tween())
-                )
-              } else {
-                (slideInHorizontally(tween()) { -it / 4 } + fadeIn(tween())).togetherWith(
-                  slideOutHorizontally(tween()) { it / 4 } + fadeOut(tween())
-                )
+              when (navEvent) {
+                AnimatedNavEvent.GoTo,
+                AnimatedNavEvent.Forward ->
+                  (slideInHorizontally(tween()) { it / 4 } + fadeIn(tween())).togetherWith(
+                    slideOutHorizontally(tween()) { -it / 4 } + fadeOut(tween())
+                  )
+                AnimatedNavEvent.Pop,
+                AnimatedNavEvent.Backward ->
+                  (slideInHorizontally(tween()) { -it / 4 } + fadeIn(tween())).togetherWith(
+                    slideOutHorizontally(tween()) { it / 4 } + fadeOut(tween())
+                  )
+                AnimatedNavEvent.RootReset -> fadeIn(tween()).togetherWith(fadeOut(tween()))
               }
             },
           ) { item ->
@@ -120,10 +123,18 @@ public interface PaneTransition {
 }
 
 /**
- * Extension on [SharedElementTransitionScope] to dynamically resolve the active stage, pane, or
- * overlay transition scope.
+ * Resolves whichever of the pane, stage ([Navigation]), or overlay scopes is currently
+ * transitioning, so shared elements follow both in-pane navigation and stage changes. Falls back to
+ * the first available in that order when none is.
  */
 @ExperimentalNavStageApi
 public fun SharedElementTransitionScope.findActiveStageScope(): AnimatedVisibilityScope? {
-  return findAnimatedScope(Pane) ?: findAnimatedScope(Navigation) ?: findAnimatedScope(Overlay)
+  val scopes =
+    listOfNotNull(
+      findAnimatedScope(Pane),
+      findAnimatedScope(Navigation),
+      findAnimatedScope(Overlay),
+    )
+  return scopes.firstOrNull { it.transition.currentState != it.transition.targetState }
+    ?: scopes.firstOrNull()
 }

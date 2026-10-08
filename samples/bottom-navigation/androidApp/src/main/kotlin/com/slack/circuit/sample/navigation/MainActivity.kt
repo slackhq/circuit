@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
@@ -16,6 +17,7 @@ import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuitx.android.IntentScreen
 import com.slack.circuitx.navigation.intercepting.AndroidScreenAwareNavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
@@ -27,6 +29,7 @@ import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 
 class MainActivity : AppCompatActivity() {
+  @OptIn(ExperimentalSharedTransitionApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     // Set edge to edge + dark status bar icons
@@ -57,13 +60,15 @@ class MainActivity : AppCompatActivity() {
               eventListeners = eventListeners,
               notifier = notifier,
             )
-          ContentScaffold(
-            navStack,
-            interceptingNavigator,
-            tabs,
-            Modifier.fillMaxSize(),
-            rememberNavStageDecoration(interceptingNavigator),
-          )
+          SharedElementTransitionLayout {
+            ContentScaffold(
+              navStack,
+              interceptingNavigator,
+              tabs,
+              Modifier.fillMaxSize(),
+              rememberNavStageDecoration(),
+            )
+          }
         }
       }
     }

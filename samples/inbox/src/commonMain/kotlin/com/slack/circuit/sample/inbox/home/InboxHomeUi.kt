@@ -13,8 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -24,6 +23,7 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import androidx.window.core.layout.WindowSizeClass
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.LocalCircuit
 import com.slack.circuit.foundation.NavDecoration
@@ -51,7 +51,10 @@ import dev.zacsweers.metro.AppScope
 @CircuitInject(InboxScreen::class, AppScope::class)
 @Composable
 fun InboxHomeUi(state: InboxScreen.State, modifier: Modifier = Modifier) {
-  val isExpanded = calculateWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Expanded
+  val isExpanded =
+    currentWindowAdaptiveInfoV2()
+      .windowSizeClass
+      .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
 
   // Keep the same scroll state when the layout moves between one pane and two panes.
   val listScrollState = rememberRetainedSaveable(saver = LazyListState.Saver) { LazyListState() }

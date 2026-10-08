@@ -4,12 +4,13 @@ package com.slack.circuitx.navstage
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.foundation.animation.AnimatedNavEvent
+import com.slack.circuit.foundation.animation.determineAnimatedNavEvent
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
@@ -62,13 +63,6 @@ private fun <T : NavArgument> rememberStage(
   return resolved ?: SinglePaneNavStage.get()
 }
 
-/**
- * CompositionLocal indicating whether the current composition is the primary (target) state. Set to
- * `false` by transitions that overlay a secondary composition (e.g. [GestureNavStageTransition]
- * showing the previous state behind the current one).
- */
-internal val LocalNavStagePrimary = compositionLocalOf { true }
-
 @OptIn(ExperimentalNavStageApi::class)
 @Composable
 internal fun <T : NavArgument> NavStageContent(
@@ -81,36 +75,28 @@ internal fun <T : NavArgument> NavStageContent(
 ) {
   val navEvent = rememberNavEvent(args)
   val targetState = rememberTransitionState(stage, args)
+  val targetItemKeys =
+    remember(targetState) { targetState.visibleItems.mapTo(HashSet()) { it.key } }
+  val composedRecords = remember { ComposedRecords() }
 
   stageTransition.AnimatedStageContent(
     targetState = targetState,
     stateFor = { stack -> rememberTransitionState(rememberStage(strategies, stack), stack) },
     navigator = navigator,
-  ) { state ->
-    // Resolve against the stack actually being rendered. A transition may hand back a stack other
-    // than the one the outer stage was resolved from, and that stage's panes would not fit it.
-    val stateStage = rememberStage(strategies, state.args)
-    val isPrimary = LocalNavStagePrimary.current && state == targetState
-    // Records the target already composes render as shared-bounds placeholders here, since a
-    // record can only be composed in one place at a time.
-    val placeholderKeys =
-      remember(isPrimary, state, targetState) {
-        if (isPrimary) {
-          emptySet()
-        } else {
-          val targetKeys = targetState.visibleItems.mapTo(HashSet()) { it.key }
-          state.visibleItems.mapNotNullTo(HashSet()) { item ->
-            item.key.takeIf { it in targetKeys }
-          }
-        }
-      }
+  ) { slotState ->
+    val isPrimary = slotState == targetState
+    val state = if (isPrimary) targetState else slotState
+    val owner = remember { Any() }
     val paneScope =
       NavStagePaneScopeImpl(
         content = content,
         navEvent = navEvent,
-        placeholderItemKeys = placeholderKeys,
+        owner = owner,
+        isPrimary = isPrimary,
+        targetItemKeys = targetItemKeys,
+        composedRecords = composedRecords,
       )
-    stateStage.Content(state.args, paneScope, Modifier)
+    state.stage.Content(state.args, paneScope, Modifier)
   }
 }
 
@@ -131,13 +117,11 @@ private fun <T : NavArgument> rememberTransitionState(
           "Each pane must render a distinct record."
       }
     }
-    NavStageTransitionState(stage.key, args, visibleItems)
+    NavStageTransitionState(stage, args, visibleItems)
   }
 
-/**
- * Classifies the navigation that produced [args], mirroring how `AnimatedNavDecoration` derives its
- * own [AnimatedNavEvent].
- */
+/** Classifies the navigation that produced [args]. */
+@OptIn(InternalCircuitApi::class)
 @Composable
 private fun <T : NavArgument> rememberNavEvent(args: NavStackList<T>): AnimatedNavEvent {
   // Held outside snapshot state: writing observable state during composition would invalidate this
@@ -146,35 +130,14 @@ private fun <T : NavArgument> rememberNavEvent(args: NavStackList<T>): AnimatedN
   return remember(args) {
     val previous = previousHolder.args
     previousHolder.args = args
-    if (previous == null) AnimatedNavEvent.GoTo else determineNavEvent(previous, args)
+    if (previous == null) {
+      AnimatedNavEvent.GoTo
+    } else {
+      determineAnimatedNavEvent(previous, args) ?: AnimatedNavEvent.GoTo
+    }
   }
 }
 
 private class PreviousArgsHolder<T : NavArgument> {
   var args: NavStackList<T>? = null
-}
-
-private fun <T : NavArgument> determineNavEvent(
-  initial: NavStackList<T>,
-  target: NavStackList<T>,
-): AnimatedNavEvent {
-  if (initial.root != target.root) return AnimatedNavEvent.RootReset
-
-  val previous = initial.active
-  val current = target.active
-  if (previous == current) return AnimatedNavEvent.GoTo
-
-  val initialBackStack = initial.backwardItems
-  val initialForwardStack = initial.forwardItems
-  val targetForwardStack = target.forwardItems
-
-  return when {
-    current in initialBackStack &&
-      previous !in initialForwardStack &&
-      previous in targetForwardStack -> AnimatedNavEvent.Backward
-
-    current in initialBackStack && previous !in targetForwardStack -> AnimatedNavEvent.Pop
-    current in initialForwardStack && current !in targetForwardStack -> AnimatedNavEvent.Forward
-    else -> AnimatedNavEvent.GoTo
-  }
 }

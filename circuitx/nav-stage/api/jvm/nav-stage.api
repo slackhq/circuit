@@ -86,12 +86,6 @@ public final class com/slack/circuitx/navstage/NavStageTransition$Companion {
 
 public final class com/slack/circuitx/navstage/NavStageTransitionState {
 	public static final field $stable I
-	public fun <init> (Ljava/lang/Object;Lcom/slack/circuit/runtime/navigation/NavStackList;Ljava/util/List;)V
-	public final fun component1 ()Ljava/lang/Object;
-	public final fun component2 ()Lcom/slack/circuit/runtime/navigation/NavStackList;
-	public final fun component3 ()Ljava/util/List;
-	public final fun copy (Ljava/lang/Object;Lcom/slack/circuit/runtime/navigation/NavStackList;Ljava/util/List;)Lcom/slack/circuitx/navstage/NavStageTransitionState;
-	public static synthetic fun copy$default (Lcom/slack/circuitx/navstage/NavStageTransitionState;Ljava/lang/Object;Lcom/slack/circuit/runtime/navigation/NavStackList;Ljava/util/List;ILjava/lang/Object;)Lcom/slack/circuitx/navstage/NavStageTransitionState;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getArgs ()Lcom/slack/circuit/runtime/navigation/NavStackList;
 	public final fun getStageKey ()Ljava/lang/Object;

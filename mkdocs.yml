@@ -135,6 +135,7 @@ nav:
       - 'Effects': circuitx/effects.md
       - 'Gesture Navigation': circuitx/gesture-navigation.md
       - 'Navigation': circuitx/navigation.md
+      - 'Nav Stage': circuitx/nav-stage.md
       - 'Overlays': circuitx/overlays.md
       - 'SubCircuit': circuitx/subcircuit.md
   - 'Change Log': changelog.md

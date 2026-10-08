@@ -2,6 +2,8 @@
 
 A modular, layout-agnostic navigation decoration system for Circuit.
 
+See the [user guide](https://slackhq.github.io/circuit/circuitx/nav-stage/) for usage, customization, and building your own stages.
+
 ---
 
 ## Overview
@@ -66,11 +68,12 @@ sequenceDiagram
 ## Getting Started
 
 ### 1. Define Split-Screen Strategy
-Define when your layout should split into dual-panes (list & detail) by providing a predicate and pane-specific transitions:
+Define when your layout should split into dual-panes (list & detail) by providing predicates and pane-specific transitions. The predicates default to the `ListPane` and `DetailPane` marker interfaces, so screens implementing those need neither:
 
 ```kotlin
 val listDetailStrategy = ListDetailNavStageStrategy(
   isListPane = { it is ListScreen },
+  isDetailPane = { it is DetailScreen },
   listTransition = { PaneTransition.None }, // Keep list stable
   detailTransition = { PaneTransition.Default } // Slide+fade the detail pane
 )
@@ -80,15 +83,18 @@ val listDetailStrategy = ListDetailNavStageStrategy(
 Provide the strategies to `NavStageDecoration` and set it as your navigation decorator in Circuit. Transitions like `GestureNavStageTransition` receive the explicit navigator parameter dynamically, keeping constructor scopes parameter-free and clean:
 
 ```kotlin
+@OptIn(ExperimentalNavStageApi::class)
 val decoration = NavStageDecoration(
   strategies = listOf(listDetailStrategy),
   stageTransition = GestureNavStageTransition()
 )
 
 CircuitCompositionLocals(circuit) {
+  val navStack = rememberSaveableNavStack(HomeScreen)
+  val navigator = rememberCircuitNavigator(navStack)
   NavigableCircuitContent(
     navigator = navigator,
-    backStack = backStack,
+    navStack = navStack,
     decoration = decoration
   )
 }
@@ -104,13 +110,18 @@ CircuitCompositionLocals(circuit) {
 To easily resolve the active `AnimatedVisibilityScope` in child screens (whether they are transitioning between screens inside a single pane or moving between stages), use the `findActiveStageScope()` extension on `SharedElementTransitionScope`:
 
 ```kotlin
-val sharedScope = SharedElementTransitionScope {
+SharedElementTransitionScope {
   val activeScope = findActiveStageScope()
-  if (activeScope != null) {
-    Modifier.sharedElement(
-      rememberSharedContentState(key = "hero-item"),
-      animatedVisibilityScope = activeScope
-    )
-  } else Modifier
+  val heroModifier =
+    if (activeScope != null) {
+      Modifier.sharedElement(
+        rememberSharedContentState(key = "hero-item"),
+        animatedVisibilityScope = activeScope
+      )
+    } else Modifier
+  Image(painter, contentDescription = null, modifier = heroModifier)
 }
 ```
+
+### Migrating from `AnimatedNavDecoration`
+Under `NavStageDecoration` the `Navigation` scope belongs to the stage transition, so it only animates when the stage layout changes or a back gesture runs, not when a screen is pushed inside a pane. Every built-in `NavStageTransition` still provides it, so `requireAnimatedScope(Navigation)` won't throw, but shared elements keyed to it stop following in-pane navigation. Switch those to `findActiveStageScope()`, or to the `Pane` scope if they only care about in-pane navigation.

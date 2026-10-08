@@ -82,8 +82,6 @@ final class <#A: com.slack.circuit.runtime.navigation/NavArgument> com.slack.cir
 }
 
 final class <#A: com.slack.circuit.runtime.navigation/NavArgument> com.slack.circuitx.navstage/NavStageTransitionState { // com.slack.circuitx.navstage/NavStageTransitionState|null[0]
-    constructor <init>(kotlin/Any, com.slack.circuit.runtime.navigation/NavStackList<#A>, kotlin.collections/List<#A>) // com.slack.circuitx.navstage/NavStageTransitionState.<init>|<init>(kotlin.Any;com.slack.circuit.runtime.navigation.NavStackList<1:0>;kotlin.collections.List<1:0>){}[0]
-
     final val args // com.slack.circuitx.navstage/NavStageTransitionState.args|{}args[0]
         final fun <get-args>(): com.slack.circuit.runtime.navigation/NavStackList<#A> // com.slack.circuitx.navstage/NavStageTransitionState.args.<get-args>|<get-args>(){}[0]
     final val stageKey // com.slack.circuitx.navstage/NavStageTransitionState.stageKey|{}stageKey[0]
@@ -91,10 +89,6 @@ final class <#A: com.slack.circuit.runtime.navigation/NavArgument> com.slack.cir
     final val visibleItems // com.slack.circuitx.navstage/NavStageTransitionState.visibleItems|{}visibleItems[0]
         final fun <get-visibleItems>(): kotlin.collections/List<#A> // com.slack.circuitx.navstage/NavStageTransitionState.visibleItems.<get-visibleItems>|<get-visibleItems>(){}[0]
 
-    final fun component1(): kotlin/Any // com.slack.circuitx.navstage/NavStageTransitionState.component1|component1(){}[0]
-    final fun component2(): com.slack.circuit.runtime.navigation/NavStackList<#A> // com.slack.circuitx.navstage/NavStageTransitionState.component2|component2(){}[0]
-    final fun component3(): kotlin.collections/List<#A> // com.slack.circuitx.navstage/NavStageTransitionState.component3|component3(){}[0]
-    final fun copy(kotlin/Any = ..., com.slack.circuit.runtime.navigation/NavStackList<#A> = ..., kotlin.collections/List<#A> = ...): com.slack.circuitx.navstage/NavStageTransitionState<#A> // com.slack.circuitx.navstage/NavStageTransitionState.copy|copy(kotlin.Any;com.slack.circuit.runtime.navigation.NavStackList<1:0>;kotlin.collections.List<1:0>){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.navstage/NavStageTransitionState.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.slack.circuitx.navstage/NavStageTransitionState.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // com.slack.circuitx.navstage/NavStageTransitionState.toString|toString(){}[0]

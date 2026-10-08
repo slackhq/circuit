@@ -25,9 +25,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -51,6 +49,7 @@ import androidx.compose.ui.layout.LocalPinnableContainer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.window.core.layout.WindowSizeClass
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
@@ -100,7 +99,7 @@ data class PetPhotoCarouselScreen(
  * This differs from some other screens by only displaying the input screen directly as static
  * state, as opposed to reading from a repository or maintaining any sort of produced state.
  */
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class)
 @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @Composable
 internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier = Modifier) {
@@ -118,13 +117,10 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
   val pagerState = rememberPagerState { totalPhotos }
   val scope = rememberStableCoroutineScope()
   val requester = remember { FocusRequester() }
-  @Suppress("MagicNumber")
   val isWideLayout =
-    when (calculateWindowSizeClass().widthSizeClass) {
-      WindowWidthSizeClass.Medium,
-      WindowWidthSizeClass.Expanded -> true
-      else -> false
-    }
+    currentWindowAdaptiveInfoV2()
+      .windowSizeClass
+      .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND)
   // Use the primary photo's aspect ratio for consistent container sizing
   val containerAspectRatio = screen.photoAspectRatio ?: DEFAULT_ASPECT_RATIO
 

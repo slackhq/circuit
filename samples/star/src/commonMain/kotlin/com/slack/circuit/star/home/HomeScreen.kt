@@ -27,9 +27,7 @@ import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -44,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntOffset
+import androidx.window.core.layout.WindowSizeClass
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.NavEvent
@@ -169,7 +168,6 @@ internal object HomeTestConstants {
   const val NAVIGATION_RAIL_TAG = "navigation_rail"
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 internal fun HomeNavigationLayout(
   selectedIndex: Int,
@@ -181,7 +179,9 @@ internal fun HomeNavigationLayout(
   content: @Composable (PaddingValues) -> Unit,
 ) {
   val useNavigationRail =
-    calculateWindowSizeClass().heightSizeClass == WindowHeightSizeClass.Compact
+    !currentWindowAdaptiveInfoV2()
+      .windowSizeClass
+      .isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
   val navigationContent: @Composable () -> Unit = {
     StarTheme(useDarkTheme = true) {
       NavigationVisibilityLayout(

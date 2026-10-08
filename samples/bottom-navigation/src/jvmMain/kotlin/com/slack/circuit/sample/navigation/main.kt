@@ -39,7 +39,7 @@ fun main() {
               interceptingNavigator,
               tabs,
               Modifier.fillMaxSize(),
-              rememberNavStageDecoration(interceptingNavigator),
+              rememberNavStageDecoration(),
             )
           }
         }

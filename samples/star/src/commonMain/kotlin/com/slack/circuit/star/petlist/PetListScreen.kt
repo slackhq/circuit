@@ -56,11 +56,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -93,6 +91,7 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
+import androidx.window.core.layout.WindowSizeClass
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
@@ -380,7 +379,7 @@ internal fun PetList(state: State, modifier: Modifier = Modifier) {
   }
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PetListGrid(
   animals: List<PetListAnimal>,
@@ -413,11 +412,13 @@ private fun PetListGrid(
     }
     @Suppress("MagicNumber")
     val columnSpan =
-      when (calculateWindowSizeClass().widthSizeClass) {
-        WindowWidthSizeClass.Medium -> 3
-        WindowWidthSizeClass.Expanded -> 4
-        // No exhaustive whens available here
-        else -> 2
+      currentWindowAdaptiveInfoV2().windowSizeClass.let { windowSizeClass ->
+        when {
+          windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND) ->
+            4
+          windowSizeClass.isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND) -> 3
+          else -> 2
+        }
       }
 
     val spacing = if (columnSpan >= 4) 32.dp else 16.dp

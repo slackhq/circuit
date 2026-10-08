@@ -77,3 +77,4 @@ fastlane/report.xml
 /.claude/worktrees/
 /CLAUDE.local.md
 .ai
+/.review-run

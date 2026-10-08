@@ -3,6 +3,8 @@
 package com.slack.circuitx.navstage
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -22,9 +24,10 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
  * Stage transitions animate the outer boundary when the layout type changes (e.g. single-pane to
  * dual-pane). This is distinct from [PaneTransition] which animates individual items within a pane.
  *
- * All built-in transitions automatically provide the [Navigation] `AnimatedVisibilityScope` so that
+ * All built-in transitions provide the [Navigation] `AnimatedVisibilityScope` so that
  * [NavStagePaneScope.Pane] calls can use shared element bounds to animate pane positions between
- * stage layouts.
+ * stage layouts. This scope follows stage changes, not navigation within a pane. Content that
+ * animates with in-pane navigation should use [findActiveStageScope] or the [Pane] scope.
  */
 @Stable
 @ExperimentalNavStageApi
@@ -45,9 +48,13 @@ public interface NavStageTransition {
   )
 
   public companion object {
-    /** Instant swap with no animation. No shared element animation is applied. */
+    /**
+     * Instant swap with no animation. Still provides the [Navigation] `AnimatedVisibilityScope`, so
+     * content that requires it keeps working.
+     */
     public val None: NavStageTransition =
       object : NavStageTransition {
+        @OptIn(ExperimentalSharedTransitionApi::class)
         @Composable
         override fun <T : NavArgument> AnimatedStageContent(
           targetState: NavStageTransitionState<T>,
@@ -55,7 +62,13 @@ public interface NavStageTransition {
           navigator: Navigator,
           content: @Composable (NavStageTransitionState<T>) -> Unit,
         ) {
-          content(targetState)
+          AnimatedContent(
+            targetState = targetState,
+            contentKey = { it.stageKey },
+            transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+          ) { state ->
+            ProvideAnimatedTransitionScope(Navigation, this@AnimatedContent) { content(state) }
+          }
         }
       }
 
@@ -92,13 +105,34 @@ public interface NavStageTransition {
  * Snapshot of the current stage layout and navigation stack, used as the target for stage
  * transitions.
  *
- * Obtain instances from [NavStageTransition.AnimatedStageContent]'s `stateFor` rather than
- * constructing them, so [visibleItems] stays consistent with the stage resolved for [args].
+ * Instances come from [NavStageTransition.AnimatedStageContent]: its `targetState`, or `stateFor`
+ * for other stacks. Each carries the [NavStage] it was resolved with, so it always renders exactly
+ * its [visibleItems] even if the stage for [args] would resolve differently now.
  */
 @Immutable
 @ExperimentalNavStageApi
-public data class NavStageTransitionState<T : NavArgument>(
-  val stageKey: Any,
-  val args: NavStackList<T>,
-  val visibleItems: List<T>,
-)
+public class NavStageTransitionState<T : NavArgument>
+internal constructor(
+  internal val stage: NavStage<T>,
+  public val args: NavStackList<T>,
+  public val visibleItems: List<T>,
+) {
+  public val stageKey: Any
+    get() = stage.key
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other !is NavStageTransitionState<*>) return false
+    return stageKey == other.stageKey && args == other.args && visibleItems == other.visibleItems
+  }
+
+  override fun hashCode(): Int {
+    var result = stageKey.hashCode()
+    result = 31 * result + args.hashCode()
+    result = 31 * result + visibleItems.hashCode()
+    return result
+  }
+
+  override fun toString(): String =
+    "NavStageTransitionState(stageKey=$stageKey, args=$args, visibleItems=$visibleItems)"
+}

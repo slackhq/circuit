@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,8 +32,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable data class ItemDetailScreen(val itemId: Int) : Screen, DetailPane
 
-data class ItemListState(val items: List<String>, val eventSink: (ItemListEvent) -> Unit) :
-  CircuitUiState
+data class ItemListState(
+  val items: List<String>,
+  val selectedIndex: Int?,
+  val eventSink: (ItemListEvent) -> Unit,
+) : CircuitUiState
 
 sealed interface ItemListEvent : CircuitUiEvent {
   data class ItemClicked(val index: Int) : ItemListEvent
@@ -44,7 +48,8 @@ class ItemListPresenter(private val navigator: Navigator) : Presenter<ItemListSt
   @Composable
   override fun present(): ItemListState {
     val items = (1..20).map { "Item $it" }
-    return ItemListState(items) { event ->
+    val selectedIndex = (navigator.peekBackStack().firstOrNull() as? ItemDetailScreen)?.itemId
+    return ItemListState(items, selectedIndex) { event ->
       when (event) {
         is ItemListEvent.ItemClicked -> navigator.goTo(ItemDetailScreen(event.index))
       }
@@ -66,13 +71,20 @@ class ItemDetailPresenter(private val screen: ItemDetailScreen) : Presenter<Item
 
 @Composable
 fun ItemListUi(state: ItemListState, modifier: Modifier = Modifier) {
-  LazyColumn(modifier.fillMaxSize()) {
+  LazyColumn(modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
     items(state.items.indices.toList()) { index ->
       Text(
         text = state.items[index],
         style = MaterialTheme.typography.bodyLarge,
         modifier =
           Modifier.fillMaxWidth()
+            .then(
+              if (index == state.selectedIndex) {
+                Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
+              } else {
+                Modifier
+              }
+            )
             .clickable { state.eventSink(ItemListEvent.ItemClicked(index)) }
             .padding(16.dp),
       )
@@ -83,7 +95,7 @@ fun ItemListUi(state: ItemListState, modifier: Modifier = Modifier) {
 
 @Composable
 fun ItemDetailUi(state: ItemDetailState, modifier: Modifier = Modifier) {
-  Column(modifier.fillMaxSize().padding(16.dp)) {
+  Column(modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface).padding(16.dp)) {
     Text(text = state.title, style = MaterialTheme.typography.headlineMedium)
     Text(
       text = state.body,

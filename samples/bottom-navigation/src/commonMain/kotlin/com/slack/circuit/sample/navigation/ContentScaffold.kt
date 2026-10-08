@@ -55,26 +55,25 @@ import com.slack.circuitx.navstage.NavStageFrame
  */
 @OptIn(ExperimentalNavStageApi::class)
 @Composable
-fun rememberNavStageDecoration(navigator: Navigator): NavDecoration =
-  remember(navigator) {
-    NavStageDecoration(
-      strategies = listOf(ListDetailNavStageStrategy()),
-      stageTransition = GestureNavStageTransition(onBack = { navigator.pop() }),
-      frame =
-        object : NavStageFrame {
-          @Suppress("ComposeModifierReused")
-          @Composable
-          override fun <T : NavArgument> Content(
-            modifier: Modifier,
-            stage: NavStage<T>,
-            args: NavStackList<T>,
-            stageContent: @Composable (() -> Unit),
-          ) {
-            Box(modifier.background(Color.LightGray).padding(8.dp)) { stageContent() }
-          }
-        },
-    )
-  }
+fun rememberNavStageDecoration(): NavDecoration = remember {
+  NavStageDecoration(
+    strategies = listOf(ListDetailNavStageStrategy()),
+    stageTransition = GestureNavStageTransition(),
+    frame =
+      object : NavStageFrame {
+        @Suppress("ComposeModifierReused")
+        @Composable
+        override fun <T : NavArgument> Content(
+          modifier: Modifier,
+          stage: NavStage<T>,
+          args: NavStackList<T>,
+          stageContent: @Composable (() -> Unit),
+        ) {
+          Box(modifier.background(Color.LightGray).padding(8.dp)) { stageContent() }
+        }
+      },
+  )
+}
 
 @Suppress("ComposeModifierReused")
 @Composable

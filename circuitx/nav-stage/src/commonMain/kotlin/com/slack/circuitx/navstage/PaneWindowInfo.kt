@@ -7,17 +7,14 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.util.fastMap
 import androidx.compose.ui.util.fastMaxOfOrDefault
 
 /**
@@ -25,8 +22,8 @@ import androidx.compose.ui.util.fastMaxOfOrDefault
  * [WindowInfo]'s container size. Read it with [currentPaneWindowSize] or [currentPaneWindowDpSize]
  * for breakpoints that should follow the space a screen is given rather than the whole window.
  *
- * Sizes come from layout, so they lag by a frame when the space changes. Until the first
- * measurement they report the enclosing pane's size, or the window's.
+ * Sizes come from the constraints the space is measured with, so they're current for the frame
+ * being laid out. An unbounded dimension reports the enclosing pane's size, or the window's.
  */
 @Stable
 @ExperimentalNavStageApi
@@ -60,26 +57,33 @@ public fun currentPaneWindowDpSize(): DpSize =
   LocalPaneWindowInfo.current?.containerDpSize ?: LocalWindowInfo.current.containerDpSize
 
 @OptIn(ExperimentalNavStageApi::class)
-private class MeasuredPaneWindowInfo(size: IntSize, dpSize: DpSize) : PaneWindowInfo {
-  override var containerSize by mutableStateOf(size)
-  override var containerDpSize by mutableStateOf(dpSize)
-}
+private data class MeasuredPaneWindowInfo(
+  override val containerSize: IntSize,
+  override val containerDpSize: DpSize,
+) : PaneWindowInfo
 
 /**
  * Lays out [content] as if it were placed directly with [modifier], and provides the space it's
- * given as [LocalPaneWindowInfo].
+ * given as [LocalPaneWindowInfo]. [content] is composed during measure, so it sees the size for the
+ * frame it's laid out in.
  */
 @OptIn(ExperimentalNavStageApi::class)
 @Composable
 internal fun ProvidePaneWindowInfo(modifier: Modifier, content: @Composable () -> Unit) {
-  val initialSize = currentPaneWindowSize()
-  val initialDpSize = currentPaneWindowDpSize()
-  val info = remember { MeasuredPaneWindowInfo(initialSize, initialDpSize) }
-  Layout(
-    content = { CompositionLocalProvider(LocalPaneWindowInfo provides info, content = content) },
-    modifier = modifier,
-  ) { measurables, constraints ->
-    val placeables = measurables.map { it.measure(constraints) }
+  val enclosingSize = currentPaneWindowSize()
+  SubcomposeLayout(modifier) { constraints ->
+    val available =
+      IntSize(
+        if (constraints.hasBoundedWidth) constraints.maxWidth else enclosingSize.width,
+        if (constraints.hasBoundedHeight) constraints.maxHeight else enclosingSize.height,
+      )
+    val info =
+      MeasuredPaneWindowInfo(available, DpSize(available.width.toDp(), available.height.toDp()))
+    val placeables =
+      subcompose(Unit) {
+          CompositionLocalProvider(LocalPaneWindowInfo provides info, content = content)
+        }
+        .fastMap { it.measure(constraints) }
     val width =
       placeables
         .fastMaxOfOrDefault(constraints.minWidth) { it.width }
@@ -88,13 +92,6 @@ internal fun ProvidePaneWindowInfo(modifier: Modifier, content: @Composable () -
       placeables
         .fastMaxOfOrDefault(constraints.minHeight) { it.height }
         .coerceAtMost(constraints.maxHeight)
-    val available =
-      IntSize(
-        if (constraints.hasBoundedWidth) constraints.maxWidth else width,
-        if (constraints.hasBoundedHeight) constraints.maxHeight else height,
-      )
-    info.containerSize = available
-    info.containerDpSize = DpSize(available.width.toDp(), available.height.toDp())
     layout(width, height) { placeables.fastForEach { it.place(0, 0) } }
   }
 }

@@ -354,7 +354,7 @@ val compact = width < 600.dp
 
 - `currentPaneWindowSize()` is the size in pixels, `currentPaneWindowDpSize()` in dp.
 - Strategies see the decoration's size. Screen UI sees its pane's.
-- Sizes come from layout, so they land a frame after the space changes. Until the first measurement they report the enclosing pane's size, or the window's.
+- Sizes come from the constraints the space is measured with, so they're current for the frame being laid out. An unbounded dimension reports the enclosing pane's size, or the window's.
 - During a layout change, shared bounds resize the pane, so the reported size animates with it.
 
 ## Recipes
@@ -375,7 +375,7 @@ In a split, `goTo` from the list replaces the current detail by default, so back
 
 - **Each record gets its own navigator.** Calls from a pane go through the stage's [navigation policy](#navigation-policy). The instance stays the same while the record is in the stack, wherever it's shown, so don't compare it against the host navigator.
 - **More than one record is active.** `LocalRecordLifecycle.current.isActive` is true for the current record of every visible pane, so a list and its detail are both active in a split. Anything that treats "active" as "top of the stack", like screen view analytics, focus requests, or one shot effects, runs for each pane.
-- **Breakpoints lag a frame.** `DefaultIsMultiPane()` and `currentPaneWindowDpSize()` come from layout, so the first frame and the frame after a resize use the previous size.
+- **Content composes during layout.** The decoration and each pane are `SubcomposeLayout`s so they can provide their size before their content composes. Like `BoxWithConstraints`, they don't support intrinsic measurements, so don't measure the decoration or a pane with `IntrinsicSize`.
 - **A record moving between panes leaves a gap.** When the list takes over the detail's record, that record moves to the list pane straight away and the detail's exit animation shows an empty placeholder.
 
 ## Migrating from `AnimatedNavDecoration`

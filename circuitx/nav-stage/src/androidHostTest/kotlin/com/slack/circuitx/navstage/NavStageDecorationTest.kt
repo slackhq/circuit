@@ -51,6 +51,7 @@ class NavStageDecorationTest {
   @get:Rule val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
   private val mounts = mutableMapOf<String, Int>()
+  private val firstPaneWidths = mutableMapOf<String, Int>()
 
   private val circuit =
     Circuit.Builder()
@@ -60,6 +61,8 @@ class NavStageDecorationTest {
       .addUiFactory { _, _ ->
         ui<LabelState> { state, modifier ->
           remember { mounts.merge(state.label, 1, Int::plus) }
+          val paneWidth = currentPaneWindowSize().width
+          remember { firstPaneWidths.getOrPut(state.label) { paneWidth } }
           BasicText(state.label, modifier.fillMaxSize().testTag(state.label))
         }
       }
@@ -114,6 +117,28 @@ class NavStageDecorationTest {
     composeTestRule.waitForIdle()
     assertComposedOnce(ItemList, Detail2)
     assertNotComposed(Detail1)
+  }
+
+  @Test
+  fun panesSeeTheirOwnWidthOnFirstComposition() {
+    setNavContent(
+      listOf(ItemList, Detail1),
+      NavStageDecoration(
+        listOf(
+          ListDetailNavStageStrategy(
+            isListPane = { it is TestListPane },
+            isDetailPane = { it is TestDetailPane },
+            isMultiPane = { true },
+          )
+        )
+      ),
+    )
+    composeTestRule.waitForIdle()
+
+    listOf(ItemList, Detail1).forEach { screen ->
+      val width = composeTestRule.onNodeWithTag(screen.label).fetchSemanticsNode().size.width
+      assertEquals(width, firstPaneWidths[screen.label])
+    }
   }
 
   @Test

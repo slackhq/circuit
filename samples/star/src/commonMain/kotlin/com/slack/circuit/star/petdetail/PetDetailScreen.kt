@@ -30,7 +30,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
@@ -45,7 +47,6 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.window.core.layout.WindowSizeClass
 import com.mikepenz.markdown.m3.Markdown
 import com.mikepenz.markdown.m3.markdownTypography
 import com.mikepenz.markdown.model.MarkdownTypography
@@ -250,15 +251,15 @@ internal object PetDetailTestConstants {
   const val PET_NAME_TAG = "pet_name"
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(
+  ExperimentalMaterial3WindowSizeClassApi::class,
+  ExperimentalSharedTransitionApi::class,
+)
 @CircuitInject(PetDetailScreen::class, AppScope::class)
 @Composable
 internal fun PetDetail(state: State, modifier: Modifier = Modifier) = SharedElementTransitionScope {
   val useCompactLandscapeLayout =
-    isLandscape() &&
-      !currentWindowAdaptiveInfoV2()
-        .windowSizeClass
-        .isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+    isLandscape() && calculateWindowSizeClass().heightSizeClass == WindowHeightSizeClass.Compact
   Scaffold(
     topBar = { if (!useCompactLandscapeLayout) TopBar(state) },
     modifier =

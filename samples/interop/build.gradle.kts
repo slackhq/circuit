@@ -29,7 +29,6 @@ dependencies {
   implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.appCompat)
   implementation(libs.androidx.browser)
-  implementation(libs.androidx.compose.material3.adaptive)
   implementation(libs.androidx.compose.runtime.rxjava3)
   implementation(libs.compose.material.icons)
   implementation(libs.compose.material.material3)
@@ -38,6 +37,7 @@ dependencies {
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.molecule.runtime)
   implementation(libs.rxjava)
+  implementation(libs.windowSizeClass)
   implementation(projects.circuitFoundation)
 
   testImplementation(libs.compose.ui.testing.junit)

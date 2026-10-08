@@ -36,10 +36,10 @@ kotlin {
         implementation(libs.compose.foundation)
         implementation(libs.compose.material.material3)
         implementation(libs.compose.material.icons)
-        implementation(libs.compose.material3.adaptive)
         implementation(libs.compose.navigationevent)
         implementation(libs.compose.ui.tooling.preview)
         implementation(libs.coroutines)
+        implementation(libs.windowSizeClass)
         implementation(projects.circuitCodegenAnnotations)
         implementation(projects.circuitFoundation)
         implementation(projects.circuitRetained)
@@ -75,6 +75,9 @@ kotlin {
       compilerOptions {
         freeCompilerArgs.add("-Xexpect-actual-classes")
         optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
+        optIn.add(
+          "androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi"
+        )
       }
     }
   }

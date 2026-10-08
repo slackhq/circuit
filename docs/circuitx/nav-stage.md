@@ -21,13 +21,13 @@ The `bottom-navigation` sample wires this up in `ContentScaffold.kt` and `ListDe
 ## Features
 
 - **Adaptive layouts from one stack.** Strategies pick a stage per frame, so folding, rotating, or resizing re-lays out the current stack without touching navigation.
-- **List-detail out of the box.** Mark screens with `ListPane` and `DetailPane` and they split once the window is medium width or wider.
+- **List-detail out of the box.** Tell `ListDetailNavStageStrategy` which screens are lists and which are details, and they split once the window is at least 600dp wide.
 - **Pluggable layouts.** Write your own `NavStage` for any arrangement: supporting panes, three columns, whatever.
 - **Per-pane animation.** Each pane has its own `PaneTransition`, so the detail can slide while the list stays still.
 - **Stage transitions.** Animate layout changes with `NavStageTransition`, including shared bounds that move panes between layouts.
 - **Predictive back.** `GestureNavStageTransition` previews the popped stack under your finger. Within a list-detail stage only the detail moves.
 - **Shared elements.** Works with Circuit's `SharedElementTransitionLayout` across panes, stages, and overlays.
-- **State safety.** Every record is composed exactly once, even mid-animation, so saved state and retained presenters behave like they do with the default decoration.
+- **State safety.** Every record is composed exactly once, even mid-animation, so saved state and retained presenters behave like they do with the default decoration. One difference: every visible pane is active, not just the top record. See [Things to know](#things-to-know).
 
 ## How it fits together
 
@@ -44,22 +44,22 @@ graph TD
 | Piece                | Job                                                                                      | Built in                                                   |
 |----------------------|------------------------------------------------------------------------------------------|------------------------------------------------------------|
 | `NavStageStrategy`   | Looks at the stack and window, returns a `NavStage` or `null` to pass.                   | `ListDetailNavStageStrategy`                               |
-| `NavStage`           | Lays out the stage and puts stack items into panes.                                      | `SinglePaneNavStage`, `ListDetailNavStage`                 |
+| `NavStage`           | Lays out the stage and puts stack items into panes.                                      | `SinglePaneNavStage()`, `ListDetailNavStage`               |
 | `NavStagePaneScope`  | Handed to `NavStage.Content`. `Pane(key, item)` renders a record.                        | Provided by the decoration                                 |
 | `PaneTransition`     | Animates the item inside one pane when it changes.                                       | `Default`, `Crossfade`, `None`                             |
 | `NavStageTransition` | Animates between stage layouts and handles back gestures.                                | `None`, `Crossfade`, `GestureNavStageTransition`           |
 | `NavStageFrame`      | Decorates around the whole stage: background, padding, clipping.                         | `None`                                                     |
 
-Strategies run in order and the first non-null stage wins. If none match, `SinglePaneNavStage` renders the active record alone, which looks just like Circuit's default decoration.
+Strategies run in order and the first non-null stage wins. If none match, `SinglePaneNavStage()` renders the active record alone with `PaneTransition.Default`. That's the same motion as Circuit's default decorator, but a custom `AnimatedNavDecorator.Factory` or `AnimatedScreenTransform` set on `Circuit.Builder` isn't applied.
 
 ## Quick start
 
-Mark your screens:
+Given a list and a detail screen:
 
 ```kotlin
-@Parcelize data object InboxScreen : Screen, ListPane
+@Parcelize data object InboxScreen : Screen
 
-@Parcelize data class EmailScreen(val id: String) : Screen, DetailPane
+@Parcelize data class EmailScreen(val id: String) : Screen
 ```
 
 Hand a `NavStageDecoration` to `NavigableCircuitContent`. Remember it so it isn't rebuilt every recomposition.
@@ -70,7 +70,13 @@ Hand a `NavStageDecoration` to `NavigableCircuitContent`. Remember it so it isn'
 fun App(circuit: Circuit) {
   val decoration = remember {
     NavStageDecoration(
-      strategies = listOf(ListDetailNavStageStrategy()),
+      strategies =
+        listOf(
+          ListDetailNavStageStrategy(
+            isListPane = { it is InboxScreen },
+            isDetailPane = { it is EmailScreen },
+          )
+        ),
       stageTransition = GestureNavStageTransition(),
     )
   }
@@ -84,7 +90,7 @@ fun App(circuit: Circuit) {
 }
 ```
 
-That's it. When the active screen is a `DetailPane`, a `ListPane` is somewhere behind it, and the window is at least medium width, you get a 40/60 split. Otherwise it's single pane.
+That's it. When the active screen is a detail, a list is somewhere behind it, and the window is at least 600dp wide, you get a 40/60 split. Otherwise it's single pane.
 
 `SharedElementTransitionLayout` is optional, but without it panes can't animate between layouts and just swap.
 
@@ -92,24 +98,25 @@ That's it. When the active screen is a `DetailPane`, a `ListPane` is somewhere b
 
 ### List-detail
 
-Every part of `ListDetailNavStageStrategy` can be overridden:
+`isListPane` and `isDetailPane` are required. Everything else can be overridden:
 
 ```kotlin
 ListDetailNavStageStrategy(
-  // Use your own predicates instead of the marker interfaces.
   isListPane = { it is InboxScreen || it is SearchScreen },
   isDetailPane = { it is EmailScreen },
   // Your own breakpoint. Defaults to ListDetailNavStageStrategy.DefaultIsMultiPane().
-  isMultiPane = { LocalWindowInfo.current.containerSize.width > 1200 },
+  isMultiPane = { currentPaneWindowDpSize().width > 840.dp },
   // Per-screen pane animations.
   listTransition = { PaneTransition.None },
   detailTransition = { screen ->
     if (screen is ComposeScreen) PaneTransition.Crossfade else PaneTransition.Default
   },
+  // What goTo from the list pane does to the detail. ReplaceDetail is the default.
+  listGoTo = ListDetailNavStage.ListGoTo.Push,
 )
 ```
 
-`isMultiPane` is composable, so it can read window size classes, posture, or a user setting.
+`isMultiPane` is composable, so it can read window size classes, posture, or a user setting. `DefaultIsMultiPane()` reads `currentPaneWindowDpSize()`, the space the decoration was given, so a decoration inside a nav rail or a pane picks its layout from its own width. See [Pane window info](#pane-window-info).
 
 Keep the lambdas stable (top level, or remembered). The strategy remembers its stage keyed on them, so a fresh lambda each recomposition rebuilds the stage.
 
@@ -121,13 +128,15 @@ NavStageDecoration(strategies, stageTransition = NavStageTransition.Crossfade)
 
 - `None` swaps layouts instantly. This is the default.
 - `Crossfade` fades between layouts while shared bounds move panes into place.
-- `GestureNavStageTransition(onBack)` adds predictive back on top. During the gesture the popped stack renders behind the current one and the leaving content scales and shifts with your finger. If the popped stack keeps the same layout, only the panes whose item changes move, so the list stays put while the detail goes. Pass `onBack` if you route back through something other than `Navigator.pop`, but it should still pop, since that's what the preview showed.
+- `GestureNavStageTransition()` adds predictive back on top. During the gesture the popped stack renders behind the current one and the leaving content scales and shifts with your finger. If the popped stack keeps the same layout, only the panes whose item changes move, so the list stays put while the detail goes. Completing the gesture pops through the stage's [navigation policy](#navigation-policy).
 
 `GestureNavStageTransition` drives the gesture itself instead of going through `AnimatedNavDecoration`, so the same motion applies on any platform that delivers back gestures.
 
 ### Pane transitions
 
-`PaneTransition.Default` slides and fades directionally based on whether the navigation went forward or back. `Crossfade` fades. `None` swaps.
+`PaneTransition.Default` uses the same forward and back motion as Circuit's default decorator and fades on a root reset. `Crossfade` fades. `None` swaps.
+
+Each pane's animation state belongs to its pane `key`. Changing the key starts the pane fresh instead of animating from the old item.
 
 ### Frames
 
@@ -168,8 +177,7 @@ class SupportingPaneStage<T : NavArgument> : NavStage<T> {
   }
 
   @Composable
-  override fun Content(args: NavStackList<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
-    val items = visibleItems(args)
+  override fun Content(items: List<T>, paneScope: NavStagePaneScope<T>, modifier: Modifier) {
     if (items.size == 1) {
       paneScope.Pane(key = "supporting", item = items.single(), modifier = modifier.fillMaxSize())
       return
@@ -203,7 +211,11 @@ object SupportingPaneStrategy : NavStageStrategy {
 }
 
 NavStageDecoration(
-  strategies = listOf(SupportingPaneStrategy, ListDetailNavStageStrategy()),
+  strategies =
+    listOf(
+      SupportingPaneStrategy,
+      ListDetailNavStageStrategy(isListPane = { it is InboxScreen }, isDetailPane = { it is EmailScreen }),
+    ),
   stageTransition = GestureNavStageTransition(),
 )
 ```
@@ -212,9 +224,10 @@ NavStageDecoration(
 
 These are what keep every record composed once and transitions correct:
 
-- **`visibleItems` must be pure and match `Content`.** Return exactly the items `Content` passes to `Pane`, in pane order. Transitions use it to work out which records are shared between layouts.
+- **`visibleItems` must be pure.** Return the items to show, in pane order. The decoration calls it once per stack and hands the result to `Content`, and transitions use it to work out which records are shared between layouts.
+- **Place exactly the items you're given.** Put each item from `items` in one `Pane`. Placing an item that isn't in `items` fails fast.
 - **No item twice.** Two panes can't show the same record. The decoration fails fast if `visibleItems` repeats a key.
-- **Unique pane keys.** The pane `key` identifies the slot ("list", "detail"), not the item. Keep it stable as the item in it changes, so its `PaneTransition` can animate.
+- **Unique pane keys.** The pane `key` identifies the slot ("list", "detail"), not the item. Keep it stable as the item in it changes, so its `PaneTransition` can animate. A new key starts the pane fresh.
 - **Namespace the stage `key`.** Stages with the same key are treated as the same layout and won't transition. Something like `"com.example.supporting-pane"` avoids clashes.
 - **Remember the stage in the strategy.** A new instance each pass works, but a stable one is cheaper.
 - **Handle stacks you didn't expect.** During a back gesture or a layout change, a stage can render an older stack than the one it was picked for. Fall back gracefully, like the single-item branch above, instead of throwing.
@@ -225,7 +238,7 @@ These are what keep every record composed once and transitions correct:
 
 ### Pane transition
 
-A pane transition gets the incoming item and the navigation direction:
+A pane transition gets the incoming item and the navigation direction. `content` takes the `AnimatedVisibilityScope` animating each item as its receiver, so call it from inside one, like `AnimatedContent`'s content lambda. The pane uses that scope to provide `PaneAnimatedScope` and to tell the entering item from the leaving ones:
 
 ```kotlin
 @OptIn(ExperimentalNavStageApi::class)
@@ -236,7 +249,7 @@ object VerticalSlide : PaneTransition {
     paneKey: Any,
     navEvent: AnimatedNavEvent,
     modifier: Modifier,
-    content: @Composable (T) -> Unit,
+    content: @Composable AnimatedVisibilityScope.(T) -> Unit,
   ) {
     AnimatedContent(
       targetState = targetItem,
@@ -254,7 +267,7 @@ object VerticalSlide : PaneTransition {
 }
 ```
 
-Always call `content` with the slot's own `item`, not `targetItem`. Rendering the target in both slots composes the record twice.
+Always call `content` with the slot's own `item`, not `targetItem`, and once per item. Only the entering slot composes the target's record, so the others show an empty placeholder while they leave.
 
 ### Stage transition
 
@@ -283,11 +296,13 @@ object SlideStages : NavStageTransition {
 
 If you need to render a stack other than the target, like a back preview, build its state with `stateFor(stack)`. It resolves the stage that stack actually needs.
 
+States are compared by identity. Pass the `targetState` instance you were given to the slot showing it, and to only one slot: that's where the target's records compose, and every other slot gets placeholders for them. Pop through the `navigator` you're given rather than the host's, so back goes through the stage's [navigation policy](#navigation-policy).
+
 ## Shared elements
 
 Three scopes are in play:
 
-- `Pane` follows navigation inside a single pane.
+- `PaneAnimatedScope` follows navigation inside a single pane.
 - `Navigation` follows stage layout changes and back gestures.
 - `Overlay` follows overlays, as usual.
 
@@ -309,6 +324,39 @@ SharedElementTransitionScope {
 }
 ```
 
+## Navigation policy
+
+Each record shown in a pane gets its own `Navigator`. Its `goTo`, `pop`, `resetRoot`, `forward`, and `backward` calls go to the stage's `navigationPolicy` along with a `NavStagePaneSource`, so the policy knows which pane the call came from and how deep in the stack that record is. `peek` calls aren't routed and always see the real stack. System back and `GestureNavStageTransition` go through `pop` with the top pane as the source.
+
+```kotlin
+override val navigationPolicy =
+  object : NavStageNavigationPolicy {
+    override fun pop(source: NavStagePaneSource, result: PopResult?, navigator: Navigator): Screen? {
+      // Pop everything above the calling pane first.
+      repeat(source.depth) { navigator.pop() }
+      return navigator.pop(result)
+    }
+  }
+```
+
+Every method defaults to passing the call straight through, and `NavStage.navigationPolicy` defaults to `NavStageNavigationPolicy.Passthrough`. `ListDetailNavStage` treats the list as the owner of the detail beside it: `pop` from the list pops the detail too, and `goTo` from the list follows `listGoTo`. Calls from the detail pass through.
+
+Answering navigators go through the same per record navigator. A popped result goes to the record that launched the screen, even when the policy leaves a different record on top.
+
+## Pane window info
+
+`LocalWindowInfo` is the whole window. Panes and the decoration itself also provide `LocalPaneWindowInfo` with the space they were given. Read it through the helpers, which fall back to `LocalWindowInfo` outside a nav stage:
+
+```kotlin
+val width = currentPaneWindowDpSize().width
+val compact = width < 600.dp
+```
+
+- `currentPaneWindowSize()` is the size in pixels, `currentPaneWindowDpSize()` in dp.
+- Strategies see the decoration's size. Screen UI sees its pane's.
+- Sizes come from layout, so they land a frame after the space changes. Until the first measurement they report the enclosing pane's size, or the window's.
+- During a layout change, shared bounds resize the pane, so the reported size animates with it.
+
 ## Recipes
 
 ### Highlight the selected list item
@@ -319,20 +367,21 @@ The list's presenter can read the visible detail from the back stack. `peekBackS
 val selectedId = (navigator.peekBackStack().firstOrNull() as? EmailScreen)?.id
 ```
 
-### Swap the detail instead of stacking it
+### Stack details instead of swapping them
 
-Tapping items in a split list pushes a detail each time, so back walks through every one you opened. If you'd rather back go straight to the list, replace the current detail:
+In a split, `goTo` from the list replaces the current detail by default, so back goes straight to the list. To keep every detail you opened in the back stack, pass `listGoTo = ListDetailNavStage.ListGoTo.Push`. In single pane the list is the top when it navigates, so phones always stack.
 
-```kotlin
-if (navigator.peekBackStack().firstOrNull() is EmailScreen) navigator.pop()
-navigator.goTo(EmailScreen(id))
-```
+## Things to know
 
-This changes single-pane behaviour too, so gate it on your multi-pane check if phones should keep stacking.
+- **Each record gets its own navigator.** Calls from a pane go through the stage's [navigation policy](#navigation-policy). The instance stays the same while the record is in the stack, wherever it's shown, so don't compare it against the host navigator.
+- **More than one record is active.** `LocalRecordLifecycle.current.isActive` is true for the current record of every visible pane, so a list and its detail are both active in a split. Anything that treats "active" as "top of the stack", like screen view analytics, focus requests, or one shot effects, runs for each pane.
+- **Breakpoints lag a frame.** `DefaultIsMultiPane()` and `currentPaneWindowDpSize()` come from layout, so the first frame and the frame after a resize use the previous size.
+- **A record moving between panes leaves a gap.** When the list takes over the detail's record, that record moves to the list pane straight away and the detail's exit animation shows an empty placeholder.
 
 ## Migrating from `AnimatedNavDecoration`
 
 `NavStageDecoration` is a sibling of `AnimatedNavDecoration`, not an extension:
 
-- `Circuit.Builder.addAnimatedScreenTransform` isn't applied to stage content. Use a `PaneTransition` instead.
-- The `Navigation` scope only animates for layout changes and back gestures, not for a push inside a pane. Shared elements keyed to it should switch to `findActiveStageScope()`, or `Pane` if they only care about in-pane navigation. Every built-in transition still provides `Navigation`, so `requireAnimatedScope(Navigation)` won't throw.
+- `Circuit.Builder.setAnimatedNavDecoratorFactory` and `addAnimatedScreenTransform` aren't applied to stage content. Use a `PaneTransition` instead.
+- More than one record can be active at once. Check anything that reads `LocalRecordLifecycle` and assumes it means top of the stack.
+- The `Navigation` scope only animates for layout changes and back gestures, not for a push inside a pane. Shared elements keyed to it should switch to `findActiveStageScope()`, or `PaneAnimatedScope` if they only care about in-pane navigation. Every built-in transition still provides `Navigation`, so `requireAnimatedScope(Navigation)` won't throw.

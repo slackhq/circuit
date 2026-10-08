@@ -120,16 +120,44 @@ public fun <T : PopResult> rememberAnsweringNavigator(
   answeringResultHandler: RuntimeAnsweringResultHandler,
   resultType: KClass<T>,
   block: (result: T) -> Unit,
+): GoToNavigator =
+  rememberAnsweringNavigator(
+    navStack = navStack,
+    answeringResultHandler = answeringResultHandler,
+    resultType = resultType,
+    block = block,
+    ownerRecordKey = null,
+    navigator = null,
+  )
+
+/**
+ * [ownerRecordKey] is the record that asked for the result, and gets it back from whichever record
+ * it launched. Null means the top record at first composition, which only receives the result once
+ * it's top again. A non-null [navigator] performs the `goTo` instead of pushing on [navStack].
+ */
+@OptIn(ExperimentalCircuitApi::class)
+@Composable
+internal fun <T : PopResult> rememberAnsweringNavigator(
+  navStack: NavStack<out NavStack.Record>,
+  answeringResultHandler: RuntimeAnsweringResultHandler,
+  resultType: KClass<T>,
+  block: (result: T) -> Unit,
+  ownerRecordKey: String?,
+  navigator: Navigator?,
 ): GoToNavigator {
   val currentBackStack by rememberUpdatedState(navStack)
   val currentResultType by rememberUpdatedState(resultType)
   val currentAnsweringResultHandler by rememberUpdatedState(answeringResultHandler)
+  val currentNavigator by rememberUpdatedState(navigator)
 
   // Top screen at the start, so we can ensure we only collect the result if
   // we've returned to this screen
   val initialRecordKey = rememberSaveable {
-    currentBackStack.currentRecord?.key ?: error("Navigator must have a top screen at start.")
+    ownerRecordKey
+      ?: currentBackStack.currentRecord?.key
+      ?: error("Navigator must have a top screen at start.")
   }
+  val tracksLaunchedRecord = ownerRecordKey != null
 
   // Key for the resultKey, so we can track who owns this requested result
   val key = rememberSaveable { @OptIn(ExperimentalUuidApi::class) Uuid.random().toString() }
@@ -139,13 +167,25 @@ public fun <T : PopResult> rememberAnsweringNavigator(
 
   // Track whether we've actually gone to the next record yet
   var launched by rememberSaveable { mutableStateOf(false) }
+  var launchedRecordKey by rememberSaveable { mutableStateOf<String?>(null) }
+  val launchedRecordGone by remember {
+    derivedStateOf {
+      val launchedKey = launchedRecordKey ?: return@derivedStateOf false
+      currentBackStack.snapshot()?.none { it.key == launchedKey } ?: true
+    }
+  }
 
-  // Collect the result if we've launched and now returned to the initial record
+  // Collect the result if we've launched and now returned to the initial record, or the record we
+  // launched has left while the owner is still composed
   val currentRecord = currentRecordState
-  if (launched && currentRecord != null && currentRecord.key == initialRecordKey) {
+  if (
+    launched &&
+      currentRecord != null &&
+      (currentRecord.key == initialRecordKey || (tracksLaunchedRecord && launchedRecordGone))
+  ) {
     LaunchedEffect(key) {
       val result =
-        currentAnsweringResultHandler.awaitResult(currentRecord.key, key) ?: return@LaunchedEffect
+        currentAnsweringResultHandler.awaitResult(initialRecordKey, key) ?: return@LaunchedEffect
       launched = false
       if (currentResultType.isInstance(result)) {
         @Suppress("UNCHECKED_CAST") block(result as T)
@@ -156,10 +196,14 @@ public fun <T : PopResult> rememberAnsweringNavigator(
     object : GoToNavigator {
       override fun goTo(screen: Screen): Boolean {
         val previousRecord = currentBackStack.currentRecord
-        val success = currentBackStack.push(screen)
+        val success = currentNavigator?.goTo(screen) ?: currentBackStack.push(screen)
         if (success) {
-          // Clear the cached pending result from the previous top record
-          if (previousRecord != null) {
+          if (tracksLaunchedRecord) {
+            val launchedKey = currentBackStack.currentRecord?.key
+            launchedRecordKey = launchedKey
+            currentAnsweringResultHandler.prepareForResult(initialRecordKey, key, launchedKey)
+          } else if (previousRecord != null) {
+            // Clear the cached pending result from the previous top record
             currentAnsweringResultHandler.prepareForResult(previousRecord.key, key)
           }
           launched = true

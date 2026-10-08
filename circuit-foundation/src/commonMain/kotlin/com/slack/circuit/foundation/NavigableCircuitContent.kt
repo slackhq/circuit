@@ -293,6 +293,7 @@ public fun <R : Record> NavigableCircuitContent(
   CompositionLocalProvider(
     LocalRetainedStateRegistry provides outerRegistry,
     LocalRecordLifecycleState provides RecordLifecycleState.Unset,
+    LocalRecordNavigator provides null,
   ) {
     val saveableStateHolder = rememberSaveableStateHolder()
     val retainedStateHolder = rememberRetainedStateHolder()
@@ -337,9 +338,15 @@ public fun <R : Record> NavigableCircuitContent(
         }
       val localNavStack = contentProviderState.lastNavigator.navStack
       val localResultHandler = contentProviderState.lastNavigator.answeringResultHandler
+      val recordNavigator = LocalRecordNavigator.current
       val localAnsweringNavigatorProvider =
-        remember(localNavStack, localResultHandler) {
-          FoundationAnsweringNavigatorProvider(localNavStack, localResultHandler)
+        remember(localNavStack, localResultHandler, record.key, recordNavigator) {
+          FoundationAnsweringNavigatorProvider(
+            navStack = localNavStack,
+            answeringResultHandler = localResultHandler,
+            ownerRecordKey = record.key,
+            navigator = recordNavigator,
+          )
         }
       CompositionLocalProvider(
         LocalAnsweringNavigatorProvider provides localAnsweringNavigatorProvider,
@@ -393,13 +400,16 @@ public class AnsweringResultNavigator<R : Record>(
   override fun pop(result: PopResult?): Screen? {
     // Run in a snapshot to ensure the sendResult doesn't get missed.
     return Snapshot.withMutableSnapshot {
+      val poppedRecordKey = navStack.currentRecord?.key
       val popped = originalNavigator.pop(result)
       if (result != null) {
-        // Send the pending result to our new top record, but only if it's expecting one
-        navStack.currentRecord?.apply {
-          if (answeringResultHandler.expectingResult(key)) {
-            answeringResultHandler.sendResult(key, result)
-          }
+        // Send the pending result to the record that launched the popped one, or else our new top
+        // record, but only if it's expecting one
+        val launcher =
+          if (popped != null) poppedRecordKey?.let(answeringResultHandler::launcherOf) else null
+        val recipient = launcher ?: navStack.currentRecord?.key
+        if (recipient != null && answeringResultHandler.expectingResult(recipient)) {
+          answeringResultHandler.sendResult(recipient, result)
         }
       }
       popped
@@ -578,7 +588,7 @@ private fun <R : Record> RecordContent(record: R, contentProviderState: ContentP
         ) {
           CircuitContent(
             screen = record.screen,
-            navigator = lastNavigator,
+            navigator = LocalRecordNavigator.current ?: lastNavigator,
             circuit = lastCircuit,
             unavailableContent = lastUnavailableRoute,
             key = record.key,

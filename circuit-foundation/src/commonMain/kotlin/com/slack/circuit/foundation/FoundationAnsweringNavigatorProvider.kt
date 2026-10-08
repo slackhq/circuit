@@ -7,6 +7,7 @@ import com.slack.circuit.runtime.AnsweringResultHandler
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.GoToNavigator
 import com.slack.circuit.runtime.InternalCircuitApi
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.internal.AnsweringNavigatorProvider
 import com.slack.circuit.runtime.navigation.NavStack
 import com.slack.circuit.runtime.navigation.NavStack.Record
@@ -17,10 +18,20 @@ import kotlin.reflect.KClass
 internal class FoundationAnsweringNavigatorProvider(
   private val navStack: NavStack<out Record>,
   private val answeringResultHandler: AnsweringResultHandler,
+  private val ownerRecordKey: String? = null,
+  private val navigator: Navigator? = null,
 ) : AnsweringNavigatorProvider {
   @Composable
   override fun <T : PopResult> rememberAnsweringNavigator(
     resultType: KClass<T>,
     block: (result: T) -> Unit,
-  ): GoToNavigator = rememberAnsweringNavigator(navStack, answeringResultHandler, resultType, block)
+  ): GoToNavigator =
+    rememberAnsweringNavigator(
+      navStack = navStack,
+      answeringResultHandler = answeringResultHandler,
+      resultType = resultType,
+      block = block,
+      ownerRecordKey = ownerRecordKey,
+      navigator = navigator,
+    )
 }

@@ -22,7 +22,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 public interface RecordLifecycle {
   /**
    * Whether the record is currently active. Typically this will return true when the record is the
-   * top record in the back stack.
+   * top record in the back stack. Decorations that show several records at once can mark more than
+   * one active.
    */
   public val isActive: Boolean
 }

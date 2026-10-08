@@ -20,9 +20,26 @@ public class AnsweringResultHandler {
 
   /** Prepares [recordKey] to receive a result tagged with [resultKey]. */
   public fun prepareForResult(recordKey: String, resultKey: String) {
+    prepareForResult(recordKey, resultKey, launchedRecordKey = null)
+  }
+
+  /**
+   * Prepares [recordKey] to receive a result tagged with [resultKey] from the record it launched,
+   * [launchedRecordKey]. See [launcherOf].
+   */
+  public fun prepareForResult(recordKey: String, resultKey: String, launchedRecordKey: String?) {
     val state = recordStates.getOrPut(recordKey) { RecordResultState() }
     state.resultKey = resultKey
+    state.launchedRecordKey = launchedRecordKey
     state.readResult()
+  }
+
+  /** Returns the record expecting a result from [launchedRecordKey], if any. */
+  public fun launcherOf(launchedRecordKey: String): String? {
+    for ((recordKey, state) in recordStates) {
+      if (state.resultKey != null && state.launchedRecordKey == launchedRecordKey) return recordKey
+    }
+    return null
   }
 
   /** Returns whether [recordKey] is expecting a result. */
@@ -57,11 +74,23 @@ public class AnsweringResultHandler {
     }
   }
 
+  /** Visits each expected result's launched record, as passed to [prepareForResult]. */
+  @InternalCircuitApi
+  public fun forEachLaunchedRecord(block: (recordKey: String, launchedRecordKey: String) -> Unit) {
+    for ((recordKey, state) in recordStates) {
+      if (state.resultKey == null) continue
+      val launchedRecordKey = state.launchedRecordKey ?: continue
+      block(recordKey, launchedRecordKey)
+    }
+  }
+
   private class RecordResultState {
     val resultChannel =
       Channel<PopResult>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     var resultKey: String? = null
+
+    var launchedRecordKey: String? = null
 
     fun readResult() = resultChannel.tryReceive().getOrNull()
 

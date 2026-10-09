@@ -8,7 +8,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.yield
 
 @OptIn(ExperimentalCircuitApi::class)
 class AnsweringResultHandlerTest {
@@ -42,6 +44,20 @@ class AnsweringResultHandlerTest {
     handler.sendResult("record", TestPopResult("second"))
 
     assertEquals(TestPopResult("second"), handler.awaitResult("record", "result"))
+  }
+
+  @Test
+  fun `stale awaiter leaves a newer key's result for its owner`() = runTest {
+    val handler = AnsweringResultHandler()
+    handler.prepareForResult("record", "stale")
+    val stale = async { handler.awaitResult("record", "stale") }
+    yield()
+
+    handler.prepareForResult("record", "current")
+    handler.sendResult("record", TestPopResult("value"))
+
+    assertNull(stale.await())
+    assertEquals(TestPopResult("value"), handler.awaitResult("record", "current"))
   }
 
   private data class TestPopResult(val value: String) : PopResult

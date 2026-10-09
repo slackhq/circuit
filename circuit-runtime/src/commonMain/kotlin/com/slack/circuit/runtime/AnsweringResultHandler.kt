@@ -57,7 +57,13 @@ public class AnsweringResultHandler {
     val state = recordStates[recordKey] ?: return null
     return if (resultKey == state.resultKey) {
       state.resultKey = null
-      state.resultChannel.receive()
+      val tagged = state.resultChannel.receive()
+      if (tagged.resultKey == resultKey) {
+        tagged.result
+      } else {
+        state.resultChannel.trySend(tagged)
+        null
+      }
     } else {
       null
     }
@@ -84,9 +90,11 @@ public class AnsweringResultHandler {
     }
   }
 
+  private class TaggedResult(val resultKey: String?, val result: PopResult)
+
   private class RecordResultState {
     val resultChannel =
-      Channel<PopResult>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+      Channel<TaggedResult>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     var resultKey: String? = null
 
@@ -94,10 +102,11 @@ public class AnsweringResultHandler {
 
     fun readResult() = resultChannel.tryReceive().getOrNull()
 
-    fun peekResult() = resultChannel.tryReceive().getOrNull()?.also { resultChannel.trySend(it) }
+    fun peekResult() =
+      resultChannel.tryReceive().getOrNull()?.also { resultChannel.trySend(it) }?.result
 
     fun sendResult(result: PopResult) {
-      resultChannel.trySend(result)
+      resultChannel.trySend(TaggedResult(resultKey, result))
     }
   }
 }

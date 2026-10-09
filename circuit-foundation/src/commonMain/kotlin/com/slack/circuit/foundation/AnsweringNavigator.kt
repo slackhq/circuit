@@ -184,8 +184,7 @@ internal fun <T : PopResult> rememberAnsweringNavigator(
       (currentRecord.key == initialRecordKey || (tracksLaunchedRecord && launchedRecordGone))
   ) {
     LaunchedEffect(key) {
-      val result =
-        currentAnsweringResultHandler.awaitResult(initialRecordKey, key) ?: return@LaunchedEffect
+      val result = currentAnsweringResultHandler.awaitResult(initialRecordKey, key)
       launched = false
       if (currentResultType.isInstance(result)) {
         @Suppress("UNCHECKED_CAST") block(result as T)
@@ -196,10 +195,14 @@ internal fun <T : PopResult> rememberAnsweringNavigator(
     object : GoToNavigator {
       override fun goTo(screen: Screen): Boolean {
         val previousRecord = currentBackStack.currentRecord
+        val previousKeys =
+          if (tracksLaunchedRecord) currentBackStack.snapshot()?.mapTo(HashSet()) { it.key }
+          else null
         val success = currentNavigator?.goTo(screen) ?: currentBackStack.push(screen)
         if (success) {
           if (tracksLaunchedRecord) {
             val launchedKey = currentBackStack.currentRecord?.key
+            if (launchedKey == null || previousKeys?.contains(launchedKey) == true) return true
             launchedRecordKey = launchedKey
             currentAnsweringResultHandler.prepareForResult(initialRecordKey, key, launchedKey)
           } else if (previousRecord != null) {

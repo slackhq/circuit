@@ -21,7 +21,7 @@ The `bottom-navigation` sample wires this up in `ContentScaffold.kt` and `ListDe
 ## Features
 
 - **Adaptive layouts from one stack.** Strategies pick a stage per frame, so folding, rotating, or resizing re-lays out the current stack without touching navigation.
-- **List-detail out of the box.** Tell `ListDetailNavStageStrategy` which screens are lists and which are details, and they split once the window is at least 600dp wide.
+- **List-detail out of the box.** Tell `ListDetailNavStageStrategy` which screens are lists and which are details, and they split once the space the decoration is given is at least 600dp wide.
 - **Pluggable layouts.** Write your own `NavStage` for any arrangement: supporting panes, three columns, whatever.
 - **Per-pane animation.** Each pane has its own `PaneTransition`, so the detail can slide while the list stays still.
 - **Stage transitions.** Animate layout changes with `NavStageTransition`, including shared bounds that move panes between layouts.
@@ -43,7 +43,7 @@ graph TD
 
 | Piece                | Job                                                                                      | Built in                                                   |
 |----------------------|------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| `NavStageStrategy`   | Looks at the stack and window, returns a `NavStage` or `null` to pass.                   | `ListDetailNavStageStrategy`                               |
+| `NavStageStrategy`   | Looks at the stack and available space, returns a `NavStage` or `null` to pass.          | `ListDetailNavStageStrategy`                               |
 | `NavStage`           | Lays out the stage and puts stack items into panes.                                      | `SinglePaneNavStage()`, `ListDetailNavStage`               |
 | `NavStagePaneScope`  | Handed to `NavStage.Content`. `Pane(key, item)` renders a record.                        | Provided by the decoration                                 |
 | `PaneTransition`     | Animates the item inside one pane when it changes.                                       | `Default`, `Crossfade`, `None`                             |
@@ -90,7 +90,7 @@ fun App(circuit: Circuit) {
 }
 ```
 
-That's it. When the active screen is a detail, a list is somewhere behind it, and the window is at least 600dp wide, you get a 40/60 split. Otherwise it's single pane.
+That's it. When the active screen is a detail, a list is somewhere behind it, and the space the decoration is given is at least 600dp wide, you get a 40/60 split. Otherwise it's single pane.
 
 `SharedElementTransitionLayout` is optional, but without it panes can't animate between layouts and just swap.
 

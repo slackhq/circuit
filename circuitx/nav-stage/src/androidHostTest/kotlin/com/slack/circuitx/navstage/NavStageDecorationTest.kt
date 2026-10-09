@@ -39,6 +39,7 @@ import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.runtime.ui.ui
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -276,6 +277,33 @@ class NavStageDecorationTest {
     startBackGesture(progress = 0.5f)
     repeat(5) { composeTestRule.mainClock.advanceTimeByFrame() }
     assertEquals(listHeight, composeTestRule.onNodeWithTag("list").getBoundsInRoot().height)
+  }
+
+  @Test
+  fun backGestureAfterEnteringListDetailPreviews() {
+    val navigator =
+      setNavContent(
+        listOf(ItemList),
+        NavStageDecoration(
+          listOf(
+            ListDetailNavStageStrategy(
+              isListPane = { it is TestListPane },
+              isDetailPane = { it is TestDetailPane },
+              isMultiPane = { true },
+            )
+          ),
+          GestureNavStageTransition(),
+        ),
+        sharedElements = true,
+      )
+    navigator.goTo(Detail1)
+    composeTestRule.waitForIdle()
+    val detailBounds = composeTestRule.onNodeWithTag("detail1").getBoundsInRoot()
+    composeTestRule.mainClock.autoAdvance = false
+
+    startBackGesture(progress = 0.5f)
+    repeat(5) { composeTestRule.mainClock.advanceTimeByFrame() }
+    assertNotEquals(detailBounds, composeTestRule.onNodeWithTag("detail1").getBoundsInRoot())
   }
 
   private fun setNavContent(

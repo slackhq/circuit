@@ -78,7 +78,7 @@ public class ListDetailNavStage<T : NavArgument>(
     object : NavStageNavigationPolicy {
       override fun goTo(source: NavStagePaneSource, screen: Screen, navigator: Navigator): Boolean {
         if (listGoTo == ListGoTo.ReplaceDetail && source.isListAboveTop()) {
-          repeat(source.depth) { navigator.pop() }
+          repeat(source.depth) { if (navigator.pop() == null) return false }
         }
         return navigator.goTo(screen)
       }
@@ -89,7 +89,7 @@ public class ListDetailNavStage<T : NavArgument>(
         navigator: Navigator,
       ): Screen? {
         if (source.isListAboveTop()) {
-          repeat(source.depth) { navigator.pop() }
+          repeat(source.depth) { if (navigator.pop() == null) return null }
         }
         return navigator.pop(result)
       }

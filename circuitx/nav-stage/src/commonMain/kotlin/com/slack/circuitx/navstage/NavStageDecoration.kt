@@ -98,14 +98,12 @@ internal fun <T : NavArgument> NavStageContent(
 
   val policy = stage.navigationPolicy
   val stageNavigator = remember(paneNavigators) { StageNavigator(paneNavigators) }
-  if (policy !== NavStageNavigationPolicy.Passthrough) {
-    PredictiveBackEventHandler(
-      isEnabled = args.backwardItems.any(),
-      onBackProgress = { _, _ -> },
-      onBackCancelled = {},
-      onBackCompleted = { stageNavigator.pop() },
-    )
-  }
+  PredictiveBackEventHandler(
+    isEnabled = policy !== NavStageNavigationPolicy.Passthrough && args.backwardItems.any(),
+    onBackProgress = { _, _ -> },
+    onBackCancelled = {},
+    onBackCompleted = { stageNavigator.pop() },
+  )
 
   stageTransition.AnimatedStageContent(
     targetState = targetState,

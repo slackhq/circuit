@@ -23,6 +23,7 @@ import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
+import kotlinx.coroutines.CancellationException
 
 /**
  * By default [CircuitContent] will wrap presenters so that the last emitted [CircuitUiState] is
@@ -128,7 +129,7 @@ private fun <T> withRetainedValuesStoreProvider(
   }
 }
 
-private class RetainedContentPresenceIndicator(
+internal class RetainedContentPresenceIndicator(
   private val store: RetainedValuesStore,
   composer: Composer,
 ) : RememberObserver {
@@ -142,10 +143,17 @@ private class RetainedContentPresenceIndicator(
     }
 
   override fun onRemembered() {
-    enterCompositionCancellationHandle = composer.scheduleFrameEndCallback {
-      didEnterComposition = true
-      store.onContentEnteredComposition()
-    }
+    enterCompositionCancellationHandle =
+      try {
+        composer.scheduleFrameEndCallback {
+          didEnterComposition = true
+          store.onContentEnteredComposition()
+        }
+      } catch (_: CancellationException) {
+        // Recomposer has shut down; frame clock awaiter will never resume.
+        // See https://github.com/slackhq/circuit/issues/2913
+        null
+      }
   }
 
   override fun onForgotten() {

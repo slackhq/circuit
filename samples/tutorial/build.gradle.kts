@@ -36,7 +36,6 @@ kotlin {
     androidMain { dependencies { implementation(projects.circuitSerializationReflect) } }
     jvmMain {
       dependencies {
-        implementation(compose.desktop.currentOs)
         implementation(projects.circuitSerializationReflect)
       }
     }

@@ -66,6 +66,7 @@ kotlin {
         implementation(libs.robolectric)
         implementation(libs.compose.ui.testing.junit)
         implementation(libs.androidx.compose.ui.testing.manifest)
+        implementation(libs.androidx.test.espresso.core)
       }
     }
   }

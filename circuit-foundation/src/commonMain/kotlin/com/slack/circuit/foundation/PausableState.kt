@@ -152,6 +152,7 @@ internal class RetainedContentPresenceIndicator(
       } catch (_: CancellationException) {
         // Recomposer has shut down; frame clock awaiter will never resume.
         // See https://github.com/slackhq/circuit/issues/2913
+        // Upstream issue: https://issuetracker.google.com/issues/568852322
         null
       }
   }

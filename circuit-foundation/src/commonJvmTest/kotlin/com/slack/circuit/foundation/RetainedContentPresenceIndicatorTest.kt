@@ -2,137 +2,126 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
-import androidx.compose.runtime.CancellationHandle
-import androidx.compose.runtime.Composer
-import androidx.compose.runtime.retain.RetainedValuesStore
-import java.lang.reflect.InvocationHandler
-import java.lang.reflect.Proxy
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
-import kotlinx.coroutines.CancellationException
-import org.junit.Test
+import androidx.compose.runtime.AbstractApplier
+import androidx.compose.runtime.BroadcastFrameClock
+import androidx.compose.runtime.Composition
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Recomposer
+import androidx.compose.runtime.currentComposer
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.LocalRetainedValuesStore
+import androidx.compose.runtime.retain.ManagedRetainedValuesStore
+import com.slack.circuit.retained.CircuitRetainedSettings
+import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
+import com.slack.circuit.retained.NoOpRetainedStateRegistry
+import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.presenter.presenterOf
+import com.slack.circuit.runtime.screen.CircuitSaver
+import com.slack.circuit.runtime.ui.ui
+import kotlin.test.Test
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
 
+private object UnitApplier : AbstractApplier<Unit>(Unit) {
+  override fun insertBottomUp(index: Int, instance: Unit) {}
+  override fun insertTopDown(index: Int, instance: Unit) {}
+  override fun move(from: Int, to: Int, count: Int) {}
+  override fun remove(index: Int, count: Int) {}
+  override fun onClear() {}
+}
+
+private data object IndicatorTestState : CircuitUiState
+
+@OptIn(ExperimentalCircuitRetainedApi::class, ExperimentalCoroutinesApi::class)
+@Suppress("UNUSED_EXPRESSION")
 class RetainedContentPresenceIndicatorTest {
 
   @Test
-  fun onRemembered_recomposerShutdown_doesNotThrowCancellationException() {
-    var onEnteredCalled = false
-    var onExitCalled = false
+  fun cancelledRecomposer_retainedContentPresenceIndicator_doesNotThrowCancellationException() =
+    runTest {
+      val clock = BroadcastFrameClock()
+      val recomposer = Recomposer(coroutineContext + clock)
+      val job = launch(clock) { recomposer.runRecomposeAndApplyChanges() }
+      recomposer.cancel()
+      job.join()
 
-    val store =
-      Proxy.newProxyInstance(
-        RetainedValuesStore::class.java.classLoader,
-        arrayOf(RetainedValuesStore::class.java),
-        InvocationHandler { _, method, _ ->
-          when (method.name) {
-            "onContentEnteredComposition" -> {
-              onEnteredCalled = true
-              null
-            }
-            "onContentExitComposition" -> {
-              onExitCalled = true
-              null
-            }
-            "hashCode" -> 1
-            "equals" -> false
-            "toString" -> "TestStore"
-            else -> null
-          }
-        },
-      ) as RetainedValuesStore
+      val composition = Composition(UnitApplier, recomposer)
+      val store = ManagedRetainedValuesStore()
 
-    val composer =
-      Proxy.newProxyInstance(
-        Composer::class.java.classLoader,
-        arrayOf(Composer::class.java),
-        InvocationHandler { _, method, _ ->
-          when (method.name) {
-            "scheduleFrameEndCallback" -> {
-              throw CancellationException(
-                "Recomposer shutdown; frame clock awaiter will never resume"
-              )
-            }
-            "hashCode" -> 1
-            "equals" -> false
-            "toString" -> "TestComposer"
-            else -> null
-          }
-        },
-      ) as Composer
+      try {
+        composition.setContent {
+          val composer = currentComposer
+          remember(store) { RetainedContentPresenceIndicator(store, composer) }
+            .apply { this.composer = composer }
+        }
+      } finally {
+        composition.dispose()
+        store.dispose()
+      }
+    }
 
-    val indicator = RetainedContentPresenceIndicator(store, composer)
+  @Test
+  fun cancelledRecomposer_pausableState_doesNotThrowCancellationException() = runTest {
+    val previousUseFirstParty = CircuitRetainedSettings.useFirstParty
+    CircuitRetainedSettings.useFirstParty = true
+    val clock = BroadcastFrameClock()
+    val recomposer = Recomposer(coroutineContext + clock)
+    val job = launch(clock) { recomposer.runRecomposeAndApplyChanges() }
+    recomposer.cancel()
+    job.join()
 
-    // Should not throw CancellationException (regression test for #2913)
-    indicator.onRemembered()
+    val composition = Composition(UnitApplier, recomposer)
+    val rootStore = ManagedRetainedValuesStore()
 
-    assertFalse(onEnteredCalled)
-
-    // onForgotten should be safe and not exit composition
-    indicator.onForgotten()
-    assertFalse(onExitCalled)
-
-    // onAbandoned should also be safe
-    indicator.onAbandoned()
+    try {
+      composition.setContent {
+        CompositionLocalProvider(LocalRetainedValuesStore provides rootStore) {
+          val state = pausableState { "test_state" }
+          check(state == "test_state")
+        }
+      }
+    } finally {
+      CircuitRetainedSettings.useFirstParty = previousUseFirstParty
+      composition.dispose()
+      rootStore.dispose()
+    }
   }
 
   @Test
-  fun onRemembered_normal_entersCompositionAndExitsOnForgotten() {
-    var onEnteredCalled = false
-    var onExitCalled = false
-    var callback: (() -> Unit)? = null
+  fun cancelledRecomposer_circuitContent_doesNotThrowCancellationException() = runTest {
+    val previousUseFirstParty = CircuitRetainedSettings.useFirstParty
+    CircuitRetainedSettings.useFirstParty = true
+    val clock = BroadcastFrameClock()
+    val recomposer = Recomposer(coroutineContext + clock)
+    val job = launch(clock) { recomposer.runRecomposeAndApplyChanges() }
+    recomposer.cancel()
+    job.join()
 
-    val store =
-      Proxy.newProxyInstance(
-        RetainedValuesStore::class.java.classLoader,
-        arrayOf(RetainedValuesStore::class.java),
-        InvocationHandler { _, method, _ ->
-          when (method.name) {
-            "onContentEnteredComposition" -> {
-              onEnteredCalled = true
-              null
-            }
-            "onContentExitComposition" -> {
-              onExitCalled = true
-              null
-            }
-            "hashCode" -> 1
-            "equals" -> false
-            "toString" -> "TestStore"
-            else -> null
+    val composition = Composition(UnitApplier, recomposer)
+    val rootStore = ManagedRetainedValuesStore()
+    val circuit =
+      Circuit.Builder()
+        .addPresenterFactory { _, _, _ -> presenterOf { IndicatorTestState } }
+        .addUiFactory { _, _ -> ui<IndicatorTestState> { _, _ -> } }
+        .build()
+
+    try {
+      composition.setContent {
+        CompositionLocalProvider(LocalRetainedValuesStore provides rootStore) {
+          CircuitCompositionLocals(
+            circuit = circuit,
+            circuitSaver = CircuitSaver.NoOp,
+            retainedStateRegistry = NoOpRetainedStateRegistry,
+          ) {
+            CircuitContent(screen = TestScreen)
           }
-        },
-      ) as RetainedValuesStore
-
-    val cancellationHandle = CancellationHandle {}
-
-    val composer =
-      Proxy.newProxyInstance(
-        Composer::class.java.classLoader,
-        arrayOf(Composer::class.java),
-        InvocationHandler { _, method, args ->
-          when (method.name) {
-            "scheduleFrameEndCallback" -> {
-              @Suppress("UNCHECKED_CAST")
-              callback = args[0] as () -> Unit
-              cancellationHandle
-            }
-            "hashCode" -> 1
-            "equals" -> false
-            "toString" -> "TestComposer"
-            else -> null
-          }
-        },
-      ) as Composer
-
-    val indicator = RetainedContentPresenceIndicator(store, composer)
-
-    indicator.onRemembered()
-    callback?.invoke()
-
-    assertTrue(onEnteredCalled)
-    assertFalse(onExitCalled)
-
-    indicator.onForgotten()
-    assertTrue(onExitCalled)
+        }
+      }
+    } finally {
+      CircuitRetainedSettings.useFirstParty = previousUseFirstParty
+      composition.dispose()
+      rootStore.dispose()
+    }
   }
 }

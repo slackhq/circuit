@@ -11,6 +11,7 @@ import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.retain.LocalRetainedValuesStore
 import androidx.compose.runtime.retain.ManagedRetainedValuesStore
+import androidx.compose.runtime.retain.RetainedValuesStore
 import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.retained.NoOpRetainedStateRegistry
@@ -19,6 +20,7 @@ import com.slack.circuit.runtime.presenter.presenterOf
 import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.ui.ui
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
@@ -32,6 +34,27 @@ private object UnitApplier : AbstractApplier<Unit>(Unit) {
 }
 
 private data object IndicatorTestState : CircuitUiState
+
+private class RecordingRetainedValuesStore(
+  private val delegate: ManagedRetainedValuesStore = ManagedRetainedValuesStore(),
+) : RetainedValuesStore by delegate {
+  var enteredCount = 0
+  var exitCount = 0
+
+  override fun onContentEnteredComposition() {
+    enteredCount++
+    delegate.onContentEnteredComposition()
+  }
+
+  override fun onContentExitComposition() {
+    exitCount++
+    delegate.onContentExitComposition()
+  }
+
+  fun dispose() {
+    delegate.dispose()
+  }
+}
 
 @OptIn(ExperimentalCircuitRetainedApi::class, ExperimentalCoroutinesApi::class)
 @Suppress("UNUSED_EXPRESSION")
@@ -47,7 +70,7 @@ class RetainedContentPresenceIndicatorTest {
       job.join()
 
       val composition = Composition(UnitApplier, recomposer)
-      val store = ManagedRetainedValuesStore()
+      val store = RecordingRetainedValuesStore()
 
       try {
         composition.setContent {
@@ -55,8 +78,13 @@ class RetainedContentPresenceIndicatorTest {
           remember(store) { RetainedContentPresenceIndicator(store, composer) }
             .apply { this.composer = composer }
         }
-      } finally {
+
+        assertEquals(0, store.enteredCount)
+
         composition.dispose()
+
+        assertEquals(0, store.exitCount)
+      } finally {
         store.dispose()
       }
     }
@@ -78,7 +106,7 @@ class RetainedContentPresenceIndicatorTest {
       composition.setContent {
         CompositionLocalProvider(LocalRetainedValuesStore provides rootStore) {
           val state = pausableState { "test_state" }
-          check(state == "test_state")
+          assertEquals("test_state", state)
         }
       }
     } finally {

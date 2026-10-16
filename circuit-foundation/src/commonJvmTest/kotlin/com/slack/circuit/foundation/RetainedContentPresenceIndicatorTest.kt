@@ -19,24 +19,29 @@ import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.presenterOf
 import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.ui.ui
-import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
+import org.junit.Test
+import org.junit.runner.RunWith
 
 private object UnitApplier : AbstractApplier<Unit>(Unit) {
   override fun insertBottomUp(index: Int, instance: Unit) {}
+
   override fun insertTopDown(index: Int, instance: Unit) {}
+
   override fun move(from: Int, to: Int, count: Int) {}
+
   override fun remove(index: Int, count: Int) {}
+
   override fun onClear() {}
 }
 
 private data object IndicatorTestState : CircuitUiState
 
 private class RecordingRetainedValuesStore(
-  private val delegate: ManagedRetainedValuesStore = ManagedRetainedValuesStore(),
+  private val delegate: ManagedRetainedValuesStore = ManagedRetainedValuesStore()
 ) : RetainedValuesStore by delegate {
   var enteredCount = 0
   var exitCount = 0
@@ -56,6 +61,7 @@ private class RecordingRetainedValuesStore(
   }
 }
 
+@RunWith(ComposeUiTestRunner::class)
 @OptIn(ExperimentalCircuitRetainedApi::class, ExperimentalCoroutinesApi::class)
 @Suppress("UNUSED_EXPRESSION")
 class RetainedContentPresenceIndicatorTest {

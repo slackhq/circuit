@@ -17,4 +17,74 @@ abstract interface com.slack.circuitx.gesturenavigation/GestureNavigationEventLi
     }
 }
 
+final class com.slack.circuitx.gesturenavigation/SlideOverNavDecoration : com.slack.circuit.foundation/NavDecoration { // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration|null[0]
+    constructor <init>(kotlin/Function1<com.slack.circuit.runtime.navigation/NavStackList<out com.slack.circuit.runtime.navigation/NavArgument>, kotlin/Boolean> = ..., kotlin/Function1<com.slack.circuit.runtime.navigation/NavStackList<out com.slack.circuit.runtime.navigation/NavArgument>, kotlin/Boolean> = ..., kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Boolean> = ..., kotlin/Boolean = ..., kotlin/Function1<com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent, kotlin/Unit> = ...) // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.<init>|<init>(kotlin.Function1<com.slack.circuit.runtime.navigation.NavStackList<out|com.slack.circuit.runtime.navigation.NavArgument>,kotlin.Boolean>;kotlin.Function1<com.slack.circuit.runtime.navigation.NavStackList<out|com.slack.circuit.runtime.navigation.NavArgument>,kotlin.Boolean>;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Boolean>;kotlin.Boolean;kotlin.Function1<com.slack.circuitx.gesturenavigation.SlideOverNavDecoration.WarmEvent,kotlin.Unit>){}[0]
+
+    final fun <#A1: com.slack.circuit.runtime.navigation/NavArgument> DecoratedContent(com.slack.circuit.runtime.navigation/NavStackList<#A1>, com.slack.circuit.runtime/Navigator, androidx.compose.ui/Modifier, kotlin/Function3<#A1, androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>, androidx.compose.runtime/Composer?, kotlin/Int) // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.DecoratedContent|DecoratedContent(com.slack.circuit.runtime.navigation.NavStackList<0:0>;com.slack.circuit.runtime.Navigator;androidx.compose.ui.Modifier;kotlin.Function3<0:0,androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>;androidx.compose.runtime.Composer?;kotlin.Int){0§<com.slack.circuit.runtime.navigation.NavArgument>}[0]
+
+    sealed interface WarmEvent { // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent|null[0]
+        final class Failed : com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent { // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed|null[0]
+            constructor <init>(kotlin/String, kotlin/Throwable) // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed.<init>|<init>(kotlin.String;kotlin.Throwable){}[0]
+
+            final val cause // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed.cause|{}cause[0]
+                final fun <get-cause>(): kotlin/Throwable // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed.cause.<get-cause>|<get-cause>(){}[0]
+            final val key // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed.key|{}key[0]
+                final fun <get-key>(): kotlin/String // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed.key.<get-key>|<get-key>(){}[0]
+
+            final fun component1(): kotlin/String // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed.component1|component1(){}[0]
+            final fun component2(): kotlin/Throwable // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed.component2|component2(){}[0]
+            final fun copy(kotlin/String = ..., kotlin/Throwable = ...): com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed.copy|copy(kotlin.String;kotlin.Throwable){}[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Failed.toString|toString(){}[0]
+        }
+
+        final class Settled : com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent { // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled|null[0]
+            constructor <init>(kotlin/String, kotlin/Boolean) // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled.<init>|<init>(kotlin.String;kotlin.Boolean){}[0]
+
+            final val key // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled.key|{}key[0]
+                final fun <get-key>(): kotlin/String // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled.key.<get-key>|<get-key>(){}[0]
+            final val warmHit // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled.warmHit|{}warmHit[0]
+                final fun <get-warmHit>(): kotlin/Boolean // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled.warmHit.<get-warmHit>|<get-warmHit>(){}[0]
+
+            final fun component1(): kotlin/String // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled.component1|component1(){}[0]
+            final fun component2(): kotlin/Boolean // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled.component2|component2(){}[0]
+            final fun copy(kotlin/String = ..., kotlin/Boolean = ...): com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled.copy|copy(kotlin.String;kotlin.Boolean){}[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Settled.toString|toString(){}[0]
+        }
+
+        final class Warmed : com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent { // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Warmed|null[0]
+            constructor <init>(kotlin/String) // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Warmed.<init>|<init>(kotlin.String){}[0]
+
+            final val key // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Warmed.key|{}key[0]
+                final fun <get-key>(): kotlin/String // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Warmed.key.<get-key>|<get-key>(){}[0]
+
+            final fun component1(): kotlin/String // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Warmed.component1|component1(){}[0]
+            final fun copy(kotlin/String = ...): com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Warmed // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Warmed.copy|copy(kotlin.String){}[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Warmed.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Warmed.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // com.slack.circuitx.gesturenavigation/SlideOverNavDecoration.WarmEvent.Warmed.toString|toString(){}[0]
+        }
+    }
+}
+
+final val com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Parked$stableprop // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Parked$stableprop|#static{}com_slack_circuitx_gesturenavigation_Placement_Parked$stableprop[0]
+final val com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Settled$stableprop // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Settled$stableprop|#static{}com_slack_circuitx_gesturenavigation_Placement_Settled$stableprop[0]
+final val com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Transitioning$stableprop // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Transitioning$stableprop|#static{}com_slack_circuitx_gesturenavigation_Placement_Transitioning$stableprop[0]
+final val com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Warming$stableprop // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Warming$stableprop|#static{}com_slack_circuitx_gesturenavigation_Placement_Warming$stableprop[0]
+final val com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration$stableprop // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration$stableprop|#static{}com_slack_circuitx_gesturenavigation_SlideOverNavDecoration$stableprop[0]
+final val com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Failed$stableprop // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Failed$stableprop|#static{}com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Failed$stableprop[0]
+final val com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Settled$stableprop // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Settled$stableprop|#static{}com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Settled$stableprop[0]
+final val com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Warmed$stableprop // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Warmed$stableprop|#static{}com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Warmed$stableprop[0]
+
 final fun com.slack.circuitx.gesturenavigation/GestureNavigationDecorationFactory(com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory = ..., com.slack.circuitx.gesturenavigation/GestureNavigationEventListener = ...): com.slack.circuit.foundation.animation/AnimatedNavDecorator.Factory // com.slack.circuitx.gesturenavigation/GestureNavigationDecorationFactory|GestureNavigationDecorationFactory(com.slack.circuit.foundation.animation.AnimatedNavDecorator.Factory;com.slack.circuitx.gesturenavigation.GestureNavigationEventListener){}[0]
+final fun com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Parked$stableprop_getter(): kotlin/Int // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Parked$stableprop_getter|com_slack_circuitx_gesturenavigation_Placement_Parked$stableprop_getter(){}[0]
+final fun com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Settled$stableprop_getter(): kotlin/Int // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Settled$stableprop_getter|com_slack_circuitx_gesturenavigation_Placement_Settled$stableprop_getter(){}[0]
+final fun com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Transitioning$stableprop_getter(): kotlin/Int // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Transitioning$stableprop_getter|com_slack_circuitx_gesturenavigation_Placement_Transitioning$stableprop_getter(){}[0]
+final fun com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Warming$stableprop_getter(): kotlin/Int // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_Placement_Warming$stableprop_getter|com_slack_circuitx_gesturenavigation_Placement_Warming$stableprop_getter(){}[0]
+final fun com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration$stableprop_getter(): kotlin/Int // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration$stableprop_getter|com_slack_circuitx_gesturenavigation_SlideOverNavDecoration$stableprop_getter(){}[0]
+final fun com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Failed$stableprop_getter(): kotlin/Int // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Failed$stableprop_getter|com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Failed$stableprop_getter(){}[0]
+final fun com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Settled$stableprop_getter(): kotlin/Int // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Settled$stableprop_getter|com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Settled$stableprop_getter(){}[0]
+final fun com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Warmed$stableprop_getter(): kotlin/Int // com.slack.circuitx.gesturenavigation/com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Warmed$stableprop_getter|com_slack_circuitx_gesturenavigation_SlideOverNavDecoration_WarmEvent_Warmed$stableprop_getter(){}[0]

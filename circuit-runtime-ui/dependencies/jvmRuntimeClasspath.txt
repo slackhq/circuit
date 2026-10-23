@@ -49,6 +49,8 @@ org.jetbrains.compose.ui:ui-geometry-desktop
 org.jetbrains.compose.ui:ui-geometry
 org.jetbrains.compose.ui:ui-graphics-desktop
 org.jetbrains.compose.ui:ui-graphics
+org.jetbrains.compose.ui:ui-skiko-desktop
+org.jetbrains.compose.ui:ui-skiko
 org.jetbrains.compose.ui:ui-text-desktop
 org.jetbrains.compose.ui:ui-text
 org.jetbrains.compose.ui:ui-unit-desktop
@@ -67,6 +69,7 @@ org.jetbrains.kotlinx:kotlinx-serialization-bom
 org.jetbrains.kotlinx:kotlinx-serialization-core-jvm
 org.jetbrains.kotlinx:kotlinx-serialization-core
 org.jetbrains.runtime:jbr-api
+org.jetbrains.skiko:skiko-awt-runtime-all
 org.jetbrains.skiko:skiko-awt
 org.jetbrains.skiko:skiko
 org.jetbrains:annotations

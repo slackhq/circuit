@@ -1,17 +1,17 @@
 [versions]
 agp = "9.4.1"
-android-compileSdk = "37"
+android-compileSdk = "37.2"
 android-targetSdk = "37"
 androidx-activity = "1.13.0"
 androidx-annotation = "1.11.0"
 androidx-appcompat = "1.8.0"
 androidx-browser = "1.10.0"
-androidx-compose = "1.12.1"  # Keep in sync with the androidx version used by jb-compose
+androidx-compose = "1.13.0-beta01"  # Keep in sync with the androidx version used by jb-compose
 anvil = "0.5.4"
 atomicfu = "0.33.0"
 benchmark = "1.5.0"
 coil = "3.6.3"
-compose-runtime = "1.12.1" # Keep in sync with the androidx version used by jb-compose
+compose-runtime = "1.13.0-beta01" # Keep in sync with the androidx version used by jb-compose
 dagger = "2.60.1"
 datastore = "1.2.1"
 dokka = "2.2.0"

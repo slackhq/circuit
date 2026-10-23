@@ -11,7 +11,8 @@ import org.jetbrains.kotlin.gradle.dsl.kotlinExtension
 
 val catalog = rootProject.extensions.getByType<VersionCatalogsExtension>().named("libs")
 val jvmTargetVersion = catalog.findVersion("jvmTarget").get().requiredVersion
-val compileSdkVersion = catalog.findVersion("android-compileSdk").get().requiredVersion.toInt()
+val compileSdkVersion =
+  catalog.findVersion("android-compileSdk").get().requiredVersion.split(".").map(String::toInt)
 val targetSdkVersion = catalog.findVersion("android-targetSdk").get().requiredVersion.toInt()
 val circuitExtension = extensions.getByType<CircuitProjectExtension>()
 
@@ -22,7 +23,9 @@ pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
       .targets
       .withType(KotlinMultiplatformAndroidLibraryTarget::class.java)
       .configureEach {
-        compileSdk = compileSdkVersion
+        compileSdk {
+          version = release(compileSdkVersion[0]) { minorApiLevel = compileSdkVersion.getOrNull(1) }
+        }
         minSdk = 24
         compilations.withType(KotlinMultiplatformAndroidHostTestCompilation::class.java) {
           targetSdk { release(targetSdkVersion) }
@@ -49,7 +52,9 @@ pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
 }
 
 fun CommonExtension.configureCommonAndroid() {
-  compileSdk = compileSdkVersion
+  compileSdk {
+    version = release(compileSdkVersion[0]) { minorApiLevel = compileSdkVersion.getOrNull(1) }
+  }
 }
 
 pluginManager.withPlugin("com.android.test") {

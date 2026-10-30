@@ -25,15 +25,30 @@ public interface RecordLifecycle {
    * top record in the back stack.
    */
   public val isActive: Boolean
+
+  /**
+   * Whether the record is currently on screen. A decoration can compose a record off screen ahead
+   * of navigation, keeping it active but not visible. Defaults to [isActive].
+   */
+  public val isVisible: Boolean
+    get() = isActive
 }
 
 internal class MutableRecordLifecycle(initial: Boolean = false) : RecordLifecycle {
   override var isActive: Boolean by mutableStateOf(initial)
+  override var isVisible: Boolean by mutableStateOf(initial)
 }
 
 @Composable
-internal fun rememberUpdatedRecordLifecycle(isActive: Boolean): RecordLifecycle {
-  return remember { MutableRecordLifecycle() }.apply { this.isActive = isActive }
+internal fun rememberUpdatedRecordLifecycle(
+  isActive: Boolean,
+  isVisible: Boolean = isActive,
+): RecordLifecycle {
+  return remember { MutableRecordLifecycle() }
+    .apply {
+      this.isActive = isActive
+      this.isVisible = isVisible
+    }
 }
 
 /**
@@ -44,7 +59,24 @@ internal fun rememberUpdatedRecordLifecycle(isActive: Boolean): RecordLifecycle 
  */
 @Composable
 public fun ProvideRecordLifecycle(isActive: Boolean, content: @Composable () -> Unit) {
-  val lifecycle = rememberUpdatedRecordLifecycle(isActive)
+  ProvideRecordLifecycle(isActive = isActive, isVisible = isActive, content = content)
+}
+
+/**
+ * Provides a [RecordLifecycle] for the current record via [LocalRecordLifecycle].
+ *
+ * @param isActive whether this record should be considered active.
+ * @param isVisible whether this record is on screen. An active record composed off screen ahead of
+ *   navigation is not visible.
+ * @param content the composable content to provide the lifecycle to.
+ */
+@Composable
+public fun ProvideRecordLifecycle(
+  isActive: Boolean,
+  isVisible: Boolean,
+  content: @Composable () -> Unit,
+) {
+  val lifecycle = rememberUpdatedRecordLifecycle(isActive, isVisible)
   CompositionLocalProvider(
     LocalRecordLifecycle provides lifecycle,
     LocalRecordLifecycleState provides RecordLifecycleState.Set,

@@ -4,6 +4,11 @@ Changelog
 Unreleased
 ----------
 
+### New
+
+- **circuitx-gesture-navigation:** Add `SlideOverNavDecoration`, an iOS-style slide-over `NavDecoration` with forward and backward swipes and optional off-screen warming of adjacent screens.
+- **circuit-foundation:** Add `RecordLifecycle.isVisible` and a `ProvideRecordLifecycle(isActive, isVisible)` overload, so a decoration can compose a record off screen while keeping it active. Defaults to `isActive`.
+
 ### Fixed
 
 - **circuit-serialization-reflect:** Compile an Android variant against Android SavedState to avoid a `NoSuchMethodError` when saving screens.

@@ -253,10 +253,12 @@ public final class com/slack/circuit/foundation/PausableStateKt {
 
 public abstract interface class com/slack/circuit/foundation/RecordLifecycle {
 	public abstract fun isActive ()Z
+	public fun isVisible ()Z
 }
 
 public final class com/slack/circuit/foundation/RecordLifecycleKt {
 	public static final fun ProvideRecordLifecycle (ZLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
+	public static final fun ProvideRecordLifecycle (ZZLkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
 	public static final fun getLocalRecordLifecycle ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 

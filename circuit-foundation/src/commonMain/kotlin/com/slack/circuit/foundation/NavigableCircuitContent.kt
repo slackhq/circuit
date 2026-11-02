@@ -568,7 +568,11 @@ private fun <R : Record> RecordContent(record: R, contentProviderState: ContentP
           when (LocalRecordLifecycleState.current) {
             RecordLifecycleState.Set -> LocalRecordLifecycle.current
             RecordLifecycleState.Unset -> {
-              val isActive = lastNavigator.navStack.currentRecord == record
+              // No decoration set this record's lifecycle, so LocalRecordLifecycle is the inherited
+              // one (usually the parent record's). Only be active while it is.
+              val isActive =
+                LocalRecordLifecycle.current.isActive &&
+                  lastNavigator.navStack.currentRecord == record
               rememberUpdatedRecordLifecycle(isActive)
             }
           }

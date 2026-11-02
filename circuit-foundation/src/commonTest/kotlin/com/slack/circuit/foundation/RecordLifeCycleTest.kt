@@ -4,7 +4,10 @@ package com.slack.circuit.foundation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -19,6 +22,8 @@ import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 
 @OptIn(ExperimentalTestApi::class)
@@ -66,6 +71,44 @@ class RecordLifeCycleTest {
       assertEquals(0, pausedState.value)
       val activeState = state1.awaitItem()
       assertEquals(1, activeState.value)
+    }
+  }
+
+  @Test
+  fun `nested record is inactive while the parent record is inactive`() = runTest {
+    var parentActive by mutableStateOf(true)
+    var nestedActive: Boolean? = null
+    val nestedCircuit =
+      Circuit.Builder()
+        .addPresenter<TestScreen, TestState> { _, navigator, _ ->
+          TestPresenter(TestScreen, navigator)
+        }
+        .addUi<TestScreen, TestState> { _, _ ->
+          val isActive = LocalRecordLifecycle.current.isActive
+          SideEffect { nestedActive = isActive }
+        }
+        .build()
+
+    runComposeUiTest {
+      setContent {
+        CircuitCompositionLocals(nestedCircuit, CircuitSaver.NoOp) {
+          ProvideRecordLifecycle(isActive = parentActive) {
+            val backStack = rememberSaveableBackStack(TestScreen)
+            val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+            NavigableCircuitContent(navigator = navigator, backStack = backStack)
+          }
+        }
+      }
+      waitForIdle()
+      assertTrue(checkNotNull(nestedActive))
+
+      parentActive = false
+      waitForIdle()
+      assertFalse(checkNotNull(nestedActive))
+
+      parentActive = true
+      waitForIdle()
+      assertTrue(checkNotNull(nestedActive))
     }
   }
 }

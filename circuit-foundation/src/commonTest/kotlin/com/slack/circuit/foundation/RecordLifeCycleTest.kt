@@ -5,10 +5,12 @@ package com.slack.circuit.foundation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.v2.runComposeUiTest
@@ -17,13 +19,13 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.retained.retain
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavArgument
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.CircuitSaver
 import com.slack.circuit.runtime.screen.Screen
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 
 @OptIn(ExperimentalTestApi::class)
@@ -77,15 +79,16 @@ class RecordLifeCycleTest {
   @Test
   fun `nested record is inactive while the parent record is inactive`() = runTest {
     var parentActive by mutableStateOf(true)
-    var nestedActive: Boolean? = null
+    var nestedLifecycle: Pair<Boolean, Boolean>? = null
     val nestedCircuit =
       Circuit.Builder()
         .addPresenter<TestScreen, TestState> { _, navigator, _ ->
           TestPresenter(TestScreen, navigator)
         }
         .addUi<TestScreen, TestState> { _, _ ->
-          val isActive = LocalRecordLifecycle.current.isActive
-          SideEffect { nestedActive = isActive }
+          val lifecycle = LocalRecordLifecycle.current
+          val activeAndVisible = lifecycle.isActive to lifecycle.isVisible
+          SideEffect { nestedLifecycle = activeAndVisible }
         }
         .build()
 
@@ -100,16 +103,89 @@ class RecordLifeCycleTest {
         }
       }
       waitForIdle()
-      assertTrue(checkNotNull(nestedActive))
+      assertEquals(true to true, nestedLifecycle)
 
       parentActive = false
       waitForIdle()
-      assertFalse(checkNotNull(nestedActive))
+      assertEquals(false to false, nestedLifecycle)
 
       parentActive = true
       waitForIdle()
-      assertTrue(checkNotNull(nestedActive))
+      assertEquals(true to true, nestedLifecycle)
     }
+  }
+
+  @Test
+  fun `nested record is only visible while current and the parent record is visible`() = runTest {
+    var parentVisible by mutableStateOf(true)
+    val lifecycles = mutableMapOf<Screen, Pair<Boolean, Boolean>>()
+
+    @Composable
+    fun CaptureLifecycle(screen: Screen) {
+      val lifecycle = LocalRecordLifecycle.current
+      val activeAndVisible = lifecycle.isActive to lifecycle.isVisible
+      SideEffect { lifecycles[screen] = activeAndVisible }
+    }
+
+    val nestedCircuit =
+      Circuit.Builder()
+        .addPresenter<TestScreen, TestState> { _, navigator, _ ->
+          TestPresenter(TestScreen, navigator)
+        }
+        .addPresenter<TestScreen2, TestState> { _, navigator, _ ->
+          TestPresenter(TestScreen2, navigator)
+        }
+        .addUi<TestScreen, TestState> { _, _ -> CaptureLifecycle(TestScreen) }
+        .addUi<TestScreen2, TestState> { _, _ -> CaptureLifecycle(TestScreen2) }
+        .build()
+
+    val visible =
+      mapOf<Screen, Pair<Boolean, Boolean>>(
+        TestScreen to (false to false),
+        TestScreen2 to (true to true),
+      )
+    val hidden =
+      mapOf<Screen, Pair<Boolean, Boolean>>(
+        TestScreen to (false to false),
+        TestScreen2 to (true to false),
+      )
+    runComposeUiTest {
+      setContent {
+        CircuitCompositionLocals(nestedCircuit, CircuitSaver.NoOp) {
+          ProvideRecordLifecycle(isActive = true, isVisible = parentVisible) {
+            val backStack = rememberSaveableBackStack(listOf(TestScreen, TestScreen2))
+            val navigator = rememberCircuitNavigator(backStack = backStack, onRootPop = {})
+            NavigableCircuitContent(
+              navigator = navigator,
+              backStack = backStack,
+              decoration = AllRecordsDecoration,
+            )
+          }
+        }
+      }
+      waitForIdle()
+      assertEquals(visible, lifecycles)
+
+      parentVisible = false
+      waitForIdle()
+      assertEquals(hidden, lifecycles)
+
+      parentVisible = true
+      waitForIdle()
+      assertEquals(visible, lifecycles)
+    }
+  }
+}
+
+private object AllRecordsDecoration : NavDecoration {
+  @Composable
+  override fun <T : NavArgument> DecoratedContent(
+    args: NavStackList<T>,
+    navigator: Navigator,
+    modifier: Modifier,
+    content: @Composable (T) -> Unit,
+  ) {
+    for (arg in args) key(arg.key) { content(arg) }
   }
 }
 

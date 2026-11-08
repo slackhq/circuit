@@ -8,7 +8,8 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.withContext
+import me.stagg.retainx.collectAsRetainState as collectAsRetainxState
+import me.stagg.retainx.produceAndCollectAsRetainState as produceAndCollectAsRetainxState
 
 /**
  * Collects values from this [StateFlow] and represents its latest value via a retained [State]. The
@@ -21,7 +22,7 @@ import kotlinx.coroutines.withContext
 @Composable
 public fun <T> StateFlow<T>.collectAsRetainedState(
   context: CoroutineContext = EmptyCoroutineContext
-): State<T> = collectAsRetainedState(value, context)
+): State<T> = collectAsRetainxState(value, context)
 
 /**
  * Collects values from this [Flow] and represents its latest value via retained [State]. Every time
@@ -34,12 +35,7 @@ public fun <T> StateFlow<T>.collectAsRetainedState(
 public fun <T : R, R> Flow<T>.collectAsRetainedState(
   initial: R,
   context: CoroutineContext = EmptyCoroutineContext,
-): State<R> =
-  produceRetainedState(initial, this, context) {
-    if (context == EmptyCoroutineContext) {
-      collect { value = it }
-    } else withContext(context) { collect { value = it } }
-  }
+): State<R> = collectAsRetainxState(initial, context)
 
 /**
  * Produces and collects values from a [Flow] provided by the [producer] lambda and represents its
@@ -64,9 +60,4 @@ public fun <T : R, R> produceAndCollectAsRetainedState(
   context: CoroutineContext = EmptyCoroutineContext,
   producer: suspend () -> Flow<T>,
 ): State<R> =
-  produceRetainedState(initial, producer, *inputs) {
-    val flow = producer()
-    if (context == EmptyCoroutineContext) {
-      flow.collect { value = it }
-    } else withContext(context) { flow.collect { value = it } }
-  }
+  produceAndCollectAsRetainxState(initial = initial, context = context, producer = producer)

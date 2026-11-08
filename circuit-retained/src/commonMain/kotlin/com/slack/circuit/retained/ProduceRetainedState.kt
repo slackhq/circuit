@@ -3,27 +3,8 @@
 package com.slack.circuit.retained
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ProduceStateScope
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.suspendCancellableCoroutine
-
-private class ProduceRetainedStateScopeImpl<T>(
-  state: MutableState<T>,
-  override val coroutineContext: CoroutineContext,
-) : ProduceStateScope<T>, MutableState<T> by state {
-
-  override suspend fun awaitDispose(onDispose: () -> Unit): Nothing {
-    try {
-      suspendCancellableCoroutine<Nothing> {}
-    } finally {
-      onDispose()
-    }
-  }
-}
 
 /**
  * Return an observable [snapshot][androidx.compose.runtime.snapshots.Snapshot] [State] that
@@ -56,9 +37,7 @@ public fun <T> produceRetainedState(
   initialValue: T,
   producer: suspend ProduceStateScope<T>.() -> Unit,
 ): State<T> {
-  val result = rememberRetained { mutableStateOf(initialValue) }
-  LaunchedEffect(Unit) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }
-  return result
+  return me.stagg.retainx.produceRetainState(initialValue = initialValue, producer = producer)
 }
 
 /**
@@ -94,9 +73,11 @@ public fun <T> produceRetainedState(
   key1: Any?,
   producer: suspend ProduceStateScope<T>.() -> Unit,
 ): State<T> {
-  val result = rememberRetained { mutableStateOf(initialValue) }
-  LaunchedEffect(key1) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }
-  return result
+  return me.stagg.retainx.produceRetainState(
+    initialValue = initialValue,
+    key1 = key1,
+    producer = producer,
+  )
 }
 
 /**
@@ -133,9 +114,12 @@ public fun <T> produceRetainedState(
   key2: Any?,
   producer: suspend ProduceStateScope<T>.() -> Unit,
 ): State<T> {
-  val result = rememberRetained { mutableStateOf(initialValue) }
-  LaunchedEffect(key1, key2) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }
-  return result
+  return me.stagg.retainx.produceRetainState(
+    initialValue = initialValue,
+    key1 = key1,
+    key2 = key2,
+    producer = producer,
+  )
 }
 
 /**
@@ -173,11 +157,13 @@ public fun <T> produceRetainedState(
   key3: Any?,
   producer: suspend ProduceStateScope<T>.() -> Unit,
 ): State<T> {
-  val result = rememberRetained { mutableStateOf(initialValue) }
-  LaunchedEffect(key1, key2, key3) {
-    ProduceRetainedStateScopeImpl(result, coroutineContext).producer()
-  }
-  return result
+  return me.stagg.retainx.produceRetainState(
+    initialValue = initialValue,
+    key1 = key1,
+    key2 = key2,
+    key3 = key3,
+    producer = producer,
+  )
 }
 
 /**
@@ -213,7 +199,9 @@ public fun <T> produceRetainedState(
   vararg keys: Any?,
   producer: suspend ProduceStateScope<T>.() -> Unit,
 ): State<T> {
-  val result = rememberRetained { mutableStateOf(initialValue) }
-  LaunchedEffect(keys = keys) { ProduceRetainedStateScopeImpl(result, coroutineContext).producer() }
-  return result
+  return me.stagg.retainx.produceRetainState(
+    initialValue = initialValue,
+    keys = keys,
+    producer = producer,
+  )
 }

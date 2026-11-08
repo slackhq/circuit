@@ -7,6 +7,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.ReusableContent
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 
 /**
  * A holder that provides a unique retainedStateRegistry for each subtree and retains all preserved
@@ -32,7 +33,9 @@ public interface RetainedStateHolder {
 public fun rememberRetainedStateHolder(
   canRetainChecker: CanRetainChecker = CanRetainChecker.Always
 ): RetainedStateHolder {
-  return rememberRetained { RetainedStateHolderImpl(canRetainChecker) }
+  return retain {
+    RetainedStateHolderImpl(canRetainChecker)
+  }
     .apply { update(canRetainChecker) }
 }
 

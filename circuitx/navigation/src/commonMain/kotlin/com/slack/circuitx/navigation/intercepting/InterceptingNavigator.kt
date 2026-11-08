@@ -9,6 +9,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigationevent.NavigationEventInfo
@@ -16,7 +17,6 @@ import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.internal.shouldEnableNavEventHandler
-import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
@@ -325,7 +325,7 @@ private fun BackStackChangedEffect(
 ) {
   // Key using the screens as it'll be the same through rotation, as the record key will change.
   val navStack = navigator.peekNavStack()
-  rememberRetained(navStack) {
+  retain(navStack) {
     val backStack = navigator.peekBackStack()
     val navigationContext = InterceptingNavigationContext(navStack)
     eventListeners.forEach {

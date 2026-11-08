@@ -23,11 +23,7 @@ import kotlin.reflect.KClass
 @OptIn(ExperimentalCircuitRetainedApi::class)
 @Composable
 internal fun defaultLifecycleRetainedStateRegistry(key: String): RetainedStateRegistry =
-  if (CircuitRetainedSettings.useFirstParty) {
-    retainBackedRetainedStateRegistry(key)
-  } else {
-    viewModelRetainedStateRegistry(key, RetainedStateRegistryViewModel.Factory)
-  }
+  retainBackedRetainedStateRegistry(key)
 
 @Composable
 internal fun viewModelRetainedStateRegistry(

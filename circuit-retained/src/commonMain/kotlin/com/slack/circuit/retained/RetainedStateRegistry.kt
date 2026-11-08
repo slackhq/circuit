@@ -97,7 +97,8 @@ public fun rememberRetainedStateRegistry(
   key: String? = null,
   canRetainChecker: CanRetainChecker = CanRetainChecker.Always,
 ): RetainedStateRegistry {
-  return rememberRetainedInternal(inputs = inputs, key = key) {
+  return me.stagg.retainx
+    .retainSaveable(inputs = inputs, key = key, saver = neverSave()) {
       RetainedStateRegistryImpl(canRetainChecker, null)
     }
     .apply { update(canRetainChecker) }

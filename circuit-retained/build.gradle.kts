@@ -63,6 +63,12 @@ kotlin {
         api(libs.compose.runtime.retain)
         api(libs.compose.runtime.saveable)
         api(libs.coroutines)
+        api("me.stagg.retainx:retainx:0.1.0-SNAPSHOT") {
+          isChanging = true
+        }
+        api("me.stagg.retainx:retainx-store:0.1.0-SNAPSHOT") {
+          isChanging = true
+        }
       }
     }
 

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.CircuitContent
 import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.retain
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.Screen
@@ -53,7 +55,7 @@ private const val ITEM_COUNT = 100
 @CircuitInject(ListBenchmarksScreen::class, AppScope::class)
 @Composable
 fun ListBenchmarks(state: State, modifier: Modifier = Modifier) {
-  var contentComposed by rememberRetained { mutableStateOf(false) }
+  var contentComposed by retain { mutableStateOf(false) }
   if (state.useNestedContent) {
     LazyColumn(modifier.systemBarsPadding()) {
       items(ITEM_COUNT) { index ->

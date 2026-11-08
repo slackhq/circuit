@@ -273,12 +273,7 @@ public fun <R : Record> NavigableCircuitContent(
   // retain {} calls inside record content get per-record lifetimes. Hosted here, outside any
   // movableContentOf, so the registry's own retain slot has a stable position.
   @OptIn(ExperimentalCircuitRetainedApi::class)
-  val recordRetainedValuesStoreRegistry =
-    if (CircuitRetainedSettings.useFirstParty) {
-      retainRetainedValuesStoreRegistry()
-    } else {
-      null
-    }
+  val recordRetainedValuesStoreRegistry = retainRetainedValuesStoreRegistry()
 
   val navDecoration =
     remember(decoration, decoratorFactory) {

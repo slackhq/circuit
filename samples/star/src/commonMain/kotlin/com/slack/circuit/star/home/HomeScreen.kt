@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -50,7 +51,7 @@ import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.foundation.rememberCircuitNavigator
-import com.slack.circuit.retained.rememberRetained
+import com.slack.circuit.retained.retain
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
@@ -107,7 +108,7 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
   SharedElementTransitionScope {
-    var contentComposed by rememberRetained { mutableStateOf(false) }
+    var contentComposed by retain { mutableStateOf(false) }
     val scope = requireAnimatedScope(Navigation)
     val isInOverlay = isTransitionActive && scope.transition.targetState == EnterExitState.Visible
     val navigationVisibilityFraction by

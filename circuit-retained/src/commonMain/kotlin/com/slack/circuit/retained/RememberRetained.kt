@@ -5,24 +5,10 @@ package com.slack.circuit.retained
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.NonRestartableComposable
-import androidx.compose.runtime.RememberObserver
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.SnapshotMutationPolicy
-import androidx.compose.runtime.currentCompositeKeyHashCode
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.neverEqualPolicy
-import androidx.compose.runtime.referentialEqualityPolicy
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.retain.RetainObserver
-import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
-import androidx.compose.runtime.saveable.SaveableStateRegistry
 import androidx.compose.runtime.saveable.Saver
-import androidx.compose.runtime.saveable.SaverScope
 import androidx.compose.runtime.saveable.autoSaver
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotMutableState
-import androidx.compose.runtime.structuralEqualityPolicy
-import androidx.compose.runtime.toString
 
 /**
  * Remember the value produced by [init].
@@ -87,9 +73,17 @@ import androidx.compose.runtime.toString
  * @param init A factory function to create the initial value of this state
  */
 @Composable
+@Deprecated(
+  "Use first-party retain.",
+  ReplaceWith("retain(keys = inputs, calculation = init)", "androidx.compose.runtime.retain.retain"),
+)
 @NonRestartableComposable
 public fun <T : Any> rememberRetained(vararg inputs: Any?, init: () -> T): T =
-  rememberRetainedInternal(inputs = inputs, init = init)
+  me.stagg.retainx.retainSaveable(
+    inputs = inputs,
+    saver = neverSave(),
+    calculation = init,
+  )
 
 /**
  * Remember the value produced by [init] using an explicit [key].
@@ -97,19 +91,24 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, init: () -> T): T =
  * A null or empty [key] uses the same positional identity as the unkeyed overload.
  */
 @Deprecated(
-  "Use retain for explicit keys.",
+  "Use retainx retain for explicit keys.",
   ReplaceWith(
     "key.let { retainedKey -> " +
-      "if (retainedKey.isNullOrEmpty()) rememberRetained(*inputs, init = init) " +
+      "if (retainedKey.isNullOrEmpty()) retain(*inputs, init = init) " +
       "else retain(*inputs, key = retainedKey, calculation = init) }",
-    "com.slack.circuit.retained.rememberRetained",
-    "com.slack.circuit.retained.retain",
+    "androidx.compose.runtime.retain",
+    "me.stagg.retainx.retain",
   ),
 )
 @Composable
 @NonRestartableComposable
 public fun <T : Any> rememberRetained(vararg inputs: Any?, key: String? = null, init: () -> T): T =
-  rememberRetainedInternal(inputs = inputs, key = key, init = init)
+  me.stagg.retainx.retainSaveable(
+    inputs = inputs,
+    key = key,
+    saver = neverSave(),
+    calculation = init,
+  )
 
 /**
  * Retains the value produced by [calculation] under the explicit [key].
@@ -126,10 +125,10 @@ public fun <T : Any> retain(
   calculation: () -> T,
 ): T {
   require(key.isNotEmpty()) { "Retained key is empty" }
-  return rememberRetainedInternal(
+  return me.stagg.retainx.retain(
     inputs = inputs,
     key = key,
-    init = calculation,
+    calculation = calculation,
   )
 }
 
@@ -146,7 +145,13 @@ public fun <T : Any> rememberRetainedSaveable(
   saver: Saver<T, out Any> = autoSaver(),
   key: String? = null,
   init: () -> T,
-): T = rememberRetainedInternal(inputs = inputs, saver = saver, key = key, init = init)
+): T =
+  me.stagg.retainx.retainSaveable(
+    inputs = inputs,
+    saver = saver,
+    key = key,
+    calculation = init,
+  )
 
 /**
  * Remember the value produced by [init].
@@ -185,7 +190,13 @@ public fun <T : Any> rememberRetained(
   saver: Saver<T, out Any>,
   key: String? = null,
   init: () -> T,
-): T = rememberRetainedInternal(inputs = inputs, saver = saver, key = key, init = init)
+): T =
+  me.stagg.retainx.retainSaveable(
+    inputs = inputs,
+    saver = saver,
+    key = key,
+    calculation = init,
+  )
 
 /**
  * Retains the value produced by [calculation] and opportunistically saves it with [saver].
@@ -202,70 +213,13 @@ public fun <T : Any> retainSaveable(
   saver: Saver<T, out Any> = autoSaver(),
   key: String? = null,
   calculation: () -> T,
-): T = rememberRetainedInternal(inputs = inputs, saver = saver, key = key, init = calculation)
-
-@Composable
-internal fun <T : Any> rememberRetainedInternal(
-  vararg inputs: Any?,
-  saver: Saver<T, out Any> = neverSave(),
-  key: String? = null,
-  init: () -> T,
-): T {
-  val saveableStateRegistry = LocalSaveableStateRegistry.current
-  val retainedStateRegistry = LocalRetainedStateRegistry.current
-  // Short-circuit no-ops
-  if (retainedStateRegistry === NoOpRetainedStateRegistry) {
-    val value =
-      rememberSaveable(inputs = inputs, saver = saver) {
-        requireRetainObserverCompatibility(init())
-      }
-    return requireRetainObserverCompatibility(value)
-  }
-  val compositeKey = currentCompositeKeyHashCode
-  // key is the one provided by the user or the one generated by the compose runtime
-  val finalKey =
-    if (!key.isNullOrEmpty()) {
-      key
-    } else {
-      compositeKey.toString(MaxSupportedRadix)
-    }
-
-  @Suppress("UNCHECKED_CAST") (saver as Saver<T, Any>)
-
-  val holder = remember {
-    // value is restored using the retained registry first, the saveable registry second, or
-    // created via [init] lambda third
-    @Suppress("UNCHECKED_CAST")
-    val retainedRestored =
-      retainedStateRegistry.consumeValue(finalKey) as? RetainableSaveableHolder.Value<T>
-    val saveableRestored =
-      saveableStateRegistry?.consumeRestored(finalKey)?.let { saver.restore(it) }
-    val finalValue =
-      requireRetainObserverCompatibility(retainedRestored?.value ?: saveableRestored ?: init())
-    val finalInputs = retainedRestored?.inputs ?: inputs
-    RetainableSaveableHolder(
-      retainedStateRegistry = retainedStateRegistry,
-      saveableStateRegistry = saveableStateRegistry,
-      saver = saver,
-      key = finalKey,
-      value = finalValue,
-      inputs = finalInputs,
-      hasBeenRestoredFromRetained = retainedRestored != null,
-    )
-  }
-  val value = requireRetainObserverCompatibility(holder.getValueIfInputsAreEqual(inputs) ?: init())
-  SideEffect {
-    holder.update(
-      retainedStateRegistry = retainedStateRegistry,
-      saveableStateRegistry = saveableStateRegistry,
-      saver = saver,
-      key = finalKey,
-      value = value,
-      inputs = inputs,
-    )
-  }
-  return value
-}
+): T =
+  me.stagg.retainx.retainSaveable(
+    inputs = inputs,
+    saver = saver,
+    key = key,
+    calculation = calculation,
+  )
 
 /**
  * Remember the value produced by [init].
@@ -294,11 +248,11 @@ public fun <T> rememberRetained(
   key: String? = null,
   init: () -> MutableState<T>,
 ): MutableState<T> =
-  rememberRetainedInternal(
+  me.stagg.retainx.retainSaveable(
     inputs = inputs,
-    saver = mutableStateSaver(stateSaver),
+    stateSaver = stateSaver,
     key = key,
-    init = init,
+    calculation = init,
   )
 
 /**
@@ -316,11 +270,11 @@ public fun <T> rememberRetainedSaveable(
   key: String? = null,
   init: () -> MutableState<T>,
 ): MutableState<T> =
-  rememberRetainedInternal(
+  me.stagg.retainx.retainSaveable(
     inputs = inputs,
-    saver = mutableStateSaver(stateSaver),
+    stateSaver = stateSaver,
     key = key,
-    init = init,
+    calculation = init,
   )
 
 /**
@@ -336,208 +290,14 @@ public fun <T> retainSaveable(
   key: String? = null,
   calculation: () -> MutableState<T>,
 ): MutableState<T> =
-  retainSaveable(
-    *inputs,
-    saver = mutableStateSaver(stateSaver),
+  me.stagg.retainx.retainSaveable(
+    inputs = inputs,
+    stateSaver = stateSaver,
     key = key,
     calculation = calculation,
   )
 
-/** The maximum radix available for conversion to and from strings. */
-private const val MaxSupportedRadix = 36
-
 private val NoOpSaver = Saver<Any?, Any>({ null }, { null })
 
 @Suppress("UNCHECKED_CAST")
-private fun <Original, Saveable : Any> neverSave() = NoOpSaver as Saver<Original, Saveable>
-
-@OptIn(ExperimentalCircuitRetainedApi::class)
-private fun <T> requireRetainObserverCompatibility(value: T): T {
-  if (CircuitRetainedSettings.enforceRetainObserverCompatibility) {
-    require(value !is RememberObserver || value is RetainObserver) {
-      "Retained a value that implements RememberObserver but not RetainObserver. " +
-        "To receive the correct callbacks, the retained value '$value' must also " +
-        "implement RetainObserver."
-    }
-  }
-  return value
-}
-
-private class RetainableSaveableHolder<T>(
-  private var retainedStateRegistry: RetainedStateRegistry?,
-  private var saveableStateRegistry: SaveableStateRegistry?,
-  private var saver: Saver<T, Any>,
-  private var key: String,
-  private var value: T,
-  private var inputs: Array<out Any?>,
-  private var hasBeenRestoredFromRetained: Boolean = false,
-) : RetainedValueProvider, RememberObserver, SaverScope {
-  private var retainedStateEntry: RetainedStateRegistry.Entry? = null
-  private var saveableStateEntry: SaveableStateRegistry.Entry? = null
-
-  /** Value provider called by the registry. */
-  private val valueProvider = {
-    with(saver) { save(requireNotNull(value) { "Value should be initialized" }) }
-  }
-
-  fun update(
-    retainedStateRegistry: RetainedStateRegistry?,
-    saveableStateRegistry: SaveableStateRegistry?,
-    saver: Saver<T, Any>,
-    key: String,
-    value: T,
-    inputs: Array<out Any?>,
-  ) {
-    var retainedEntryIsOutdated = false
-    var saveableEntryIsOutdated = false
-    if (this.retainedStateRegistry !== retainedStateRegistry) {
-      this.retainedStateRegistry = retainedStateRegistry
-      retainedEntryIsOutdated = true
-    }
-    if (this.saveableStateRegistry !== saveableStateRegistry) {
-      this.saveableStateRegistry = saveableStateRegistry
-      saveableEntryIsOutdated = true
-    }
-    if (this.key != key) {
-      this.key = key
-      retainedEntryIsOutdated = true
-      saveableEntryIsOutdated = true
-    }
-    if (this.value !== value) {
-      // If the value changes, clear the hasBeenRestored flag
-      hasBeenRestoredFromRetained = false
-    }
-    this.saver = saver
-    this.value = value
-    this.inputs = inputs
-    if (retainedStateEntry != null && retainedEntryIsOutdated) {
-      retainedStateEntry?.unregister()
-      retainedStateEntry = null
-      registerRetained()
-    }
-    if (saveableStateRegistry != null && saveableEntryIsOutdated) {
-      saveableStateEntry?.unregister()
-      saveableStateEntry = null
-      registerSaveable()
-    }
-  }
-
-  private fun registerRetained() {
-    val registry = retainedStateRegistry
-    require(retainedStateEntry == null) { "entry($retainedStateEntry) is not null" }
-    if (registry != null) {
-      retainedStateEntry = registry.registerValue(key, this)
-    }
-  }
-
-  private fun registerSaveable() {
-    val registry = saveableStateRegistry
-    require(saveableStateEntry == null) { "entry($saveableStateEntry) is not null" }
-    if (registry != null) {
-      registry.requireCanBeSaved(valueProvider())
-      saveableStateEntry = registry.registerProvider(key, valueProvider)
-    }
-  }
-
-  /** Value provider called by the registry. */
-  override fun invoke(): Any {
-    return Value(value = requireNotNull(value) { "Value should be initialized" }, inputs = inputs)
-  }
-
-  override fun canBeSaved(value: Any): Boolean {
-    val registry = saveableStateRegistry
-    return registry == null || registry.canBeSaved(value)
-  }
-
-  override fun onRemembered() {
-    registerRetained()
-    registerSaveable()
-
-    // If value is a RememberObserver, we notify that it has remembered
-    if (!hasBeenRestoredFromRetained) {
-      val v = value
-      if (v is RememberObserver) v.onRemembered()
-    }
-  }
-
-  override fun onForgotten() {
-    release()
-  }
-
-  override fun onAbandoned() {
-    release()
-  }
-
-  private fun release() {
-    saveableStateEntry?.unregister()
-    val hasRemoved = retainedStateEntry?.unregister() ?: true
-    if (hasRemoved) {
-      when (val v = value) {
-        is RememberObserver -> v.onForgotten()
-        is RetainedStateRegistry -> v.forgetUnclaimedValues()
-      }
-    }
-  }
-
-  fun getValueIfInputsAreEqual(inputs: Array<out Any?>): T? {
-    return value.takeIf { inputs.contentEquals(this.inputs) }
-  }
-
-  class Value<T>(override val value: T, val inputs: Array<out Any?>) : RetainedValueHolder<T>
-}
-
-private fun SaveableStateRegistry.requireCanBeSaved(value: Any?) {
-  require(value == null || canBeSaved(value)) {
-    if (value is SnapshotMutableState<*>) {
-      if (
-        value.policy !== neverEqualPolicy<Any?>() &&
-          value.policy !== structuralEqualityPolicy<Any?>() &&
-          value.policy !== referentialEqualityPolicy<Any?>()
-      ) {
-        "If you use a custom SnapshotMutationPolicy for your MutableState you have to" +
-          " write a custom Saver"
-      } else {
-        "MutableState containing ${value.value} cannot be saved using the current " +
-          "SaveableStateRegistry. The default implementation only supports types " +
-          "which can be stored inside the Bundle. Please consider implementing a " +
-          "custom Saver for this class and pass it as a stateSaver parameter to " +
-          "rememberRetainedSaveable()."
-      }
-    } else {
-      "$value cannot be saved using the current SaveableStateRegistry. The default " +
-        "implementation only supports types which can be stored inside the Bundle" +
-        ". Please consider implementing a custom Saver for this class and pass it" +
-        " to rememberRetainedSaveable()."
-    }
-  }
-}
-
-@Suppress("UNCHECKED_CAST")
-private fun <T> mutableStateSaver(inner: Saver<T, out Any>) =
-  with(inner as Saver<T, Any>) {
-    Saver<MutableState<T>, MutableState<Any?>>(
-      save = { state ->
-        require(state is SnapshotMutableState<T>) {
-          "If you use a custom MutableState implementation you have to write a custom " +
-            "Saver and pass it as a saver param to rememberRetainedSaveable()"
-        }
-        val saved = save(state.value)
-        if (saved != null) {
-          mutableStateOf(saved, state.policy as SnapshotMutationPolicy<Any?>)
-        } else {
-          // if the inner saver returned null we need to return null as well so the
-          // user's init lambda will be used instead of restoring mutableStateOf(null)
-          null
-        }
-      },
-      restore =
-        @Suppress("UNCHECKED_CAST", "ExceptionMessage") {
-          require(it is SnapshotMutableState<Any?>)
-          mutableStateOf(
-            if (it.value != null) restore(it.value!!) else null,
-            it.policy as SnapshotMutationPolicy<T?>,
-          )
-            as MutableState<T>
-        },
-    )
-  }
+internal fun <Original, Saveable : Any> neverSave() = NoOpSaver as Saver<Original, Saveable>

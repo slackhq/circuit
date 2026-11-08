@@ -19,8 +19,6 @@ import androidx.compose.runtime.retain.RetainedValuesStore
 import androidx.compose.runtime.retain.retainManagedRetainedValuesStore
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withCompositionLocal
-import com.slack.circuit.retained.CircuitRetainedSettings
-import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import kotlinx.coroutines.CancellationException
@@ -72,24 +70,12 @@ public fun <T> pausableState(
 
   val saveableStateHolder = rememberSaveableStateHolderWithReturn()
   val retainedStateHolder = rememberRetainedStateHolderWithReturn()
-  @OptIn(ExperimentalCircuitRetainedApi::class)
-  val retainedValuesStore =
-    if (CircuitRetainedSettings.useFirstParty) {
-      key(key) { retainManagedRetainedValuesStore() }
-    } else {
-      null
-    }
+  val retainedValuesStore = key(key) { retainManagedRetainedValuesStore() }
 
   return if (isActive || state.value == null) {
     val finalKey = key ?: "pausable_state"
     val producedState =
-      if (retainedValuesStore != null) {
-        withRetainedValuesStoreProvider(retainedValuesStore) {
-          saveableStateHolder.SaveableStateProvider(finalKey) {
-            retainedStateHolder.RetainedStateProvider(key = finalKey, content = produceState)
-          }
-        }
-      } else {
+      withRetainedValuesStoreProvider(retainedValuesStore) {
         saveableStateHolder.SaveableStateProvider(finalKey) {
           retainedStateHolder.RetainedStateProvider(key = finalKey, content = produceState)
         }

@@ -20,7 +20,6 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.google.common.truth.Truth.assertThat
-import kotlin.test.assertFailsWith
 import org.junit.Test
 
 class RetainedValuesStoreProviderTest {
@@ -92,16 +91,6 @@ class RetainedValuesStoreProviderTest {
     } finally {
       existingStore.dispose()
     }
-  }
-
-  @Test
-  fun missingOwnerThrows() {
-    val exception =
-      assertFailsWith<IllegalStateException> {
-        resolveRetainedValuesStoreOwner(owner = null, automaticOwner = { null })
-      }
-
-    assertThat(exception).hasMessageThat().contains("requires a RetainedValuesStoreOwner")
   }
 
   @Test

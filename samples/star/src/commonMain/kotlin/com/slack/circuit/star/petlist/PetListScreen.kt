@@ -68,6 +68,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateMap
@@ -193,7 +194,7 @@ class PetListPresenter(
 ) : Presenter<State> {
   @Composable
   override fun present(): State {
-    var isRefreshing by rememberRetained { mutableStateOf(false) }
+    var isRefreshing by retain { mutableStateOf(false) }
     if (isRefreshing) {
       LaunchedEffect(Unit) {
         petRepo.refreshData()
@@ -209,10 +210,10 @@ class PetListPresenter(
           .collect { value = it }
       }
 
-    var isUpdateFiltersModalShowing by rememberRetained { mutableStateOf(false) }
+    var isUpdateFiltersModalShowing by retain { mutableStateOf(false) }
     var filters by rememberSaveable { mutableStateOf(Filters()) }
     val filteredAnimals by
-      rememberRetained(animalState, filters) {
+      retain(animalState, filters) {
         derivedStateOf { animalState?.filter { shouldKeep(filters, it) }?.toList() }
       }
 

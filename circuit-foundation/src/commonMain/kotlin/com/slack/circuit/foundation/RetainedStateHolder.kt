@@ -6,18 +6,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.withCompositionLocal
 import com.slack.circuit.retained.CanRetainChecker
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.RetainedValueProvider
-import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.retained.rememberRetainedStateRegistry
 
 /** Copy of [RetainedStateHolder] to return content value */
 internal interface RetainedStateHolder {
 
-  @Composable fun <T> RetainedStateProvider(key: String, content: @Composable () -> T): T
+  @Suppress("ComposeNamingLowercase", "ComposableNaming")
+  @Composable
+  fun <T> RetainedStateProvider(key: String, content: @Composable () -> T): T
 
   fun removeState(key: String)
 }
@@ -27,7 +29,9 @@ internal interface RetainedStateHolder {
 internal fun rememberRetainedStateHolderWithReturn(
   canRetainChecker: CanRetainChecker = CanRetainChecker.Always
 ): RetainedStateHolder {
-  return rememberRetained { RetainedStateHolderImpl(canRetainChecker) }
+  return retain {
+    RetainedStateHolderImpl(canRetainChecker)
+  }
     .apply { update(canRetainChecker) }
 }
 

@@ -9,6 +9,7 @@ import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.retain.RetainObserver
+import androidx.compose.runtime.retain.retain
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -20,7 +21,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.slack.circuit.backstack.BackStack
 import com.slack.circuit.foundation.navstack.NavStackRecordLocalProvider
 import com.slack.circuit.foundation.navstack.ProvidedValues
-import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.navigation.NavStack
 import kotlin.reflect.KClass
 
@@ -102,7 +102,7 @@ public object ViewModelNavStackRecordLocalProvider : NavStackRecordLocalProvider
     val viewModelStore = containerViewModel.viewModelStoreForKey(record.key)
     // This will retain the observer in NavigableCircuitContent using its outerRegistry.
     val observer =
-      rememberRetained(record, viewModelStore) {
+      retain(record, viewModelStore) {
         NestedRememberObserver {
           containerViewModel.removeViewModelStoreOwnerForKey(record.key)?.clear()
         }

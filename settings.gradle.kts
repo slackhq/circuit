@@ -225,6 +225,7 @@ include(
   ":circuit-serialization-reflect",
   ":circuit-shared-elements",
   ":circuit-test",
+  ":circuitx:adaptive",
   ":circuitx:android",
   ":circuitx:effects",
   ":circuitx:gesture-navigation",

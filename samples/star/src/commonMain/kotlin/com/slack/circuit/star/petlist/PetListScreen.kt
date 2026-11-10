@@ -139,6 +139,10 @@ import com.slack.circuit.star.transition.PetImageBoundsKey
 import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.FilterList
 import com.slack.circuit.star.ui.Pets
+import com.slack.circuit.star.ui.thenIf
+import com.slack.circuitx.adaptive.ExperimentalCircuitAdaptiveApi
+import com.slack.circuitx.adaptive.LocalPaneRole
+import com.slack.circuitx.adaptive.PaneRole
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -444,7 +448,7 @@ private fun PetListGrid(
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalCircuitAdaptiveApi::class)
 @Composable
 private fun PetListGridItem(
   animal: PetListAnimal,
@@ -452,6 +456,8 @@ private fun PetListGridItem(
   onClick: () -> Unit = {},
 ) = SharedElementTransitionScope {
   val animatedScope = requireAnimatedScope(Navigation)
+  // Beside its detail the list stays on screen, so an item has nothing to hand over to the detail.
+  val shareElements = LocalPaneRole.current == PaneRole.SINGLE
   val boundsState = rememberSharedContentState(key = PetCardBoundsKey(animal.id))
   val fraction by
     remember(boundsState, animatedScope) {
@@ -465,16 +471,15 @@ private fun PetListGridItem(
   val bottomCornerSize = lerp(0.dp, 12.dp, 1 - fraction)
   ElevatedCard(
     modifier =
-      modifier
-        .fillMaxWidth()
-        .testTag(CARD_TAG)
-        .sharedBounds(
+      modifier.fillMaxWidth().testTag(CARD_TAG).thenIf(shareElements) {
+        sharedBounds(
           sharedContentState = boundsState,
           animatedVisibilityScope = animatedScope,
           enter = fadeIn(tween(durationMillis = 100, easing = EaseOutCubic)),
           exit = fadeOut(tween(durationMillis = 40, easing = EaseInCubic)),
           zIndexInOverlay = 1f,
-        ),
+        )
+      },
     shape = RoundedCornerShape(topCornerSize),
     colors =
       CardDefaults.elevatedCardColors(
@@ -485,15 +490,18 @@ private fun PetListGridItem(
     Column(modifier = Modifier.clickable(onClick = onClick)) {
       // Image
       val imageModifier =
-        Modifier.sharedBounds(
-            sharedContentState = rememberSharedContentState(key = PetImageBoundsKey(animal.id, 0)),
-            animatedVisibilityScope = animatedScope,
-            placeholderSize = AnimatedSize,
-            resizeMode = RemeasureToBounds,
-            enter = fadeIn(animationSpec = tween(durationMillis = 80, easing = EaseInExpo)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 80, easing = EaseOutExpo)),
-            zIndexInOverlay = 3f,
-          )
+        Modifier.thenIf(shareElements) {
+            sharedBounds(
+              sharedContentState =
+                rememberSharedContentState(key = PetImageBoundsKey(animal.id, 0)),
+              animatedVisibilityScope = animatedScope,
+              placeholderSize = AnimatedSize,
+              resizeMode = RemeasureToBounds,
+              enter = fadeIn(animationSpec = tween(durationMillis = 80, easing = EaseInExpo)),
+              exit = fadeOut(animationSpec = tween(durationMillis = 80, easing = EaseOutExpo)),
+              zIndexInOverlay = 3f,
+            )
+          }
           .clip(
             RoundedCornerShape(
               topStart = topCornerSize,
@@ -550,11 +558,13 @@ private fun PetListGridItem(
           text = animal.name,
           style = MaterialTheme.typography.labelLarge,
           modifier =
-            Modifier.sharedBounds(
-              sharedContentState = rememberSharedContentState(PetNameBoundsKey(animal.id)),
-              animatedVisibilityScope = requireAnimatedScope(Navigation),
-              zIndexInOverlay = 2f,
-            ),
+            Modifier.thenIf(shareElements) {
+              sharedBounds(
+                sharedContentState = rememberSharedContentState(PetNameBoundsKey(animal.id)),
+                animatedVisibilityScope = animatedScope,
+                zIndexInOverlay = 2f,
+              )
+            },
         )
         // Type
         animal.breed?.let {
@@ -562,12 +572,14 @@ private fun PetListGridItem(
             text = animal.breed,
             style = MaterialTheme.typography.bodyMedium,
             modifier =
-              Modifier.sharedBounds(
-                sharedContentState =
-                  rememberSharedContentState(key = "tag-${animal.id}-${animal.breed}"),
-                animatedVisibilityScope = requireAnimatedScope(Navigation),
-                zIndexInOverlay = 2f,
-              ),
+              Modifier.thenIf(shareElements) {
+                sharedBounds(
+                  sharedContentState =
+                    rememberSharedContentState(key = "tag-${animal.id}-${animal.breed}"),
+                  animatedVisibilityScope = animatedScope,
+                  zIndexInOverlay = 2f,
+                )
+              },
           )
         }
         CompositionLocalProvider(

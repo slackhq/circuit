@@ -5,6 +5,7 @@ package com.slack.circuit.star.home
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.EaseInOutCubic
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -39,6 +41,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
@@ -46,13 +49,16 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntOffset
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.LocalCircuit
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.NavigableCircuitContent
+import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.Screen
@@ -66,8 +72,16 @@ import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
 import com.slack.circuit.star.home.HomeTestConstants.BOTTOM_NAVIGATION_TAG
 import com.slack.circuit.star.home.HomeTestConstants.NAVIGATION_RAIL_ITEM_TAG
 import com.slack.circuit.star.home.HomeTestConstants.NAVIGATION_RAIL_TAG
+import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.StarTheme
+import com.slack.circuitx.adaptive.ExperimentalCircuitAdaptiveApi
+import com.slack.circuitx.adaptive.ListDetailPaneStrategy
+import com.slack.circuitx.adaptive.PaneHost
+import com.slack.circuitx.adaptive.PaneNavDecoration
+import com.slack.circuitx.adaptive.PaneReplaceInterceptor
+import com.slack.circuitx.adaptive.PaneStyle
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
+import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 import dev.zacsweers.metro.AppScope
 import kotlin.math.roundToInt
 
@@ -102,7 +116,11 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(
+  ExperimentalSharedTransitionApi::class,
+  ExperimentalCircuitApi::class,
+  ExperimentalCircuitAdaptiveApi::class,
+)
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
@@ -137,9 +155,50 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
       }
     }
 
+    // On wide windows the pet list stays on screen and a pet's details open beside it. The back
+    // stack is the same in both layouts, so resizing the window keeps the open pet.
+    val paneHost = remember {
+      PaneHost().apply { placeholder = emptyDetailPane(state.navItems[state.selectedIndex]) }
+    }
+    val circuit = checkNotNull(LocalCircuit.current)
+    val decoration =
+      remember(circuit, paneHost) {
+        PaneNavDecoration(
+          strategy =
+            ListDetailPaneStrategy(
+              paneStyle = { screen ->
+                if (screen is PetDetailScreen) {
+                  PaneStyle.LIST_DETAIL
+                } else {
+                  null
+                }
+              }
+            ),
+          delegate =
+            AnimatedNavDecoration(
+              animatedScreenTransforms = circuit.animatedScreenTransforms,
+              decoratorFactory = GestureNavigationDecorationFactory(),
+            ),
+          host = paneHost,
+          divider = { VerticalDivider() },
+        )
+      }
+    // Picking another pet beside the list replaces the open one. NavigableCircuitContent already
+    // handles back, so this navigator leaves it alone.
+    val paneNavigator =
+      rememberInterceptingNavigator(
+        navigator = navigator,
+        interceptors = remember(paneHost) { listOf(PaneReplaceInterceptor(paneHost)) },
+        enableBackHandler = false,
+      )
+
     HomeNavigationLayout(
       selectedIndex = state.selectedIndex,
-      onSelectedIndex = { index -> state.eventSink(ClickNavItem(index)) },
+      onSelectedIndex = { index ->
+        // Set in the click event so the next frame lays out at the new tab's pane widths.
+        paneHost.placeholder = emptyDetailPane(state.navItems[index])
+        state.eventSink(ClickNavItem(index))
+      },
       navigationModifier =
         Modifier.renderInSharedTransitionScopeOverlay(
           renderInOverlay = { isInOverlay },
@@ -150,15 +209,36 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
       modifier = modifier,
     ) { paddingValues ->
       NavigableCircuitContent(
-        navigator = navigator,
+        navigator = paneNavigator,
         backStack = backStack,
         modifier = Modifier.padding(paddingValues),
-        decoratorFactory = remember { GestureNavigationDecorationFactory() },
+        decoration = decoration,
       )
       contentComposed = true
     }
     Platform.ReportDrawnWhen { contentComposed }
   }
+
+/**
+ * Returns the content of the empty right pane for [item], or null when the tab has no details to
+ * show beside it.
+ */
+private fun emptyDetailPane(item: BottomNavItem): (@Composable () -> Unit)? {
+  return when (item) {
+    BottomNavItem.Adoptables -> EmptyPetDetailPane
+    BottomNavItem.About -> null
+  }
+}
+
+private val EmptyPetDetailPane: @Composable () -> Unit = {
+  Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Text(
+      text = "Select a pet to see its details",
+      style = MaterialTheme.typography.bodyLarge,
+      color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+  }
+}
 
 // These are the buttons on the NavBar, they dictate where we navigate too
 val NAV_ITEMS = listOf(BottomNavItem.Adoptables, BottomNavItem.About)

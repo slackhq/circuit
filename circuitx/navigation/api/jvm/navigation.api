@@ -33,6 +33,18 @@ public final class com/slack/circuitx/navigation/intercepting/InterceptedResult$
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/slack/circuitx/navigation/intercepting/InterceptedResult$RewriteAll : com/slack/circuitx/navigation/intercepting/InterceptedResult {
+	public static final field $stable I
+	public fun <init> (Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$RewriteAll;
+	public static synthetic fun copy$default (Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$RewriteAll;Ljava/util/List;ILjava/lang/Object;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$RewriteAll;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getNavEvents ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/slack/circuitx/navigation/intercepting/InterceptedResult$Skipped : com/slack/circuitx/navigation/intercepting/InterceptedResult {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/slack/circuitx/navigation/intercepting/InterceptedResult$Skipped;

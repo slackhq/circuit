@@ -10,12 +10,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.internal.shouldEnableNavEventHandler
+import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
@@ -145,15 +147,10 @@ public class InterceptingNavigator(
           if (interceptedResult.consumed) return null
         }
 
-        is InterceptedResult.Rewrite -> {
-          when (val event = interceptedResult.navEvent) {
-            is NavEvent.Pop -> return pop(event.result)
-            is NavEvent.ResetRoot -> return resetRoot(event.newRoot, event.options).lastOrNull()
-            is NavEvent.GoTo -> goTo(event.screen)
-            is NavEvent.Backward -> backward()
-            is NavEvent.Forward -> forward()
-          }
-          return null
+        is InterceptedResult.Rewrite -> return rewritePopResult(interceptedResult.navEvent)
+
+        is InterceptedResult.RewriteAll -> {
+          return rewriteAll(interceptedResult.navEvents, emptyResult = null, ::rewritePopResult)
         }
       }
     }
@@ -175,15 +172,14 @@ public class InterceptingNavigator(
           if (interceptedResult.consumed) return emptyList()
         }
 
-        is InterceptedResult.Rewrite -> {
-          when (val event = interceptedResult.navEvent) {
-            is NavEvent.ResetRoot -> return resetRoot(event.newRoot, event.options)
-            is NavEvent.Pop -> pop(event.result)
-            is NavEvent.GoTo -> goTo(event.screen)
-            is NavEvent.Backward -> backward()
-            is NavEvent.Forward -> forward()
-          }
-          return emptyList()
+        is InterceptedResult.Rewrite -> return rewriteResetRootResult(interceptedResult.navEvent)
+
+        is InterceptedResult.RewriteAll -> {
+          return rewriteAll(
+            interceptedResult.navEvents,
+            emptyResult = emptyList(),
+            ::rewriteResetRootResult,
+          )
         }
       }
     }
@@ -240,7 +236,11 @@ public class InterceptingNavigator(
         }
 
         is InterceptedResult.Rewrite -> {
-          return rewriteBooleanResult(interceptedResult)
+          return rewriteBooleanResult(interceptedResult.navEvent)
+        }
+
+        is InterceptedResult.RewriteAll -> {
+          return rewriteAll(interceptedResult.navEvents, emptyResult = true, ::rewriteBooleanResult)
         }
       }
     }
@@ -289,10 +289,34 @@ public class InterceptingNavigator(
   }
 }
 
-private fun InterceptingNavigator.rewriteBooleanResult(
-  interceptedResult: InterceptedResult.Rewrite
-): Boolean {
-  when (val event = interceptedResult.navEvent) {
+/**
+ * Applies [navEvents] in order in one snapshot, so no reader of the back stack sees a state between
+ * two events. Each event goes through this navigator again, so interceptors and listeners see it.
+ *
+ * @param emptyResult The result when [navEvents] is empty.
+ * @param rewriteLast Dispatches the last event and maps it to the result of the intercepted call.
+ */
+private inline fun <R> InterceptingNavigator.rewriteAll(
+  navEvents: List<NavEvent>,
+  emptyResult: R,
+  rewriteLast: (NavEvent) -> R,
+): R {
+  return Snapshot.withMutableSnapshot {
+    var result = emptyResult
+    navEvents.forEachIndexed { index, event ->
+      if (index == navEvents.lastIndex) {
+        result = rewriteLast(event)
+      } else {
+        onNavEvent(event)
+      }
+    }
+    result
+  }
+}
+
+/** Dispatches a rewritten [event] for an intercepted `goTo`, `forward`, or `backward`. */
+private fun InterceptingNavigator.rewriteBooleanResult(event: NavEvent): Boolean {
+  when (event) {
     is NavEvent.GoTo -> return goTo(event.screen)
     is NavEvent.Backward -> return backward()
     is NavEvent.Forward -> return forward()
@@ -300,6 +324,30 @@ private fun InterceptingNavigator.rewriteBooleanResult(
     is NavEvent.ResetRoot -> resetRoot(event.newRoot, event.options)
   }
   return true
+}
+
+/** Dispatches a rewritten [event] for an intercepted `pop`. */
+private fun InterceptingNavigator.rewritePopResult(event: NavEvent): Screen? {
+  when (event) {
+    is NavEvent.Pop -> return pop(event.result)
+    is NavEvent.ResetRoot -> return resetRoot(event.newRoot, event.options).lastOrNull()
+    is NavEvent.GoTo -> goTo(event.screen)
+    is NavEvent.Backward -> backward()
+    is NavEvent.Forward -> forward()
+  }
+  return null
+}
+
+/** Dispatches a rewritten [event] for an intercepted `resetRoot`. */
+private fun InterceptingNavigator.rewriteResetRootResult(event: NavEvent): List<Screen> {
+  when (event) {
+    is NavEvent.ResetRoot -> return resetRoot(event.newRoot, event.options)
+    is NavEvent.Pop -> pop(event.result)
+    is NavEvent.GoTo -> goTo(event.screen)
+    is NavEvent.Backward -> backward()
+    is NavEvent.Forward -> forward()
+  }
+  return emptyList()
 }
 
 private class InterceptingNavigationContext(private val navStackList: NavStackList<Screen>?) :

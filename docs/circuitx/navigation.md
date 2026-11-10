@@ -69,6 +69,7 @@ public interface NavigationInterceptor {
 - `InterceptedResult.Failure` - The interceptor encountered an error while handled the navigation
 - `InterceptedGoToResult.Rewrite` - The interceptor wants to navigate to a different screen
 - `InterceptedResetRootResult.Rewrite` - The interceptor wants to reset to a different root screen
+- `InterceptedResult.RewriteAll` - The interceptor wants to replace the navigation with several events, such as a pop and then a `goTo`
 
 Both `InterceptedResult.Success` and `InterceptedResult.Failure` have a `consumed` flag which
 determines whether the navigation event is fully handled by the interceptor.
@@ -79,6 +80,10 @@ determines whether the navigation event is fully handled by the interceptor.
 When an interceptor returns a `Rewrite` result, the navigation processing restarts with
 the *rewritten* screen. All interceptors will operate on this rewritten navigation event as if it
 was a new navigation event.
+
+`RewriteAll` applies its events in order in one snapshot, so the back stack never renders between
+two events. Each event restarts the navigation processing. The interceptor that returned
+`RewriteAll` sees its own events again and must skip them.
 
 ### FailureNotifier
 

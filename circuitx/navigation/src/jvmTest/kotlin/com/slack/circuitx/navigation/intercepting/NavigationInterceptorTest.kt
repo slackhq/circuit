@@ -2,13 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.navigation.intercepting
 
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.internal.test.TestPopResult
 import com.slack.circuit.internal.test.TestScreen
+import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.navigation.navStackListOf
+import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
+import com.slack.circuit.test.FakeNavigator
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.GoToEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.PopEvent
 import com.slack.circuitx.navigation.intercepting.FakeNavigationInterceptor.ResetRootEvent
@@ -17,7 +21,9 @@ import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companio
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotSame
 import kotlin.test.assertNull
+import kotlin.test.assertSame
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -623,5 +629,115 @@ class NavigationInterceptorTest {
       )
       assertEquals(TestScreen.RootBeta, fakeNavigator.awaitResetRoot().newRoot)
     }
+  }
+
+  @Test
+  fun `Single interceptor goTo RewriteAll pops then pushes`() = runTest {
+    composeTestRule.run {
+      val rewrite =
+        InterceptedResult.RewriteAll(listOf(NavEvent.Pop(), NavEvent.GoTo(TestScreen.ScreenC)))
+      // The interceptor sees the rewritten events again.
+      fakeInterceptor1.queueGoTo(rewrite, Skipped)
+      fakeInterceptor1.queuePop(Skipped)
+      val (fakeNavigator, interceptingNavigator) =
+        setTestContent(
+          interceptors = singleInterceptor,
+          additionalScreens = arrayOf(TestScreen.ScreenA),
+        )
+      assertTrue(interceptingNavigator.goTo(TestScreen.ScreenB))
+      assertEquals(rewrite, fakeInterceptor1.awaitGoTo().interceptorGoToResult)
+      assertEquals(Skipped, fakeInterceptor1.awaitPop().interceptorGoToResult)
+      assertEquals(TestScreen.ScreenC, fakeInterceptor1.awaitGoTo().screen)
+      assertEquals(TestScreen.ScreenA, fakeNavigator.awaitPop().poppedScreen)
+      assertEquals(TestScreen.ScreenC, fakeNavigator.awaitNextScreen())
+      assertEquals(
+        listOf(TestScreen.ScreenC, TestScreen.RootAlpha),
+        interceptingNavigator.peekBackStack(),
+      )
+    }
+  }
+
+  @Test
+  fun `Single interceptor goTo RewriteAll with no events consumes`() = runTest {
+    composeTestRule.run {
+      fakeInterceptor1.queueGoTo(InterceptedResult.RewriteAll(emptyList()))
+      val (fakeNavigator, interceptingNavigator) = setTestContent(interceptors = singleInterceptor)
+      assertTrue(interceptingNavigator.goTo(TestScreen.ScreenA))
+      fakeNavigator.assertGoToIsEmpty()
+    }
+  }
+
+  @Test
+  fun `Single interceptor pop RewriteAll returns the last pop`() = runTest {
+    composeTestRule.run {
+      val rewrite = InterceptedResult.RewriteAll(listOf(NavEvent.Pop(), NavEvent.Pop()))
+      fakeInterceptor1.queuePop(rewrite, Skipped, Skipped)
+      val (fakeNavigator, interceptingNavigator) =
+        setTestContent(
+          interceptors = singleInterceptor,
+          additionalScreens = arrayOf(TestScreen.ScreenA, TestScreen.ScreenB),
+        )
+      assertEquals(TestScreen.ScreenA, interceptingNavigator.pop())
+      assertEquals(TestScreen.ScreenB, fakeNavigator.awaitPop().poppedScreen)
+      assertEquals(TestScreen.ScreenA, fakeNavigator.awaitPop().poppedScreen)
+      assertEquals(listOf<Screen>(TestScreen.RootAlpha), interceptingNavigator.peekBackStack())
+    }
+  }
+
+  @Test
+  fun `Single interceptor resetRoot RewriteAll returns the last reset`() = runTest {
+    composeTestRule.run {
+      val rewrite =
+        InterceptedResult.RewriteAll(
+          listOf(NavEvent.Pop(), NavEvent.ResetRoot(TestScreen.RootBeta, StateOptions.Default))
+        )
+      fakeInterceptor1.queueResetRoot(rewrite, Skipped)
+      fakeInterceptor1.queuePop(Skipped)
+      val (fakeNavigator, interceptingNavigator) =
+        setTestContent(
+          interceptors = singleInterceptor,
+          additionalScreens = arrayOf(TestScreen.ScreenA),
+        )
+      assertEquals(
+        listOf<Screen>(TestScreen.RootAlpha),
+        interceptingNavigator.resetRoot(TestScreen.ScreenB),
+      )
+      assertEquals(TestScreen.ScreenA, fakeNavigator.awaitPop().poppedScreen)
+      assertEquals(TestScreen.RootBeta, fakeNavigator.awaitResetRoot().newRoot)
+    }
+  }
+
+  @Test
+  fun `RewriteAll applies every event in one snapshot`() {
+    val outer = Snapshot.current
+    val snapshots = mutableListOf<Snapshot>()
+    val fakeNavigator = FakeNavigator(TestScreen.RootAlpha, TestScreen.ScreenA)
+    val recordingNavigator =
+      object : Navigator by fakeNavigator {
+        override fun pop(result: PopResult?): Screen? {
+          snapshots += Snapshot.current
+          return fakeNavigator.pop(result)
+        }
+
+        override fun goTo(screen: Screen): Boolean {
+          snapshots += Snapshot.current
+          return fakeNavigator.goTo(screen)
+        }
+      }
+    val interceptor =
+      object : NavigationInterceptor {
+        override fun goTo(screen: Screen, navigationContext: NavigationContext): InterceptedResult {
+          return if (screen == TestScreen.ScreenB) {
+            InterceptedResult.RewriteAll(listOf(NavEvent.Pop(), NavEvent.GoTo(TestScreen.ScreenC)))
+          } else {
+            Skipped
+          }
+        }
+      }
+    val interceptingNavigator = InterceptingNavigator(recordingNavigator, listOf(interceptor))
+    assertTrue(interceptingNavigator.goTo(TestScreen.ScreenB))
+    assertEquals(2, snapshots.size)
+    assertSame(snapshots[0], snapshots[1])
+    assertNotSame(outer, snapshots[0])
   }
 }

@@ -87,6 +87,19 @@ public sealed interface InterceptedResult {
   /** The [NavigationInterceptor] intercepted and rewrote the navigation destination. */
   public data class Rewrite(val navEvent: NavEvent) : InterceptedResult
 
+  /**
+   * The [NavigationInterceptor] intercepted and rewrote the navigation into several events, such as
+   * two pops and a push to replace the top two screens.
+   *
+   * [InterceptingNavigator] applies [navEvents] in order in one snapshot, so the back stack never
+   * renders between two events. The last event gives the result of the intercepted call. An empty
+   * list consumes the navigation.
+   *
+   * Each event restarts navigation processing, as a [Rewrite] does. The interceptor that returned
+   * this result sees its own events again and must not rewrite them a second time.
+   */
+  public data class RewriteAll(val navEvents: List<NavEvent>) : InterceptedResult
+
   /** The [NavigationInterceptor] did not intercept the interaction. */
   public data object Skipped : InterceptedResult
 

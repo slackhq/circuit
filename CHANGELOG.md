@@ -4,6 +4,11 @@ Changelog
 Unreleased
 ----------
 
+### New
+
+- **circuitx-navigation:** Add `InterceptedResult.RewriteAll`, which rewrites a navigation into several `NavEvent`s that `InterceptingNavigator` applies in one snapshot.
+- **circuit-sharedelements:** Add `ProvideStaticAnimatedTransitionScope`, which provides an `AnimatedScope` to content that renders outside the transition that normally provides it.
+
 ### Fixed
 
 - **circuit-foundation:** A record in a nested `NavigableCircuitContent` is now only active (`LocalRecordLifecycle.isActive`) while its parent record is active, unless a `NavDecoration` provides its own lifecycle.

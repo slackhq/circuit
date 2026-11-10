@@ -6,6 +6,7 @@ Unreleased
 
 ### New
 
+- **circuitx-adaptive:** New experimental artifact with `PaneNavDecoration`, which shows one back stack as one or two panes based on the window size. See the [docs](https://slackhq.github.io/circuit/circuitx/adaptive/).
 - **circuitx-navigation:** Add `InterceptedResult.RewriteAll`, which rewrites a navigation into several `NavEvent`s that `InterceptingNavigator` applies in one snapshot.
 - **circuit-sharedelements:** Add `ProvideStaticAnimatedTransitionScope`, which provides an `AnimatedScope` to content that renders outside the transition that normally provides it.
 

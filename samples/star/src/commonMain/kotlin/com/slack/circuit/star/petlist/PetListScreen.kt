@@ -20,6 +20,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -58,9 +59,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -384,7 +382,7 @@ internal fun PetList(state: State, modifier: Modifier = Modifier) {
   }
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PetListGrid(
   animals: List<PetListAnimal>,
@@ -396,7 +394,7 @@ private fun PetListGrid(
     rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { eventSink(Refresh) })
 
   val focusRequester = remember { FocusRequester() }
-  Box(
+  BoxWithConstraints(
     modifier =
       modifier
         .pullRefresh(pullRefreshState)
@@ -415,12 +413,14 @@ private fun PetListGrid(
     if (PlatformUtils.platform == Platform.Jvm) {
       LaunchedEffect(Unit) { focusRequester.requestFocus() }
     }
+    // The grid can be narrower than the window, like when it is the list pane beside a pet's
+    // details, so the column count comes from the grid's own width. The breakpoints match the
+    // medium and expanded window width classes.
     @Suppress("MagicNumber")
     val columnSpan =
-      when (calculateWindowSizeClass().widthSizeClass) {
-        WindowWidthSizeClass.Medium -> 3
-        WindowWidthSizeClass.Expanded -> 4
-        // No exhaustive whens available here
+      when {
+        maxWidth >= 840.dp -> 4
+        maxWidth >= 600.dp -> 3
         else -> 2
       }
 

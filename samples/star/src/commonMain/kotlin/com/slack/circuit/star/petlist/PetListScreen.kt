@@ -87,6 +87,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -417,7 +418,7 @@ private fun PetListGrid(
     LazyVerticalStaggeredGrid(
       // The grid can be narrower than the window, like when it is the list pane beside a pet's
       // details. It fits as many columns of at least this width as its own width allows.
-      columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
+      columns = PetGridCells,
       modifier = Modifier.fillMaxSize().testTag(GRID_TAG),
       verticalItemSpacing = spacing,
       horizontalArrangement = spacedBy(spacing),
@@ -435,6 +436,40 @@ private fun PetListGrid(
       refreshing = isRefreshing,
       state = pullRefreshState,
     )
+  }
+}
+
+/**
+ * Columns of the pet grid. It fits as many columns of [PreferredMinWidth] as the grid width allows.
+ * A grid with room for only one of those still gets two columns, so a small phone shows a grid.
+ * Below two columns of [NarrowMinWidth] the cards cannot fit their text, and the grid has one
+ * column.
+ */
+private object PetGridCells : StaggeredGridCells {
+  private val PreferredMinWidth = 150.dp
+  private val NarrowMinWidth = 120.dp
+
+  override fun Density.calculateCrossAxisCellSizes(availableSize: Int, spacing: Int): IntArray {
+    val preferredCount = (availableSize + spacing) / (PreferredMinWidth.roundToPx() + spacing)
+    val count =
+      if (preferredCount >= 2) {
+        preferredCount
+      } else if (availableSize >= NarrowMinWidth.roundToPx() * 2 + spacing) {
+        2
+      } else {
+        1
+      }
+    // Equal columns. The first columns take the pixels that do not divide evenly.
+    val widthWithoutSpacing = (availableSize - spacing * (count - 1)).coerceAtLeast(0)
+    val columnWidth = widthWithoutSpacing / count
+    val remainder = widthWithoutSpacing % count
+    return IntArray(count) { index ->
+      if (index < remainder) {
+        columnWidth + 1
+      } else {
+        columnWidth
+      }
+    }
   }
 }
 

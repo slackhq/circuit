@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -91,9 +92,6 @@ import com.slack.circuit.star.transition.PetCardBoundsKey
 import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.thenIf
 import com.slack.circuit.star.ui.thenIfNotNull
-import com.slack.circuitx.adaptive.ExperimentalCircuitAdaptiveApi
-import com.slack.circuitx.adaptive.LocalPaneRole
-import com.slack.circuitx.adaptive.PaneRole
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -289,22 +287,8 @@ private fun TopBar(state: State) {
   if (state !is AnimalState) return
   CenterAlignedTopAppBar(
     title = { PetName(state, style = MaterialTheme.typography.titleLarge) },
-    navigationIcon = {
-      if (showsBackIcon()) {
-        BackPressNavIcon()
-      }
-    },
+    navigationIcon = { BackPressNavIcon() },
   )
-}
-
-/**
- * Whether this screen offers a way back. Beside the pet list it does not, because the list stays on
- * screen and another pick replaces this pet.
- */
-@OptIn(ExperimentalCircuitAdaptiveApi::class)
-@Composable
-private fun showsBackIcon(): Boolean {
-  return LocalPaneRole.current != PaneRole.DETAIL_ROOT
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalCircuitSharedElementsApi::class)
@@ -370,10 +354,17 @@ private fun ShowAnimal(
       )
     }
   }
-  when {
-    useCompactLandscapeLayout -> ShowAnimalCompactLandscape(state, scaffoldPadding, carouselContent)
-    isLandscape() -> ShowAnimalLandscape(state, scaffoldPadding, carouselContent)
-    else -> ShowAnimalPortrait(state, scaffoldPadding, carouselContent)
+  // This screen can be narrower than the window, like in a panel beside the pet grid. The
+  // side-by-side layout depends on the shape of the screen itself.
+  BoxWithConstraints(Modifier.fillMaxSize()) {
+    val isWide = maxWidth > maxHeight
+    when {
+      useCompactLandscapeLayout -> {
+        ShowAnimalCompactLandscape(state, scaffoldPadding, carouselContent)
+      }
+      isWide -> ShowAnimalLandscape(state, scaffoldPadding, carouselContent)
+      else -> ShowAnimalPortrait(state, scaffoldPadding, carouselContent)
+    }
   }
 }
 
@@ -396,15 +387,13 @@ private fun ShowAnimalCompactLandscape(
       contentAlignment = Alignment.Center,
     ) {
       carouselContent(state)
-      if (showsBackIcon()) {
-        Surface(
-          modifier = Modifier.align(Alignment.TopStart).padding(4.dp).testTag(COMPACT_CLOSE_TAG),
-          shape = CircleShape,
-          color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-          shadowElevation = 2.dp,
-        ) {
-          BackPressNavIcon()
-        }
+      Surface(
+        modifier = Modifier.align(Alignment.TopStart).padding(4.dp).testTag(COMPACT_CLOSE_TAG),
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+        shadowElevation = 2.dp,
+      ) {
+        BackPressNavIcon()
       }
     }
     Column(

@@ -5,7 +5,6 @@ package com.slack.circuit.star.home
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.EaseInOutCubic
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,7 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,7 +40,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
@@ -155,11 +153,10 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
       }
     }
 
-    // On wide windows the pet list stays on screen and a pet's details open beside it. The back
-    // stack is the same in both layouts, so resizing the window keeps the open pet.
-    val paneHost = remember {
-      PaneHost().apply { placeholder = emptyDetailPane(state.navItems[state.selectedIndex]) }
-    }
+    // On wide windows the pet grid keeps the full width until a pet is picked. The pet's details
+    // then open in a panel beside the grid. The back stack is the same in both layouts, so resizing
+    // the window keeps the open pet.
+    val paneHost = remember { PaneHost() }
     val circuit = checkNotNull(LocalCircuit.current)
     val decoration =
       remember(circuit, paneHost) {
@@ -168,7 +165,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
             ListDetailPaneStrategy(
               paneStyle = { screen ->
                 if (screen is PetDetailScreen) {
-                  PaneStyle.LIST_DETAIL
+                  PaneStyle.SUPPORTING
                 } else {
                   null
                 }
@@ -183,7 +180,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
           divider = { VerticalDivider() },
         )
       }
-    // Picking another pet beside the list replaces the open one. NavigableCircuitContent already
+    // Picking another pet beside the grid replaces the open one. NavigableCircuitContent already
     // handles back, so this navigator leaves it alone.
     val paneNavigator =
       rememberInterceptingNavigator(
@@ -194,11 +191,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
 
     HomeNavigationLayout(
       selectedIndex = state.selectedIndex,
-      onSelectedIndex = { index ->
-        // Set in the click event so the next frame lays out at the new tab's pane widths.
-        paneHost.placeholder = emptyDetailPane(state.navItems[index])
-        state.eventSink(ClickNavItem(index))
-      },
+      onSelectedIndex = { index -> state.eventSink(ClickNavItem(index)) },
       navigationModifier =
         Modifier.renderInSharedTransitionScopeOverlay(
           renderInOverlay = { isInOverlay },
@@ -218,27 +211,6 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
     }
     Platform.ReportDrawnWhen { contentComposed }
   }
-
-/**
- * Returns the content of the empty right pane for [item], or null when the tab has no details to
- * show beside it.
- */
-private fun emptyDetailPane(item: BottomNavItem): (@Composable () -> Unit)? {
-  return when (item) {
-    BottomNavItem.Adoptables -> EmptyPetDetailPane
-    BottomNavItem.About -> null
-  }
-}
-
-private val EmptyPetDetailPane: @Composable () -> Unit = {
-  Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    Text(
-      text = "Select a pet to see its details",
-      style = MaterialTheme.typography.bodyLarge,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-  }
-}
 
 // These are the buttons on the NavBar, they dictate where we navigate too
 val NAV_ITEMS = listOf(BottomNavItem.Adoptables, BottomNavItem.About)
@@ -260,8 +232,9 @@ internal fun HomeNavigationLayout(
   navigationVisibilityFraction: Float = 1f,
   content: @Composable (PaddingValues) -> Unit,
 ) {
-  val useNavigationRail =
-    calculateWindowSizeClass().heightSizeClass == WindowHeightSizeClass.Compact
+  // A rail on the start edge from the medium width class, which covers tablets and phones in
+  // landscape. It sits outside the navigation content, so the panes share the width beside it.
+  val useNavigationRail = calculateWindowSizeClass().widthSizeClass != WindowWidthSizeClass.Compact
   val navigationContent: @Composable () -> Unit = {
     StarTheme(useDarkTheme = true) {
       NavigationVisibilityLayout(

@@ -71,9 +71,9 @@ public object ListDetailPaneDefaults {
  * @param paneStyle Returns the style of a screen, or null when it has none.
  * @param listPaneFraction The left pane's share of the width for [PaneStyle.LIST_DETAIL].
  * @param listPaneWidthRange Limits of the left pane's width for [PaneStyle.LIST_DETAIL].
- * @param listPaneChromeWidth Width of fixed chrome that the left pane draws beside its list, like a
- *   navigation rail. [listPaneFraction] and [listPaneWidthRange] apply to the width that is left,
- *   and the left pane gets the result plus this width.
+ * @param listPaneSizesItself Lets the left pane of [PaneStyle.LIST_DETAIL] take the width its
+ *   content asks for, in place of [listPaneFraction] and [listPaneWidthRange]. See
+ *   [PaneSplit.PrimaryWraps].
  * @param supportingPaneFraction The right pane's share of the width for [PaneStyle.SUPPORTING].
  * @param supportingPaneWidthRange Limits of the right pane's width for [PaneStyle.SUPPORTING].
  * @param placeholder Draws the right pane while no record is open there, or null to give the left
@@ -86,7 +86,7 @@ public class ListDetailPaneStrategy(
   private val minHeightDp: Int = HEIGHT_DP_MEDIUM_LOWER_BOUND,
   private val listPaneFraction: Float = ListDetailPaneDefaults.ListPaneFraction,
   private val listPaneWidthRange: ClosedRange<Dp> = ListDetailPaneDefaults.ListPaneWidthRange,
-  private val listPaneChromeWidth: Dp = 0.dp,
+  private val listPaneSizesItself: Boolean = false,
   private val supportingPaneFraction: Float = ListDetailPaneDefaults.SupportingPaneFraction,
   private val supportingPaneWidthRange: ClosedRange<Dp> =
     ListDetailPaneDefaults.SupportingPaneWidthRange,
@@ -117,27 +117,32 @@ public class ListDetailPaneStrategy(
       window.separatingHinges.firstOrNull()?.takeIf {
         it.left >= minHingePaneWidth && width - it.right >= minHingePaneWidth
       }
-    val primaryWidth =
+    val split =
       when {
-        hinge != null -> null
+        hinge != null -> PaneSplit.AtHinge
         style == PaneStyle.SUPPORTING -> {
-          width -
-            (width * supportingPaneFraction).coerceIn(
-              supportingPaneWidthRange.start,
-              supportingPaneWidthRange.endInclusive,
-            )
+          PaneSplit.Fixed(
+            width -
+              (width * supportingPaneFraction).coerceIn(
+                supportingPaneWidthRange.start,
+                supportingPaneWidthRange.endInclusive,
+              )
+          )
         }
+        listPaneSizesItself -> PaneSplit.PrimaryWraps()
         // The detail gets most of the width, so a grid beside the list keeps room for its columns.
         else -> {
-          ((width - listPaneChromeWidth) * listPaneFraction).coerceIn(
-            listPaneWidthRange.start,
-            listPaneWidthRange.endInclusive,
-          ) + listPaneChromeWidth
+          PaneSplit.Fixed(
+            (width * listPaneFraction).coerceIn(
+              listPaneWidthRange.start,
+              listPaneWidthRange.endInclusive,
+            )
+          )
         }
       }
     return PaneScene(
       primaryKey = visible[runLength].key,
-      primaryWidth = primaryWidth,
+      split = split,
       placeholder = placeholder,
     )
   }

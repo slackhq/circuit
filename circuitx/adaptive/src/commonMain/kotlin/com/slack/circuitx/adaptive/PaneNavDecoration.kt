@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
@@ -20,10 +21,12 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.isSpecified
 import com.slack.circuit.foundation.LocalRecordLifecycle
 import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.foundation.ProvideRecordLifecycle
@@ -54,8 +57,9 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
  * keeps its state when it moves between the left pane and [delegate]. Each record renders in one
  * place only, because two calls would reuse the same saved state keys.
  *
- * Every layout decision is made in composition, never read during measure. Shared element
- * transitions add a lookahead pass, and both passes must agree on the pane widths.
+ * The records of each pane are chosen in composition. The pane widths resolve in measure from the
+ * [PaneSplit] of the scene. Shared element transitions add a lookahead pass, and both passes
+ * resolve the same widths because they measure with the same constraints.
  *
  * @param strategy Decides when to split and which record takes the left pane.
  * @param delegate Renders the single layout, and the right pane of the split layout.
@@ -97,9 +101,20 @@ public class PaneNavDecoration(
           }
         }
       val isSplit = panes != null
+      val placeholder = host.placeholder ?: panes?.scene?.placeholder
+      val showsDetail = panes != null && (panes.abovePrimary.isNotEmpty() || placeholder != null)
+      val split = panes?.scene?.split
+      // Alone in the window, the left pane always gets the full width.
+      val primarySizesItself = showsDetail && split is PaneSplit.PrimaryWraps
       // Screens read this while they compose, so it carries the layout of this composition.
       val paneState =
-        remember(panes) { PaneState(panes?.scene, panes?.abovePrimary?.lastOrNull()?.screen) }
+        remember(panes, primarySizesItself) {
+          PaneState(
+            scene = panes?.scene,
+            detailRoot = panes?.abovePrimary?.lastOrNull()?.screen,
+            primarySizesItself = primarySizesItself,
+          )
+        }
       SideEffect {
         host.scene = paneState.scene
         host.detailRoot = paneState.detailRoot
@@ -123,10 +138,15 @@ public class PaneNavDecoration(
           .asPaddingValues()
           .calculateStartPadding(LocalLayoutDirection.current)
 
-      val placeholder = host.placeholder ?: panes?.scene?.placeholder
-      val showsDetail = panes != null && (panes.abovePrimary.isNotEmpty() || placeholder != null)
-      // The hinge to split at. A scene without a width and without a hinge splits in the middle.
+      // The hinge for PaneSplit.AtHinge. A window without one splits in the middle.
       val hinge = paneWindow.separatingHinges.firstOrNull()
+      // A pane that sizes itself keeps the width of its content, so nothing here may fill it.
+      val primaryFill =
+        if (primarySizesItself) {
+          Modifier.fillMaxHeight()
+        } else {
+          Modifier.fillMaxSize()
+        }
 
       CompositionLocalProvider(LocalPaneHost provides host, LocalPaneState provides paneState) {
         Layout(
@@ -142,7 +162,7 @@ public class PaneNavDecoration(
                 ProvideRecordLifecycle(isActive = LocalRecordLifecycle.current.isActive) {
                   // Shared elements in the primary record need a Navigation scope while it sits
                   // outside the delegate's transitions.
-                  ProvideStaticAnimatedTransitionScope(Navigation, Modifier.fillMaxSize()) {
+                  ProvideStaticAnimatedTransitionScope(Navigation, primaryFill) {
                     CompositionLocalProvider(LocalPaneRole provides PaneRole.PRIMARY) {
                       content(panes.primary)
                     }
@@ -195,28 +215,53 @@ public class PaneNavDecoration(
             } else {
               0
             }
-          val sceneWidth = panes.scene.primaryWidth
-          val primaryWidth: Int
+          val scenePaneSplit = panes.scene.split
+          val primaryPlaceable: Placeable
           val detailStart: Int
           when {
             !showsDetail -> {
-              primaryWidth = width
+              primaryPlaceable = primary.measure(Constraints.fixed(width, height))
               detailStart = width
             }
-            sceneWidth != null -> {
-              primaryWidth = (startInset + sceneWidth).roundToPx().coerceIn(0, width)
+            scenePaneSplit is PaneSplit.Fixed -> {
+              val primaryWidth =
+                (startInset + scenePaneSplit.primaryWidth).roundToPx().coerceIn(0, width)
+              primaryPlaceable = primary.measure(Constraints.fixed(primaryWidth, height))
               detailStart = primaryWidth + dividerWidth
             }
+            scenePaneSplit is PaneSplit.PrimaryWraps -> {
+              // The left pane picks its width here. The same constraints go in on the lookahead
+              // pass and on the main pass, so both get the same split.
+              val room = (width - dividerWidth).coerceAtLeast(0)
+              val maxWidth =
+                if (scenePaneSplit.maxWidth.isSpecified) {
+                  scenePaneSplit.maxWidth.roundToPx().coerceIn(0, room)
+                } else {
+                  room
+                }
+              primaryPlaceable =
+                primary.measure(
+                  Constraints(
+                    minWidth = 0,
+                    maxWidth = maxWidth,
+                    minHeight = height,
+                    maxHeight = height,
+                  )
+                )
+              detailStart = primaryPlaceable.width + dividerWidth
+            }
             hinge != null -> {
-              primaryWidth = hinge.left.roundToPx().coerceIn(0, width)
+              val primaryWidth = hinge.left.roundToPx().coerceIn(0, width)
+              primaryPlaceable = primary.measure(Constraints.fixed(primaryWidth, height))
               detailStart = maxOf(hinge.right.roundToPx(), primaryWidth + dividerWidth)
             }
             else -> {
-              primaryWidth = (width - dividerWidth) / 2
+              val primaryWidth = (width - dividerWidth) / 2
+              primaryPlaceable = primary.measure(Constraints.fixed(primaryWidth, height))
               detailStart = primaryWidth + dividerWidth
             }
           }
-          val primaryPlaceable = primary.measure(Constraints.fixed(primaryWidth, height))
+          val primaryWidth = primaryPlaceable.width
           val dividerPlaceable = dividerMeasurable.measure(Constraints.fixed(dividerWidth, height))
           val detailPlaceable =
             detail.measure(Constraints.fixed((width - detailStart).coerceAtLeast(0), height))

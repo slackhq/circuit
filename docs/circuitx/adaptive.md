@@ -57,7 +57,7 @@ The decoration must fill the window for hinge bounds to line up with its panes.
 ## Pane strategy
 
 A `PaneStrategy` maps the window and the stack to a `PaneScene`, or to null for the single layout.
-The scene names the record in the left pane and its width. The decoration owns the layout, insets,
+The scene names the record in the left pane and how the panes split. The decoration owns the layout, insets,
 record lifecycle, and animation scopes.
 
 `ListDetailPaneStrategy` is the built-in strategy.
@@ -72,11 +72,30 @@ record lifecycle, and animation scopes.
 
 `ListDetailPaneDefaults` holds the default pane sizes.
 
-If the left pane draws fixed chrome beside its list, like a navigation rail, pass its width as
-`listPaneChromeWidth`. The strategy then sizes the list from the width that is left.
+### Pane widths
+
+A scene carries a `PaneSplit`, which tells the decoration where the panes meet.
+
+| Split          | Left pane width                           |
+|----------------|-------------------------------------------|
+| `Fixed`        | A width that the strategy computed        |
+| `AtHinge`      | Up to the first hinge, or half the window |
+| `PrimaryWraps` | The width that the left pane's content asks for |
+
+Use `PrimaryWraps` when the left pane holds more than one sized part, like a navigation rail beside
+a list. `ListDetailPaneStrategy(listPaneSizesItself = true)` returns it for `LIST_DETAIL`.
+
+The decoration then measures the left pane with a minimum width of zero. The screen in that pane
+must choose a width while `LocalPaneState.current.primarySizesItself` is true. Content that fills
+the maximum width leaves the right pane empty. `Modifier.listPaneWidth()` gives a list the default
+list pane width.
 
 ```kotlin
-ListDetailPaneStrategy(listPaneChromeWidth = 80.dp)
+val sizesItself = LocalPaneState.current.primarySizesItself
+Row(if (sizesItself) Modifier.fillMaxHeight() else Modifier.fillMaxSize()) {
+  NavigationRail { /* ... */ }
+  PetList(if (sizesItself) Modifier.listPaneWidth() else Modifier.weight(1f))
+}
 ```
 
 To keep feature modules free of this artifact, pass a lookup in place of the `PaneScreen` marker.

@@ -32,7 +32,7 @@ class PaneReplaceInterceptorTest {
     split: Boolean = true,
   ): Navigator {
     if (split) {
-      host.scene = PaneScene(primaryKey = "primary", primaryWidth = 300.dp)
+      host.scene = PaneScene(primaryKey = "primary", split = PaneSplit.Fixed(300.dp))
       host.primaryDepth = primaryDepth
     }
     val delegate = FakeNavigator(screens.first(), *screens.drop(1).toTypedArray())

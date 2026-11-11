@@ -68,6 +68,63 @@ public class PaneWindow(
 }
 
 /**
+ * How a [PaneNavDecoration] finds the edge between the two panes of a [PaneScene].
+ *
+ * A strategy picks a split in composition. The decoration resolves it to a width when it measures,
+ * with the same result in the lookahead pass and the main pass.
+ */
+@ExperimentalCircuitAdaptiveApi
+@Immutable
+public sealed interface PaneSplit {
+  /**
+   * The left pane is [primaryWidth] wide and the right pane takes the rest. The decoration adds the
+   * start window inset to [primaryWidth].
+   */
+  public class Fixed(public val primaryWidth: Dp) : PaneSplit {
+    override fun equals(other: Any?): Boolean {
+      return other is Fixed && primaryWidth == other.primaryWidth
+    }
+
+    override fun hashCode(): Int {
+      return primaryWidth.hashCode()
+    }
+
+    override fun toString(): String {
+      return "PaneSplit.Fixed(primaryWidth=$primaryWidth)"
+    }
+  }
+
+  /** The panes split at the first hinge of the window, or in the middle when it has none. */
+  public data object AtHinge : PaneSplit
+
+  /**
+   * The left pane takes the width that its content asks for, up to [maxWidth], and the right pane
+   * takes the rest. Use it when the left pane holds more than one sized part, like a navigation
+   * rail beside a list.
+   *
+   * The decoration measures the left pane with a minimum width of zero. Its screen must then choose
+   * a width, because content that fills the maximum width leaves the right pane empty. The screen
+   * reads [PaneState.primarySizesItself] to know when this applies, and can size a list with
+   * [Modifier.listPaneWidth][listPaneWidth]. The screen also handles the start window inset.
+   *
+   * @param maxWidth The widest the left pane can be, or [Dp.Unspecified] for the window width.
+   */
+  public class PrimaryWraps(public val maxWidth: Dp = Dp.Unspecified) : PaneSplit {
+    override fun equals(other: Any?): Boolean {
+      return other is PrimaryWraps && maxWidth == other.maxWidth
+    }
+
+    override fun hashCode(): Int {
+      return maxWidth.hashCode()
+    }
+
+    override fun toString(): String {
+      return "PaneSplit.PrimaryWraps(maxWidth=$maxWidth)"
+    }
+  }
+}
+
+/**
  * Two panes over one stack. The record with [primaryKey] takes the left pane. Every record above it
  * goes to the right pane, and records below it stay hidden.
  */
@@ -76,11 +133,8 @@ public class PaneWindow(
 public class PaneScene(
   /** Key of the record in the left pane. It renders with no transitions. */
   public val primaryKey: String,
-  /**
-   * Width of the left pane, or null to split at the first hinge of the window. The decoration adds
-   * the start window inset to this width.
-   */
-  public val primaryWidth: Dp?,
+  /** How the decoration finds the edge between the panes. */
+  public val split: PaneSplit,
   /**
    * Draws the right pane while no record is open there, or null to give the left pane the full
    * width. [PaneHost.placeholder] takes priority over this.
@@ -90,19 +144,19 @@ public class PaneScene(
   override fun equals(other: Any?): Boolean {
     return other is PaneScene &&
       primaryKey == other.primaryKey &&
-      primaryWidth == other.primaryWidth &&
+      split == other.split &&
       placeholder == other.placeholder
   }
 
   override fun hashCode(): Int {
     var result = primaryKey.hashCode()
-    result = 31 * result + primaryWidth.hashCode()
+    result = 31 * result + split.hashCode()
     result = 31 * result + placeholder.hashCode()
     return result
   }
 
   override fun toString(): String {
-    return "PaneScene(primaryKey=$primaryKey, primaryWidth=$primaryWidth)"
+    return "PaneScene(primaryKey=$primaryKey, split=$split)"
   }
 }
 

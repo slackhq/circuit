@@ -44,21 +44,34 @@ public class PaneState(
   public val scene: PaneScene?,
   /** The screen at the bottom of the right pane. Lists use it to highlight the open item. */
   public val detailRoot: Screen?,
+  /**
+   * The decoration measures the left pane with a minimum width of zero and uses the width its
+   * content asks for. It is true for a [PaneSplit.PrimaryWraps] scene while the right pane shows.
+   * The screen in the left pane must then choose its own width.
+   */
+  public val primarySizesItself: Boolean = false,
 ) {
   /** The window shows two panes. */
   public val isSplit: Boolean
     get() = scene != null
 
   override fun equals(other: Any?): Boolean {
-    return other is PaneState && scene == other.scene && detailRoot == other.detailRoot
+    return other is PaneState &&
+      scene == other.scene &&
+      detailRoot == other.detailRoot &&
+      primarySizesItself == other.primarySizesItself
   }
 
   override fun hashCode(): Int {
-    return 31 * scene.hashCode() + detailRoot.hashCode()
+    var result = scene.hashCode()
+    result = 31 * result + detailRoot.hashCode()
+    result = 31 * result + primarySizesItself.hashCode()
+    return result
   }
 
   override fun toString(): String {
-    return "PaneState(scene=$scene, detailRoot=$detailRoot)"
+    return "PaneState(scene=$scene, detailRoot=$detailRoot, " +
+      "primarySizesItself=$primarySizesItself)"
   }
 
   public companion object {

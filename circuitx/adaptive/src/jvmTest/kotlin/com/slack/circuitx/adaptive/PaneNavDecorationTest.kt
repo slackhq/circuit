@@ -6,8 +6,11 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -64,6 +67,9 @@ class PaneNavDecorationTest {
   /** A root that reserves the right pane, like a list with a "pick one" message. */
   private data object ReservingRoot : Screen
 
+  /** A root that draws a rail beside its list and picks its own width in the left pane. */
+  private data object SelfSizedRoot : Screen
+
   private data class Detail(val id: Int) : PaneScreen {
     override val paneStyle: PaneStyle
       get() = PaneStyle.LIST_DETAIL
@@ -89,6 +95,7 @@ class PaneNavDecorationTest {
   private val tablet = DpSize(1000.dp, 700.dp)
   /** The list pane at [tablet]: 40% of the width, limited to 400dp. */
   private val tabletListPaneWidth = 400.dp
+  private val RailWidth = 72.dp
 
   private val circuit =
     Circuit.Builder()
@@ -99,6 +106,7 @@ class PaneNavDecorationTest {
   private var windowSize by mutableStateOf(phone)
   private var hinge: DpRect? = null
   private val host = PaneHost()
+  private var strategy: PaneStrategy = ListDetailPaneStrategy()
   /** The [PaneState] of each composition of the root screen, oldest first. */
   private val rootPaneStates = mutableListOf<PaneState>()
   private lateinit var navigator: Navigator
@@ -120,7 +128,7 @@ class PaneNavDecorationTest {
               }
             val decoration = remember {
               PaneNavDecoration(
-                strategy = ListDetailPaneStrategy(),
+                strategy = strategy,
                 delegate =
                   AnimatedNavDecoration(emptyMap(), NavigatorDefaults.DefaultDecoratorFactory),
                 host = host,
@@ -302,6 +310,26 @@ class PaneNavDecorationTest {
   }
 
   @Test
+  fun leftPaneCanSizeItself() = runComposeUiTest {
+    windowSize = tablet
+    strategy = ListDetailPaneStrategy(listPaneSizesItself = true)
+    setNavContent(SelfSizedRoot)
+    // Alone, the left pane gets the full width
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tablet.width)
+
+    runOnIdle { navigator.goTo(Detail(1)) }
+    // The rail, plus 40% of the width beside it
+    val leftPaneWidth = RailWidth + (tablet.width - RailWidth) * 0.4f
+    onNodeWithTag("rail").assertWidthIsEqualTo(RailWidth)
+    onNodeWithTag("root-container").assertWidthIsEqualTo(leftPaneWidth)
+    onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - leftPaneWidth)
+    assertLabel("root", PaneRole.PRIMARY, taps = 0)
+
+    runOnIdle { navigator.pop() }
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tablet.width)
+  }
+
+  @Test
   fun screensReadTheLayoutOfTheirOwnComposition() = runComposeUiTest {
     windowSize = tablet
     setNavContent(Root)
@@ -315,8 +343,38 @@ class PaneNavDecorationTest {
     runOnIdle { check(rootPaneStates.last().detailRoot == Detail(1)) }
   }
 
+  /** A rail beside a list. Beside a detail, the list picks its width and the row wraps both. */
+  @Composable
+  private fun SelfSizedRootUi(modifier: Modifier) {
+    val sizesItself = LocalPaneState.current.primarySizesItself
+    val role = LocalPaneRole.current
+    val active = LocalRecordLifecycle.current.isActive
+    val rowSize =
+      if (sizesItself) {
+        Modifier.fillMaxHeight()
+      } else {
+        Modifier.fillMaxSize()
+      }
+    Row(modifier.then(rowSize).testTag("root-container")) {
+      Box(Modifier.width(RailWidth).fillMaxHeight().testTag("rail"))
+      val listSize =
+        if (sizesItself) {
+          Modifier.listPaneWidth()
+        } else {
+          Modifier.weight(1f)
+        }
+      Box(listSize.fillMaxHeight()) {
+        BasicText("root role=$role active=$active taps=0", Modifier.testTag("root"))
+      }
+    }
+  }
+
   @Composable
   private fun TestUi(screen: Screen, modifier: Modifier) {
+    if (screen == SelfSizedRoot) {
+      SelfSizedRootUi(modifier)
+      return
+    }
     val tag =
       when (screen) {
         Root,

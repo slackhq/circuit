@@ -43,8 +43,38 @@ abstract interface com.slack.circuitx.adaptive/PaneStrategy { // com.slack.circu
     abstract fun scene(com.slack.circuitx.adaptive/PaneWindow, com.slack.circuit.runtime.navigation/NavStackList<out com.slack.circuit.runtime.navigation/NavArgument>): com.slack.circuitx.adaptive/PaneScene? // com.slack.circuitx.adaptive/PaneStrategy.scene|scene(com.slack.circuitx.adaptive.PaneWindow;com.slack.circuit.runtime.navigation.NavStackList<out|com.slack.circuit.runtime.navigation.NavArgument>){}[0]
 }
 
+sealed interface com.slack.circuitx.adaptive/PaneSplit { // com.slack.circuitx.adaptive/PaneSplit|null[0]
+    final class Fixed : com.slack.circuitx.adaptive/PaneSplit { // com.slack.circuitx.adaptive/PaneSplit.Fixed|null[0]
+        constructor <init>(androidx.compose.ui.unit/Dp) // com.slack.circuitx.adaptive/PaneSplit.Fixed.<init>|<init>(androidx.compose.ui.unit.Dp){}[0]
+
+        final val primaryWidth // com.slack.circuitx.adaptive/PaneSplit.Fixed.primaryWidth|{}primaryWidth[0]
+            final fun <get-primaryWidth>(): androidx.compose.ui.unit/Dp // com.slack.circuitx.adaptive/PaneSplit.Fixed.primaryWidth.<get-primaryWidth>|<get-primaryWidth>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.adaptive/PaneSplit.Fixed.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.slack.circuitx.adaptive/PaneSplit.Fixed.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.slack.circuitx.adaptive/PaneSplit.Fixed.toString|toString(){}[0]
+    }
+
+    final class PrimaryWraps : com.slack.circuitx.adaptive/PaneSplit { // com.slack.circuitx.adaptive/PaneSplit.PrimaryWraps|null[0]
+        constructor <init>(androidx.compose.ui.unit/Dp = ...) // com.slack.circuitx.adaptive/PaneSplit.PrimaryWraps.<init>|<init>(androidx.compose.ui.unit.Dp){}[0]
+
+        final val maxWidth // com.slack.circuitx.adaptive/PaneSplit.PrimaryWraps.maxWidth|{}maxWidth[0]
+            final fun <get-maxWidth>(): androidx.compose.ui.unit/Dp // com.slack.circuitx.adaptive/PaneSplit.PrimaryWraps.maxWidth.<get-maxWidth>|<get-maxWidth>(){}[0]
+
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.adaptive/PaneSplit.PrimaryWraps.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.slack.circuitx.adaptive/PaneSplit.PrimaryWraps.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.slack.circuitx.adaptive/PaneSplit.PrimaryWraps.toString|toString(){}[0]
+    }
+
+    final object AtHinge : com.slack.circuitx.adaptive/PaneSplit { // com.slack.circuitx.adaptive/PaneSplit.AtHinge|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.adaptive/PaneSplit.AtHinge.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // com.slack.circuitx.adaptive/PaneSplit.AtHinge.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // com.slack.circuitx.adaptive/PaneSplit.AtHinge.toString|toString(){}[0]
+    }
+}
+
 final class com.slack.circuitx.adaptive/ListDetailPaneStrategy : com.slack.circuitx.adaptive/PaneStrategy { // com.slack.circuitx.adaptive/ListDetailPaneStrategy|null[0]
-    constructor <init>(kotlin/Function1<com.slack.circuit.runtime.screen/Screen, com.slack.circuitx.adaptive/PaneStyle?> = ..., kotlin/Int = ..., kotlin/Int = ..., kotlin/Float = ..., kotlin.ranges/ClosedRange<androidx.compose.ui.unit/Dp> = ..., androidx.compose.ui.unit/Dp = ..., kotlin/Float = ..., kotlin.ranges/ClosedRange<androidx.compose.ui.unit/Dp> = ..., androidx.compose.ui.unit/Dp = ..., kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>? = ...) // com.slack.circuitx.adaptive/ListDetailPaneStrategy.<init>|<init>(kotlin.Function1<com.slack.circuit.runtime.screen.Screen,com.slack.circuitx.adaptive.PaneStyle?>;kotlin.Int;kotlin.Int;kotlin.Float;kotlin.ranges.ClosedRange<androidx.compose.ui.unit.Dp>;androidx.compose.ui.unit.Dp;kotlin.Float;kotlin.ranges.ClosedRange<androidx.compose.ui.unit.Dp>;androidx.compose.ui.unit.Dp;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?){}[0]
+    constructor <init>(kotlin/Function1<com.slack.circuit.runtime.screen/Screen, com.slack.circuitx.adaptive/PaneStyle?> = ..., kotlin/Int = ..., kotlin/Int = ..., kotlin/Float = ..., kotlin.ranges/ClosedRange<androidx.compose.ui.unit/Dp> = ..., kotlin/Boolean = ..., kotlin/Float = ..., kotlin.ranges/ClosedRange<androidx.compose.ui.unit/Dp> = ..., androidx.compose.ui.unit/Dp = ..., kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>? = ...) // com.slack.circuitx.adaptive/ListDetailPaneStrategy.<init>|<init>(kotlin.Function1<com.slack.circuit.runtime.screen.Screen,com.slack.circuitx.adaptive.PaneStyle?>;kotlin.Int;kotlin.Int;kotlin.Float;kotlin.ranges.ClosedRange<androidx.compose.ui.unit.Dp>;kotlin.Boolean;kotlin.Float;kotlin.ranges.ClosedRange<androidx.compose.ui.unit.Dp>;androidx.compose.ui.unit.Dp;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?){}[0]
 
     final fun scene(com.slack.circuitx.adaptive/PaneWindow, com.slack.circuit.runtime.navigation/NavStackList<out com.slack.circuit.runtime.navigation/NavArgument>): com.slack.circuitx.adaptive/PaneScene? // com.slack.circuitx.adaptive/ListDetailPaneStrategy.scene|scene(com.slack.circuitx.adaptive.PaneWindow;com.slack.circuit.runtime.navigation.NavStackList<out|com.slack.circuit.runtime.navigation.NavArgument>){}[0]
 }
@@ -77,14 +107,14 @@ final class com.slack.circuitx.adaptive/PaneReplaceInterceptor : com.slack.circu
 }
 
 final class com.slack.circuitx.adaptive/PaneScene { // com.slack.circuitx.adaptive/PaneScene|null[0]
-    constructor <init>(kotlin/String, androidx.compose.ui.unit/Dp?, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>? = ...) // com.slack.circuitx.adaptive/PaneScene.<init>|<init>(kotlin.String;androidx.compose.ui.unit.Dp?;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?){}[0]
+    constructor <init>(kotlin/String, com.slack.circuitx.adaptive/PaneSplit, kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>? = ...) // com.slack.circuitx.adaptive/PaneScene.<init>|<init>(kotlin.String;com.slack.circuitx.adaptive.PaneSplit;kotlin.Function2<androidx.compose.runtime.Composer,kotlin.Int,kotlin.Unit>?){}[0]
 
     final val placeholder // com.slack.circuitx.adaptive/PaneScene.placeholder|{}placeholder[0]
         final fun <get-placeholder>(): kotlin/Function2<androidx.compose.runtime/Composer, kotlin/Int, kotlin/Unit>? // com.slack.circuitx.adaptive/PaneScene.placeholder.<get-placeholder>|<get-placeholder>(){}[0]
     final val primaryKey // com.slack.circuitx.adaptive/PaneScene.primaryKey|{}primaryKey[0]
         final fun <get-primaryKey>(): kotlin/String // com.slack.circuitx.adaptive/PaneScene.primaryKey.<get-primaryKey>|<get-primaryKey>(){}[0]
-    final val primaryWidth // com.slack.circuitx.adaptive/PaneScene.primaryWidth|{}primaryWidth[0]
-        final fun <get-primaryWidth>(): androidx.compose.ui.unit/Dp? // com.slack.circuitx.adaptive/PaneScene.primaryWidth.<get-primaryWidth>|<get-primaryWidth>(){}[0]
+    final val split // com.slack.circuitx.adaptive/PaneScene.split|{}split[0]
+        final fun <get-split>(): com.slack.circuitx.adaptive/PaneSplit // com.slack.circuitx.adaptive/PaneScene.split.<get-split>|<get-split>(){}[0]
 
     final fun equals(kotlin/Any?): kotlin/Boolean // com.slack.circuitx.adaptive/PaneScene.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // com.slack.circuitx.adaptive/PaneScene.hashCode|hashCode(){}[0]
@@ -92,12 +122,14 @@ final class com.slack.circuitx.adaptive/PaneScene { // com.slack.circuitx.adapti
 }
 
 final class com.slack.circuitx.adaptive/PaneState { // com.slack.circuitx.adaptive/PaneState|null[0]
-    constructor <init>(com.slack.circuitx.adaptive/PaneScene?, com.slack.circuit.runtime.screen/Screen?) // com.slack.circuitx.adaptive/PaneState.<init>|<init>(com.slack.circuitx.adaptive.PaneScene?;com.slack.circuit.runtime.screen.Screen?){}[0]
+    constructor <init>(com.slack.circuitx.adaptive/PaneScene?, com.slack.circuit.runtime.screen/Screen?, kotlin/Boolean = ...) // com.slack.circuitx.adaptive/PaneState.<init>|<init>(com.slack.circuitx.adaptive.PaneScene?;com.slack.circuit.runtime.screen.Screen?;kotlin.Boolean){}[0]
 
     final val detailRoot // com.slack.circuitx.adaptive/PaneState.detailRoot|{}detailRoot[0]
         final fun <get-detailRoot>(): com.slack.circuit.runtime.screen/Screen? // com.slack.circuitx.adaptive/PaneState.detailRoot.<get-detailRoot>|<get-detailRoot>(){}[0]
     final val isSplit // com.slack.circuitx.adaptive/PaneState.isSplit|{}isSplit[0]
         final fun <get-isSplit>(): kotlin/Boolean // com.slack.circuitx.adaptive/PaneState.isSplit.<get-isSplit>|<get-isSplit>(){}[0]
+    final val primarySizesItself // com.slack.circuitx.adaptive/PaneState.primarySizesItself|{}primarySizesItself[0]
+        final fun <get-primarySizesItself>(): kotlin/Boolean // com.slack.circuitx.adaptive/PaneState.primarySizesItself.<get-primarySizesItself>|<get-primarySizesItself>(){}[0]
     final val scene // com.slack.circuitx.adaptive/PaneState.scene|{}scene[0]
         final fun <get-scene>(): com.slack.circuitx.adaptive/PaneScene? // com.slack.circuitx.adaptive/PaneState.scene.<get-scene>|<get-scene>(){}[0]
 
@@ -154,9 +186,13 @@ final val com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneHost$stabl
 final val com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneNavDecoration$stableprop // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneNavDecoration$stableprop|#static{}com_slack_circuitx_adaptive_PaneNavDecoration$stableprop[0]
 final val com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneReplaceInterceptor$stableprop // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneReplaceInterceptor$stableprop|#static{}com_slack_circuitx_adaptive_PaneReplaceInterceptor$stableprop[0]
 final val com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneScene$stableprop // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneScene$stableprop|#static{}com_slack_circuitx_adaptive_PaneScene$stableprop[0]
+final val com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_AtHinge$stableprop // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_AtHinge$stableprop|#static{}com_slack_circuitx_adaptive_PaneSplit_AtHinge$stableprop[0]
+final val com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_Fixed$stableprop // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_Fixed$stableprop|#static{}com_slack_circuitx_adaptive_PaneSplit_Fixed$stableprop[0]
+final val com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_PrimaryWraps$stableprop // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_PrimaryWraps$stableprop|#static{}com_slack_circuitx_adaptive_PaneSplit_PrimaryWraps$stableprop[0]
 final val com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneState$stableprop // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneState$stableprop|#static{}com_slack_circuitx_adaptive_PaneState$stableprop[0]
 final val com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneWindow$stableprop // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneWindow$stableprop|#static{}com_slack_circuitx_adaptive_PaneWindow$stableprop[0]
 
+final fun (androidx.compose.ui/Modifier).com.slack.circuitx.adaptive/listPaneWidth(kotlin/Float = ..., kotlin.ranges/ClosedRange<androidx.compose.ui.unit/Dp> = ...): androidx.compose.ui/Modifier // com.slack.circuitx.adaptive/listPaneWidth|listPaneWidth@androidx.compose.ui.Modifier(kotlin.Float;kotlin.ranges.ClosedRange<androidx.compose.ui.unit.Dp>){}[0]
 final fun com.slack.circuitx.adaptive/PaneWindow(androidx.compose.ui.unit/DpSize, kotlin.collections/List<androidx.compose.ui.unit/DpRect> = ...): com.slack.circuitx.adaptive/PaneWindow // com.slack.circuitx.adaptive/PaneWindow|PaneWindow(androidx.compose.ui.unit.DpSize;kotlin.collections.List<androidx.compose.ui.unit.DpRect>){}[0]
 final fun com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_ListDetailPaneDefaults$stableprop_getter(): kotlin/Int // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_ListDetailPaneDefaults$stableprop_getter|com_slack_circuitx_adaptive_ListDetailPaneDefaults$stableprop_getter(){}[0]
 final fun com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_ListDetailPaneStrategy$stableprop_getter(): kotlin/Int // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_ListDetailPaneStrategy$stableprop_getter|com_slack_circuitx_adaptive_ListDetailPaneStrategy$stableprop_getter(){}[0]
@@ -166,6 +202,9 @@ final fun com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneHost$stabl
 final fun com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneNavDecoration$stableprop_getter(): kotlin/Int // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneNavDecoration$stableprop_getter|com_slack_circuitx_adaptive_PaneNavDecoration$stableprop_getter(){}[0]
 final fun com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneReplaceInterceptor$stableprop_getter(): kotlin/Int // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneReplaceInterceptor$stableprop_getter|com_slack_circuitx_adaptive_PaneReplaceInterceptor$stableprop_getter(){}[0]
 final fun com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneScene$stableprop_getter(): kotlin/Int // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneScene$stableprop_getter|com_slack_circuitx_adaptive_PaneScene$stableprop_getter(){}[0]
+final fun com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_AtHinge$stableprop_getter(): kotlin/Int // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_AtHinge$stableprop_getter|com_slack_circuitx_adaptive_PaneSplit_AtHinge$stableprop_getter(){}[0]
+final fun com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_Fixed$stableprop_getter(): kotlin/Int // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_Fixed$stableprop_getter|com_slack_circuitx_adaptive_PaneSplit_Fixed$stableprop_getter(){}[0]
+final fun com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_PrimaryWraps$stableprop_getter(): kotlin/Int // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneSplit_PrimaryWraps$stableprop_getter|com_slack_circuitx_adaptive_PaneSplit_PrimaryWraps$stableprop_getter(){}[0]
 final fun com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneState$stableprop_getter(): kotlin/Int // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneState$stableprop_getter|com_slack_circuitx_adaptive_PaneState$stableprop_getter(){}[0]
 final fun com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneWindow$stableprop_getter(): kotlin/Int // com.slack.circuitx.adaptive/com_slack_circuitx_adaptive_PaneWindow$stableprop_getter|com_slack_circuitx_adaptive_PaneWindow$stableprop_getter(){}[0]
 final fun com.slack.circuitx.adaptive/rememberPaneWindow(androidx.compose.ui.unit/DpSize, androidx.compose.runtime/Composer?, kotlin/Int): com.slack.circuitx.adaptive/PaneWindow // com.slack.circuitx.adaptive/rememberPaneWindow|rememberPaneWindow(androidx.compose.ui.unit.DpSize;androidx.compose.runtime.Composer?;kotlin.Int){}[0]

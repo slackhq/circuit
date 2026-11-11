@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("DEPRECATION")
+
 package com.slack.circuit.retained
 
 import androidx.compose.runtime.Composable
@@ -12,6 +14,7 @@ import com.slack.circuit.retained.RetainedStateRegistry.Entry
  * Allows components to save and restore their state using the `onRetainNonConfigurationInstance`
  * mechanism.
  */
+@Deprecated(RETAINED_STATE_REGISTRY_DEPRECATION)
 public interface RetainedStateRegistry {
   /**
    * Returns the restored value for the given key. Once being restored the value is cleared, so you
@@ -81,6 +84,7 @@ internal interface MutableRetainedStateRegistry : RetainedStateRegistry {
  *
  * @param values The map of the restored values
  */
+@Deprecated(RETAINED_STATE_REGISTRY_DEPRECATION)
 public fun RetainedStateRegistry(
   canRetainChecker: CanRetainChecker = CanRetainChecker.Always,
   values: Map<String, List<Any?>> = emptyMap(),
@@ -92,6 +96,7 @@ public fun RetainedStateRegistry(
 
 /** Creates and remembers the instance of [RetainedStateRegistry]. */
 @Composable
+@Deprecated(RETAINED_STATE_REGISTRY_DEPRECATION)
 public fun rememberRetainedStateRegistry(
   vararg inputs: Any?,
   key: String? = null,
@@ -105,6 +110,7 @@ public fun rememberRetainedStateRegistry(
 }
 
 /** CompositionLocal with a current [RetainedStateRegistry] instance. */
+@Deprecated(RETAINED_STATE_REGISTRY_DEPRECATION)
 public val LocalRetainedStateRegistry: ProvidableCompositionLocal<RetainedStateRegistry> =
   staticCompositionLocalOf {
     NoOpRetainedStateRegistry

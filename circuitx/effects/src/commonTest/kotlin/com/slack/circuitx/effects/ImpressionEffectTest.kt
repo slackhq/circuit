@@ -3,14 +3,14 @@
 package com.slack.circuitx.effects
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.moleculeFlow
 import app.cash.turbine.test
-import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.RetainedStateRegistry
+import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
+import com.slack.circuit.retained.RetainedValuesStoreOwner
+import com.slack.circuit.retained.RetainedValuesStoreProvider
 import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -46,12 +46,15 @@ internal interface ImpressionEffectTestShared {
 
 /** Shared implementation of unit tests for [ImpressionEffect] and [LaunchedImpressionEffect]. */
 @OptIn(
-  ExperimentalCoroutinesApi::class // For advanceUntilIdle()
+  ExperimentalCircuitRetainedApi::class,
+  ExperimentalCoroutinesApi::class, // For advanceUntilIdle()
 )
 @Ignore // Only run the actual uses of this.
 internal class ImpressionEffectTestSharedImpl : ImpressionEffectTestShared {
 
-  private val registry = RetainedStateRegistry()
+  // rememberRetained is backed by a retained-values store, which non-Android platforms need
+  // installed explicitly for values to survive leaving and rejoining the composition.
+  private val storeOwner = RetainedValuesStoreOwner()
   private val composed = MutableStateFlow(true)
 
   override fun recreateImpressionEffect() {
@@ -156,17 +159,14 @@ internal class ImpressionEffectTestSharedImpl : ImpressionEffectTestShared {
   /** Simulating a screen with this. */
   @Composable
   private fun setRetainedContent(content: @Composable () -> Unit = {}) {
-    CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
-      val isCompose by composed.collectAsState(initial = true)
-      if (isCompose) {
-        content()
-      }
+    val isCompose by composed.collectAsState(initial = true)
+    if (isCompose) {
+      RetainedValuesStoreProvider(storeOwner, content)
     }
   }
 
   /** Simulate a retained leaving and joining of the composition. */
   private fun recreate() {
-    registry.saveAll()
     composed.value = false
     composed.value = true
   }

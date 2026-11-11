@@ -28,7 +28,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.currentCompositeKeyHashCode
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
@@ -52,13 +51,8 @@ import com.slack.circuit.foundation.animation.AnimatedNavState
 import com.slack.circuit.foundation.navstack.ProvidedValues
 import com.slack.circuit.foundation.navstack.providedValuesForNavStack
 import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
-import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
-import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.RetainedStateHolder
 import com.slack.circuit.retained.rememberRetained
-import com.slack.circuit.retained.rememberRetainedStateHolder
-import com.slack.circuit.retained.rememberRetainedStateRegistry
 import com.slack.circuit.runtime.AnsweringResultHandler as RuntimeAnsweringResultHandler
 import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.InternalCircuitApi
@@ -234,44 +228,10 @@ public fun <R : Record> NavigableCircuitContent(
     circuit.onUnavailableContent,
 ) {
   if (navigator.navStack.isEmpty) return
-  /*
-   * We store the RetainedStateRegistries for each back stack entry into an 'navigation content'
-   * RetainedStateRegistry. If we don't do this, those registries would be stored directly in the
-   * current LocalRetainedStateRegistry value, which will mostly likely be the
-   * lifecycleRetainedStateRegistry. On Android, that lifecycleRetainedStateRegistry will drop
-   * any 'unclaimed' values when the host Activity is recreated. Since records on the back stack
-   * aren't attached to composition, they can't claim their retained registries and thus we drop
-   * all of the state for the record. See #1046.
-   *
-   * Using this 'navigation content' registry means that _it_ will be stored in the
-   * lifecycleRetainedStateRegistry instead, and any back stack record registries stored within
-   * the 'navigation content' registry. The difference is that NavigableCircuitContent
-   * will be attached to composition for the entire lifetime that we care about, and thus will
-   * be able to save/claim the 'navigation content' registry on recreations. Since any back stack
-   * registries are nested in this 'navigation content' registry, everything is
-   * saved/claimed correctly. As a diagram, it looks like this:
-   *                          ┌────────────────┐
-   *                          │ ContinuityRSR  │
-   *                          └───────▲────────┘
-   *                      ┌───────────┴─────────┐
-   *                 ┌────► NavigableContentRSR ◄───────┐
-   *                 │    └───────────▲─────────┘       │
-   *          ┌──────┴──────┐  ┌──────┴──────┐   ┌──────┴──────┐
-   *          │ ScreenA RSR │  │ ScreenB RSR │   │ ScreenC RSR │
-   *          └──────▲──────┘  └──────▲──────┘   └──────▲──────┘
-   * ┌─────────────┐ │         ┌──────┴──────┐   ┌──────┴──────┐
-   * │retainedState├─┤         │retainedState│   │retainedState│
-   * └─────────────┘ │         └─────────────┘   └─────────────┘
-   * ┌─────────────┐ │
-   * │retainedState├─┘         (RSR = RetainedStateRegistry)
-   * └─────────────┘
-   */
-  val outerKey = "_navigable_registry_${currentCompositeKeyHashCode.toString(MaxSupportedRadix)}"
-  val outerRegistry = rememberRetainedStateRegistry(key = outerKey)
 
-  // When first-party retain is enabled, scope a RetainedValuesStore to each record so that
-  // retain {} calls inside record content get per-record lifetimes. Hosted here, outside any
-  // movableContentOf, so the registry's own retain slot has a stable position.
+  // Scope a RetainedValuesStore to each record so that retain {} calls inside record content get
+  // per-record lifetimes. Hosted here, outside any movableContentOf, so the registry's own retain
+  // slot has a stable position.
   @OptIn(ExperimentalCircuitRetainedApi::class)
   val recordRetainedValuesStoreRegistry = retainRetainedValuesStoreRegistry()
 
@@ -285,17 +245,12 @@ public fun <R : Record> NavigableCircuitContent(
       }
     }
 
-  CompositionLocalProvider(
-    LocalRetainedStateRegistry provides outerRegistry,
-    LocalRecordLifecycleState provides RecordLifecycleState.Unset,
-  ) {
+  CompositionLocalProvider(LocalRecordLifecycleState provides RecordLifecycleState.Unset) {
     val saveableStateHolder = rememberSaveableStateHolder()
-    val retainedStateHolder = rememberRetainedStateHolder()
     val contentProviderState =
-      remember(saveableStateHolder, retainedStateHolder, recordRetainedValuesStoreRegistry) {
+      remember(saveableStateHolder, recordRetainedValuesStoreRegistry) {
           ContentProviderState(
             saveableStateHolder = saveableStateHolder,
-            retainedStateHolder = retainedStateHolder,
             navigator = navigator,
             circuit = circuit,
             unavailableRoute = unavailableRoute,
@@ -484,7 +439,6 @@ private fun <R : Record> buildCircuitContentProviders(
 @Stable
 public class ContentProviderState<R : Record>(
   internal val saveableStateHolder: SaveableStateHolder,
-  internal val retainedStateHolder: RetainedStateHolder,
   navigator: AnsweringResultNavigator<R>,
   circuit: Circuit,
   unavailableRoute: @Composable (screen: Screen, modifier: Modifier) -> Unit,
@@ -497,7 +451,6 @@ public class ContentProviderState<R : Record>(
 
   /** Removes all held state for a record that has permanently left the navstack. */
   internal fun removeRecordState(registryKey: String) {
-    retainedStateHolder.removeState(registryKey)
     saveableStateHolder.removeState(registryKey)
     recordRetainedValuesStoreRegistry?.clearChild(registryKey)
   }
@@ -506,17 +459,10 @@ public class ContentProviderState<R : Record>(
     if (this === other) return true
     if (other !is ContentProviderState<*>) return false
 
-    if (saveableStateHolder != other.saveableStateHolder) return false
-    if (retainedStateHolder != other.retainedStateHolder) return false
-
-    return true
+    return saveableStateHolder == other.saveableStateHolder
   }
 
-  override fun hashCode(): Int {
-    var result = saveableStateHolder.hashCode()
-    result = 31 * result + retainedStateHolder.hashCode()
-    return result
-  }
+  override fun hashCode(): Int = saveableStateHolder.hashCode()
 }
 
 @OptIn(ExperimentalCircuitApi::class)
@@ -556,31 +502,27 @@ private fun <R : Record> createRecordContent(onActive: () -> Unit, onDispose: ()
 private fun <R : Record> RecordContent(record: R, contentProviderState: ContentProviderState<R>) {
   with(contentProviderState) {
     saveableStateHolder.SaveableStateProvider(record.registryKey) {
-      // Provides a RetainedStateRegistry that is maintained independently for each record while
-      // the record exists in the back stack.
-      retainedStateHolder.RetainedStateProvider(record.registryKey) {
-        val lifecycle =
-          when (LocalRecordLifecycleState.current) {
-            RecordLifecycleState.Set -> LocalRecordLifecycle.current
-            RecordLifecycleState.Unset -> {
-              val isActive =
-                LocalRecordLifecycle.current.isActive &&
-                  lastNavigator.navStack.currentRecord == record
-              rememberUpdatedRecordLifecycle(isActive)
-            }
+      val lifecycle =
+        when (LocalRecordLifecycleState.current) {
+          RecordLifecycleState.Set -> LocalRecordLifecycle.current
+          RecordLifecycleState.Unset -> {
+            val isActive =
+              LocalRecordLifecycle.current.isActive &&
+                lastNavigator.navStack.currentRecord == record
+            rememberUpdatedRecordLifecycle(isActive)
           }
-        CompositionLocalProvider(
-          LocalRecordLifecycle provides lifecycle,
-          LocalRecordLifecycleState provides RecordLifecycleState.Set,
-        ) {
-          CircuitContent(
-            screen = record.screen,
-            navigator = lastNavigator,
-            circuit = lastCircuit,
-            unavailableContent = lastUnavailableRoute,
-            key = record.key,
-          )
         }
+      CompositionLocalProvider(
+        LocalRecordLifecycle provides lifecycle,
+        LocalRecordLifecycleState provides RecordLifecycleState.Set,
+      ) {
+        CircuitContent(
+          screen = record.screen,
+          navigator = lastNavigator,
+          circuit = lastCircuit,
+          unavailableContent = lastUnavailableRoute,
+          key = record.key,
+        )
       }
       // Remove saved states for records that are no longer in the back stack.
       // Keep this inside SaveableStateProvider so the active registry's state is saved and the
@@ -589,7 +531,6 @@ private fun <R : Record> RecordContent(record: R, contentProviderState: ContentP
       DisposableEffect(record.registryKey) {
         onDispose {
           if (!lastNavigator.navStack.containsRecord(record, includeSaved = true)) {
-            retainedStateHolder.removeState(record.registryKey)
             saveableStateHolder.removeState(record.registryKey)
           }
         }
@@ -597,9 +538,6 @@ private fun <R : Record> RecordContent(record: R, contentProviderState: ContentP
     }
   }
 }
-
-/** The maximum radix available for conversion to and from strings. */
-private const val MaxSupportedRadix = 36
 
 private fun recordRegistryKey(key: String): String = "_registry_$key"
 

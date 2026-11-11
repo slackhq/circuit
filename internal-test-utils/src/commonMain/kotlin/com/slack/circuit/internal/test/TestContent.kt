@@ -152,6 +152,7 @@ class TestCountPresenter(
           remember { mutableIntStateOf(0) }
         }
         RememberType.Retained -> {
+          @Suppress("DEPRECATION")
           rememberRetained("count".takeIf { useKeys }) { mutableIntStateOf(0) }
         }
         RememberType.Saveable -> {

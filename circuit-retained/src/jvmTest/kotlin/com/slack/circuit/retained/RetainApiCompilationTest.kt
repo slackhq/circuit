@@ -12,28 +12,35 @@ import com.slack.circuit.retained.rememberRetainedSaveable
 import com.slack.circuit.retained.retain
 import com.slack.circuit.retained.retainSaveable
 
+@Suppress("DEPRECATION")
 @Composable
-private fun compileUnkeyedRememberRetained(
+private fun compileDeprecatedRememberRetained(
+  inputs: Array<out Any?>,
+  key: String?,
+  init: () -> Any,
+): Any {
+  rememberRetained(*inputs, init = init)
+  return rememberRetained(*inputs, key = key, init = init)
+}
+
+// Must match the unkeyed rememberRetained ReplaceWith expression exactly.
+@Composable
+private fun compileUnkeyedRememberRetainedReplacement(
   inputs: Array<out Any?>,
   init: () -> Any,
-): Any = rememberRetained(*inputs, init = init)
+): Any = retain(*inputs, calculation = init)
 
-@Suppress("DEPRECATION")
+// Must match the keyed rememberRetained ReplaceWith expression exactly.
 @Composable
 private fun compileKeyedRememberRetainedReplacement(
   inputs: Array<out Any?>,
   key: String?,
   init: () -> Any,
-): Any {
-  rememberRetained(*inputs, key = key, init = init)
-  return key.let { retainedKey ->
-    if (retainedKey.isNullOrEmpty()) {
-      rememberRetained(*inputs, init = init)
-    } else {
-      retain(*inputs, key = retainedKey, calculation = init)
-    }
+): Any =
+  key.let { retainedKey ->
+    if (retainedKey.isNullOrEmpty()) retain(*inputs, calculation = init)
+    else retain(*inputs, key = retainedKey, calculation = init)
   }
-}
 
 @Composable
 private fun compileRetainCalls(

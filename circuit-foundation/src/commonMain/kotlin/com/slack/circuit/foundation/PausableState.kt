@@ -69,16 +69,13 @@ public fun <T> pausableState(
   val state = remember(key) { MutableRef<T>(null) }
 
   val saveableStateHolder = rememberSaveableStateHolderWithReturn()
-  val retainedStateHolder = rememberRetainedStateHolderWithReturn()
   val retainedValuesStore = key(key) { retainManagedRetainedValuesStore() }
 
   return if (isActive || state.value == null) {
     val finalKey = key ?: "pausable_state"
     val producedState =
       withRetainedValuesStoreProvider(retainedValuesStore) {
-        saveableStateHolder.SaveableStateProvider(finalKey) {
-          retainedStateHolder.RetainedStateProvider(key = finalKey, content = produceState)
-        }
+        saveableStateHolder.SaveableStateProvider(finalKey, produceState)
       }
     state.value = producedState
     producedState

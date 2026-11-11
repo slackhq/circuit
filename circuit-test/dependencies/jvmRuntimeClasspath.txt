@@ -35,6 +35,10 @@ app.cash.molecule:molecule-runtime-jvm
 app.cash.molecule:molecule-runtime
 app.cash.turbine:turbine-jvm
 app.cash.turbine:turbine
+me.stagg.retainx:retainx-jvm
+me.stagg.retainx:retainx-store-jvm
+me.stagg.retainx:retainx-store
+me.stagg.retainx:retainx
 org.jetbrains.androidx.lifecycle:lifecycle-common-jvm
 org.jetbrains.androidx.lifecycle:lifecycle-common
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose-desktop

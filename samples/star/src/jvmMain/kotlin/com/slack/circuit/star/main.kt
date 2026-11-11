@@ -23,7 +23,6 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.SingletonImageLoader
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.retained.RetainedValuesStoreProvider
 import com.slack.circuit.star.di.AppGraph
@@ -32,7 +31,6 @@ import java.net.URI
 
 @OptIn(ExperimentalCircuitRetainedApi::class)
 fun main() {
-  CircuitRetainedSettings.useFirstParty = true
   val appGraph = AppGraph.create()
   SingletonImageLoader.setSafe { appGraph.imageLoader }
   application {

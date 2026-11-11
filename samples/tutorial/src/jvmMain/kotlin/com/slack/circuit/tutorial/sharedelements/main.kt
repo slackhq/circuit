@@ -11,11 +11,13 @@ import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
+import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
+import com.slack.circuit.retained.RetainedValuesStoreProvider
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuit.tutorial.buildCircuitSaver
 import com.slack.circuit.tutorial.common.EmailRepository
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalCircuitRetainedApi::class, ExperimentalSharedTransitionApi::class)
 fun main() {
   val emailRepository = EmailRepository()
   val circuitSaver = buildCircuitSaver()
@@ -29,12 +31,14 @@ fun main() {
       .build()
   application {
     Window(title = "Tutorial", onCloseRequest = ::exitApplication) {
-      MaterialTheme {
-        CircuitCompositionLocals(circuit) {
-          val backStack = rememberSaveableBackStack(root = InboxScreen)
-          val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
-          SharedElementTransitionLayout {
-            NavigableCircuitContent(navigator = navigator, backStack = backStack)
+      RetainedValuesStoreProvider {
+        MaterialTheme {
+          CircuitCompositionLocals(circuit) {
+            val backStack = rememberSaveableBackStack(root = InboxScreen)
+            val navigator = rememberCircuitNavigator(backStack) { exitApplication() }
+            SharedElementTransitionLayout {
+              NavigableCircuitContent(navigator = navigator, backStack = backStack)
+            }
           }
         }
       }

@@ -5,8 +5,8 @@ package com.slack.circuit.sample.interop
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.setValue
-import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
@@ -17,7 +17,7 @@ import kotlinx.serialization.Serializable
 class CircuitCounterPresenter(private val initialCount: Int) : Presenter<CounterScreen.State> {
   @Composable
   override fun present(): CounterScreen.State {
-    var count by rememberRetained { mutableIntStateOf(initialCount) }
+    var count by retain { mutableIntStateOf(initialCount) }
 
     return CounterScreen.State(count) { event ->
       when (event) {

@@ -24,13 +24,11 @@ import com.slack.circuit.internal.test.TestEvent
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.TestState
 import com.slack.circuit.internal.test.createTestCircuit
-import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.presenter.presenterOf
 import com.slack.circuit.runtime.screen.CircuitSaver
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -49,9 +47,6 @@ class FirstPartyRetainRecordLifecycleTest {
   @get:Rule val composeTestRule = createComposeRule()
 
   private val events = mutableListOf<String>()
-  private val previousUseFirstParty = CircuitRetainedSettings.useFirstParty
-  private val previousEnforceRetainObserverCompatibility =
-    CircuitRetainedSettings.enforceRetainObserverCompatibility
 
   private inner class Tracked(val label: String) : RetainObserver {
     override fun onRetained() {
@@ -75,13 +70,6 @@ class FirstPartyRetainRecordLifecycleTest {
     }
   }
 
-  @After
-  fun tearDown() {
-    CircuitRetainedSettings.useFirstParty = previousUseFirstParty
-    CircuitRetainedSettings.enforceRetainObserverCompatibility =
-      previousEnforceRetainObserverCompatibility
-  }
-
   @Test
   fun perRecordRetentionLifecycleWithAnimatedDecoration() {
     runScenario(useEmptyDecoration = false)
@@ -94,7 +82,6 @@ class FirstPartyRetainRecordLifecycleTest {
 
   @Test
   fun savedRecordsSurviveUntilHostRetires() {
-    CircuitRetainedSettings.useFirstParty = true
     lateinit var navigator: Navigator
     val circuit =
       createTestCircuit(
@@ -145,7 +132,6 @@ class FirstPartyRetainRecordLifecycleTest {
 
   @Test
   fun removedConditionalUiValueRetiresWhileRecordRemainsComposed() {
-    CircuitRetainedSettings.useFirstParty = true
     var showRetained by mutableStateOf(true)
     val circuit =
       Circuit.Builder()
@@ -185,7 +171,6 @@ class FirstPartyRetainRecordLifecycleTest {
 
   @Test
   fun firstPartyPresenterStateUpdatesWhileActive() {
-    CircuitRetainedSettings.useFirstParty = true
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.FirstPartyRetain)
 
     composeTestRule.setContent {
@@ -203,8 +188,6 @@ class FirstPartyRetainRecordLifecycleTest {
 
   @Test
   fun navigationInternalsAreRetainObserverCompatible() {
-    CircuitRetainedSettings.useFirstParty = true
-    CircuitRetainedSettings.enforceRetainObserverCompatibility = true
     val circuit = createTestCircuit()
 
     composeTestRule.setContent {
@@ -220,7 +203,6 @@ class FirstPartyRetainRecordLifecycleTest {
 
   @Test
   fun retainedPresenterSurvivesInterruptedRootTransition() {
-    CircuitRetainedSettings.useFirstParty = true
     lateinit var navigator: Navigator
     val circuit =
       createTestCircuit(
@@ -273,7 +255,6 @@ class FirstPartyRetainRecordLifecycleTest {
   }
 
   private fun runScenario(useEmptyDecoration: Boolean) {
-    CircuitRetainedSettings.useFirstParty = true
     val circuit =
       createTestCircuit(
         presenter = { screen, navigator ->

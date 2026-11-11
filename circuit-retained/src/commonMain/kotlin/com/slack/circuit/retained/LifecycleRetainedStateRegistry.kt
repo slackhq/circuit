@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("DEPRECATION")
+
 package com.slack.circuit.retained
 
 import androidx.compose.runtime.Composable
@@ -18,10 +20,12 @@ import androidx.compose.runtime.Composable
  *   lifecycle.
  */
 @Composable
+@Deprecated(RETAINED_STATE_REGISTRY_DEPRECATION)
 public expect fun lifecycleRetainedStateRegistry(
   key: String = LifecycleRetainedStateRegistry.KEY
 ): RetainedStateRegistry
 
+@Deprecated(RETAINED_STATE_REGISTRY_DEPRECATION)
 public object LifecycleRetainedStateRegistry {
   public const val KEY: String = "CircuitLifecycleRetainedStateRegistry"
 }

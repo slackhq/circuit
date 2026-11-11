@@ -7,9 +7,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.setValue
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.sample.inbox.data.EmailFolder
@@ -35,7 +35,7 @@ class InboxListPresenter(
 
   @Composable
   override fun present(): InboxListScreen.State {
-    var folder by rememberRetained { mutableStateOf(screen.folder) }
+    var folder by retain { mutableStateOf(screen.folder) }
     val emailsFlow = remember(folder) { emailRepository.observeEmails(folder) }
     val emails by emailsFlow.collectAsState(initial = emptyList())
 

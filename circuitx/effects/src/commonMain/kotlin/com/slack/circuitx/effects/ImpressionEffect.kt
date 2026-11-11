@@ -1,5 +1,7 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("DEPRECATION")
+
 package com.slack.circuitx.effects
 
 import androidx.compose.runtime.Composable
@@ -9,7 +11,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
@@ -19,7 +20,7 @@ import com.slack.circuit.runtime.screen.Screen
 
 /**
  * A side effect that will run an [impression]. This [impression] will run only once until it is
- * forgotten based on the current [RetainedStateRegistry] or until the [inputs] change. This is
+ * retired from the current retained values store or until the [inputs] change. This is
  * useful for single fire side effects like logging or analytics.
  *
  * @param inputs A set of inputs that when changed will cause the [impression] to be re-run.
@@ -32,7 +33,7 @@ public fun ImpressionEffect(vararg inputs: Any?, impression: () -> Unit) {
 
 /**
  * A [LaunchedEffect] that will run a suspendable [impression]. The [impression] will run once until
- * it is forgotten based on the [RetainedStateRegistry], and/or until the [inputs] change. This is
+ * it is retired from the current retained values store, and/or until the [inputs] change. This is
  * useful for async single fire side effects like logging or analytics.
  *
  * @param inputs A set of inputs that when changed will cause the [impression] to be re-run.

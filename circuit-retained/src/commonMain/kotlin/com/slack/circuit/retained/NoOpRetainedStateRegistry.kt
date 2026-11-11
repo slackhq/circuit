@@ -1,8 +1,11 @@
 // Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("DEPRECATION")
+
 package com.slack.circuit.retained
 
 /** A no-op [RetainedStateRegistry]. Should generally only be used for testing and previews. */
+@Deprecated(RETAINED_STATE_REGISTRY_DEPRECATION)
 public object NoOpRetainedStateRegistry : RetainedStateRegistry {
   override fun consumeValue(key: String): Any? = null
 

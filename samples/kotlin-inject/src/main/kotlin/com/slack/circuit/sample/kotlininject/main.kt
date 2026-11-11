@@ -12,6 +12,8 @@ import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.CircuitContent
+import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
+import com.slack.circuit.retained.RetainedValuesStoreProvider
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.Presenter
 import com.slack.circuit.runtime.screen.CircuitSaver
@@ -23,10 +25,13 @@ import software.amazon.lastmile.kotlin.inject.anvil.AppScope
 
 typealias KotlinInjectApp = @Composable () -> Unit
 
+@OptIn(ExperimentalCircuitRetainedApi::class)
 fun main() = application {
   val app = remember { AppComponent::class.create().kotlinInjectApp }
 
-  Window(onCloseRequest = ::exitApplication, title = "Sample") { app() }
+  Window(onCloseRequest = ::exitApplication, title = "Sample") {
+    RetainedValuesStoreProvider { app() }
+  }
 }
 
 @Inject

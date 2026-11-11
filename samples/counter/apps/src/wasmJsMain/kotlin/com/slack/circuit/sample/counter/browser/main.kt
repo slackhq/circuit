@@ -6,13 +6,11 @@ package com.slack.circuit.sample.counter.browser
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ComposeViewport
-import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.retained.RetainedValuesStoreProvider
 import com.slack.circuit.sample.counter.CounterApp
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalCircuitRetainedApi::class)
 fun main() {
-  CircuitRetainedSettings.useFirstParty = true
   ComposeViewport { RetainedValuesStoreProvider { CounterApp() } }
 }

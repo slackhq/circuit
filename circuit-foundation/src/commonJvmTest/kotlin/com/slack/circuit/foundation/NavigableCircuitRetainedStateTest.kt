@@ -1,11 +1,14 @@
 // Copyright (C) 2023 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("DEPRECATION")
+
 package com.slack.circuit.foundation
 
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.RememberObserver
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.RetainObserver
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -282,7 +285,7 @@ class NavigableCircuitRetainedStateTest {
 
   /** Records the id it was retained under once its retained value is released. */
   private class ForgetProbe(private val id: String, private val forgotten: MutableList<String>) :
-    RememberObserver {
+    RememberObserver, RetainObserver {
     override fun onRemembered() {}
 
     override fun onForgotten() {
@@ -290,6 +293,20 @@ class NavigableCircuitRetainedStateTest {
     }
 
     override fun onAbandoned() {
+      forgotten += id
+    }
+
+    override fun onRetained() {}
+
+    override fun onEnteredComposition() {}
+
+    override fun onExitedComposition() {}
+
+    override fun onRetired() {
+      forgotten += id
+    }
+
+    override fun onUnused() {
       forgotten += id
     }
   }

@@ -61,6 +61,8 @@ public final class com/slack/circuit/foundation/Circuit$Builder {
 public final class com/slack/circuit/foundation/CircuitCompositionLocalsKt {
 	public static final fun CircuitCompositionLocals (Lcom/slack/circuit/foundation/Circuit;Lcom/slack/circuit/retained/RetainedStateRegistry;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun CircuitCompositionLocals (Lcom/slack/circuit/foundation/Circuit;Lcom/slack/circuit/runtime/screen/CircuitSaver;Lcom/slack/circuit/retained/RetainedStateRegistry;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+	public static final fun CircuitCompositionLocals (Lcom/slack/circuit/foundation/Circuit;Lcom/slack/circuit/runtime/screen/CircuitSaver;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
+	public static final fun CircuitCompositionLocals (Lcom/slack/circuit/foundation/Circuit;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
 	public static final fun CircuitPreview (Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;I)V
 	public static final fun getLocalCircuit ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }

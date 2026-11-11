@@ -9,7 +9,6 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.NoOpRetainedStateRegistry
 import com.slack.circuit.retained.RetainedStateRegistry
 import com.slack.circuit.retained.lifecycleRetainedStateRegistry
 import com.slack.circuit.runtime.CircuitContext
@@ -29,11 +28,7 @@ import com.slack.circuit.runtime.screen.currentProvidedCircuitSaverOrNull
  */
 @OptIn(InternalCircuitSaverApi::class)
 @Composable
-public fun CircuitCompositionLocals(
-  circuit: Circuit,
-  retainedStateRegistry: RetainedStateRegistry = lifecycleRetainedStateRegistry(),
-  content: @Composable () -> Unit,
-) {
+public fun CircuitCompositionLocals(circuit: Circuit, content: @Composable () -> Unit) {
   val fallbackSaver = currentProvidedCircuitSaverOrNull() ?: rememberDefaultCircuitSaver()
   val circuitSaver =
     circuit.circuitSaver
@@ -41,12 +36,7 @@ public fun CircuitCompositionLocals(
         remember(transform, fallbackSaver) { transform(fallbackSaver) }
       }
       ?: fallbackSaver
-  CircuitCompositionLocals(
-    circuit = circuit,
-    circuitSaver = circuitSaver,
-    retainedStateRegistry = retainedStateRegistry,
-    content = content,
-  )
+  CircuitCompositionLocals(circuit = circuit, circuitSaver = circuitSaver, content = content)
 }
 
 /**
@@ -57,16 +47,45 @@ public fun CircuitCompositionLocals(
 public fun CircuitCompositionLocals(
   circuit: Circuit,
   circuitSaver: CircuitSaver,
-  retainedStateRegistry: RetainedStateRegistry = lifecycleRetainedStateRegistry(),
   content: @Composable () -> Unit,
 ) {
   ProvideCircuitSaver(circuitSaver) {
-    CompositionLocalProvider(
-      LocalCircuit provides circuit,
-      LocalRetainedStateRegistry provides retainedStateRegistry,
-    ) {
-      content()
-    }
+    CompositionLocalProvider(LocalCircuit provides circuit, content = content)
+  }
+}
+
+@Suppress("DEPRECATION")
+@Deprecated(
+  "Circuit no longer reads RetainedStateRegistry. Install a RetainedValuesStoreProvider at the " +
+    "root instead.",
+  ReplaceWith("CircuitCompositionLocals(circuit, content)"),
+)
+@Composable
+public fun CircuitCompositionLocals(
+  circuit: Circuit,
+  retainedStateRegistry: RetainedStateRegistry = lifecycleRetainedStateRegistry(),
+  content: @Composable () -> Unit,
+) {
+  CompositionLocalProvider(LocalRetainedStateRegistry provides retainedStateRegistry) {
+    CircuitCompositionLocals(circuit, content)
+  }
+}
+
+@Suppress("DEPRECATION")
+@Deprecated(
+  "Circuit no longer reads RetainedStateRegistry. Install a RetainedValuesStoreProvider at the " +
+    "root instead.",
+  ReplaceWith("CircuitCompositionLocals(circuit, circuitSaver, content)"),
+)
+@Composable
+public fun CircuitCompositionLocals(
+  circuit: Circuit,
+  circuitSaver: CircuitSaver,
+  retainedStateRegistry: RetainedStateRegistry = lifecycleRetainedStateRegistry(),
+  content: @Composable () -> Unit,
+) {
+  CompositionLocalProvider(LocalRetainedStateRegistry provides retainedStateRegistry) {
+    CircuitCompositionLocals(circuit, circuitSaver, content)
   }
 }
 
@@ -93,10 +112,5 @@ private val EMPTY_CIRCUIT = Circuit.Builder().build()
  */
 @Composable
 public fun CircuitPreview(content: @Composable () -> Unit) {
-  CircuitCompositionLocals(
-    circuit = EMPTY_CIRCUIT,
-    circuitSaver = CircuitSaver.NoOp,
-    retainedStateRegistry = NoOpRetainedStateRegistry,
-    content = content,
-  )
+  CircuitCompositionLocals(circuit = EMPTY_CIRCUIT, circuitSaver = CircuitSaver.NoOp, content)
 }

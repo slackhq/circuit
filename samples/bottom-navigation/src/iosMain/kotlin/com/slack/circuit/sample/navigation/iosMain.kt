@@ -11,6 +11,8 @@ import androidx.compose.ui.window.ComposeUIViewController
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
 import com.slack.circuit.foundation.rememberCircuitNavigator
+import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
+import com.slack.circuit.retained.RetainedValuesStoreProvider
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuitx.navigation.intercepting.InterceptedGoToResult
 import com.slack.circuitx.navigation.intercepting.LoggingNavigationEventListener
@@ -24,7 +26,11 @@ import platform.Foundation.NSURL
 import platform.UIKit.UIApplication
 import platform.UIKit.UIViewController
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalComposeUiApi::class)
+@OptIn(
+  ExperimentalCircuitRetainedApi::class,
+  ExperimentalSharedTransitionApi::class,
+  ExperimentalComposeUiApi::class,
+)
 @Suppress("Unused") // Called from Swift
 fun MainViewController(): UIViewController {
   // CircuitX Navigation
@@ -36,19 +42,21 @@ fun MainViewController(): UIViewController {
   val circuitSaver = buildCircuitSaver()
   val circuit = buildCircuitForTabs(tabs, circuitSaver)
   return ComposeUIViewController {
-    MaterialTheme {
-      CircuitCompositionLocals(circuit) {
-        val navStack = rememberSaveableNavStack(tabs.first())
-        val navigator = rememberCircuitNavigator(navStack = navStack) {}
-        // Build the delegate Navigator.
-        val interceptingNavigator =
-          rememberInterceptingNavigator(
-            navigator = navigator,
-            interceptors = interceptors,
-            eventListeners = eventListeners,
-            notifier = notifier,
-          )
-        ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
+    RetainedValuesStoreProvider {
+      MaterialTheme {
+        CircuitCompositionLocals(circuit) {
+          val navStack = rememberSaveableNavStack(tabs.first())
+          val navigator = rememberCircuitNavigator(navStack = navStack) {}
+          // Build the delegate Navigator.
+          val interceptingNavigator =
+            rememberInterceptingNavigator(
+              navigator = navigator,
+              interceptors = interceptors,
+              eventListeners = eventListeners,
+              notifier = notifier,
+            )
+          ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
+        }
       }
     }
   }

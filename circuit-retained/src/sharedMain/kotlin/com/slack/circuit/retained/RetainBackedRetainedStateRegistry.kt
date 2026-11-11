@@ -1,5 +1,7 @@
 // Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("DEPRECATION")
+
 package com.slack.circuit.retained
 
 import androidx.annotation.VisibleForTesting

@@ -18,9 +18,7 @@ import com.slack.circuit.internal.test.TestContentTags.TAG_POP
 import com.slack.circuit.internal.test.TestCountPresenter
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.internal.test.createTestCircuit
-import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 
@@ -35,16 +33,6 @@ class NavigableCircuitFirstPartyRetainDeviceTest {
 
   private val circuit =
     createTestCircuit(rememberType = TestCountPresenter.RememberType.FirstPartyRetain)
-  private val previousUseFirstParty = CircuitRetainedSettings.useFirstParty
-
-  init {
-    CircuitRetainedSettings.useFirstParty = true
-  }
-
-  @After
-  fun tearDown() {
-    CircuitRetainedSettings.useFirstParty = previousUseFirstParty
-  }
 
   @Test
   fun retainedValuesFollowRecordLifetimeAcrossRecreation() {

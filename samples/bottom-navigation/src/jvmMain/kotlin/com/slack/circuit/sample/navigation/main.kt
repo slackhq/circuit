@@ -13,10 +13,12 @@ import androidx.compose.ui.window.application
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.navstack.rememberSaveableNavStack
 import com.slack.circuit.foundation.rememberCircuitNavigator
+import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
+import com.slack.circuit.retained.RetainedValuesStoreProvider
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalCircuitRetainedApi::class, ExperimentalSharedTransitionApi::class)
 fun main() {
 
   val tabs = TabScreen.all
@@ -24,17 +26,19 @@ fun main() {
   val circuit = buildCircuitForTabs(tabs, circuitSaver)
   application {
     Window(title = "Navigation Sample", onCloseRequest = ::exitApplication) {
-      MaterialTheme {
-        CircuitCompositionLocals(circuit) {
-          val navStack = rememberSaveableNavStack(tabs.first())
-          val navigator = rememberCircuitNavigator(navStack) { exitApplication() }
-          // CircuitX Navigation
-          val uriHandler = LocalUriHandler.current
-          val interceptors = remember { listOf(InfoScreenInterceptor(uriHandler)) }
-          val interceptingNavigator =
-            rememberInterceptingNavigator(navigator = navigator, interceptors = interceptors)
-          SharedElementTransitionLayout {
-            ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
+      RetainedValuesStoreProvider {
+        MaterialTheme {
+          CircuitCompositionLocals(circuit) {
+            val navStack = rememberSaveableNavStack(tabs.first())
+            val navigator = rememberCircuitNavigator(navStack) { exitApplication() }
+            // CircuitX Navigation
+            val uriHandler = LocalUriHandler.current
+            val interceptors = remember { listOf(InfoScreenInterceptor(uriHandler)) }
+            val interceptingNavigator =
+              rememberInterceptingNavigator(navigator = navigator, interceptors = interceptors)
+            SharedElementTransitionLayout {
+              ContentScaffold(navStack, interceptingNavigator, tabs, Modifier.fillMaxSize())
+            }
           }
         }
       }

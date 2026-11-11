@@ -1,5 +1,7 @@
 // Copyright (C) 2026 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("DEPRECATION")
+
 package com.slack.circuit.retained.android
 
 import androidx.activity.ComponentActivity
@@ -14,7 +16,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.test.core.app.ActivityScenario
 import com.google.common.truth.Truth.assertThat
-import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.retained.LocalRetainedStateRegistry
 import com.slack.circuit.retained.lifecycleRetainedStateRegistry
@@ -23,15 +24,13 @@ import com.slack.circuit.retained.rememberRetainedSaveable
 import com.slack.circuit.retained.retain
 import com.slack.circuit.retained.retainSaveable
 import leakcanary.DetectLeaksAfterTestSuccess.Companion.detectLeaksAfterTestSuccessWrapping
-import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 
 /**
- * Exercises [lifecycleRetainedStateRegistry] with [CircuitRetainedSettings.useFirstParty] enabled,
- * where retention is delegated to Compose's first-party retain store instead of a Circuit-managed
- * ViewModel.
+ * Exercises [lifecycleRetainedStateRegistry], where retention is delegated to Compose's first-party
+ * retain store instead of a Circuit-managed ViewModel.
  */
 @OptIn(ExperimentalCircuitRetainedApi::class)
 class FirstPartyBackedRegistryTest {
@@ -48,16 +47,6 @@ class FirstPartyBackedRegistryTest {
 
   private val retainedValues = mutableMapOf<String, Any>()
   private var showContent by mutableStateOf(true)
-  private val previousUseFirstParty = CircuitRetainedSettings.useFirstParty
-
-  init {
-    CircuitRetainedSettings.useFirstParty = true
-  }
-
-  @After
-  fun tearDown() {
-    CircuitRetainedSettings.useFirstParty = previousUseFirstParty
-  }
 
   @Composable
   private fun RetainingContent() {
@@ -191,12 +180,6 @@ class FirstPartyBackedRegistryTest {
     runRetainedSaveableRecreation(useRetainSaveable = false)
   }
 
-  /** Control: same content under the ViewModel backing. */
-  @Test
-  fun rememberRetainedSaveableSurvivesRecreationWithViewModelBacking() {
-    CircuitRetainedSettings.useFirstParty = false
-    runRetainedSaveableRecreation(useRetainSaveable = false)
-  }
 
   @Test
   fun retainSaveableSurvivesRecreation() {

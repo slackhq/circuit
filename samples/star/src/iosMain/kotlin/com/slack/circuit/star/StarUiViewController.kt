@@ -4,7 +4,6 @@ package com.slack.circuit.star
 
 import androidx.compose.ui.window.ComposeUIViewController
 import com.slack.circuit.foundation.CircuitCompositionLocals
-import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.retained.RetainedValuesStoreProvider
 import com.slack.circuit.star.di.AppGraph
@@ -12,7 +11,6 @@ import platform.UIKit.UIViewController
 
 @OptIn(ExperimentalCircuitRetainedApi::class)
 fun makeUiViewController(graph: AppGraph): UIViewController {
-  CircuitRetainedSettings.useFirstParty = true
   return ComposeUIViewController {
     RetainedValuesStoreProvider {
       CircuitCompositionLocals(graph.circuit) { StarCircuitApp() }

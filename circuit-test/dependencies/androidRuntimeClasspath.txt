@@ -84,6 +84,10 @@ app.cash.molecule:molecule-runtime
 app.cash.turbine:turbine-jvm
 app.cash.turbine:turbine
 com.google.guava:listenablefuture
+me.stagg.retainx:retainx-android
+me.stagg.retainx:retainx-store-android
+me.stagg.retainx:retainx-store
+me.stagg.retainx:retainx
 org.jetbrains.androidx.lifecycle:lifecycle-common-jvm
 org.jetbrains.androidx.lifecycle:lifecycle-common
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-android

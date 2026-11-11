@@ -100,7 +100,7 @@ public object ViewModelNavStackRecordLocalProvider : NavStackRecordLocalProvider
         factory = BackStackRecordLocalProviderViewModel.Factory,
       )
     val viewModelStore = containerViewModel.viewModelStoreForKey(record.key)
-    // This will retain the observer in NavigableCircuitContent using its outerRegistry.
+    // Retained in the retained values store enclosing NavigableCircuitContent.
     val observer =
       retain(record, viewModelStore) {
         NestedRememberObserver {

@@ -12,9 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.retain.LocalRetainedValuesStore
 import androidx.compose.runtime.retain.ManagedRetainedValuesStore
 import androidx.compose.runtime.retain.RetainedValuesStore
-import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
-import com.slack.circuit.retained.NoOpRetainedStateRegistry
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.presenter.presenterOf
 import com.slack.circuit.runtime.screen.CircuitSaver
@@ -97,8 +95,6 @@ class RetainedContentPresenceIndicatorTest {
 
   @Test
   fun cancelledRecomposer_pausableState_doesNotThrowCancellationException() = runTest {
-    val previousUseFirstParty = CircuitRetainedSettings.useFirstParty
-    CircuitRetainedSettings.useFirstParty = true
     val clock = BroadcastFrameClock()
     val recomposer = Recomposer(coroutineContext + clock)
     val job = launch(clock) { recomposer.runRecomposeAndApplyChanges() }
@@ -116,7 +112,6 @@ class RetainedContentPresenceIndicatorTest {
         }
       }
     } finally {
-      CircuitRetainedSettings.useFirstParty = previousUseFirstParty
       composition.dispose()
       rootStore.dispose()
     }
@@ -124,8 +119,6 @@ class RetainedContentPresenceIndicatorTest {
 
   @Test
   fun cancelledRecomposer_circuitContent_doesNotThrowCancellationException() = runTest {
-    val previousUseFirstParty = CircuitRetainedSettings.useFirstParty
-    CircuitRetainedSettings.useFirstParty = true
     val clock = BroadcastFrameClock()
     val recomposer = Recomposer(coroutineContext + clock)
     val job = launch(clock) { recomposer.runRecomposeAndApplyChanges() }
@@ -143,17 +136,12 @@ class RetainedContentPresenceIndicatorTest {
     try {
       composition.setContent {
         CompositionLocalProvider(LocalRetainedValuesStore provides rootStore) {
-          CircuitCompositionLocals(
-            circuit = circuit,
-            circuitSaver = CircuitSaver.NoOp,
-            retainedStateRegistry = NoOpRetainedStateRegistry,
-          ) {
+          CircuitCompositionLocals(circuit = circuit, circuitSaver = CircuitSaver.NoOp) {
             CircuitContent(screen = TestScreen)
           }
         }
       }
     } finally {
-      CircuitRetainedSettings.useFirstParty = previousUseFirstParty
       composition.dispose()
       rootStore.dispose()
     }

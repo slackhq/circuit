@@ -7,9 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.setValue
 import com.slack.circuit.codegen.annotations.CircuitInject
-import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.screen.PopResult
 import com.slack.circuit.runtime.screen.Screen
@@ -33,7 +33,7 @@ fun InboxPresenter(
   inboxListFactory: InboxListPresenter.Factory,
   emailDetailFactory: EmailDetailPresenter.Factory,
 ): InboxScreen.State {
-  var selectedEmailId by rememberRetained { mutableStateOf<String?>(null) }
+  var selectedEmailId by retain { mutableStateOf<String?>(null) }
 
   val navigator = remember { SelectionNavigator { emailId -> selectedEmailId = emailId } }
 

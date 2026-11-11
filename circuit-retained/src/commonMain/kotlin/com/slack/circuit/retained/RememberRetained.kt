@@ -75,7 +75,7 @@ import androidx.compose.runtime.saveable.autoSaver
 @Composable
 @Deprecated(
   "Use first-party retain.",
-  ReplaceWith("retain(keys = inputs, calculation = init)", "androidx.compose.runtime.retain.retain"),
+  ReplaceWith("retain(*inputs, calculation = init)", "androidx.compose.runtime.retain.retain"),
 )
 @NonRestartableComposable
 public fun <T : Any> rememberRetained(vararg inputs: Any?, init: () -> T): T =
@@ -91,13 +91,13 @@ public fun <T : Any> rememberRetained(vararg inputs: Any?, init: () -> T): T =
  * A null or empty [key] uses the same positional identity as the unkeyed overload.
  */
 @Deprecated(
-  "Use retainx retain for explicit keys.",
+  "Use first-party retain, or retain with an explicit key.",
   ReplaceWith(
     "key.let { retainedKey -> " +
-      "if (retainedKey.isNullOrEmpty()) retain(*inputs, init = init) " +
+      "if (retainedKey.isNullOrEmpty()) retain(*inputs, calculation = init) " +
       "else retain(*inputs, key = retainedKey, calculation = init) }",
-    "androidx.compose.runtime.retain",
-    "me.stagg.retainx.retain",
+    "androidx.compose.runtime.retain.retain",
+    "com.slack.circuit.retained.retain",
   ),
 )
 @Composable

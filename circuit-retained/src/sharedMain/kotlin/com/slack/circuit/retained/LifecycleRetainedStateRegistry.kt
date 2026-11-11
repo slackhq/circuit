@@ -1,5 +1,7 @@
 // Copyright (C) 2022 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("DEPRECATION")
+
 package com.slack.circuit.retained
 
 import androidx.annotation.VisibleForTesting
@@ -17,8 +19,7 @@ import kotlin.reflect.KClass
 
 /**
  * Shared implementation for [lifecycleRetainedStateRegistry] on targets that support the
- * ViewModel-backed registry. Branches to the first-party retain backing when
- * [CircuitRetainedSettings.useFirstParty] is set.
+ * ViewModel-backed registry, backed by first-party retain.
  */
 @OptIn(ExperimentalCircuitRetainedApi::class)
 @Composable

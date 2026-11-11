@@ -39,7 +39,6 @@ import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.CircuitCompositionLocals
 import com.slack.circuit.foundation.NavigableCircuitContent
 import com.slack.circuit.foundation.rememberCircuitNavigator
-import com.slack.circuit.retained.CircuitRetainedSettings
 import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
 import com.slack.circuit.retained.RetainedValuesStoreProvider
 import com.slack.circuit.runtime.CircuitContext
@@ -146,7 +145,6 @@ private fun CounterPreviewNegative() {
 
 @OptIn(ExperimentalCircuitRetainedApi::class)
 fun main() {
-  CircuitRetainedSettings.useFirstParty = true
   application {
     Window(
       title = "Counter Circuit (Desktop)",

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
@@ -17,8 +16,6 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.unit.dp
-import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.RetainedStateRegistry
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
@@ -33,7 +30,6 @@ private const val TAG_COLUMN = "column"
 class ImpressionEffectScrollTest {
 
   @get:Rule val composeTestRule = createComposeRule()
-  private val registry = RetainedStateRegistry()
 
   @Test
   fun scrollImpressionEffect() {
@@ -90,8 +86,6 @@ class ImpressionEffectScrollTest {
     }
 
   private fun ComposeContentTestRule.setRetainedContent(content: @Composable () -> Unit = {}) {
-    setContent {
-      CompositionLocalProvider(LocalRetainedStateRegistry provides registry) { content() }
-    }
+    setContent(content)
   }
 }

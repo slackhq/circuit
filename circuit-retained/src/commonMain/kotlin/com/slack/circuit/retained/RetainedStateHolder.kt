@@ -1,5 +1,7 @@
 // Copyright (C) 2024 Slack Technologies, LLC
 // SPDX-License-Identifier: Apache-2.0
+@file:Suppress("DEPRECATION")
+
 package com.slack.circuit.retained
 
 import androidx.compose.runtime.Composable
@@ -14,6 +16,7 @@ import androidx.compose.runtime.retain.retain
  * values. Each [RetainedStateProvider] maintains a unique retainedStateRegistry for each key,
  * allowing it to save and restore states.
  */
+@Deprecated(RETAINED_STATE_HOLDER_DEPRECATION)
 public interface RetainedStateHolder {
 
   /**
@@ -30,6 +33,7 @@ public interface RetainedStateHolder {
 
 /** Creates and remembers the instance of [RetainedStateHolder]. */
 @Composable
+@Deprecated(RETAINED_STATE_HOLDER_DEPRECATION)
 public fun rememberRetainedStateHolder(
   canRetainChecker: CanRetainChecker = CanRetainChecker.Always
 ): RetainedStateHolder {

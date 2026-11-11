@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.retain.ForgetfulRetainedValuesStore
+import androidx.compose.runtime.retain.LocalRetainedValuesStore
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
@@ -16,8 +18,9 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import com.slack.circuit.retained.LocalRetainedStateRegistry
-import com.slack.circuit.retained.RetainedStateRegistry
+import com.slack.circuit.retained.ExperimentalCircuitRetainedApi
+import com.slack.circuit.retained.RetainedValuesStoreOwner
+import com.slack.circuit.retained.RetainedValuesStoreProvider
 import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.test.FakeNavigator
 import kotlin.test.assertEquals
@@ -34,13 +37,14 @@ private const val TAG_GOTO = "goto"
 private const val TAG_POP = "pop"
 private const val TAG_RESET = "reset"
 
+@OptIn(ExperimentalCircuitRetainedApi::class)
 @RunWith(RobolectricTestRunner::class)
 class RememberImpressionNavigatorTest {
 
   @get:Rule val composeTestRule = createComposeRule()
 
   private val fakeNavigator = FakeNavigator(TestRootScreen)
-  private val registry = RetainedStateRegistry()
+  private val storeOwner = RetainedValuesStoreOwner()
   private val composed = MutableStateFlow(true)
 
   @Test
@@ -162,17 +166,17 @@ class RememberImpressionNavigatorTest {
 
   private fun ComposeContentTestRule.setRetainedContent(content: @Composable () -> Unit) {
     setContent {
-      CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
+      // Clear the host's store so our explicit owner controls retention, as on other platforms.
+      CompositionLocalProvider(LocalRetainedValuesStore provides ForgetfulRetainedValuesStore) {
         val isCompose by composed.collectAsState(initial = true)
         if (isCompose) {
-          content()
+          RetainedValuesStoreProvider(storeOwner, content)
         }
       }
     }
   }
 
   private fun ComposeContentTestRule.recreate() {
-    registry.saveAll()
     composed.value = false
     waitForIdle()
     composed.value = true

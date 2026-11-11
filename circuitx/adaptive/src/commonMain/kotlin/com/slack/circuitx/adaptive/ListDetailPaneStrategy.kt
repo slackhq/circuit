@@ -34,6 +34,25 @@ public interface PaneScreen : Screen {
   public val paneStyle: PaneStyle
 }
 
+/** The default pane sizes of [ListDetailPaneStrategy]. */
+@ExperimentalCircuitAdaptiveApi
+public object ListDetailPaneDefaults {
+  /** The left pane's share of the width for [PaneStyle.LIST_DETAIL]. */
+  public const val ListPaneFraction: Float = 0.4f
+
+  /** Limits of the left pane's width for [PaneStyle.LIST_DETAIL]. */
+  public val ListPaneWidthRange: ClosedRange<Dp> = 280.dp..400.dp
+
+  /** The right pane's share of the width for [PaneStyle.SUPPORTING]. */
+  public const val SupportingPaneFraction: Float = 0.33f
+
+  /** Limits of the right pane's width for [PaneStyle.SUPPORTING]. */
+  public val SupportingPaneWidthRange: ClosedRange<Dp> = 320.dp..400.dp
+
+  /** The narrowest pane to show on either side of a hinge. */
+  public val MinHingePaneWidth: Dp = 280.dp
+}
+
 /**
  * Shows a screen beside the screens that open from it, on windows at least [minWidthDp] wide and
  * [minHeightDp] tall. The defaults are Material's expanded width and medium height, which most
@@ -52,6 +71,9 @@ public interface PaneScreen : Screen {
  * @param paneStyle Returns the style of a screen, or null when it has none.
  * @param listPaneFraction The left pane's share of the width for [PaneStyle.LIST_DETAIL].
  * @param listPaneWidthRange Limits of the left pane's width for [PaneStyle.LIST_DETAIL].
+ * @param listPaneChromeWidth Width of fixed chrome that the left pane draws beside its list, like a
+ *   navigation rail. [listPaneFraction] and [listPaneWidthRange] apply to the width that is left,
+ *   and the left pane gets the result plus this width.
  * @param supportingPaneFraction The right pane's share of the width for [PaneStyle.SUPPORTING].
  * @param supportingPaneWidthRange Limits of the right pane's width for [PaneStyle.SUPPORTING].
  * @param placeholder Draws the right pane while no record is open there, or null to give the left
@@ -62,11 +84,13 @@ public class ListDetailPaneStrategy(
   private val paneStyle: (Screen) -> PaneStyle? = { (it as? PaneScreen)?.paneStyle },
   private val minWidthDp: Int = WIDTH_DP_EXPANDED_LOWER_BOUND,
   private val minHeightDp: Int = HEIGHT_DP_MEDIUM_LOWER_BOUND,
-  private val listPaneFraction: Float = 0.4f,
-  private val listPaneWidthRange: ClosedRange<Dp> = 280.dp..400.dp,
-  private val supportingPaneFraction: Float = 0.33f,
-  private val supportingPaneWidthRange: ClosedRange<Dp> = 320.dp..400.dp,
-  private val minHingePaneWidth: Dp = 280.dp,
+  private val listPaneFraction: Float = ListDetailPaneDefaults.ListPaneFraction,
+  private val listPaneWidthRange: ClosedRange<Dp> = ListDetailPaneDefaults.ListPaneWidthRange,
+  private val listPaneChromeWidth: Dp = 0.dp,
+  private val supportingPaneFraction: Float = ListDetailPaneDefaults.SupportingPaneFraction,
+  private val supportingPaneWidthRange: ClosedRange<Dp> =
+    ListDetailPaneDefaults.SupportingPaneWidthRange,
+  private val minHingePaneWidth: Dp = ListDetailPaneDefaults.MinHingePaneWidth,
   private val placeholder: (@Composable () -> Unit)? = null,
 ) : PaneStrategy {
 
@@ -105,10 +129,10 @@ public class ListDetailPaneStrategy(
         }
         // The detail gets most of the width, so a grid beside the list keeps room for its columns.
         else -> {
-          (width * listPaneFraction).coerceIn(
+          ((width - listPaneChromeWidth) * listPaneFraction).coerceIn(
             listPaneWidthRange.start,
             listPaneWidthRange.endInclusive,
-          )
+          ) + listPaneChromeWidth
         }
       }
     return PaneScene(

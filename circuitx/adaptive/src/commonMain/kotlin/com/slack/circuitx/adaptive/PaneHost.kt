@@ -3,6 +3,7 @@
 package com.slack.circuitx.adaptive
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
@@ -30,11 +31,59 @@ public enum class PaneRole {
 }
 
 /**
- * State that a [PaneNavDecoration] shares with the screens it shows and with
- * [PaneReplaceInterceptor].
+ * The layout that a [PaneNavDecoration] chose for the composition that reads it.
  *
- * The decoration writes the layout it chose after each composition. Screens read it from
- * [LocalPaneHost], and the primary screen can set [placeholder] to reserve the right pane.
+ * Screens read it from [LocalPaneState] to draw for the layout they are in, like a tab host that
+ * shows a navigation rail while the window is split. The value is ready in the first frame and in
+ * the same frame as a window resize.
+ */
+@ExperimentalCircuitAdaptiveApi
+@Immutable
+public class PaneState(
+  /** The scene of this composition, or null while one record fills the window. */
+  public val scene: PaneScene?,
+  /** The screen at the bottom of the right pane. Lists use it to highlight the open item. */
+  public val detailRoot: Screen?,
+) {
+  /** The window shows two panes. */
+  public val isSplit: Boolean
+    get() = scene != null
+
+  override fun equals(other: Any?): Boolean {
+    return other is PaneState && scene == other.scene && detailRoot == other.detailRoot
+  }
+
+  override fun hashCode(): Int {
+    return 31 * scene.hashCode() + detailRoot.hashCode()
+  }
+
+  override fun toString(): String {
+    return "PaneState(scene=$scene, detailRoot=$detailRoot)"
+  }
+
+  public companion object {
+    /** One record fills the window. */
+    public val Single: PaneState = PaneState(scene = null, detailRoot = null)
+  }
+}
+
+/**
+ * The [PaneState] of the nearest [PaneNavDecoration]. It is [PaneState.Single] outside one.
+ *
+ * Code outside composition, like a [PaneReplaceInterceptor], reads [PaneHost] for the same values.
+ */
+@ExperimentalCircuitAdaptiveApi
+public val LocalPaneState: ProvidableCompositionLocal<PaneState> = compositionLocalOf {
+  PaneState.Single
+}
+
+/**
+ * State that a [PaneNavDecoration] shares with [PaneReplaceInterceptor] and with the screens it
+ * shows.
+ *
+ * The decoration writes the layout it chose after each composition, so [scene] and [detailRoot] are
+ * one composition behind for a screen that reads them while it composes. Screens read
+ * [LocalPaneState] for those. The primary screen sets [placeholder] here to reserve the right pane.
  */
 @ExperimentalCircuitAdaptiveApi
 @Stable

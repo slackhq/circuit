@@ -70,6 +70,15 @@ record lifecycle, and animation scopes.
 - The panes split at a vertical hinge when both sides have room for a pane.
 - A screen with no style, above the root, fills the window.
 
+`ListDetailPaneDefaults` holds the default pane sizes.
+
+If the left pane draws fixed chrome beside its list, like a navigation rail, pass its width as
+`listPaneChromeWidth`. The strategy then sizes the list from the width that is left.
+
+```kotlin
+ListDetailPaneStrategy(listPaneChromeWidth = 80.dp)
+```
+
 To keep feature modules free of this artifact, pass a lookup in place of the `PaneScreen` marker.
 
 ```kotlin
@@ -113,8 +122,23 @@ host.placeholder = { Text("Select a pet") }
 A screen that switches content, like a tab host, should set `placeholder` in the same event. The
 next frame then lays out at the final widths.
 
-`PaneHost.detailRoot` is the screen at the bottom of the right pane. A list can use it to highlight
-the open item.
+`placeholder` is state. If you set it on each recomposition, set the same lambda instance.
+
+## Pane state
+
+A screen reads `LocalPaneState` to learn the layout of the window.
+
+- `isSplit` is true while the window shows two panes. A tab host can use it to show a navigation
+  rail.
+- `detailRoot` is the screen at the bottom of the right pane. A list can use it to highlight the
+  open item.
+
+```kotlin
+val showsRail = LocalPaneState.current.isSplit
+```
+
+`PaneHost` has the same values for code outside composition. It gets them after each composition, so
+a screen that reads them there is one frame late.
 
 ## Replacing the detail
 

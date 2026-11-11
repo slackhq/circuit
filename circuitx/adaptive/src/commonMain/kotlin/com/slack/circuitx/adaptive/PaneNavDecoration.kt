@@ -97,9 +97,12 @@ public class PaneNavDecoration(
           }
         }
       val isSplit = panes != null
+      // Screens read this while they compose, so it carries the layout of this composition.
+      val paneState =
+        remember(panes) { PaneState(panes?.scene, panes?.abovePrimary?.lastOrNull()?.screen) }
       SideEffect {
-        host.scene = panes?.scene
-        host.detailRoot = panes?.abovePrimary?.lastOrNull()?.screen
+        host.scene = paneState.scene
+        host.detailRoot = paneState.detailRoot
         if (panes != null) {
           host.primaryDepth = visible.size - panes.abovePrimary.size
         }
@@ -125,7 +128,7 @@ public class PaneNavDecoration(
       // The hinge to split at. A scene without a width and without a hinge splits in the middle.
       val hinge = paneWindow.separatingHinges.firstOrNull()
 
-      CompositionLocalProvider(LocalPaneHost provides host) {
+      CompositionLocalProvider(LocalPaneHost provides host, LocalPaneState provides paneState) {
         Layout(
           modifier = Modifier.fillMaxSize(),
           content = {

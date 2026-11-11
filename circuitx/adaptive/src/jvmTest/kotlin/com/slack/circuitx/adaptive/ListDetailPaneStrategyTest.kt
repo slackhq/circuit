@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.adaptive
 
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -72,6 +73,18 @@ class ListDetailPaneStrategyTest {
     // 851 * 0.4
     assertThat(scene(foldOpen, Detail(1), Home)!!.primaryWidth).isEqualTo(851.dp * 0.4f)
     assertThat(scene(DpSize(2000.dp, 900.dp), Detail(1), Home)!!.primaryWidth).isEqualTo(400.dp)
+  }
+
+  @Test
+  fun listPaneChromeWidthAddsToTheListWidth() {
+    val withRail = ListDetailPaneStrategy(listPaneChromeWidth = 80.dp)
+    fun width(size: DpSize): Dp? {
+      return withRail.scene(PaneWindow(size), stack(Detail(1), Home))!!.primaryWidth
+    }
+    // (851 - 80) * 0.4, plus the rail
+    assertThat(width(foldOpen)).isEqualTo((851.dp - 80.dp) * 0.4f + 80.dp)
+    // The list reaches its 400dp limit, plus the rail
+    assertThat(width(DpSize(2000.dp, 900.dp))).isEqualTo(480.dp)
   }
 
   @Test

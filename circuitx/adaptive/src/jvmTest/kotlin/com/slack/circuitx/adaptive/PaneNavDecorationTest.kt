@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -98,6 +99,8 @@ class PaneNavDecorationTest {
   private var windowSize by mutableStateOf(phone)
   private var hinge: DpRect? = null
   private val host = PaneHost()
+  /** The [PaneState] of each composition of the root screen, oldest first. */
+  private val rootPaneStates = mutableListOf<PaneState>()
   private lateinit var navigator: Navigator
 
   private fun ComposeUiTest.setNavContent(root: Screen) {
@@ -298,6 +301,20 @@ class PaneNavDecorationTest {
     runOnIdle { check(!host.isSplit) }
   }
 
+  @Test
+  fun screensReadTheLayoutOfTheirOwnComposition() = runComposeUiTest {
+    windowSize = tablet
+    setNavContent(Root)
+    runOnIdle {
+      // The host gets the layout after a composition, so a screen that read it there would
+      // compose once with the single layout.
+      check(rootPaneStates.isNotEmpty())
+      check(rootPaneStates.all { it.isSplit })
+      navigator.goTo(Detail(1))
+    }
+    runOnIdle { check(rootPaneStates.last().detailRoot == Detail(1)) }
+  }
+
   @Composable
   private fun TestUi(screen: Screen, modifier: Modifier) {
     val tag =
@@ -309,6 +326,10 @@ class PaneNavDecorationTest {
         is Stacked -> "stacked${screen.id}"
         else -> error("Unexpected screen $screen")
       }
+    if (tag == "root") {
+      val paneState = LocalPaneState.current
+      SideEffect { rootPaneStates += paneState }
+    }
     var taps by rememberSaveable { mutableIntStateOf(0) }
     val role = LocalPaneRole.current
     val active = LocalRecordLifecycle.current.isActive

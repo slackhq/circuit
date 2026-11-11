@@ -7,11 +7,21 @@ public final class com/slack/circuitx/adaptive/ComposableSingletons$PaneNavDecor
 public abstract interface annotation class com/slack/circuitx/adaptive/ExperimentalCircuitAdaptiveApi : java/lang/annotation/Annotation {
 }
 
+public final class com/slack/circuitx/adaptive/ListDetailPaneDefaults {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/slack/circuitx/adaptive/ListDetailPaneDefaults;
+	public static final field ListPaneFraction F
+	public static final field SupportingPaneFraction F
+	public final fun getListPaneWidthRange ()Lkotlin/ranges/ClosedRange;
+	public final fun getMinHingePaneWidth-D9Ej5fM ()F
+	public final fun getSupportingPaneWidthRange ()Lkotlin/ranges/ClosedRange;
+}
+
 public final class com/slack/circuitx/adaptive/ListDetailPaneStrategy : com/slack/circuitx/adaptive/PaneStrategy {
 	public static final field $stable I
 	public fun <init> ()V
-	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;IIFLkotlin/ranges/ClosedRange;FLkotlin/ranges/ClosedRange;FLkotlin/jvm/functions/Function2;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;IIFLkotlin/ranges/ClosedRange;FLkotlin/ranges/ClosedRange;FLkotlin/jvm/functions/Function2;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;IIFLkotlin/ranges/ClosedRange;FFLkotlin/ranges/ClosedRange;FLkotlin/jvm/functions/Function2;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;IIFLkotlin/ranges/ClosedRange;FFLkotlin/ranges/ClosedRange;FLkotlin/jvm/functions/Function2;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun scene (Lcom/slack/circuitx/adaptive/PaneWindow;Lcom/slack/circuit/runtime/navigation/NavStackList;)Lcom/slack/circuitx/adaptive/PaneScene;
 }
 
@@ -28,6 +38,7 @@ public final class com/slack/circuitx/adaptive/PaneHost {
 public final class com/slack/circuitx/adaptive/PaneHostKt {
 	public static final fun getLocalPaneHost ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 	public static final fun getLocalPaneRole ()Landroidx/compose/runtime/ProvidableCompositionLocal;
+	public static final fun getLocalPaneState ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
 public final class com/slack/circuitx/adaptive/PaneNavDecoration : com/slack/circuit/foundation/NavDecoration {
@@ -67,6 +78,22 @@ public final class com/slack/circuitx/adaptive/PaneScene {
 
 public abstract interface class com/slack/circuitx/adaptive/PaneScreen : com/slack/circuit/runtime/screen/Screen {
 	public abstract fun getPaneStyle ()Lcom/slack/circuitx/adaptive/PaneStyle;
+}
+
+public final class com/slack/circuitx/adaptive/PaneState {
+	public static final field $stable I
+	public static final field Companion Lcom/slack/circuitx/adaptive/PaneState$Companion;
+	public fun <init> (Lcom/slack/circuitx/adaptive/PaneScene;Lcom/slack/circuit/runtime/screen/Screen;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDetailRoot ()Lcom/slack/circuit/runtime/screen/Screen;
+	public final fun getScene ()Lcom/slack/circuitx/adaptive/PaneScene;
+	public fun hashCode ()I
+	public final fun isSplit ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuitx/adaptive/PaneState$Companion {
+	public final fun getSingle ()Lcom/slack/circuitx/adaptive/PaneState;
 }
 
 public abstract interface class com/slack/circuitx/adaptive/PaneStrategy {

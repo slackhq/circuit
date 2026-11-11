@@ -20,7 +20,6 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -394,7 +393,7 @@ private fun PetListGrid(
     rememberPullRefreshState(refreshing = isRefreshing, onRefresh = { eventSink(Refresh) })
 
   val focusRequester = remember { FocusRequester() }
-  BoxWithConstraints(
+  Box(
     modifier =
       modifier
         .pullRefresh(pullRefreshState)
@@ -413,21 +412,12 @@ private fun PetListGrid(
     if (PlatformUtils.platform == Platform.Jvm) {
       LaunchedEffect(Unit) { focusRequester.requestFocus() }
     }
-    // The grid can be narrower than the window, like when it is the list pane beside a pet's
-    // details, so the column count comes from the grid's own width. The breakpoints match the
-    // medium and expanded window width classes.
-    @Suppress("MagicNumber")
-    val columnSpan =
-      when {
-        maxWidth >= 840.dp -> 4
-        maxWidth >= 600.dp -> 3
-        else -> 2
-      }
-
-    val spacing = if (columnSpan >= 4) 32.dp else 16.dp
+    val spacing = 16.dp
     @Suppress("MagicNumber")
     LazyVerticalStaggeredGrid(
-      columns = StaggeredGridCells.Fixed(columnSpan),
+      // The grid can be narrower than the window, like when it is the list pane beside a pet's
+      // details. It fits as many columns of at least this width as its own width allows.
+      columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
       modifier = Modifier.fillMaxSize().testTag(GRID_TAG),
       verticalItemSpacing = spacing,
       horizontalArrangement = spacedBy(spacing),

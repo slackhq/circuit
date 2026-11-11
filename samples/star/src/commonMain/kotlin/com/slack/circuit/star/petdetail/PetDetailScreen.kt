@@ -91,6 +91,9 @@ import com.slack.circuit.star.transition.PetCardBoundsKey
 import com.slack.circuit.star.transition.PetNameBoundsKey
 import com.slack.circuit.star.ui.thenIf
 import com.slack.circuit.star.ui.thenIfNotNull
+import com.slack.circuitx.adaptive.ExperimentalCircuitAdaptiveApi
+import com.slack.circuitx.adaptive.LocalPaneRole
+import com.slack.circuitx.adaptive.PaneRole
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -286,8 +289,22 @@ private fun TopBar(state: State) {
   if (state !is AnimalState) return
   CenterAlignedTopAppBar(
     title = { PetName(state, style = MaterialTheme.typography.titleLarge) },
-    navigationIcon = { BackPressNavIcon() },
+    navigationIcon = {
+      if (showsBackIcon()) {
+        BackPressNavIcon()
+      }
+    },
   )
+}
+
+/**
+ * Whether this screen offers a way back. Beside the pet list it does not, because the list stays on
+ * screen and another pick replaces this pet.
+ */
+@OptIn(ExperimentalCircuitAdaptiveApi::class)
+@Composable
+private fun showsBackIcon(): Boolean {
+  return LocalPaneRole.current != PaneRole.DETAIL_ROOT
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalCircuitSharedElementsApi::class)
@@ -379,13 +396,15 @@ private fun ShowAnimalCompactLandscape(
       contentAlignment = Alignment.Center,
     ) {
       carouselContent(state)
-      Surface(
-        modifier = Modifier.align(Alignment.TopStart).padding(4.dp).testTag(COMPACT_CLOSE_TAG),
-        shape = CircleShape,
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-        shadowElevation = 2.dp,
-      ) {
-        BackPressNavIcon()
+      if (showsBackIcon()) {
+        Surface(
+          modifier = Modifier.align(Alignment.TopStart).padding(4.dp).testTag(COMPACT_CLOSE_TAG),
+          shape = CircleShape,
+          color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+          shadowElevation = 2.dp,
+        ) {
+          BackPressNavIcon()
+        }
       }
     }
     Column(

@@ -21,6 +21,8 @@ class PaneReplaceInterceptorTest {
 
   private data class Stacked(val id: Int) : Screen
 
+  private data class Other(val id: Int) : Screen
+
   private val host = PaneHost()
 
   /**
@@ -30,13 +32,30 @@ class PaneReplaceInterceptorTest {
     vararg screens: Screen,
     primaryDepth: Int = 1,
     split: Boolean = true,
+    interceptor: PaneReplaceInterceptor = PaneReplaceInterceptor(host),
   ): Navigator {
     if (split) {
       host.scene = PaneScene(primaryKey = "primary", split = PaneSplit.Fixed(300.dp))
       host.primaryDepth = primaryDepth
     }
     val delegate = FakeNavigator(screens.first(), *screens.drop(1).toTypedArray())
-    return InterceptingNavigator(delegate, listOf(PaneReplaceInterceptor(host)))
+    return InterceptingNavigator(delegate, listOf(interceptor))
+  }
+
+  @Test
+  fun customRuleReplacesAcrossTypes() {
+    val anyDetail = PaneReplaceInterceptor(host) { _, incoming -> incoming !is Stacked }
+    val navigator = navigator(Home, Detail(1), Stacked(1), interceptor = anyDetail)
+    assertThat(navigator.goTo(Other(1))).isTrue()
+    assertThat(navigator.peekBackStack()).containsExactly(Other(1), Home)
+  }
+
+  @Test
+  fun customRuleCanStackScreensOfOneType() {
+    val neverReplace = PaneReplaceInterceptor(host) { _, _ -> false }
+    val navigator = navigator(Home, Detail(1), interceptor = neverReplace)
+    assertThat(navigator.goTo(Detail(2))).isTrue()
+    assertThat(navigator.peekBackStack()).containsExactly(Detail(2), Detail(1), Home)
   }
 
   @Test

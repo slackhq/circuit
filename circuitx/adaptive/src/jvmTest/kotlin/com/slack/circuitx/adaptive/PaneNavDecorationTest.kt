@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -22,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -38,6 +40,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
@@ -115,6 +118,7 @@ class PaneNavDecorationTest {
   private var hinge: DpRect? = null
   /** Width of app chrome before the decoration, like a navigation rail. */
   private var leadingWidth by mutableStateOf(0.dp)
+  private var layoutDirection = LayoutDirection.Ltr
   /** Overrides how many panes fit, because the test window is too narrow for three by default. */
   private var maxPanes: Int? = null
   private val host = PaneHost()
@@ -128,6 +132,15 @@ class PaneNavDecorationTest {
       host.placeholder = { BasicText("Pick one") }
     }
     setContent {
+      CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
+        NavContent(root)
+      }
+    }
+  }
+
+  @Composable
+  private fun NavContent(root: Screen) {
+    run {
       CircuitCompositionLocals(circuit) {
         // Apps wrap navigation in this, which adds a lookahead pass to every layout
         SharedElementTransitionLayout {
@@ -365,14 +378,75 @@ class PaneNavDecorationTest {
     windowSize = tablet
     setNavContent(Root)
     runOnIdle {
-      check(host.isSplit)
+      // The root has the full width, so the window shows one pane of a scene
+      check(host.scene != null)
+      check(!host.isSplit)
+      check(host.paneCount == 1)
       check(host.detailRoot == null)
       navigator.goTo(Detail(1))
     }
-    runOnIdle { check(host.detailRoot == Detail(1)) }
+    runOnIdle {
+      check(host.isSplit)
+      check(host.paneCount == 2)
+      check(host.detailRoot == Detail(1))
+    }
 
     windowSize = phone
-    runOnIdle { check(!host.isSplit) }
+    runOnIdle {
+      check(!host.isSplit)
+      check(host.scene == null)
+    }
+  }
+
+  @Test
+  fun hostCanTurnOffThePlaceholderOfTheStrategy() = runComposeUiTest {
+    windowSize = tablet
+    strategy = ListDetailPaneStrategy(placeholder = { BasicText("Pick one") })
+    setNavContent(Root)
+    onNodeWithText("Pick one").assertExists()
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tabletListPaneWidth)
+
+    runOnIdle { host.placeholder = PaneHost.NoPlaceholder }
+    onAllNodesWithText("Pick one").assertCountEquals(0)
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tablet.width)
+  }
+
+  @Test
+  fun supportingPanelGetsItsFullWidth() = runComposeUiTest {
+    windowSize = tablet
+    setNavContent(Root)
+    runOnIdle { navigator.goTo(Supporting(1)) }
+
+    onNodeWithTag("supporting1-container").assertWidthIsEqualTo(tabletListPaneWidth)
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth)
+  }
+
+  @Test
+  fun hingeSplitsThePanesInRightToLeftLayouts() = runComposeUiTest {
+    windowSize = tablet
+    layoutDirection = LayoutDirection.Rtl
+    // The chrome is on the right, so the decoration covers 0dp to 920dp of the window
+    leadingWidth = 80.dp
+    hinge = DpRect(480.dp, 0.dp, 500.dp, 700.dp)
+    setNavContent(Root)
+    runOnIdle { navigator.goTo(Detail(1)) }
+
+    // The left pane starts at the right edge and ends at the hinge
+    onNodeWithTag("root-container").assertWidthIsEqualTo(920.dp - 500.dp)
+    onNodeWithTag("detail1-container").assertWidthIsEqualTo(480.dp)
+  }
+
+  @Test
+  fun hingeCorrectionAfterTheFirstFrameDoesNotAnimate() = runComposeUiTest {
+    windowSize = tablet
+    leadingWidth = 80.dp
+    hinge = DpRect(480.dp, 0.dp, 500.dp, 700.dp)
+    strategy = ListDetailPaneStrategy(placeholder = { BasicText("Pick one") })
+    mainClock.autoAdvance = false
+    setNavContent(Root)
+    // One frame to learn the position in the window, and one to lay out with it
+    repeat(3) { mainClock.advanceTimeByFrame() }
+    onNodeWithTag("root-container").assertWidthIsEqualTo(400.dp)
   }
 
   @Test
@@ -435,7 +509,7 @@ class PaneNavDecorationTest {
       // The host gets the layout after a composition, so a screen that read it there would
       // compose once with the single layout.
       check(rootPaneStates.isNotEmpty())
-      check(rootPaneStates.all { it.isSplit })
+      check(rootPaneStates.all { it.scene != null })
       navigator.goTo(Detail(1))
     }
     runOnIdle { check(rootPaneStates.last().detailRoot == Detail(1)) }

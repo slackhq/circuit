@@ -3,6 +3,8 @@
 package com.slack.circuitx.adaptive
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.SnapSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.spring
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -41,6 +44,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
 import com.slack.circuit.foundation.LocalRecordLifecycle
@@ -88,6 +92,9 @@ import kotlinx.coroutines.launch
  * @param window Creates the [PaneWindow] for the size of this decoration. Override it to supply
  *   hinges from another source, or to change how many panes fit and how wide they are.
  * @param divider Drawn between panes, at its intrinsic width.
+ * @param animationSpec Moves the pane edges when a pane opens, closes, or changes width. The left
+ *   and middle panes measure again on each frame of it. Pass `snap()` to resize them in one frame,
+ *   which costs less for a heavy left pane.
  */
 @ExperimentalCircuitAdaptiveApi
 @Stable
@@ -97,6 +104,7 @@ public class PaneNavDecoration(
   private val host: PaneHost = PaneHost(),
   private val window: @Composable (DpSize) -> PaneWindow = { rememberPaneWindow(it) },
   private val divider: @Composable () -> Unit = {},
+  private val animationSpec: FiniteAnimationSpec<Float> = DefaultPaneAnimationSpec,
 ) : NavDecoration {
 
   @Composable
@@ -109,16 +117,17 @@ public class PaneNavDecoration(
     BoxWithConstraints(modifier) {
       // ---- 1. Describe the window ----
 
-      // Hinge bounds arrive in window coordinates. This decoration can start past the start
-      // edge of the window, like beside a navigation rail, so the strategy and the layout get
-      // the hinges in the decoration's own coordinates. The position is known after the first
-      // placement, so the first frame uses zero.
+      // Hinge bounds arrive in window coordinates. This decoration can start past the edge of
+      // the window, like beside a navigation rail, so the strategy and the layout get the
+      // hinges in the decoration's own coordinates, measured from its start edge. The position
+      // is known after the first placement, so the first frame uses zero.
       var leftInWindow by remember { mutableIntStateOf(0) }
       val windowFromApp = window(DpSize(maxWidth, maxHeight))
       val leftInWindowDp = with(LocalDensity.current) { leftInWindow.toDp() }
+      val layoutDirection = LocalLayoutDirection.current
       val paneWindow =
-        remember(windowFromApp, leftInWindowDp) {
-          windowFromApp.withHingesShiftedBy(leftInWindowDp)
+        remember(windowFromApp, leftInWindowDp, layoutDirection) {
+          windowFromApp.withHingesInDecoration(leftInWindowDp, layoutDirection)
         }
 
       // ---- 2. Ask the strategy which records take which pane ----
@@ -131,23 +140,36 @@ public class PaneNavDecoration(
           strategy.scene(paneWindow, args)?.let { scene -> resolvePanes(scene, visible) }
         }
       val isSplit = panes != null
-      val placeholder = host.placeholder ?: panes?.scene?.placeholder
+      val hostPlaceholder = host.placeholder
+      val placeholder =
+        when {
+          hostPlaceholder == null -> panes?.scene?.placeholder
+          hostPlaceholder === PaneHost.NoPlaceholder -> null
+          else -> hostPlaceholder
+        }
       // A split scene still shows one pane while nothing is open beside the primary record and
       // nothing reserves that space.
       val showsDetail = panes != null && (panes.abovePrimary.isNotEmpty() || placeholder != null)
       // Alone in the window, the left pane always gets the full width.
       val primarySizesItself = showsDetail && panes.scene.split is PaneSplit.PrimaryWraps
+      val paneCount =
+        when {
+          !showsDetail -> 1
+          panes.secondary != null -> 3
+          else -> 2
+        }
 
       // ---- 3. Publish the layout ----
 
       // Screens read this while they compose, so it carries the layout of this composition.
       val paneState =
-        remember(panes, primarySizesItself, paneWindow) {
+        remember(panes, primarySizesItself, paneWindow, paneCount) {
           PaneState(
             scene = panes?.scene,
             detailRoot = panes?.abovePrimary?.lastOrNull()?.screen,
             primarySizesItself = primarySizesItself,
             preferredPaneWidth = paneWindow.preferredPaneWidth,
+            paneCount = paneCount,
           )
         }
       // The host serves readers outside composition, like PaneReplaceInterceptor, so it gets the
@@ -155,6 +177,7 @@ public class PaneNavDecoration(
       SideEffect {
         host.scene = paneState.scene
         host.detailRoot = paneState.detailRoot
+        host.paneCount = paneState.paneCount
         if (panes != null) {
           host.primaryDepth = visible.size - panes.abovePrimary.size
         }
@@ -179,10 +202,19 @@ public class PaneNavDecoration(
         safeDrawing
           .only(WindowInsetsSides.Start)
           .asPaddingValues()
-          .calculateStartPadding(LocalLayoutDirection.current)
+          .calculateStartPadding(layoutDirection)
+      val endInset =
+        safeDrawing
+          .only(WindowInsetsSides.End)
+          .asPaddingValues()
+          .calculateEndPadding(layoutDirection)
 
       // The hinge for PaneSplit.AtHinge. A window without one splits in the middle.
       val hinge = paneWindow.separatingHinges.firstOrNull()
+      // The hinge of the last measure. It moves one frame after the first placement, when the
+      // decoration learns where it is in the window. That move is a correction, so the edges jump
+      // to it.
+      val lastHinge = remember { arrayOfNulls<DpRect>(1) }
       // The two edges that move when a pane opens or closes. See the diagram at the measure
       // block below.
       val besideEdge = remember { PaneEdge() }
@@ -241,7 +273,16 @@ public class PaneNavDecoration(
                 // The right pane stays at its final layout position and slides with a draw
                 // offset. Shared elements inside it then see one stable position, where a
                 // moving layout position makes them lose their place.
-                .graphicsLayer { translationX = detailEdge?.offsetFromTarget ?: 0f }
+                .graphicsLayer {
+                  val offset = detailEdge?.offsetFromTarget ?: 0f
+                  // Edges are measured from the start edge, which is on the right in RTL.
+                  translationX =
+                    if (layoutDirection == LayoutDirection.Rtl) {
+                      -offset
+                    } else {
+                      offset
+                    }
+                }
                 .then(detailInsets)
             ) {
               delegate.DecoratedContent(paneArgs, navigator, Modifier.fillMaxSize()) { arg ->
@@ -281,10 +322,13 @@ public class PaneNavDecoration(
 
           // ---- Single layout: the delegate fills the decoration ----
           if (panes == null || primary == null || dividerMeasurable == null) {
-            // The next split layout starts at its final widths.
-            besideEdge.reset()
+            // The top record has the full width. If the next layout splits at this width, the
+            // left pane resizes from here and the right pane slides in. A third pane starts at its
+            // final width.
+            besideEdge.snapTo(width, width)
             rightEdge.reset()
             detailEdge = null
+            lastHinge[0] = hinge
             val only = detail.measure(Constraints.fixed(width, height))
             return@Layout layout(width, height) { only.placeRelative(0, 0) }
           }
@@ -299,6 +343,9 @@ public class PaneNavDecoration(
             } else {
               0
             }
+
+          val hingeMoved = lastHinge[0] != hinge
+          lastHinge[0] = hinge
 
           // ---- Where the left pane ends, from the scene's split ----
           val scenePaneSplit = panes.scene.split
@@ -317,6 +364,18 @@ public class PaneNavDecoration(
             scenePaneSplit is PaneSplit.Fixed -> {
               targetPrimaryWidth =
                 (startInset + scenePaneSplit.primaryWidth).roundToPx().coerceIn(0, width)
+              targetBesideStart = targetPrimaryWidth + dividerWidth
+            }
+            // A width for the right pane, plus the end inset that it covers. The divider takes
+            // its width from the left pane.
+            scenePaneSplit is PaneSplit.RightFixed -> {
+              val rightWidth = (endInset + scenePaneSplit.rightWidth).roundToPx().coerceIn(0, width)
+              targetBesideStart = width - rightWidth
+              targetPrimaryWidth = (targetBesideStart - dividerWidth).coerceAtLeast(0)
+            }
+            scenePaneSplit is PaneSplit.Fraction -> {
+              targetPrimaryWidth =
+                ((width - dividerWidth) * scenePaneSplit.primaryFraction).roundToInt()
               targetBesideStart = targetPrimaryWidth + dividerWidth
             }
             scenePaneSplit is PaneSplit.PrimaryWraps -> {
@@ -358,7 +417,14 @@ public class PaneNavDecoration(
           // ---- Animate that edge and measure the left pane ----
           // The edge moves to its target over a few frames, so the left pane resizes while the
           // right pane slides. The lookahead pass gets the same position as the main pass.
-          val besideStart = besideEdge.animateTo(targetBesideStart, width, animationScope)
+          val besideStart =
+            besideEdge.animateTo(
+              newTarget = targetBesideStart,
+              width = width,
+              coroutineScope = animationScope,
+              animationSpec = animationSpec,
+              snap = hingeMoved,
+            )
           // The gap between the left pane and the next one (a divider or a hinge) keeps its
           // size while the edge moves.
           val gapWidth = targetBesideStart - targetPrimaryWidth
@@ -399,7 +465,14 @@ public class PaneNavDecoration(
               rightRoom / 2
             }
           val targetRightStart = width - rightWidth
-          val rightStart = rightEdge.animateTo(targetRightStart, width, animationScope)
+          val rightStart =
+            rightEdge.animateTo(
+              newTarget = targetRightStart,
+              width = width,
+              coroutineScope = animationScope,
+              animationSpec = animationSpec,
+              snap = hingeMoved,
+            )
           detailEdge = rightEdge
           // The middle pane sits between the two moving edges, so it resizes as either one moves.
           val secondaryWidth = (rightStart - secondDividerWidth - besideStart).coerceAtLeast(0)
@@ -458,10 +531,18 @@ private class PaneEdge {
   /**
    * Returns where the edge is in this frame on its way to [newTarget]. The read of the position
    * makes the layout measure again on each frame of the animation.
+   *
+   * @param snap Jumps to [newTarget], for a move that corrects the layout.
    */
-  fun animateTo(newTarget: Int, width: Int, coroutineScope: CoroutineScope): Int {
+  fun animateTo(
+    newTarget: Int,
+    width: Int,
+    coroutineScope: CoroutineScope,
+    animationSpec: FiniteAnimationSpec<Float>,
+    snap: Boolean,
+  ): Int {
     // First layout, or the decoration changed width: nothing sensible to animate from.
-    if (!initialized || layoutWidth != width) {
+    if (!initialized || layoutWidth != width || snap || animationSpec is SnapSpec) {
       snapTo(newTarget, width)
       return newTarget
     }
@@ -472,7 +553,7 @@ private class PaneEdge {
       target = newTarget
       animation?.cancel()
       animation = coroutineScope.launch {
-        animate(from, newTarget.toFloat(), animationSpec = PaneEdgeAnimationSpec) { value, _ ->
+        animate(from, newTarget.toFloat(), animationSpec = animationSpec) { value, _ ->
           position = value
         }
       }
@@ -488,8 +569,9 @@ private class PaneEdge {
   }
 }
 
-private val PaneEdgeAnimationSpec =
-  spring<Float>(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = 1f)
+/** The default pane edge animation. Its threshold is one pixel, the unit of an edge position. */
+private val DefaultPaneAnimationSpec: FiniteAnimationSpec<Float> =
+  spring(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = 1f)
 
 /**
  * Renders a record that stays in a pane outside the delegate, so it has no transitions of its own.
@@ -518,17 +600,35 @@ private fun StaticPane(role: PaneRole, fillWidth: Boolean, content: @Composable 
 
 /**
  * Returns this window with its hinges moved from window coordinates to the coordinates of a
- * decoration that starts [left] from the start edge of the window. Hinges outside the decoration
- * are dropped.
+ * decoration whose left edge is [left] from the left edge of the window. Hinges outside the
+ * decoration are dropped.
+ *
+ * The result measures each hinge from the start edge of the decoration, which is its right edge in
+ * a right-to-left layout. The layout places panes from the start edge, so a pane that ends at
+ * `hinge.left` ends at the hinge in both directions.
  */
-private fun PaneWindow.withHingesShiftedBy(left: Dp): PaneWindow {
-  if (separatingHinges.isEmpty() || left == 0.dp) {
+private fun PaneWindow.withHingesInDecoration(
+  left: Dp,
+  layoutDirection: LayoutDirection,
+): PaneWindow {
+  if (separatingHinges.isEmpty()) {
     return this
   }
   val shifted =
     separatingHinges
-      .map { DpRect(it.left - left, it.top, it.right - left, it.bottom) }
+      .map { hinge ->
+        val hingeLeft = hinge.left - left
+        val hingeRight = hinge.right - left
+        if (layoutDirection == LayoutDirection.Rtl) {
+          DpRect(size.width - hingeRight, hinge.top, size.width - hingeLeft, hinge.bottom)
+        } else {
+          DpRect(hingeLeft, hinge.top, hingeRight, hinge.bottom)
+        }
+      }
       .filter { it.left > 0.dp && it.right < size.width }
+  if (shifted == separatingHinges) {
+    return this
+  }
   return PaneWindow(
     size = size,
     sizeClass = sizeClass,
@@ -603,8 +703,12 @@ private fun <T : NavArgument> resolvePanes(scene: PaneScene, visible: List<T>): 
   // Lower indexes are higher on the stack, so everything before the primary is above it.
   val abovePrimary = visible.subList(0, primaryIndex)
   // A middle pane needs a record of its own and at least one record above it for the right pane.
+  // These two splits describe two panes only.
+  val splitFitsThreePanes =
+    scene.split !is PaneSplit.AtHinge && scene.split !is PaneSplit.RightFixed
   val secondaryIndex =
     scene.secondaryKey
+      ?.takeIf { splitFitsThreePanes }
       ?.let { key -> abovePrimary.indexOfFirst { it.key == key } }
       ?.takeIf { it > 0 }
   return Panes(

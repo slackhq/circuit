@@ -21,7 +21,10 @@ public enum class PaneRole {
   /** The only visible screen, as on phones. */
   SINGLE,
 
-  /** The screen in the left pane. */
+  /**
+   * The screen in the left pane. It has the full width while nothing is open beside it and no
+   * placeholder is set. Read [PaneState.isSplit] to tell the two apart.
+   */
   PRIMARY,
 
   /**
@@ -68,17 +71,23 @@ public class PaneState(
    * that sizes itself can give it to its list. It is [Dp.Unspecified] outside a decoration.
    */
   public val preferredPaneWidth: Dp = Dp.Unspecified,
+  /**
+   * How many panes the window shows now. It is 1 for a [scene] whose left pane has the full width,
+   * because nothing is open beside it and no placeholder is set.
+   */
+  public val paneCount: Int = 1,
 ) {
   /** The window shows more than one pane. */
   public val isSplit: Boolean
-    get() = scene != null
+    get() = paneCount > 1
 
   override fun equals(other: Any?): Boolean {
     return other is PaneState &&
       scene == other.scene &&
       detailRoot == other.detailRoot &&
       primarySizesItself == other.primarySizesItself &&
-      preferredPaneWidth == other.preferredPaneWidth
+      preferredPaneWidth == other.preferredPaneWidth &&
+      paneCount == other.paneCount
   }
 
   override fun hashCode(): Int {
@@ -86,12 +95,14 @@ public class PaneState(
     result = 31 * result + detailRoot.hashCode()
     result = 31 * result + primarySizesItself.hashCode()
     result = 31 * result + preferredPaneWidth.hashCode()
+    result = 31 * result + paneCount
     return result
   }
 
   override fun toString(): String {
     return "PaneState(scene=$scene, detailRoot=$detailRoot, " +
-      "primarySizesItself=$primarySizesItself, preferredPaneWidth=$preferredPaneWidth)"
+      "primarySizesItself=$primarySizesItself, preferredPaneWidth=$preferredPaneWidth, " +
+      "paneCount=$paneCount)"
   }
 
   public companion object {
@@ -131,22 +142,38 @@ public class PaneHost {
 
   /**
    * Reserves the right pane and draws it while no record is open there. It takes priority over
-   * [PaneScene.placeholder].
+   * [PaneScene.placeholder]. Null uses the placeholder of the scene. [NoPlaceholder] gives the left
+   * pane the full width, also when the scene has a placeholder.
    *
    * A screen that switches content, like a tab host, should set this in the same event that
    * switches the content. The next frame then lays out at the final widths.
    */
   public var placeholder: (@Composable () -> Unit)? by mutableStateOf(null)
 
+  /**
+   * How many panes the window showed in the last composition. It is 1 for a [scene] whose left pane
+   * has the full width.
+   */
+  public var paneCount: Int by mutableIntStateOf(1)
+    internal set
+
   /** The window shows more than one pane. */
   public val isSplit: Boolean
-    get() = scene != null
+    get() = paneCount > 1
 
   /**
    * How many records the primary record and the records below it make up. The count does not change
    * when records above the primary record change, so it stays correct between compositions.
    */
   internal var primaryDepth: Int by mutableIntStateOf(0)
+
+  public companion object {
+    /**
+     * A [placeholder] value that reserves nothing. Set it to give the left pane the full width
+     * while no record is open beside it, in place of the placeholder of the scene.
+     */
+    public val NoPlaceholder: @Composable () -> Unit = {}
+  }
 }
 
 /** The [PaneHost] of the nearest [PaneNavDecoration], or null outside one. */

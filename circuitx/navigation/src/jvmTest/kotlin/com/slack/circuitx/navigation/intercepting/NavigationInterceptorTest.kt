@@ -658,6 +658,29 @@ class NavigationInterceptorTest {
   }
 
   @Test
+  fun `Single interceptor goTo RewriteAll stops at a failed event`() = runTest {
+    composeTestRule.run {
+      val rewrite =
+        InterceptedResult.RewriteAll(listOf(NavEvent.Pop(), NavEvent.GoTo(TestScreen.ScreenC)))
+      // The rewritten pop is blocked, so the push after it must not run.
+      fakeInterceptor1.queueGoTo(rewrite)
+      fakeInterceptor1.queuePop(FailConsumed)
+      val (fakeNavigator, interceptingNavigator) =
+        setTestContent(
+          interceptors = singleInterceptor,
+          additionalScreens = arrayOf(TestScreen.ScreenA),
+        )
+      assertFalse(interceptingNavigator.goTo(TestScreen.ScreenB))
+      fakeNavigator.assertGoToIsEmpty()
+      fakeNavigator.assertPopIsEmpty()
+      assertEquals(
+        listOf(TestScreen.ScreenA, TestScreen.RootAlpha),
+        interceptingNavigator.peekBackStack(),
+      )
+    }
+  }
+
+  @Test
   fun `Single interceptor goTo RewriteAll with no events consumes`() = runTest {
     composeTestRule.run {
       fakeInterceptor1.queueGoTo(InterceptedResult.RewriteAll(emptyList()))

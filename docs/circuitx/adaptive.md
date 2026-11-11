@@ -83,6 +83,7 @@ owns the layout, insets, record lifecycle, and animation scopes.
   `minHeightDp`.
 - The left pane takes the record just below the topmost run of screens that have a `PaneStyle`.
 - `LIST_DETAIL` gives the left pane a set width. `SUPPORTING` gives the right pane a set width.
+- `LIST` marks a list that is not the root. See [Lists above the root](#lists-above-the-root).
 - `EXTRA` opens a third pane when the window has room for three. See [Three panes](#three-panes).
 - The panes split at a vertical hinge. A window with a hinge shows two panes at most.
 - A screen with no style, above the root, fills the window.
@@ -143,6 +144,8 @@ A scene carries a `PaneSplit`, which tells the decoration where the left pane en
 | Split          | Left pane width                                 |
 |----------------|-------------------------------------------------|
 | `Fixed`        | A width that the strategy chose                 |
+| `RightFixed`   | The rest, beside a right pane of a set width    |
+| `Fraction`     | A fraction of the window                        |
 | `AtHinge`      | Up to the first hinge, or half the window       |
 | `PrimaryWraps` | The width that the left pane's content asks for |
 
@@ -188,7 +191,8 @@ conversation. When the window has room for three panes, it opens in a third pane
 
 In a smaller window, the extra screen stacks over the detail in the right pane.
 
-A custom strategy asks for three panes with `PaneScene.secondaryKey` and `rightPaneWidth`.
+A custom strategy asks for three panes with `PaneScene.secondaryKey` and `rightPaneWidth`. The
+`AtHinge` and `RightFixed` splits show two panes only.
 
 ## Roles
 
@@ -197,7 +201,7 @@ Each screen reads `LocalPaneRole` to learn where it renders.
 | Role             | Where                                                     |
 |------------------|-----------------------------------------------------------|
 | `SINGLE`         | The only visible screen, as on phones                     |
-| `PRIMARY`        | The left pane                                             |
+| `PRIMARY`        | The left pane, also while it has the full width           |
 | `DETAIL_ROOT`    | The screen opened from the left pane                      |
 | `DETAIL_STACKED` | A screen above the detail                                 |
 | `EXTRA_ROOT`     | The bottom screen of the third pane                       |
@@ -235,8 +239,31 @@ No placeholder                         With a placeholder
 host.placeholder = { Text("Select a pet") }
 ```
 
+To give one screen the full width when the strategy has a placeholder, set
+`PaneHost.NoPlaceholder`.
+
+```kotlin
+host.placeholder = PaneHost.NoPlaceholder
+```
+
 When a screen opens beside the left pane, the left pane resizes over a few frames and the new
-pane slides in from the end edge.
+pane slides in from the end edge. The left pane measures again on each of those frames. To resize
+it in one frame, pass `animationSpec = snap()` to `PaneNavDecoration`.
+
+### Lists above the root
+
+A root with no screens above it always takes the left pane, so it can show a placeholder. A list
+that opens over other screens needs `PaneStyle.LIST` for the same behavior.
+
+```kotlin
+data object InboxScreen : PaneScreen {
+  override val paneStyle
+    get() = PaneStyle.LIST
+}
+```
+
+If the root is not always a list, pass `rootIsList = false` to `ListDetailPaneStrategy` and mark
+each list.
 
 A screen that switches content, like a tab host, should set `placeholder` in the same event. The
 next frame then lays out at the final widths.
@@ -247,7 +274,8 @@ next frame then lays out at the final widths.
 
 A screen reads `LocalPaneState` to learn the layout of the window.
 
-- `isSplit` is true while the window shows more than one pane.
+- `isSplit` is true while the window shows more than one pane. `paneCount` is the number of
+  panes. Both report one pane while the left pane has the full width.
 - `detailRoot` is the screen opened from the left pane. A list can use it to highlight the open
   item.
 - `preferredPaneWidth` is the pane width of the window.
@@ -256,18 +284,25 @@ A screen reads `LocalPaneState` to learn the layout of the window.
 val openItem = LocalPaneState.current.detailRoot as? PetDetailScreen
 ```
 
-`PaneHost` has `isSplit` and `detailRoot` for code outside composition. It gets them after each
+`PaneHost` has `isSplit`, `paneCount`, and `detailRoot` for code outside composition. It gets them after each
 composition, so a screen that reads them there is one frame late.
 
 ## Replacing the detail
 
-`PaneReplaceInterceptor` is a [`NavigationInterceptor`](navigation.md). While the window is split,
-it applies these rules to `goTo`:
+`PaneReplaceInterceptor` is a [`NavigationInterceptor`](navigation.md). While the decoration has
+a scene, it applies these rules to `goTo`:
 
 - A screen of a type that is already open beside the left pane replaces that screen and every
   screen above it.
 - A screen that is already open there pops back to it.
 - Any other screen is pushed.
+
+To change which screens replace each other, pass a rule. This one lets any detail of a list replace
+any other, for a list with more than one detail type.
+
+```kotlin
+PaneReplaceInterceptor(host) { open, incoming -> open is InboxDetail && incoming is InboxDetail }
+```
 
 The pops and the push are one `InterceptedResult.RewriteAll`, so the stack never renders between
 them.

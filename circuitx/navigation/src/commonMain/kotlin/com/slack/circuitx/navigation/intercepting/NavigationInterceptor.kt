@@ -95,6 +95,10 @@ public sealed interface InterceptedResult {
    * renders between two events. The last event gives the result of the intercepted call. An empty
    * list consumes the navigation.
    *
+   * The events apply together or not at all. When one fails, like a pop that another interceptor
+   * blocks, the events after it do not run and the intercepted call fails. The earlier events are
+   * undone for a back stack that keeps its records in snapshot state, like `SaveableBackStack`.
+   *
    * Each event restarts navigation processing, as a [Rewrite] does. The interceptor that returned
    * this result sees its own events again and must not rewrite them a second time.
    */

@@ -24,6 +24,12 @@ class ListDetailPaneStrategyTest {
 
   private data object Plain : Screen
 
+  /** A list that opens over other screens. */
+  private data object Inbox : PaneScreen {
+    override val paneStyle: PaneStyle
+      get() = PaneStyle.LIST
+  }
+
   private data class Detail(val id: Int) : PaneScreen {
     override val paneStyle: PaneStyle
       get() = PaneStyle.LIST_DETAIL
@@ -98,17 +104,36 @@ class ListDetailPaneStrategyTest {
     }
     assertThat(split(Detail(1), Home)).isEqualTo(PaneSplit.PrimaryWraps())
     assertThat(split(Home)).isEqualTo(PaneSplit.PrimaryWraps())
-    // The right pane is the narrow one for a supporting screen, so its width stays computed
-    assertThat(split(Supporting(1), Home)).isInstanceOf<PaneSplit.Fixed>()
+    // The right pane is the narrow one for a supporting screen, so it keeps its set width
+    assertThat(split(Supporting(1), Home)).isEqualTo(PaneSplit.RightFixed(360.dp))
   }
 
   @Test
   fun supportingPaneLeavesMostOfTheWidthToThePrimary() {
     // The right pane takes the preferred pane width.
-    assertThat(scene(desktop, Supporting(1), Home)!!.fixedWidth).isEqualTo(1100.dp - 360.dp)
+    assertThat(scene(desktop, Supporting(1), Home)!!.split).isEqualTo(PaneSplit.RightFixed(360.dp))
     val custom = ListDetailPaneStrategy(supportingPaneWidth = 320.dp)
-    assertThat(custom.scene(PaneWindow(desktop), stack(Supporting(1), Home))!!.fixedWidth)
-      .isEqualTo(1100.dp - 320.dp)
+    assertThat(custom.scene(PaneWindow(desktop), stack(Supporting(1), Home))!!.split)
+      .isEqualTo(PaneSplit.RightFixed(320.dp))
+  }
+
+  @Test
+  fun listAboveTheRootKeepsThePanes() {
+    // Before a pick, so the list can show a placeholder
+    assertThat(scene(desktop, Inbox, Home)!!.primaryKey).isEqualTo(Arg(Inbox).key)
+    assertThat(scene(desktop, Detail(1), Inbox, Home)!!.primaryKey).isEqualTo(Arg(Inbox).key)
+    // A list opened from a detail starts its own panes
+    assertThat(scene(desktop, Inbox, Detail(1), Home)!!.primaryKey).isEqualTo(Arg(Inbox).key)
+  }
+
+  @Test
+  fun rootCanBeLeftOutOfThePanes() {
+    val listsAreMarked = ListDetailPaneStrategy(rootIsList = false)
+    val window = PaneWindow(desktop)
+    assertThat(listsAreMarked.scene(window, stack(Home))).isNull()
+    assertThat(listsAreMarked.scene(window, stack(Inbox))).isNotNull()
+    // A detail still opens beside the root
+    assertThat(listsAreMarked.scene(window, stack(Detail(1), Home))).isNotNull()
   }
 
   @Test
@@ -139,7 +164,7 @@ class ListDetailPaneStrategyTest {
   @Test
   fun bottomOfTheRunPicksTheStyle() {
     val scene = scene(desktop, Detail(1), Supporting(1), Home)
-    assertThat(scene!!.fixedWidth).isEqualTo(1100.dp - 360.dp)
+    assertThat(scene!!.split).isEqualTo(PaneSplit.RightFixed(360.dp))
   }
 
   @Test
@@ -170,6 +195,16 @@ class ListDetailPaneStrategyTest {
     val window = PaneWindow(foldOpen, listOf(hinge))
     assertThat(guarded.scene(window, stack(Detail(1), Home))!!.split)
       .isInstanceOf<PaneSplit.Fixed>()
+  }
+
+  @Test
+  fun windowWithAHingeNeverGetsThreePanes() {
+    // Too close to the edge to split at, and still in the way of a middle pane
+    val hinge = DpRect(200.dp, 0.dp, 211.dp, 900.dp)
+    val guarded = ListDetailPaneStrategy(minHingePaneWidth = 280.dp)
+    val window = PaneWindow(large, listOf(hinge))
+    assertThat(window.maxPanes).isEqualTo(3)
+    assertThat(guarded.scene(window, stack(Extra(1), Detail(1), Home))!!.secondaryKey).isNull()
   }
 
   @Test

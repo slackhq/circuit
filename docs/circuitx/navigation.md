@@ -85,6 +85,10 @@ was a new navigation event.
 two events. Each event restarts the navigation processing. The interceptor that returned
 `RewriteAll` sees its own events again and must skip them.
 
+The events apply together or not at all. If one fails, the events after it do not run and the
+intercepted call fails. The earlier events are undone for a back stack that keeps its records in
+snapshot state, like `SaveableBackStack`.
+
 ### FailureNotifier
 
 `InterceptingNavigator.FailureNotifier` is a simple interface that provides a mechanism to handle

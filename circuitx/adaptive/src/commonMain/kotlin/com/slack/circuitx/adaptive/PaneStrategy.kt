@@ -51,10 +51,12 @@ public class PaneWindow(
   /** The window size class of [size]. */
   public val sizeClass: WindowSizeClass,
   /**
-   * Vertical hinges that separate the display, in window coordinates. Empty on iOS and desktop.
+   * Vertical hinges that separate the display. Empty on iOS and desktop.
    *
-   * The decoration moves them to its own coordinates before it calls a strategy, so a strategy can
-   * compare them with [size].
+   * A `window` function of a [PaneNavDecoration] returns them in window coordinates. The decoration
+   * moves them to its own coordinates before it calls a strategy: `left` is then the distance from
+   * the start edge of the decoration to the hinge, and `right` is the distance to the far side of
+   * the hinge, in both layout directions. A strategy can compare them with [size].
    */
   public val separatingHinges: List<DpRect>,
   /** How many panes fit side by side in this window. */
@@ -115,8 +117,52 @@ public sealed interface PaneSplit {
   }
 
   /**
-   * The panes split at the first hinge of the window, or in the middle when it has none. A scene
-   * with three panes cannot use it.
+   * The pane beside the left pane is [rightWidth] wide and the left pane takes the rest. The
+   * decoration adds the end window inset to [rightWidth]. Use it for a panel beside a main screen.
+   *
+   * The decoration ignores [PaneScene.secondaryKey] with this split.
+   */
+  public class RightFixed(public val rightWidth: Dp) : PaneSplit {
+    override fun equals(other: Any?): Boolean {
+      return other is RightFixed && rightWidth == other.rightWidth
+    }
+
+    override fun hashCode(): Int {
+      return rightWidth.hashCode()
+    }
+
+    override fun toString(): String {
+      return "PaneSplit.RightFixed(rightWidth=$rightWidth)"
+    }
+  }
+
+  /**
+   * The left pane takes [primaryFraction] of the width, from 0 to 1, and the pane beside it takes
+   * the rest.
+   */
+  public class Fraction(public val primaryFraction: Float) : PaneSplit {
+    init {
+      require(primaryFraction in 0f..1f) { "primaryFraction must be from 0 to 1" }
+    }
+
+    override fun equals(other: Any?): Boolean {
+      return other is Fraction && primaryFraction == other.primaryFraction
+    }
+
+    override fun hashCode(): Int {
+      return primaryFraction.hashCode()
+    }
+
+    override fun toString(): String {
+      return "PaneSplit.Fraction(primaryFraction=$primaryFraction)"
+    }
+  }
+
+  /**
+   * The panes split at the first hinge of the window, or in the middle when it has none.
+   *
+   * The decoration ignores [PaneScene.secondaryKey] with this split, so a hinge never crosses a
+   * pane.
    */
   public data object AtHinge : PaneSplit
 

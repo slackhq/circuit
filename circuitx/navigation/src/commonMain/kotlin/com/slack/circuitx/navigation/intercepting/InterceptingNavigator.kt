@@ -17,7 +17,6 @@ import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.internal.shouldEnableNavEventHandler
-import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
@@ -150,7 +149,13 @@ public class InterceptingNavigator(
         is InterceptedResult.Rewrite -> return rewritePopResult(interceptedResult.navEvent)
 
         is InterceptedResult.RewriteAll -> {
-          return rewriteAll(interceptedResult.navEvents, emptyResult = null, ::rewritePopResult)
+          return rewriteAll(
+            interceptedResult.navEvents,
+            emptyResult = null,
+            failedResult = null,
+            lastFailed = { false },
+            ::rewritePopResult,
+          )
         }
       }
     }
@@ -178,6 +183,8 @@ public class InterceptingNavigator(
           return rewriteAll(
             interceptedResult.navEvents,
             emptyResult = emptyList(),
+            failedResult = emptyList(),
+            lastFailed = { false },
             ::rewriteResetRootResult,
           )
         }
@@ -240,7 +247,13 @@ public class InterceptingNavigator(
         }
 
         is InterceptedResult.RewriteAll -> {
-          return rewriteAll(interceptedResult.navEvents, emptyResult = true, ::rewriteBooleanResult)
+          return rewriteAll(
+            interceptedResult.navEvents,
+            emptyResult = true,
+            failedResult = false,
+            lastFailed = { succeeded -> !succeeded },
+            ::rewriteBooleanResult,
+          )
         }
       }
     }
@@ -293,24 +306,60 @@ public class InterceptingNavigator(
  * Applies [navEvents] in order in one snapshot, so no reader of the back stack sees a state between
  * two events. Each event goes through this navigator again, so interceptors and listeners see it.
  *
+ * The events apply together or not at all. When one fails, the events after it do not run, and the
+ * snapshot is dropped, which undoes the earlier events for a back stack that keeps its records in
+ * snapshot state. Listeners that already saw an earlier event are not told about the undo.
+ *
  * @param emptyResult The result when [navEvents] is empty.
+ * @param failedResult The result when an event fails.
+ * @param lastFailed Whether the result of the last event is a failure.
  * @param rewriteLast Dispatches the last event and maps it to the result of the intercepted call.
  */
 private inline fun <R> InterceptingNavigator.rewriteAll(
   navEvents: List<NavEvent>,
   emptyResult: R,
+  failedResult: R,
+  lastFailed: (R) -> Boolean,
   rewriteLast: (NavEvent) -> R,
 ): R {
-  return Snapshot.withMutableSnapshot {
-    var result = emptyResult
-    navEvents.forEachIndexed { index, event ->
-      if (index == navEvents.lastIndex) {
-        result = rewriteLast(event)
-      } else {
-        onNavEvent(event)
+  val snapshot = Snapshot.takeMutableSnapshot()
+  try {
+    val result = snapshot.enter {
+      var result = emptyResult
+      for ((index, event) in navEvents.withIndex()) {
+        if (index == navEvents.lastIndex) {
+          result = rewriteLast(event)
+          if (lastFailed(result)) {
+            // Leaves without the apply below, so the earlier events are undone.
+            return result
+          }
+        } else if (!dispatchRewritten(event)) {
+          return failedResult
+        }
       }
+      result
     }
-    result
+    snapshot.apply().check()
+    return result
+  } finally {
+    snapshot.dispose()
+  }
+}
+
+/**
+ * Dispatches one event of a [InterceptedResult.RewriteAll] and returns whether it changed the back
+ * stack. A pop that returns no screen counts as failed, also when an interceptor consumed it.
+ */
+private fun InterceptingNavigator.dispatchRewritten(event: NavEvent): Boolean {
+  return when (event) {
+    is NavEvent.Pop -> pop(event.result) != null
+    is NavEvent.GoTo -> goTo(event.screen)
+    is NavEvent.Backward -> backward()
+    is NavEvent.Forward -> forward()
+    is NavEvent.ResetRoot -> {
+      resetRoot(event.newRoot, event.options)
+      true
+    }
   }
 }
 

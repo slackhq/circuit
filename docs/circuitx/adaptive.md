@@ -71,6 +71,35 @@ widths need no changes.
 If a screen inside the stack draws the rail, that screen is the left pane and holds two sized parts.
 Let it size itself, as [Pane widths](#pane-widths) describes.
 
+### Tabs and saved back stacks
+
+A tab switch is a `resetRoot` on the navigator that the panes render. Use
+`StateOptions.SaveAndRestore`, so each tab keeps its own stack.
+
+```kotlin
+NavigationRailItem(
+  selected = tab == selectedTab,
+  onClick = { paneNavigator.resetRoot(tab.screen, StateOptions.SaveAndRestore) },
+  icon = { /* ... */ },
+)
+```
+
+The open detail is part of the stack, so it is saved with its tab. If the user opens a pet, goes
+to another tab, and comes back, the stack is again `PetDetail, PetList`, and the panes show the
+same pet beside the list. No other state holds the selection.
+
+`PaneReplaceInterceptor` changes `goTo` only. A `resetRoot` passes through it.
+
+The root of each tab takes the left pane. A tab whose root is not a list has two options.
+
+- To keep it at full width, set `host.placeholder = PaneHost.NoPlaceholder` in the click, or use no
+  placeholder in the strategy.
+- To keep it out of the panes, pass `rootIsList = false` and mark each list. See
+  [Lists above the root](#lists-above-the-root).
+
+Set a tab's placeholder in the same click as the `resetRoot`, as [Empty right pane](#empty-right-pane)
+describes.
+
 ## Pane strategy
 
 A `PaneStrategy` maps the window and the stack to a `PaneScene`, or to null for the single layout.
@@ -284,8 +313,37 @@ A screen reads `LocalPaneState` to learn the layout of the window.
 val openItem = LocalPaneState.current.detailRoot as? PetDetailScreen
 ```
 
-`PaneHost` has `isSplit`, `paneCount`, and `detailRoot` for code outside composition. It gets them after each
-composition, so a screen that reads them there is one frame late.
+`PaneHost` has `isSplit`, `paneCount`, and `detailRoot` for code outside composition. It gets them
+after each composition, so a screen that reads them there is one frame late.
+
+## Selected item
+
+A list beside its detail usually highlights the open item. Circuit screens do not share state, so
+the list cannot ask the detail what it shows. The back stack already holds the answer: the open
+detail is the record above the list. The decoration gives that screen to the list as
+`PaneState.detailRoot`.
+
+```kotlin
+@Composable
+fun PetList(state: PetListScreen.State, modifier: Modifier = Modifier) {
+  val openPetId = (LocalPaneState.current.detailRoot as? PetDetailScreen)?.id
+  LazyColumn(modifier) {
+    items(state.pets) { pet ->
+      PetRow(
+        pet = pet,
+        selected = pet.id == openPetId,
+        onClick = { state.eventSink(PetListScreen.Event.ClickPet(pet.id)) },
+      )
+    }
+  }
+}
+```
+
+The presenter only calls `navigator.goTo(PetDetailScreen(id))`. It keeps no selection state, and
+`PaneReplaceInterceptor` swaps the open detail.
+
+- `detailRoot` is null in the single layout, so a phone highlights nothing.
+- The selection follows back, a fold, and process death, because it is the stack.
 
 ## Replacing the detail
 

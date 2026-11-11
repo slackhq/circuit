@@ -107,8 +107,8 @@ public class PaneNavDecoration(
     content: @Composable (T) -> Unit,
   ) {
     BoxWithConstraints(modifier) {
-      // Top first, root last. Forward items stay hidden, as Circuit shows the active record.
-      val visible = remember(args) { listOf(args.active) + args.backwardItems }
+      // ---- 1. Describe the window ----
+
       // Hinge bounds arrive in window coordinates. This decoration can start past the start
       // edge of the window, like beside a navigation rail, so the strategy and the layout get
       // the hinges in the decoration's own coordinates. The position is known after the first
@@ -120,15 +120,26 @@ public class PaneNavDecoration(
         remember(windowFromApp, leftInWindowDp) {
           windowFromApp.withHingesShiftedBy(leftInWindowDp)
         }
+
+      // ---- 2. Ask the strategy which records take which pane ----
+
+      // Top first, root last. Forward items stay hidden, as Circuit shows the active record.
+      val visible = remember(args) { listOf(args.active) + args.backwardItems }
+      // Null means the single layout: the delegate gets the whole stack.
       val panes =
         remember(args, visible, paneWindow) {
           strategy.scene(paneWindow, args)?.let { scene -> resolvePanes(scene, visible) }
         }
       val isSplit = panes != null
       val placeholder = host.placeholder ?: panes?.scene?.placeholder
+      // A split scene still shows one pane while nothing is open beside the primary record and
+      // nothing reserves that space.
       val showsDetail = panes != null && (panes.abovePrimary.isNotEmpty() || placeholder != null)
       // Alone in the window, the left pane always gets the full width.
       val primarySizesItself = showsDetail && panes.scene.split is PaneSplit.PrimaryWraps
+
+      // ---- 3. Publish the layout ----
+
       // Screens read this while they compose, so it carries the layout of this composition.
       val paneState =
         remember(panes, primarySizesItself, paneWindow) {
@@ -139,6 +150,8 @@ public class PaneNavDecoration(
             preferredPaneWidth = paneWindow.preferredPaneWidth,
           )
         }
+      // The host serves readers outside composition, like PaneReplaceInterceptor, so it gets the
+      // layout once this composition is applied.
       SideEffect {
         host.scene = paneState.scene
         host.detailRoot = paneState.detailRoot
@@ -146,6 +159,10 @@ public class PaneNavDecoration(
           host.primaryDepth = visible.size - panes.abovePrimary.size
         }
       }
+
+      // ---- 4. Build the stack that the delegate renders ----
+
+      // Split: only the right pane's records, over a placeholder. Single: every record.
       val paneArgs =
         remember(args, panes) {
           if (panes != null) {
@@ -154,6 +171,8 @@ public class PaneNavDecoration(
             args.transform<T, PaneArg<T>> { PaneArg.Record(it, PaneRole.SINGLE) }
           }
         }
+
+      // ---- 5. Inputs for the layout below ----
 
       val safeDrawing = WindowInsets.safeDrawing
       val startInset =
@@ -164,6 +183,8 @@ public class PaneNavDecoration(
 
       // The hinge for PaneSplit.AtHinge. A window without one splits in the middle.
       val hinge = paneWindow.separatingHinges.firstOrNull()
+      // The two edges that move when a pane opens or closes. See the diagram at the measure
+      // block below.
       val besideEdge = remember { PaneEdge() }
       val rightEdge = remember { PaneEdge() }
       // The edge that the right pane starts at, or null for the single layout.
@@ -177,6 +198,11 @@ public class PaneNavDecoration(
               leftInWindow = coordinates.positionInWindow().x.roundToInt()
             },
           content = {
+            // Up to five children, each found by its layoutId in the measure block:
+            // the left pane, a divider, the middle pane, a second divider, and the delegate.
+
+            // Left pane and its divider. The pane does not reach the end edge of the window, so
+            // it takes no end inset.
             if (panes != null) {
               Box(
                 Modifier.layoutId(PrimaryPaneId)
@@ -190,6 +216,7 @@ public class PaneNavDecoration(
               }
               Box(Modifier.layoutId(DividerId)) { divider() }
             }
+            // Middle pane and its divider, for three panes. It touches neither window edge.
             if (panes?.secondary != null) {
               Box(
                 Modifier.layoutId(SecondaryPaneId)
@@ -201,6 +228,8 @@ public class PaneNavDecoration(
               }
               Box(Modifier.layoutId(SecondDividerId)) { divider() }
             }
+            // The delegate. It is the whole layout when single, and the right pane when split.
+            // It is always this one call, so a layout switch never remounts what it shows.
             val detailInsets =
               if (isSplit) {
                 Modifier.consumeWindowInsets(safeDrawing.only(WindowInsetsSides.Start))
@@ -234,11 +263,23 @@ public class PaneNavDecoration(
             }
           },
         ) { measurables, constraints ->
+          // The names used below, for two panes and for three:
+          //
+          //   0        primaryWidth  besideStart                      width
+          //   |  left pane  | divider |          right pane             |
+          //
+          //   0        primaryWidth  besideStart            rightStart  width
+          //   |  left pane  | divider | middle pane | divider | right pane |
+          //
+          // A "target" value is where an edge ends up. The value without that prefix is where
+          // the edge is in this frame, while it animates to the target.
           val width = constraints.maxWidth
           val height = constraints.maxHeight
           val detail = measurables.first { it.layoutId == DetailPaneId }
           val primary = measurables.firstOrNull { it.layoutId == PrimaryPaneId }
           val dividerMeasurable = measurables.firstOrNull { it.layoutId == DividerId }
+
+          // ---- Single layout: the delegate fills the decoration ----
           if (panes == null || primary == null || dividerMeasurable == null) {
             // The next split layout starts at its final widths.
             besideEdge.reset()
@@ -258,6 +299,8 @@ public class PaneNavDecoration(
             } else {
               0
             }
+
+          // ---- Where the left pane ends, from the scene's split ----
           val scenePaneSplit = panes.scene.split
           // The left pane when it picks its own width. It is measured once, at its final size.
           var wrappedPrimary: Placeable? = null
@@ -265,10 +308,12 @@ public class PaneNavDecoration(
           val targetPrimaryWidth: Int
           val targetBesideStart: Int
           when {
+            // Nothing beside the left pane, so it takes the full width.
             !showsDetail -> {
               targetPrimaryWidth = width
               targetBesideStart = width
             }
+            // A width from the strategy, plus the start inset that the left pane covers.
             scenePaneSplit is PaneSplit.Fixed -> {
               targetPrimaryWidth =
                 (startInset + scenePaneSplit.primaryWidth).roundToPx().coerceIn(0, width)
@@ -297,24 +342,33 @@ public class PaneNavDecoration(
               targetPrimaryWidth = placeable.width
               targetBesideStart = targetPrimaryWidth + dividerWidth
             }
+            // PaneSplit.AtHinge with a hinge: the left pane ends where the hinge starts, and the
+            // next pane starts where the hinge ends.
             hinge != null -> {
               targetPrimaryWidth = hinge.left.roundToPx().coerceIn(0, width)
               targetBesideStart = maxOf(hinge.right.roundToPx(), targetPrimaryWidth + dividerWidth)
             }
+            // PaneSplit.AtHinge with no hinge: two equal panes.
             else -> {
               targetPrimaryWidth = (width - dividerWidth) / 2
               targetBesideStart = targetPrimaryWidth + dividerWidth
             }
           }
+
+          // ---- Animate that edge and measure the left pane ----
           // The edge moves to its target over a few frames, so the left pane resizes while the
           // right pane slides. The lookahead pass gets the same position as the main pass.
           val besideStart = besideEdge.animateTo(targetBesideStart, width, animationScope)
-          val primaryWidth =
-            (besideStart - (targetBesideStart - targetPrimaryWidth)).coerceAtLeast(0)
+          // The gap between the left pane and the next one (a divider or a hinge) keeps its
+          // size while the edge moves.
+          val gapWidth = targetBesideStart - targetPrimaryWidth
+          val primaryWidth = (besideStart - gapWidth).coerceAtLeast(0)
           val primaryPlaceable =
             wrappedPrimary ?: primary.measure(Constraints.fixed(primaryWidth, height))
           val dividerPlaceable = dividerMeasurable.measure(Constraints.fixed(dividerWidth, height))
           val targetBesideWidth = (width - targetBesideStart).coerceAtLeast(0)
+
+          // ---- Two panes: the delegate takes everything beside the left pane ----
           if (secondary == null || secondDividerMeasurable == null) {
             // The right pane keeps its full width while it slides, so its content does not reflow
             // on the way. After it closes, it keeps the last width it had, off screen.
@@ -329,10 +383,12 @@ public class PaneNavDecoration(
             return@Layout layout(width, height) {
               primaryPlaceable.placeRelative(0, 0)
               dividerPlaceable.placeRelative(primaryWidth, 0)
+              // At its target. The draw offset from detailEdge makes it slide.
               detailPlaceable.placeRelative(targetBesideStart, 0)
             }
           }
-          // Three panes. The right pane has a set width and the middle pane takes what is left.
+
+          // ---- Three panes: the delegate has a set width, the middle pane takes the rest ----
           val secondDividerWidth =
             secondDividerMeasurable.maxIntrinsicWidth(height).coerceIn(0, targetBesideWidth)
           val rightRoom = targetBesideWidth - secondDividerWidth
@@ -345,6 +401,7 @@ public class PaneNavDecoration(
           val targetRightStart = width - rightWidth
           val rightStart = rightEdge.animateTo(targetRightStart, width, animationScope)
           detailEdge = rightEdge
+          // The middle pane sits between the two moving edges, so it resizes as either one moves.
           val secondaryWidth = (rightStart - secondDividerWidth - besideStart).coerceAtLeast(0)
           val secondaryPlaceable = secondary.measure(Constraints.fixed(secondaryWidth, height))
           val secondDividerPlaceable =
@@ -403,10 +460,13 @@ private class PaneEdge {
    * makes the layout measure again on each frame of the animation.
    */
   fun animateTo(newTarget: Int, width: Int, coroutineScope: CoroutineScope): Int {
+    // First layout, or the decoration changed width: nothing sensible to animate from.
     if (!initialized || layoutWidth != width) {
       snapTo(newTarget, width)
       return newTarget
     }
+    // A new target at the same width, like a pane that opened: start from where the edge is
+    // now, which also covers a target that changes mid-animation.
     if (target != newTarget) {
       val from = position
       target = newTarget
@@ -508,10 +568,17 @@ private data class Panes<T : NavArgument>(
   /**
    * The role of a record above [primary]. A record keeps its detail role when it moves to the
    * middle pane, so its chrome stays the same.
+   *
+   * For the stack `Profile, Thread, Conversation, Inbox` (top first) with `Inbox` as [primary]:
+   * - Two panes: `Conversation` is `DETAIL_ROOT`, the two above it are `DETAIL_STACKED`.
+   * - Three panes with `Thread` as [secondary]: `Profile` is `EXTRA_ROOT`, `Thread` is
+   *   `DETAIL_STACKED`, and the hidden `Conversation` is still `DETAIL_ROOT`.
    */
   fun roleOf(record: T): PaneRole {
+    // The right pane holds extra screens only while a middle pane exists.
     val inExtraPane = secondary != null && rightPane.any { it.key == record.key }
     return when {
+      // Lists are top first, so the last entry is the bottom of its pane.
       inExtraPane && record.key == rightPane.last().key -> PaneRole.EXTRA_ROOT
       inExtraPane -> PaneRole.EXTRA_STACKED
       record.key == abovePrimary.lastOrNull()?.key -> PaneRole.DETAIL_ROOT
@@ -520,12 +587,20 @@ private data class Panes<T : NavArgument>(
   }
 }
 
-/** Finds the records that [scene] names in [visible] (top first), or null when it names none. */
+/**
+ * Finds the records that [scene] names in [visible] (top first), or null when it names none.
+ *
+ * For `visible = [Profile, Conversation, Inbox, Home]` and a scene with `Inbox` as primary:
+ * - `abovePrimary` is `[Profile, Conversation]`, and `Home` stays hidden.
+ * - With no secondary key, `rightPane` is `[Profile, Conversation]`.
+ * - With `Conversation` as secondary, `rightPane` is `[Profile]`.
+ */
 private fun <T : NavArgument> resolvePanes(scene: PaneScene, visible: List<T>): Panes<T>? {
   val primaryIndex = visible.indexOfFirst { it.key == scene.primaryKey }
   if (primaryIndex < 0) {
     return null
   }
+  // Lower indexes are higher on the stack, so everything before the primary is above it.
   val abovePrimary = visible.subList(0, primaryIndex)
   // A middle pane needs a record of its own and at least one record above it for the right pane.
   val secondaryIndex =
@@ -561,7 +636,17 @@ internal sealed interface PaneArg<out T : NavArgument> : NavArgument {
 /** The placeholder's screen. It never enters the back stack. */
 internal data object PanePlaceholderScreen : Screen
 
-/** The records of the right pane of [panes] (top first), over a placeholder. */
+/**
+ * The records of the right pane of [panes] (top first), over a placeholder.
+ *
+ * The placeholder is the root of this stack. The delegate then treats the first record in the right
+ * pane as a push over it, so that record gets an enter transition, and a pop back to the left
+ * pane's record alone plays as a pop to the placeholder.
+ *
+ * For a right pane of `[Profile, Conversation]`, the delegate gets `Profile` as active, with
+ * `Conversation` and then the placeholder behind it. For an empty right pane, the placeholder is
+ * the only entry.
+ */
 private fun <T : NavArgument> rightPaneStack(
   args: NavStackList<T>,
   panes: Panes<T>,

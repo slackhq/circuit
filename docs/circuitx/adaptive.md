@@ -52,6 +52,16 @@ data class PetDetailScreen(val id: Long) : PaneScreen {
 On a wide window, the left pane shows the list. The right pane passes the detail, and every screen
 above it, to the wrapped decoration. Transitions and back gestures apply to the right pane only.
 
+```
+Narrow window             Wide window
++-----------+             +-----------+---------------------+
+|           |             |           |                     |
+|  Detail   |             |   List    |       Detail        |
+|  (top of  |             |           |                     |
+|   stack)  |             |           |                     |
++-----------+             +-----------+---------------------+
+```
+
 ## Navigation rails and bars
 
 Put app-wide navigation, like a navigation rail, outside `NavigableCircuitContent`. Material's
@@ -69,13 +79,33 @@ owns the layout, insets, record lifecycle, and animation scopes.
 
 `ListDetailPaneStrategy` is the built-in strategy.
 
-- It splits a window that has room for two panes and is at least 480 dp tall. Change the height with
+- It splits a window that has room for two panes and is at least 480dp tall. Change the height with
   `minHeightDp`.
 - The left pane takes the record just below the topmost run of screens that have a `PaneStyle`.
 - `LIST_DETAIL` gives the left pane a set width. `SUPPORTING` gives the right pane a set width.
 - `EXTRA` opens a third pane when the window has room for three. See [Three panes](#three-panes).
 - The panes split at a vertical hinge. A window with a hinge shows two panes at most.
 - A screen with no style, above the root, fills the window.
+
+The style of a screen decides which pane gets the set width.
+
+```
+LIST_DETAIL: the list is narrow        SUPPORTING: the panel is narrow
++---------+---------------------+      +---------------------+---------+
+|         |                     |      |                     |         |
+|  List   |       Detail        |      |        Main         |  Panel  |
+|         |                     |      |                     |         |
++---------+---------------------+      +---------------------+---------+
+ 360dp     the rest                     the rest              360dp
+
+EXTRA, on a window with room for three panes
++---------+---------------------+---------+
+|         |                     |         |
+|  List   |       Detail        |  Extra  |
+|         |                     |         |
++---------+---------------------+---------+
+ 412dp     the rest              412dp
+```
 
 To keep feature modules free of this artifact, pass a lookup in place of the `PaneScreen` marker.
 
@@ -93,11 +123,11 @@ during measure.
 A `PaneWindow` tells the strategy how many panes fit (`maxPanes`) and how wide a pane is
 (`preferredPaneWidth`). The default window takes both from Material's pane guidance.
 
-| Window width       | Panes | Pane width |
-|--------------------|-------|------------|
-| Below 840 dp       | 1     |            |
-| 840 dp to 1199 dp  | 2     | 360 dp     |
-| 1200 dp and wider  | 3     | 412 dp     |
+| Window width     | Panes | Pane width |
+|------------------|-------|------------|
+| Below 840dp      | 1     |            |
+| 840dp to 1199dp  | 2     | 360dp      |
+| 1200dp and wider | 3     | 412dp      |
 
 To use other values, pass a `window` function to `PaneNavDecoration`, or pass widths to
 `ListDetailPaneStrategy`.
@@ -115,6 +145,19 @@ A scene carries a `PaneSplit`, which tells the decoration where the left pane en
 | `Fixed`        | A width that the strategy chose                 |
 | `AtHinge`      | Up to the first hinge, or half the window       |
 | `PrimaryWraps` | The width that the left pane's content asks for |
+
+```
+Fixed                          AtHinge                        PrimaryWraps
++-------+---------------+      +-----------+-+-----------+    +--+------+------------+
+|       |               |      |           |h|           |    |  |      |            |
+| Left  |     Right     |      |   Left    |i|   Right   |    |R | List |   Right    |
+|       |               |      |           |n|           |    |a |      |            |
+|       |               |      |           |g|           |    |i |      |            |
+|       |               |      |           |e|           |    |l |      |            |
++-------+---------------+      +-----------+-+-----------+    +--+------+------------+
+ width from the strategy        panes end at the hinge         left pane is as wide
+                                                               as its content
+```
 
 Use `PrimaryWraps` when the left pane holds more than one sized part.
 `ListDetailPaneStrategy(listPaneSizesItself = true)` returns it for `LIST_DETAIL`.
@@ -174,12 +217,26 @@ val shareElements = LocalPaneRole.current == PaneRole.SINGLE
 
 With only the left pane's record on the stack, that record fills the window. This suits a grid
 that opens a panel on a pick. To keep the right pane visible, like for a list beside its detail,
-set a placeholder. `ListDetailPaneStrategy` takes one for all screens. A screen can also
-set one through `LocalPaneHost`.
+set a placeholder.
+
+```
+No placeholder                         With a placeholder
++-------------------------------+      +---------+---------------------+
+|                               |      |         |                     |
+|             Grid              |      |  List   |   "Select a pet"    |
+|                               |      |         |                     |
++-------------------------------+      +---------+---------------------+
+```
+
+`ListDetailPaneStrategy` takes a placeholder for all screens. A screen can also set one through
+`LocalPaneHost`.
 
 ```kotlin
 host.placeholder = { Text("Select a pet") }
 ```
+
+When a screen opens beside the left pane, the left pane resizes over a few frames and the new
+pane slides in from the end edge.
 
 A screen that switches content, like a tab host, should set `placeholder` in the same event. The
 next frame then lays out at the final widths.

@@ -18,6 +18,7 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
@@ -30,7 +31,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /** Tests for the rules in the [NavDecoration] KDoc. */
-@OptIn(ExperimentalTestApi::class)
+@OptIn(ExperimentalTestApi::class, ExperimentalCircuitApi::class)
 @RunWith(ComposeUiTestRunner::class)
 class NavDecorationContractTest {
 

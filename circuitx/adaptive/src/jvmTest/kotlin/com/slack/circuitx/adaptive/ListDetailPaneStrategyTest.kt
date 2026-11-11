@@ -34,6 +34,11 @@ class ListDetailPaneStrategyTest {
       get() = PaneStyle.SUPPORTING
   }
 
+  private data class Extra(val id: Int) : PaneScreen {
+    override val paneStyle: PaneStyle
+      get() = PaneStyle.EXTRA
+  }
+
   private data class Arg(override val screen: Screen) : NavArgument {
     override val key: String
       get() = screen.toString()
@@ -42,7 +47,9 @@ class ListDetailPaneStrategyTest {
   private val phone = DpSize(411.dp, 900.dp)
   private val portraitTablet = DpSize(744.dp, 1133.dp)
   private val foldOpen = DpSize(851.dp, 882.dp)
-  private val desktop = DpSize(1200.dp, 800.dp)
+  private val desktop = DpSize(1100.dp, 800.dp)
+  /** Wide enough for three panes. */
+  private val large = DpSize(1400.dp, 900.dp)
 
   private val strategy = ListDetailPaneStrategy()
 
@@ -70,14 +77,17 @@ class ListDetailPaneStrategyTest {
     val scene = scene(desktop, Detail(1), Home)
     assertThat(scene).isNotNull()
     assertThat(scene!!.primaryKey).isEqualTo(Arg(Home).key)
-    assertThat(scene.fixedWidth).isEqualTo(400.dp)
+    assertThat(scene.fixedWidth).isEqualTo(360.dp)
   }
 
   @Test
-  fun listPaneWidthScalesWithTheWindow() {
-    // 851 * 0.4
-    assertThat(scene(foldOpen, Detail(1), Home)!!.fixedWidth).isEqualTo(851.dp * 0.4f)
-    assertThat(scene(DpSize(2000.dp, 900.dp), Detail(1), Home)!!.fixedWidth).isEqualTo(400.dp)
+  fun listPaneTakesThePreferredPaneWidthOfTheWindow() {
+    assertThat(scene(foldOpen, Detail(1), Home)!!.fixedWidth).isEqualTo(360.dp)
+    // Material gives wider panes from the large width class
+    assertThat(scene(large, Detail(1), Home)!!.fixedWidth).isEqualTo(412.dp)
+    val custom = ListDetailPaneStrategy(listPaneWidth = 300.dp)
+    assertThat(custom.scene(PaneWindow(desktop), stack(Detail(1), Home))!!.fixedWidth)
+      .isEqualTo(300.dp)
   }
 
   @Test
@@ -94,18 +104,18 @@ class ListDetailPaneStrategyTest {
 
   @Test
   fun supportingPaneLeavesMostOfTheWidthToThePrimary() {
-    // The right pane takes 1200 * 0.33, which is within its limits.
-    assertThat(scene(desktop, Supporting(1), Home)!!.fixedWidth)
-      .isEqualTo(1200.dp - 1200.dp * 0.33f)
-    // 851 * 0.33 is under the 320dp minimum.
-    assertThat(scene(foldOpen, Supporting(1), Home)!!.fixedWidth).isEqualTo(851.dp - 320.dp)
+    // The right pane takes the preferred pane width.
+    assertThat(scene(desktop, Supporting(1), Home)!!.fixedWidth).isEqualTo(1100.dp - 360.dp)
+    val custom = ListDetailPaneStrategy(supportingPaneWidth = 320.dp)
+    assertThat(custom.scene(PaneWindow(desktop), stack(Supporting(1), Home))!!.fixedWidth)
+      .isEqualTo(1100.dp - 320.dp)
   }
 
   @Test
   fun rootAloneKeepsThePanes() {
     val scene = scene(desktop, Home)
     assertThat(scene!!.primaryKey).isEqualTo(Arg(Home).key)
-    assertThat(scene.fixedWidth).isEqualTo(400.dp)
+    assertThat(scene.fixedWidth).isEqualTo(360.dp)
   }
 
   @Test
@@ -129,7 +139,7 @@ class ListDetailPaneStrategyTest {
   @Test
   fun bottomOfTheRunPicksTheStyle() {
     val scene = scene(desktop, Detail(1), Supporting(1), Home)
-    assertThat(scene!!.fixedWidth).isEqualTo(1200.dp - 1200.dp * 0.33f)
+    assertThat(scene!!.fixedWidth).isEqualTo(1100.dp - 360.dp)
   }
 
   @Test
@@ -156,14 +166,63 @@ class ListDetailPaneStrategyTest {
   @Test
   fun hingeTooCloseToAnEdgeIsIgnored() {
     val hinge = DpRect(200.dp, 0.dp, 211.dp, 882.dp)
-    assertThat(scene(foldOpen, Detail(1), Home, hinge = hinge)!!.split)
+    val guarded = ListDetailPaneStrategy(minHingePaneWidth = 280.dp)
+    val window = PaneWindow(foldOpen, listOf(hinge))
+    assertThat(guarded.scene(window, stack(Detail(1), Home))!!.split)
       .isInstanceOf<PaneSplit.Fixed>()
   }
 
   @Test
-  fun breakpointsAreConfigurable() {
-    val narrow = ListDetailPaneStrategy(minWidthDp = 600, minHeightDp = 0)
-    val window = PaneWindow(portraitTablet)
-    assertThat(narrow.scene(window, stack(Detail(1), Home))).isNotNull()
+  fun windowDecidesHowManyPanesFit() {
+    val base = PaneWindow(portraitTablet)
+    assertThat(base.maxPanes).isEqualTo(1)
+    val twoPanes =
+      PaneWindow(
+        size = base.size,
+        sizeClass = base.sizeClass,
+        separatingHinges = emptyList(),
+        maxPanes = 2,
+        preferredPaneWidth = base.preferredPaneWidth,
+      )
+    assertThat(strategy.scene(twoPanes, stack(Detail(1), Home))).isNotNull()
+  }
+
+  @Test
+  fun shortWindowsShowOneRecord() {
+    val landscapePhone = PaneWindow(DpSize(900.dp, 400.dp))
+    assertThat(strategy.scene(landscapePhone, stack(Detail(1), Home))).isNull()
+    val anyHeight = ListDetailPaneStrategy(minHeightDp = 0)
+    assertThat(anyHeight.scene(landscapePhone, stack(Detail(1), Home))).isNotNull()
+  }
+
+  @Test
+  fun extraScreenOpensAThirdPaneOnALargeWindow() {
+    val scene = scene(large, Extra(1), Detail(1), Home)!!
+    assertThat(scene.primaryKey).isEqualTo(Arg(Home).key)
+    assertThat(scene.secondaryKey).isEqualTo(Arg(Detail(1)).key)
+    assertThat(scene.rightPaneWidth).isEqualTo(412.dp)
+  }
+
+  @Test
+  fun extraScreenStacksWhenTheWindowFitsTwoPanes() {
+    val scene = scene(desktop, Extra(1), Detail(1), Home)!!
+    assertThat(scene.primaryKey).isEqualTo(Arg(Home).key)
+    assertThat(scene.secondaryKey).isNull()
+    val hinge = DpRect(690.dp, 0.dp, 710.dp, 900.dp)
+    assertThat(scene(large, Extra(1), Detail(1), Home, hinge = hinge)!!.secondaryKey).isNull()
+  }
+
+  @Test
+  fun recordBelowTheLowestExtraTakesTheMiddlePane() {
+    val scene = scene(large, Extra(2), Extra(1), Detail(2), Detail(1), Home)!!
+    assertThat(scene.secondaryKey).isEqualTo(Arg(Detail(2)).key)
+  }
+
+  @Test
+  fun extraScreenNeedsADetailBelowIt() {
+    // Directly above the root, it is the detail
+    assertThat(scene(large, Extra(1), Home)!!.secondaryKey).isNull()
+    // A supporting pane keeps two panes
+    assertThat(scene(large, Extra(1), Supporting(1), Home)!!.secondaryKey).isNull()
   }
 }

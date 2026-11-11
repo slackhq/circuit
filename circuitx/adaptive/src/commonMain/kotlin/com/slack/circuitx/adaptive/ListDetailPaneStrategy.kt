@@ -4,10 +4,10 @@ package com.slack.circuitx.adaptive
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.coerceIn
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.takeOrElse
 import androidx.window.core.layout.WindowSizeClass.Companion.HEIGHT_DP_MEDIUM_LOWER_BOUND
-import androidx.window.core.layout.WindowSizeClass.Companion.WIDTH_DP_EXPANDED_LOWER_BOUND
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
@@ -20,6 +20,13 @@ public enum class PaneStyle {
 
   /** Extra information about the screen below, which keeps most of the width. */
   SUPPORTING,
+
+  /**
+   * More content for an open detail, like a profile opened from a conversation. A window with room
+   * for three panes shows it in a third pane, beside the list and the detail. Other windows stack
+   * it over the detail.
+   */
+  EXTRA,
 }
 
 /**
@@ -34,29 +41,10 @@ public interface PaneScreen : Screen {
   public val paneStyle: PaneStyle
 }
 
-/** The default pane sizes of [ListDetailPaneStrategy]. */
-@ExperimentalCircuitAdaptiveApi
-public object ListDetailPaneDefaults {
-  /** The left pane's share of the width for [PaneStyle.LIST_DETAIL]. */
-  public const val ListPaneFraction: Float = 0.4f
-
-  /** Limits of the left pane's width for [PaneStyle.LIST_DETAIL]. */
-  public val ListPaneWidthRange: ClosedRange<Dp> = 280.dp..400.dp
-
-  /** The right pane's share of the width for [PaneStyle.SUPPORTING]. */
-  public const val SupportingPaneFraction: Float = 0.33f
-
-  /** Limits of the right pane's width for [PaneStyle.SUPPORTING]. */
-  public val SupportingPaneWidthRange: ClosedRange<Dp> = 320.dp..400.dp
-
-  /** The narrowest pane to show on either side of a hinge. */
-  public val MinHingePaneWidth: Dp = 280.dp
-}
-
 /**
- * Shows a screen beside the screens that open from it, on windows at least [minWidthDp] wide and
- * [minHeightDp] tall. The defaults are Material's expanded width and medium height, which most
- * tablets reach in landscape.
+ * Shows a screen beside the screens that open from it, on windows with room for two panes
+ * ([PaneWindow.maxPanes]) that are at least [minHeightDp] tall. With the default [PaneWindow], that
+ * is Material's expanded width, which most tablets reach in landscape.
  *
  * The left pane takes the record just below the topmost run of records that have a [PaneStyle]. For
  * the stack `Detail, List, Home` where only `Detail` has a style, `List` takes the left pane and
@@ -66,36 +54,41 @@ public object ListDetailPaneDefaults {
  * [PaneHost.placeholder] before the first pick. A stack whose top record has no style, and is not
  * the root, shows only that record.
  *
- * The panes split at the first hinge when [minHingePaneWidth] fits on both sides of it.
+ * On a window with room for three panes, a [PaneStyle.EXTRA] record above a list's detail opens a
+ * third pane. The record just below the lowest such record takes the middle pane.
+ *
+ * The panes split at the first hinge when [minHingePaneWidth] fits on both sides of it. A window
+ * with a hinge shows two panes at most.
+ *
+ * Pane widths default to [PaneWindow.preferredPaneWidth], which is Material's pane width for the
+ * default [PaneWindow].
  *
  * @param paneStyle Returns the style of a screen, or null when it has none.
- * @param listPaneFraction The left pane's share of the width for [PaneStyle.LIST_DETAIL].
- * @param listPaneWidthRange Limits of the left pane's width for [PaneStyle.LIST_DETAIL].
+ * @param minHeightDp The shortest window that splits. The default is the medium height class, which
+ *   keeps phones in landscape on one pane.
+ * @param listPaneWidth Width of the left pane for [PaneStyle.LIST_DETAIL].
  * @param listPaneSizesItself Lets the left pane of [PaneStyle.LIST_DETAIL] take the width its
- *   content asks for, in place of [listPaneFraction] and [listPaneWidthRange]. See
- *   [PaneSplit.PrimaryWraps].
- * @param supportingPaneFraction The right pane's share of the width for [PaneStyle.SUPPORTING].
- * @param supportingPaneWidthRange Limits of the right pane's width for [PaneStyle.SUPPORTING].
+ *   content asks for, in place of [listPaneWidth]. See [PaneSplit.PrimaryWraps].
+ * @param supportingPaneWidth Width of the right pane for [PaneStyle.SUPPORTING].
+ * @param extraPaneWidth Width of the third pane for [PaneStyle.EXTRA].
+ * @param minHingePaneWidth The narrowest pane to show on either side of a hinge.
  * @param placeholder Draws the right pane while no record is open there, or null to give the left
  *   pane the full width.
  */
 @ExperimentalCircuitAdaptiveApi
 public class ListDetailPaneStrategy(
   private val paneStyle: (Screen) -> PaneStyle? = { (it as? PaneScreen)?.paneStyle },
-  private val minWidthDp: Int = WIDTH_DP_EXPANDED_LOWER_BOUND,
   private val minHeightDp: Int = HEIGHT_DP_MEDIUM_LOWER_BOUND,
-  private val listPaneFraction: Float = ListDetailPaneDefaults.ListPaneFraction,
-  private val listPaneWidthRange: ClosedRange<Dp> = ListDetailPaneDefaults.ListPaneWidthRange,
+  private val listPaneWidth: Dp = Dp.Unspecified,
   private val listPaneSizesItself: Boolean = false,
-  private val supportingPaneFraction: Float = ListDetailPaneDefaults.SupportingPaneFraction,
-  private val supportingPaneWidthRange: ClosedRange<Dp> =
-    ListDetailPaneDefaults.SupportingPaneWidthRange,
-  private val minHingePaneWidth: Dp = ListDetailPaneDefaults.MinHingePaneWidth,
+  private val supportingPaneWidth: Dp = Dp.Unspecified,
+  private val extraPaneWidth: Dp = Dp.Unspecified,
+  private val minHingePaneWidth: Dp = 0.dp,
   private val placeholder: (@Composable () -> Unit)? = null,
 ) : PaneStrategy {
 
   override fun scene(window: PaneWindow, stack: NavStackList<out NavArgument>): PaneScene? {
-    if (!window.sizeClass.isAtLeastBreakpoint(minWidthDp, minHeightDp)) {
+    if (window.maxPanes < 2 || !window.sizeClass.isHeightAtLeastBreakpoint(minHeightDp)) {
       return null
     }
     // Top first, root last. Forward items stay hidden, as Circuit shows the active record.
@@ -121,29 +114,33 @@ public class ListDetailPaneStrategy(
       when {
         hinge != null -> PaneSplit.AtHinge
         style == PaneStyle.SUPPORTING -> {
-          PaneSplit.Fixed(
-            width -
-              (width * supportingPaneFraction).coerceIn(
-                supportingPaneWidthRange.start,
-                supportingPaneWidthRange.endInclusive,
-              )
-          )
+          val supportingWidth = supportingPaneWidth.takeOrElse { window.preferredPaneWidth }
+          PaneSplit.Fixed((width - supportingWidth).coerceAtLeast(0.dp))
         }
         listPaneSizesItself -> PaneSplit.PrimaryWraps()
-        // The detail gets most of the width, so a grid beside the list keeps room for its columns.
-        else -> {
-          PaneSplit.Fixed(
-            (width * listPaneFraction).coerceIn(
-              listPaneWidthRange.start,
-              listPaneWidthRange.endInclusive,
-            )
-          )
-        }
+        else -> PaneSplit.Fixed(listPaneWidth.takeOrElse { window.preferredPaneWidth })
+      }
+    // The record below the lowest EXTRA record of the run, when the window fits a third pane. A
+    // supporting pane already takes its width from the main pane, so it gets no third pane.
+    val secondaryIndex =
+      if (window.maxPanes >= 3 && hinge == null && style != PaneStyle.SUPPORTING) {
+        (runLength - 2 downTo 0)
+          .firstOrNull { paneStyle(visible[it].screen) == PaneStyle.EXTRA }
+          ?.let { it + 1 }
+      } else {
+        null
       }
     return PaneScene(
       primaryKey = visible[runLength].key,
       split = split,
       placeholder = placeholder,
+      secondaryKey = secondaryIndex?.let { visible[it].key },
+      rightPaneWidth =
+        if (secondaryIndex != null) {
+          extraPaneWidth.takeOrElse { window.preferredPaneWidth }
+        } else {
+          Dp.Unspecified
+        },
     )
   }
 }

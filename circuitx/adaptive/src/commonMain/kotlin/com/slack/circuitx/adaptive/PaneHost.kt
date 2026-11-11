@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.unit.Dp
 import com.slack.circuit.runtime.screen.Screen
 
 /** Where a record renders. Screens read it to adapt back buttons and shared elements. */
@@ -23,11 +24,23 @@ public enum class PaneRole {
   /** The screen in the left pane. */
   PRIMARY,
 
-  /** The bottom screen of the right pane, opened from the primary screen. */
+  /**
+   * The screen opened from the primary screen. It is the bottom screen of the right pane with two
+   * panes, and it takes the middle pane with three.
+   */
   DETAIL_ROOT,
 
-  /** A screen pushed over another screen in the right pane. */
+  /**
+   * A screen pushed over the detail. It is in the right pane with two panes, and in the middle pane
+   * or hidden below it with three.
+   */
   DETAIL_STACKED,
+
+  /** The bottom screen of the third pane, opened from a detail. */
+  EXTRA_ROOT,
+
+  /** A screen pushed over another screen in the third pane. */
+  EXTRA_STACKED,
 }
 
 /**
@@ -50,8 +63,13 @@ public class PaneState(
    * The screen in the left pane must then choose its own width.
    */
   public val primarySizesItself: Boolean = false,
+  /**
+   * The width for a pane that does not take the remaining width, from [PaneWindow]. A left pane
+   * that sizes itself can give it to its list. It is [Dp.Unspecified] outside a decoration.
+   */
+  public val preferredPaneWidth: Dp = Dp.Unspecified,
 ) {
-  /** The window shows two panes. */
+  /** The window shows more than one pane. */
   public val isSplit: Boolean
     get() = scene != null
 
@@ -59,19 +77,21 @@ public class PaneState(
     return other is PaneState &&
       scene == other.scene &&
       detailRoot == other.detailRoot &&
-      primarySizesItself == other.primarySizesItself
+      primarySizesItself == other.primarySizesItself &&
+      preferredPaneWidth == other.preferredPaneWidth
   }
 
   override fun hashCode(): Int {
     var result = scene.hashCode()
     result = 31 * result + detailRoot.hashCode()
     result = 31 * result + primarySizesItself.hashCode()
+    result = 31 * result + preferredPaneWidth.hashCode()
     return result
   }
 
   override fun toString(): String {
     return "PaneState(scene=$scene, detailRoot=$detailRoot, " +
-      "primarySizesItself=$primarySizesItself)"
+      "primarySizesItself=$primarySizesItself, preferredPaneWidth=$preferredPaneWidth)"
   }
 
   public companion object {
@@ -118,7 +138,7 @@ public class PaneHost {
    */
   public var placeholder: (@Composable () -> Unit)? by mutableStateOf(null)
 
-  /** The window shows two panes. */
+  /** The window shows more than one pane. */
   public val isSplit: Boolean
     get() = scene != null
 

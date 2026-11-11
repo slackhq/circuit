@@ -47,6 +47,7 @@ kotlin {
         api(libs.androidx.window.core)
         implementation(libs.compose.foundation)
         implementation(libs.compose.material3.adaptive)
+        implementation(libs.compose.material3.adaptive.layout)
         implementation(projects.circuitSharedElements)
       }
     }

@@ -19,6 +19,8 @@ androidx.compose.foundation:foundation-layout-android
 androidx.compose.foundation:foundation-layout
 androidx.compose.foundation:foundation
 androidx.compose.material3.adaptive:adaptive-android
+androidx.compose.material3.adaptive:adaptive-layout-android
+androidx.compose.material3.adaptive:adaptive-layout
 androidx.compose.material3.adaptive:adaptive
 androidx.compose.runtime:runtime-android
 androidx.compose.runtime:runtime-annotation-android
@@ -107,6 +109,8 @@ org.jetbrains.compose.foundation:foundation-layout-android
 org.jetbrains.compose.foundation:foundation-layout
 org.jetbrains.compose.foundation:foundation
 org.jetbrains.compose.material3.adaptive:adaptive-android
+org.jetbrains.compose.material3.adaptive:adaptive-layout-android
+org.jetbrains.compose.material3.adaptive:adaptive-layout
 org.jetbrains.compose.material3.adaptive:adaptive
 org.jetbrains.compose.runtime:runtime-android
 org.jetbrains.compose.runtime:runtime-saveable-android

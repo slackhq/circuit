@@ -11,9 +11,9 @@ import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companio
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companion.SuccessConsumed
 
 /**
- * Replaces the open detail when another screen of the same type opens while [host] shows two panes.
- * Picking a second list item then swaps the detail, and back returns to the empty right pane in one
- * step.
+ * Replaces the open detail when another screen of the same type opens while [host] shows a split
+ * layout. Picking a second list item then swaps the detail, and back returns to the empty right
+ * pane in one step.
  *
  * The rule looks only at the records in the right pane:
  * - A screen of a type that is not there is pushed as usual.

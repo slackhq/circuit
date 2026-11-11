@@ -7,21 +7,11 @@ public final class com/slack/circuitx/adaptive/ComposableSingletons$PaneNavDecor
 public abstract interface annotation class com/slack/circuitx/adaptive/ExperimentalCircuitAdaptiveApi : java/lang/annotation/Annotation {
 }
 
-public final class com/slack/circuitx/adaptive/ListDetailPaneDefaults {
-	public static final field $stable I
-	public static final field INSTANCE Lcom/slack/circuitx/adaptive/ListDetailPaneDefaults;
-	public static final field ListPaneFraction F
-	public static final field SupportingPaneFraction F
-	public final fun getListPaneWidthRange ()Lkotlin/ranges/ClosedRange;
-	public final fun getMinHingePaneWidth-D9Ej5fM ()F
-	public final fun getSupportingPaneWidthRange ()Lkotlin/ranges/ClosedRange;
-}
-
 public final class com/slack/circuitx/adaptive/ListDetailPaneStrategy : com/slack/circuitx/adaptive/PaneStrategy {
 	public static final field $stable I
 	public fun <init> ()V
-	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;IIFLkotlin/ranges/ClosedRange;ZFLkotlin/ranges/ClosedRange;FLkotlin/jvm/functions/Function2;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;IIFLkotlin/ranges/ClosedRange;ZFLkotlin/ranges/ClosedRange;FLkotlin/jvm/functions/Function2;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;IFZFFFLkotlin/jvm/functions/Function2;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;IFZFFFLkotlin/jvm/functions/Function2;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun scene (Lcom/slack/circuitx/adaptive/PaneWindow;Lcom/slack/circuit/runtime/navigation/NavStackList;)Lcom/slack/circuitx/adaptive/PaneScene;
 }
 
@@ -41,11 +31,6 @@ public final class com/slack/circuitx/adaptive/PaneHostKt {
 	public static final fun getLocalPaneState ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
-public final class com/slack/circuitx/adaptive/PaneModifiersKt {
-	public static final fun listPaneWidth (Landroidx/compose/ui/Modifier;FLkotlin/ranges/ClosedRange;)Landroidx/compose/ui/Modifier;
-	public static synthetic fun listPaneWidth$default (Landroidx/compose/ui/Modifier;FLkotlin/ranges/ClosedRange;ILjava/lang/Object;)Landroidx/compose/ui/Modifier;
-}
-
 public final class com/slack/circuitx/adaptive/PaneNavDecoration : com/slack/circuit/foundation/NavDecoration {
 	public static final field $stable I
 	public fun <init> (Lcom/slack/circuitx/adaptive/PaneStrategy;Lcom/slack/circuit/foundation/NavDecoration;Lcom/slack/circuitx/adaptive/PaneHost;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function2;)V
@@ -62,6 +47,8 @@ public final class com/slack/circuitx/adaptive/PaneReplaceInterceptor : com/slac
 public final class com/slack/circuitx/adaptive/PaneRole : java/lang/Enum {
 	public static final field DETAIL_ROOT Lcom/slack/circuitx/adaptive/PaneRole;
 	public static final field DETAIL_STACKED Lcom/slack/circuitx/adaptive/PaneRole;
+	public static final field EXTRA_ROOT Lcom/slack/circuitx/adaptive/PaneRole;
+	public static final field EXTRA_STACKED Lcom/slack/circuitx/adaptive/PaneRole;
 	public static final field PRIMARY Lcom/slack/circuitx/adaptive/PaneRole;
 	public static final field SINGLE Lcom/slack/circuitx/adaptive/PaneRole;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
@@ -71,11 +58,13 @@ public final class com/slack/circuitx/adaptive/PaneRole : java/lang/Enum {
 
 public final class com/slack/circuitx/adaptive/PaneScene {
 	public static final field $stable I
-	public fun <init> (Ljava/lang/String;Lcom/slack/circuitx/adaptive/PaneSplit;Lkotlin/jvm/functions/Function2;)V
-	public synthetic fun <init> (Ljava/lang/String;Lcom/slack/circuitx/adaptive/PaneSplit;Lkotlin/jvm/functions/Function2;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lcom/slack/circuitx/adaptive/PaneSplit;Lkotlin/jvm/functions/Function2;Ljava/lang/String;FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lcom/slack/circuitx/adaptive/PaneSplit;Lkotlin/jvm/functions/Function2;Ljava/lang/String;FLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getPlaceholder ()Lkotlin/jvm/functions/Function2;
 	public final fun getPrimaryKey ()Ljava/lang/String;
+	public final fun getRightPaneWidth-D9Ej5fM ()F
+	public final fun getSecondaryKey ()Ljava/lang/String;
 	public final fun getSplit ()Lcom/slack/circuitx/adaptive/PaneSplit;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -119,10 +108,11 @@ public final class com/slack/circuitx/adaptive/PaneSplit$PrimaryWraps : com/slac
 public final class com/slack/circuitx/adaptive/PaneState {
 	public static final field $stable I
 	public static final field Companion Lcom/slack/circuitx/adaptive/PaneState$Companion;
-	public fun <init> (Lcom/slack/circuitx/adaptive/PaneScene;Lcom/slack/circuit/runtime/screen/Screen;Z)V
-	public synthetic fun <init> (Lcom/slack/circuitx/adaptive/PaneScene;Lcom/slack/circuit/runtime/screen/Screen;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcom/slack/circuitx/adaptive/PaneScene;Lcom/slack/circuit/runtime/screen/Screen;ZFILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lcom/slack/circuitx/adaptive/PaneScene;Lcom/slack/circuit/runtime/screen/Screen;ZFLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getDetailRoot ()Lcom/slack/circuit/runtime/screen/Screen;
+	public final fun getPreferredPaneWidth-D9Ej5fM ()F
 	public final fun getPrimarySizesItself ()Z
 	public final fun getScene ()Lcom/slack/circuitx/adaptive/PaneScene;
 	public fun hashCode ()I
@@ -145,6 +135,7 @@ public final class com/slack/circuitx/adaptive/PaneStrategyKt {
 }
 
 public final class com/slack/circuitx/adaptive/PaneStyle : java/lang/Enum {
+	public static final field EXTRA Lcom/slack/circuitx/adaptive/PaneStyle;
 	public static final field LIST_DETAIL Lcom/slack/circuitx/adaptive/PaneStyle;
 	public static final field SUPPORTING Lcom/slack/circuitx/adaptive/PaneStyle;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
@@ -154,8 +145,10 @@ public final class com/slack/circuitx/adaptive/PaneStyle : java/lang/Enum {
 
 public final class com/slack/circuitx/adaptive/PaneWindow {
 	public static final field $stable I
-	public synthetic fun <init> (JLandroidx/window/core/layout/WindowSizeClass;Ljava/util/List;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (JLandroidx/window/core/layout/WindowSizeClass;Ljava/util/List;IFLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getMaxPanes ()I
+	public final fun getPreferredPaneWidth-D9Ej5fM ()F
 	public final fun getSeparatingHinges ()Ljava/util/List;
 	public final fun getSize-MYxV2XQ ()J
 	public final fun getSizeClass ()Landroidx/window/core/layout/WindowSizeClass;

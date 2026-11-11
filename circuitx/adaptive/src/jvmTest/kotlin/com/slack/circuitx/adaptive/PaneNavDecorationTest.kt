@@ -86,6 +86,12 @@ class PaneNavDecorationTest {
       get() = PaneStyle.LIST_DETAIL
   }
 
+  /** A screen opened from a detail that takes a third pane when the window has room. */
+  private data class Extra(val id: Int) : PaneScreen {
+    override val paneStyle: PaneStyle
+      get() = PaneStyle.EXTRA
+  }
+
   private data class TestState(val screen: Screen) : CircuitUiState
 
   private val phone = DpSize(411.dp, 900.dp)
@@ -93,8 +99,8 @@ class PaneNavDecorationTest {
   private val portraitTablet = DpSize(744.dp, 1133.dp)
   // The test window is 1024px wide at density 1, so wider sizes would clamp
   private val tablet = DpSize(1000.dp, 700.dp)
-  /** The list pane at [tablet]: 40% of the width, limited to 400dp. */
-  private val tabletListPaneWidth = 400.dp
+  /** The list pane at [tablet]: Material's preferred pane width. */
+  private val tabletListPaneWidth = 360.dp
   private val RailWidth = 72.dp
 
   private val circuit =
@@ -105,6 +111,8 @@ class PaneNavDecorationTest {
 
   private var windowSize by mutableStateOf(phone)
   private var hinge: DpRect? = null
+  /** Overrides how many panes fit, because the test window is too narrow for three by default. */
+  private var maxPanes: Int? = null
   private val host = PaneHost()
   private var strategy: PaneStrategy = ListDetailPaneStrategy()
   /** The [PaneState] of each composition of the root screen, oldest first. */
@@ -133,7 +141,7 @@ class PaneNavDecorationTest {
                   AnimatedNavDecoration(emptyMap(), NavigatorDefaults.DefaultDecoratorFactory),
                 host = host,
                 // Material adaptive reads the real test window, which never has a hinge
-                window = { size -> PaneWindow(size, listOfNotNull(hinge)) },
+                window = { size -> testWindow(size) },
               )
             }
             NavigableCircuitContent(navigator, backStack, decoration = decoration)
@@ -141,6 +149,18 @@ class PaneNavDecorationTest {
         }
       }
     }
+  }
+
+  private fun testWindow(size: DpSize): PaneWindow {
+    val window = PaneWindow(size, listOfNotNull(hinge))
+    val panes = maxPanes ?: return window
+    return PaneWindow(
+      size = window.size,
+      sizeClass = window.sizeClass,
+      separatingHinges = window.separatingHinges,
+      maxPanes = panes,
+      preferredPaneWidth = window.preferredPaneWidth,
+    )
   }
 
   private fun ComposeUiTest.assertLabel(tag: String, role: PaneRole, taps: Int) {
@@ -310,6 +330,38 @@ class PaneNavDecorationTest {
   }
 
   @Test
+  fun windowWithRoomForThreePanesShowsAnExtraScreenInTheThird() = runComposeUiTest {
+    windowSize = tablet
+    maxPanes = 3
+    setNavContent(Root)
+    runOnIdle { navigator.goTo(Detail(1)) }
+    // Two panes until an extra screen opens
+    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 0)
+    onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth)
+    onNodeWithTag("detail1-tap").performClick()
+
+    runOnIdle { navigator.goTo(Extra(1)) }
+    assertLabel("root", PaneRole.PRIMARY, taps = 0)
+    // The detail keeps its role and its state when it moves to the middle pane
+    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 1)
+    assertLabel("extra1", PaneRole.EXTRA_ROOT, taps = 0)
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tabletListPaneWidth)
+    onNodeWithTag("extra1-container").assertWidthIsEqualTo(tabletListPaneWidth)
+    onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth * 2)
+
+    // Another screen of the same type replaces the one in the third pane
+    runOnIdle { navigator.goTo(Extra(2)) }
+    assertLabel("extra2", PaneRole.EXTRA_ROOT, taps = 0)
+    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 1)
+    onAllNodesWithTag("extra1").assertCountEquals(0)
+
+    runOnIdle { navigator.pop() }
+    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 1)
+    onAllNodesWithTag("extra2").assertCountEquals(0)
+    onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth)
+  }
+
+  @Test
   fun leftPaneCanSizeItself() = runComposeUiTest {
     windowSize = tablet
     strategy = ListDetailPaneStrategy(listPaneSizesItself = true)
@@ -318,8 +370,8 @@ class PaneNavDecorationTest {
     onNodeWithTag("root-container").assertWidthIsEqualTo(tablet.width)
 
     runOnIdle { navigator.goTo(Detail(1)) }
-    // The rail, plus 40% of the width beside it
-    val leftPaneWidth = RailWidth + (tablet.width - RailWidth) * 0.4f
+    // The rail, plus the preferred pane width for the list
+    val leftPaneWidth = RailWidth + tabletListPaneWidth
     onNodeWithTag("rail").assertWidthIsEqualTo(RailWidth)
     onNodeWithTag("root-container").assertWidthIsEqualTo(leftPaneWidth)
     onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - leftPaneWidth)
@@ -346,7 +398,8 @@ class PaneNavDecorationTest {
   /** A rail beside a list. Beside a detail, the list picks its width and the row wraps both. */
   @Composable
   private fun SelfSizedRootUi(modifier: Modifier) {
-    val sizesItself = LocalPaneState.current.primarySizesItself
+    val paneState = LocalPaneState.current
+    val sizesItself = paneState.primarySizesItself
     val role = LocalPaneRole.current
     val active = LocalRecordLifecycle.current.isActive
     val rowSize =
@@ -359,7 +412,7 @@ class PaneNavDecorationTest {
       Box(Modifier.width(RailWidth).fillMaxHeight().testTag("rail"))
       val listSize =
         if (sizesItself) {
-          Modifier.listPaneWidth()
+          Modifier.width(paneState.preferredPaneWidth)
         } else {
           Modifier.weight(1f)
         }
@@ -382,6 +435,7 @@ class PaneNavDecorationTest {
         is Detail -> "detail${screen.id}"
         is Supporting -> "supporting${screen.id}"
         is Stacked -> "stacked${screen.id}"
+        is Extra -> "extra${screen.id}"
         else -> error("Unexpected screen $screen")
       }
     if (tag == "root") {

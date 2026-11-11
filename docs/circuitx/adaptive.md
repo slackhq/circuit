@@ -52,8 +52,6 @@ data class PetDetailScreen(val id: Long) : PaneScreen {
 On a wide window, the left pane shows the list. The right pane passes the detail, and every screen
 above it, to the wrapped decoration. Transitions and back gestures apply to the right pane only.
 
-The decoration must fill the window for hinge bounds to line up with its panes.
-
 ## Navigation rails and bars
 
 Put app-wide navigation, like a navigation rail, outside `NavigableCircuitContent`. Material's
@@ -162,9 +160,10 @@ Each screen reads `LocalPaneRole` to learn where it renders.
 | `EXTRA_ROOT`     | The bottom screen of the third pane                       |
 | `EXTRA_STACKED`  | A screen above another screen in the third pane           |
 
-A screen with the `DETAIL_ROOT` role sits beside its list. Hide its back arrow there, because the
-list is already on screen. Also turn off shared elements between panes. A list beside its detail
-stays visible, so its items have nothing to share.
+A screen with the `DETAIL_ROOT` role sits beside the screen that opened it. For a list's detail,
+hide its back arrow there, because the list is already on screen. A supporting panel can show a
+close button instead. Also turn off shared elements between panes. A list beside its detail stays
+visible, so its items have nothing to share.
 
 ```kotlin
 val showsBackArrow = LocalPaneRole.current != PaneRole.DETAIL_ROOT
@@ -173,8 +172,9 @@ val shareElements = LocalPaneRole.current == PaneRole.SINGLE
 
 ## Empty right pane
 
-With only the left pane's record on the stack, that record fills the window. To keep the right pane
-visible, set a placeholder. `ListDetailPaneStrategy` takes one for all screens. A screen can also
+With only the left pane's record on the stack, that record fills the window. This suits a grid
+that opens a panel on a pick. To keep the right pane visible, like for a list beside its detail,
+set a placeholder. `ListDetailPaneStrategy` takes one for all screens. A screen can also
 set one through `LocalPaneHost`.
 
 ```kotlin

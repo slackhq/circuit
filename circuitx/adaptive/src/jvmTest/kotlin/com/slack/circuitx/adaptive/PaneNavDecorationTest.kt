@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicText
@@ -28,6 +29,7 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.assertWidthIsEqualTo
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
@@ -111,6 +113,8 @@ class PaneNavDecorationTest {
 
   private var windowSize by mutableStateOf(phone)
   private var hinge: DpRect? = null
+  /** Width of app chrome before the decoration, like a navigation rail. */
+  private var leadingWidth by mutableStateOf(0.dp)
   /** Overrides how many panes fit, because the test window is too narrow for three by default. */
   private var maxPanes: Int? = null
   private val host = PaneHost()
@@ -127,7 +131,7 @@ class PaneNavDecorationTest {
       CircuitCompositionLocals(circuit) {
         // Apps wrap navigation in this, which adds a lookahead pass to every layout
         SharedElementTransitionLayout {
-          Box(Modifier.size(windowSize)) {
+          Box(Modifier.size(windowSize).padding(start = leadingWidth)) {
             val backStack = rememberSaveableBackStack(root)
             val circuitNavigator = rememberCircuitNavigator(backStack) {}
             navigator =
@@ -271,6 +275,48 @@ class PaneNavDecorationTest {
     // Both are composed mid-transition, and the leaving one hasn't become a stacked screen
     onNodeWithTag("detail1").assertTextContains("role=DETAIL_ROOT", substring = true)
     onNodeWithTag("detail2").assertTextContains("role=DETAIL_ROOT", substring = true)
+  }
+
+  @Test
+  fun hingeLinesUpWhenTheDecorationStartsPastTheWindowEdge() = runComposeUiTest {
+    windowSize = tablet
+    leadingWidth = 80.dp
+    // In window coordinates, so 400dp from the start of the decoration
+    hinge = DpRect(480.dp, 0.dp, 500.dp, 700.dp)
+    setNavContent(Root)
+    runOnIdle { navigator.goTo(Detail(1)) }
+
+    onNodeWithTag("root-container").assertWidthIsEqualTo(400.dp)
+    onNodeWithTag("detail1-container").assertWidthIsEqualTo(500.dp)
+  }
+
+  @Test
+  fun panelSlidesInWhileThePrimaryResizes() = runComposeUiTest {
+    windowSize = tablet
+    // No placeholder, so the root has the full width until a detail opens
+    setNavContent(Root)
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tablet.width)
+
+    mainClock.autoAdvance = false
+    runOnIdle { navigator.goTo(Detail(1)) }
+    repeat(4) { mainClock.advanceTimeByFrame() }
+    // Part of the way there: the root is narrower, and has not reached its final width
+    val midBounds = onNodeWithTag("root-container").getUnclippedBoundsInRoot()
+    val midWidth = midBounds.right - midBounds.left
+    check(midWidth < tablet.width) { "Expected the root to start shrinking, was $midWidth" }
+    check(midWidth > tabletListPaneWidth) { "Expected an animation, was $midWidth" }
+    // The detail keeps its final width while it slides in
+    onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth)
+
+    mainClock.autoAdvance = true
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tabletListPaneWidth)
+
+    // A resize jumps to the new widths
+    windowSize = DpSize(900.dp, 700.dp)
+    mainClock.autoAdvance = false
+    mainClock.advanceTimeByFrame()
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tabletListPaneWidth)
+    onNodeWithTag("detail1-container").assertWidthIsEqualTo(900.dp - tabletListPaneWidth)
   }
 
   @Test

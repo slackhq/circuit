@@ -53,7 +53,8 @@ public class PaneWindow(
   /**
    * Vertical hinges that separate the display, in window coordinates. Empty on iOS and desktop.
    *
-   * The decoration must fill the window for these bounds to line up with its panes.
+   * The decoration moves them to its own coordinates before it calls a strategy, so a strategy can
+   * compare them with [size].
    */
   public val separatingHinges: List<DpRect>,
   /** How many panes fit side by side in this window. */

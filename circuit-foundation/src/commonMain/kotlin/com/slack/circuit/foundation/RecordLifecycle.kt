@@ -22,7 +22,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 public interface RecordLifecycle {
   /**
    * Whether the record is currently active. Typically this will return true when the record is the
-   * top record in the back stack.
+   * top record in the back stack and its parent record, if any, is active.
    */
   public val isActive: Boolean
 }

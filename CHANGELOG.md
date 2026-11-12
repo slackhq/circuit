@@ -6,6 +6,7 @@ Unreleased
 
 ### Fixed
 
+- **circuit-foundation:** A record in a nested `NavigableCircuitContent` is now only active (`LocalRecordLifecycle.isActive`) while its parent record is active, unless a `NavDecoration` provides its own lifecycle.
 - **circuit-serialization-reflect:** Compile an Android variant against Android SavedState to avoid a `NoSuchMethodError` when saving screens.
 
 0.39.0

@@ -7,6 +7,7 @@ package com.slack.circuit.retained
  *
  * Only defined as a top-level interface to allow non-JS targets to extend `() -> Any?`.
  */
+@MustUseReturnValues
 public actual fun interface RetainedValueProvider {
   public actual fun invoke(): Any?
 }

@@ -51,9 +51,7 @@ class RememberCircuitNavigatorTest {
         }
       }
       assertEquals(2, navigators.size)
-      navigators.single { it.peek() == TestScreen }
-      navigators.single { it.peek() == TestScreen2 }
-      Unit
+      assertEquals(setOf(TestScreen, TestScreen2), navigators.map { it.peek() }.toSet())
     }
 
   @Test

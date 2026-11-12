@@ -7,6 +7,7 @@ package com.slack.circuit.retained
  *
  * Only defined as a top-level interface to allow non-JS targets to extend `() -> Any?`.
  */
+@MustUseReturnValues
 public expect fun interface RetainedValueProvider {
   /**
    * Returns the retained value. If the value is wrapped in a holder class, this class should

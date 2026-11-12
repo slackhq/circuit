@@ -14,3 +14,54 @@ public final class com/slack/circuitx/gesturenavigation/GestureNavigationEventLi
 	public final fun getNoOp ()Lcom/slack/circuitx/gesturenavigation/GestureNavigationEventListener;
 }
 
+public final class com/slack/circuitx/gesturenavigation/SlideOverNavDecoration : com/slack/circuit/foundation/NavDecoration {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;ZLkotlin/jvm/functions/Function1;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function2;ZLkotlin/jvm/functions/Function1;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun DecoratedContent (Lcom/slack/circuit/runtime/navigation/NavStackList;Lcom/slack/circuit/runtime/Navigator;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+}
+
+public abstract interface class com/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent {
+}
+
+public final class com/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Failed : com/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/Throwable;
+	public final fun copy (Ljava/lang/String;Ljava/lang/Throwable;)Lcom/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Failed;
+	public static synthetic fun copy$default (Lcom/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Failed;Ljava/lang/String;Ljava/lang/Throwable;ILjava/lang/Object;)Lcom/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Failed;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCause ()Ljava/lang/Throwable;
+	public final fun getKey ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Settled : com/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Z)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Z
+	public final fun copy (Ljava/lang/String;Z)Lcom/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Settled;
+	public static synthetic fun copy$default (Lcom/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Settled;Ljava/lang/String;ZILjava/lang/Object;)Lcom/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Settled;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKey ()Ljava/lang/String;
+	public final fun getWarmHit ()Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Warmed : com/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lcom/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Warmed;
+	public static synthetic fun copy$default (Lcom/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Warmed;Ljava/lang/String;ILjava/lang/Object;)Lcom/slack/circuitx/gesturenavigation/SlideOverNavDecoration$WarmEvent$Warmed;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getKey ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+

@@ -18,6 +18,7 @@ import app.cash.turbine.Turbine
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.retained.retain
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
@@ -28,7 +29,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.test.runTest
 
-@OptIn(ExperimentalTestApi::class)
+@OptIn(ExperimentalTestApi::class, ExperimentalCircuitApi::class)
 @RunWith(ComposeUiTestRunner::class)
 class RecordLifeCycleTest {
 

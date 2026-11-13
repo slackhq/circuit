@@ -4,6 +4,10 @@ Changelog
 Unreleased
 ----------
 
+### New
+
+- **circuit-foundation:** Add experimental `RecordLifecycle.isVisible` and a `ProvideRecordLifecycle(isActive, isVisible)` overload, so a decoration can report whether a record is shown separately from whether it's active.
+
 ### Fixed
 
 - **circuit-foundation:** A record in a nested `NavigableCircuitContent` is now only active (`LocalRecordLifecycle.isActive`) while its parent record is active, unless a `NavDecoration` provides its own lifecycle.

@@ -568,10 +568,12 @@ private fun <R : Record> RecordContent(record: R, contentProviderState: ContentP
           when (LocalRecordLifecycleState.current) {
             RecordLifecycleState.Set -> LocalRecordLifecycle.current
             RecordLifecycleState.Unset -> {
-              val isActive =
-                LocalRecordLifecycle.current.isActive &&
-                  lastNavigator.navStack.currentRecord == record
-              rememberUpdatedRecordLifecycle(isActive)
+              val parentLifecycle = LocalRecordLifecycle.current
+              val isCurrent = lastNavigator.navStack.currentRecord == record
+              rememberUpdatedRecordLifecycle(
+                isActive = parentLifecycle.isActive && isCurrent,
+                isVisible = parentLifecycle.isVisible && isCurrent,
+              )
             }
           }
         CompositionLocalProvider(

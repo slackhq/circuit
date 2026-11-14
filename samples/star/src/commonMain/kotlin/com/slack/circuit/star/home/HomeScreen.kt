@@ -27,8 +27,9 @@ import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,13 +47,16 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntOffset
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.codegen.annotations.CircuitInject
+import com.slack.circuit.foundation.LocalCircuit
 import com.slack.circuit.foundation.NavEvent
 import com.slack.circuit.foundation.NavigableCircuitContent
+import com.slack.circuit.foundation.animation.AnimatedNavDecoration
 import com.slack.circuit.foundation.onNavEvent
 import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.Navigator.StateOptions
 import com.slack.circuit.runtime.screen.Screen
@@ -66,8 +70,16 @@ import com.slack.circuit.star.home.HomeScreen.Event.ClickNavItem
 import com.slack.circuit.star.home.HomeTestConstants.BOTTOM_NAVIGATION_TAG
 import com.slack.circuit.star.home.HomeTestConstants.NAVIGATION_RAIL_ITEM_TAG
 import com.slack.circuit.star.home.HomeTestConstants.NAVIGATION_RAIL_TAG
+import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.StarTheme
+import com.slack.circuitx.adaptive.ExperimentalCircuitAdaptiveApi
+import com.slack.circuitx.adaptive.ListDetailPaneStrategy
+import com.slack.circuitx.adaptive.PaneHost
+import com.slack.circuitx.adaptive.PaneNavDecoration
+import com.slack.circuitx.adaptive.PaneReplaceInterceptor
+import com.slack.circuitx.adaptive.PaneStyle
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
+import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 import dev.zacsweers.metro.AppScope
 import kotlin.math.roundToInt
 
@@ -102,7 +114,11 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(
+  ExperimentalSharedTransitionApi::class,
+  ExperimentalCircuitApi::class,
+  ExperimentalCircuitAdaptiveApi::class,
+)
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
@@ -137,6 +153,42 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
       }
     }
 
+    // On wide windows the pet grid keeps the full width until a pet is picked. The pet's details
+    // then open in a panel beside the grid. The back stack is the same in both layouts, so resizing
+    // the window keeps the open pet.
+    val paneHost = remember { PaneHost() }
+    val circuit = checkNotNull(LocalCircuit.current)
+    val decoration =
+      remember(circuit, paneHost) {
+        PaneNavDecoration(
+          strategy =
+            ListDetailPaneStrategy(
+              paneStyle = { screen ->
+                if (screen is PetDetailScreen) {
+                  PaneStyle.SUPPORTING
+                } else {
+                  null
+                }
+              }
+            ),
+          delegate =
+            AnimatedNavDecoration(
+              animatedScreenTransforms = circuit.animatedScreenTransforms,
+              decoratorFactory = GestureNavigationDecorationFactory(),
+            ),
+          host = paneHost,
+          divider = { VerticalDivider() },
+        )
+      }
+    // Picking another pet beside the grid replaces the open one. NavigableCircuitContent already
+    // handles back, so this navigator leaves it alone.
+    val paneNavigator =
+      rememberInterceptingNavigator(
+        navigator = navigator,
+        interceptors = remember(paneHost) { listOf(PaneReplaceInterceptor(paneHost)) },
+        enableBackHandler = false,
+      )
+
     HomeNavigationLayout(
       selectedIndex = state.selectedIndex,
       onSelectedIndex = { index -> state.eventSink(ClickNavItem(index)) },
@@ -150,10 +202,10 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
       modifier = modifier,
     ) { paddingValues ->
       NavigableCircuitContent(
-        navigator = navigator,
+        navigator = paneNavigator,
         backStack = backStack,
         modifier = Modifier.padding(paddingValues),
-        decoratorFactory = remember { GestureNavigationDecorationFactory() },
+        decoration = decoration,
       )
       contentComposed = true
     }
@@ -180,8 +232,9 @@ internal fun HomeNavigationLayout(
   navigationVisibilityFraction: Float = 1f,
   content: @Composable (PaddingValues) -> Unit,
 ) {
-  val useNavigationRail =
-    calculateWindowSizeClass().heightSizeClass == WindowHeightSizeClass.Compact
+  // A rail on the start edge from the medium width class, which covers tablets and phones in
+  // landscape. It sits outside the navigation content, so the panes share the width beside it.
+  val useNavigationRail = calculateWindowSizeClass().widthSizeClass != WindowWidthSizeClass.Compact
   val navigationContent: @Composable () -> Unit = {
     StarTheme(useDarkTheme = true) {
       NavigationVisibilityLayout(

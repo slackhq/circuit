@@ -44,6 +44,8 @@ androidx.core:core
 androidx.customview:customview-poolingcontainer
 androidx.emoji2:emoji2
 androidx.graphics:graphics-path
+androidx.graphics:graphics-shapes-android
+androidx.graphics:graphics-shapes
 androidx.interpolator:interpolator
 androidx.lifecycle:lifecycle-common-jvm
 androidx.lifecycle:lifecycle-common
@@ -60,6 +62,8 @@ androidx.lifecycle:lifecycle-viewmodel-ktx
 androidx.lifecycle:lifecycle-viewmodel-savedstate-android
 androidx.lifecycle:lifecycle-viewmodel-savedstate
 androidx.lifecycle:lifecycle-viewmodel
+androidx.navigationevent:navigationevent-android
+androidx.navigationevent:navigationevent
 androidx.profileinstaller:profileinstaller
 androidx.savedstate:savedstate-android
 androidx.savedstate:savedstate-compose-android

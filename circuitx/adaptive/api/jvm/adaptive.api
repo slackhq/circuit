@@ -11,6 +11,13 @@ public final class com/slack/circuitx/adaptive/ComposableSingletons$PaneNavDecor
 	public final fun getLambda$376499355$circuit_root_circuitx_adaptive ()Lkotlin/jvm/functions/Function4;
 }
 
+public final class com/slack/circuitx/adaptive/ComposableSingletons$PaneNavigationKt {
+	public static final field INSTANCE Lcom/slack/circuitx/adaptive/ComposableSingletons$PaneNavigationKt;
+	public fun <init> ()V
+	public final fun getLambda$-1922946995$circuit_root_circuitx_adaptive ()Lkotlin/jvm/functions/Function4;
+	public final fun getLambda$-62683907$circuit_root_circuitx_adaptive ()Lkotlin/jvm/functions/Function2;
+}
+
 public abstract interface annotation class com/slack/circuitx/adaptive/ExperimentalCircuitAdaptiveApi : java/lang/annotation/Annotation {
 }
 
@@ -49,6 +56,17 @@ public final class com/slack/circuitx/adaptive/PaneNavDecoration : com/slack/cir
 	public fun <init> (Lcom/slack/circuitx/adaptive/PaneStrategy;Lcom/slack/circuit/foundation/NavDecoration;Lcom/slack/circuitx/adaptive/PaneHost;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function2;Landroidx/compose/animation/core/FiniteAnimationSpec;Lkotlin/jvm/functions/Function4;)V
 	public synthetic fun <init> (Lcom/slack/circuitx/adaptive/PaneStrategy;Lcom/slack/circuit/foundation/NavDecoration;Lcom/slack/circuitx/adaptive/PaneHost;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function2;Landroidx/compose/animation/core/FiniteAnimationSpec;Lkotlin/jvm/functions/Function4;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun DecoratedContent (Lcom/slack/circuit/runtime/navigation/NavStackList;Lcom/slack/circuit/runtime/Navigator;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/slack/circuitx/adaptive/PaneNavigation {
+	public static final field $stable I
+	public final fun getDecoration ()Lcom/slack/circuit/foundation/NavDecoration;
+	public final fun getHost ()Lcom/slack/circuitx/adaptive/PaneHost;
+	public final fun getNavigator ()Lcom/slack/circuit/runtime/Navigator;
+}
+
+public final class com/slack/circuitx/adaptive/PaneNavigationKt {
+	public static final fun rememberPaneNavigation (Lcom/slack/circuit/runtime/Navigator;Lcom/slack/circuitx/adaptive/PaneStrategy;Lcom/slack/circuit/foundation/NavDecoration;Lcom/slack/circuitx/adaptive/PaneHost;Ljava/util/List;ZLkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function2;Landroidx/compose/animation/core/FiniteAnimationSpec;Lkotlin/jvm/functions/Function4;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuitx/adaptive/PaneNavigation;
 }
 
 public final class com/slack/circuitx/adaptive/PanePosition : java/lang/Enum {

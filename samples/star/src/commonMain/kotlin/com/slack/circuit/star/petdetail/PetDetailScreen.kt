@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -353,10 +354,17 @@ private fun ShowAnimal(
       )
     }
   }
-  when {
-    useCompactLandscapeLayout -> ShowAnimalCompactLandscape(state, scaffoldPadding, carouselContent)
-    isLandscape() -> ShowAnimalLandscape(state, scaffoldPadding, carouselContent)
-    else -> ShowAnimalPortrait(state, scaffoldPadding, carouselContent)
+  // This screen can be narrower than the window, like in a panel beside the pet grid. The
+  // side-by-side layout depends on the shape of the screen itself.
+  BoxWithConstraints(Modifier.fillMaxSize()) {
+    val isWide = maxWidth > maxHeight
+    when {
+      useCompactLandscapeLayout -> {
+        ShowAnimalCompactLandscape(state, scaffoldPadding, carouselContent)
+      }
+      isWide -> ShowAnimalLandscape(state, scaffoldPadding, carouselContent)
+      else -> ShowAnimalPortrait(state, scaffoldPadding, carouselContent)
+    }
   }
 }
 

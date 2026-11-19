@@ -131,6 +131,7 @@ nav:
       - 'Testing': docs/testing.md
   - 'CircuitX':
       - 'About': circuitx.md
+      - 'Adaptive': circuitx/adaptive.md
       - 'Android': circuitx/android.md
       - 'Effects': circuitx/effects.md
       - 'Gesture Navigation': circuitx/gesture-navigation.md

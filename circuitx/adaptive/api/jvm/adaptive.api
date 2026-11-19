@@ -4,6 +4,13 @@ public final class com/slack/circuitx/adaptive/ComposableSingletons$PaneHostKt {
 	public final fun getLambda$1296858536$circuit_root_circuitx_adaptive ()Lkotlin/jvm/functions/Function2;
 }
 
+public final class com/slack/circuitx/adaptive/ComposableSingletons$PaneNavDecorationKt {
+	public static final field INSTANCE Lcom/slack/circuitx/adaptive/ComposableSingletons$PaneNavDecorationKt;
+	public fun <init> ()V
+	public final fun getLambda$-1485847221$circuit_root_circuitx_adaptive ()Lkotlin/jvm/functions/Function2;
+	public final fun getLambda$376499355$circuit_root_circuitx_adaptive ()Lkotlin/jvm/functions/Function4;
+}
+
 public abstract interface annotation class com/slack/circuitx/adaptive/ExperimentalCircuitAdaptiveApi : java/lang/annotation/Annotation {
 }
 
@@ -37,6 +44,13 @@ public final class com/slack/circuitx/adaptive/PaneHostKt {
 	public static final fun getLocalPaneState ()Landroidx/compose/runtime/ProvidableCompositionLocal;
 }
 
+public final class com/slack/circuitx/adaptive/PaneNavDecoration : com/slack/circuit/foundation/NavDecoration {
+	public static final field $stable I
+	public fun <init> (Lcom/slack/circuitx/adaptive/PaneStrategy;Lcom/slack/circuit/foundation/NavDecoration;Lcom/slack/circuitx/adaptive/PaneHost;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function2;Landroidx/compose/animation/core/FiniteAnimationSpec;Lkotlin/jvm/functions/Function4;)V
+	public synthetic fun <init> (Lcom/slack/circuitx/adaptive/PaneStrategy;Lcom/slack/circuit/foundation/NavDecoration;Lcom/slack/circuitx/adaptive/PaneHost;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function2;Landroidx/compose/animation/core/FiniteAnimationSpec;Lkotlin/jvm/functions/Function4;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun DecoratedContent (Lcom/slack/circuit/runtime/navigation/NavStackList;Lcom/slack/circuit/runtime/Navigator;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+}
+
 public final class com/slack/circuitx/adaptive/PanePosition : java/lang/Enum {
 	public static final field LEFT Lcom/slack/circuitx/adaptive/PanePosition;
 	public static final field MIDDLE Lcom/slack/circuitx/adaptive/PanePosition;
@@ -45,6 +59,13 @@ public final class com/slack/circuitx/adaptive/PanePosition : java/lang/Enum {
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuitx/adaptive/PanePosition;
 	public static fun values ()[Lcom/slack/circuitx/adaptive/PanePosition;
+}
+
+public final class com/slack/circuitx/adaptive/PaneReplaceInterceptor : com/slack/circuitx/navigation/intercepting/NavigationInterceptor {
+	public static final field $stable I
+	public fun <init> (Lcom/slack/circuitx/adaptive/PaneHost;Lkotlin/jvm/functions/Function2;)V
+	public synthetic fun <init> (Lcom/slack/circuitx/adaptive/PaneHost;Lkotlin/jvm/functions/Function2;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun goTo (Lcom/slack/circuit/runtime/screen/Screen;Lcom/slack/circuitx/navigation/intercepting/NavigationContext;)Lcom/slack/circuitx/navigation/intercepting/InterceptedResult;
 }
 
 public final class com/slack/circuitx/adaptive/PaneRole : java/lang/Enum {

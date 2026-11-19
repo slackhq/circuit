@@ -594,7 +594,7 @@ private class PaneEdge {
 }
 
 /** The default pane edge animation. Its threshold is one pixel, the unit of an edge position. */
-private val DefaultPaneAnimationSpec: FiniteAnimationSpec<Float> =
+internal val DefaultPaneAnimationSpec: FiniteAnimationSpec<Float> =
   spring(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = 1f)
 
 /**

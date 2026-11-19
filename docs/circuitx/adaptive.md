@@ -16,26 +16,42 @@ renders, so screens keep their state.
 
 ## Setup
 
-Wrap your usual decoration in a `PaneNavDecoration`.
+Create the pane navigation and pass its parts to `NavigableCircuitContent`.
 
 ```kotlin
-val host = remember { PaneHost() }
-val decoration =
-  remember(circuit, host) {
-    PaneNavDecoration(
-      strategy = ListDetailPaneStrategy(),
-      delegate =
+val panes = rememberPaneNavigation(navigator)
+NavigableCircuitContent(panes.navigator, backStack, decoration = panes.decoration)
+```
+
+`rememberPaneNavigation` wraps the default decoration of your `Circuit` in a `PaneNavDecoration`.
+It also adds a `PaneReplaceInterceptor` to the navigator. Both share `panes.host`, a `PaneHost`.
+
+To wrap another decoration, pass it as the `delegate`. Remember the values that you pass, because
+each one is a key of the result.
+
+```kotlin
+val panes =
+  rememberPaneNavigation(
+    navigator = navigator,
+    delegate =
+      remember(circuit) {
         AnimatedNavDecoration(
           animatedScreenTransforms = circuit.animatedScreenTransforms,
           decoratorFactory = GestureNavigationDecorationFactory(),
-        ),
-      host = host,
-    )
-  }
+        )
+      },
+  )
+```
+
+An app with its own intercepting navigator can create the parts itself.
+
+```kotlin
+val host = remember { PaneHost() }
+val decoration = remember(host) { PaneNavDecoration(strategy, delegate, host) }
 val paneNavigator =
   rememberInterceptingNavigator(
     navigator = navigator,
-    interceptors = remember(host) { listOf(PaneReplaceInterceptor(host)) },
+    interceptors = remember(host) { listOf(PaneReplaceInterceptor(host), myInterceptor) },
   )
 NavigableCircuitContent(paneNavigator, backStack, decoration = decoration)
 ```
@@ -92,7 +108,7 @@ same pet beside the list. No other state holds the selection.
 
 The root of each tab takes the left pane. A tab whose root is not a list has two options.
 
-- To keep it at full width, set `host.placeholder = PaneHost.NoPlaceholder` in the click, or use no
+- To keep it at full width, set `panes.host.placeholder = PaneHost.NoPlaceholder` in the click, or use no
   placeholder in the strategy.
 - To keep it out of the panes, pass `rootIsList = false` and mark each list. See
   [Lists above the root](#lists-above-the-root).
@@ -112,10 +128,8 @@ calls it for each pane, in the bounds of that pane. This toolbar holds the tabs.
 left pane, where the root of each tab renders.
 
 ```kotlin
-PaneNavDecoration(
-  strategy = strategy,
-  delegate = delegate,
-  host = host,
+rememberPaneNavigation(
+  navigator = navigator,
   paneContainer = { position, content ->
     // The root of the stack is the selected tab
     val selected = backStack.rootRecord?.screen
@@ -355,14 +369,14 @@ No placeholder                         With a placeholder
 `LocalPaneHost`.
 
 ```kotlin
-host.placeholder = { Text("Select a pet") }
+panes.host.placeholder = { Text("Select a pet") }
 ```
 
 To give one screen the full width when the strategy has a placeholder, set
 `PaneHost.NoPlaceholder`.
 
 ```kotlin
-host.placeholder = PaneHost.NoPlaceholder
+panes.host.placeholder = PaneHost.NoPlaceholder
 ```
 
 When a screen opens beside the left pane, the left pane resizes over a few frames and the new

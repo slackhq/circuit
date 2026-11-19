@@ -15,13 +15,13 @@ import com.slack.circuit.runtime.screen.Screen
 @ExperimentalCircuitAdaptiveApi
 public enum class PaneStyle {
   /**
-   * A screen that opens other screens beside it, like a list. It takes the left pane while it is
+   * A screen that opens other screens beside it, like a list. It takes the start pane while it is
    * the top screen, so it can show a placeholder before the first pick. The root needs no style for
    * this. Use it for a list that opens over other screens.
    */
   LIST,
 
-  /** A list's detail. The list keeps a narrow pane on the left and the detail fills the rest. */
+  /** A list's detail. The list keeps a narrow pane at the start and the detail fills the rest. */
   LIST_DETAIL,
 
   /** Extra information about the screen below, which keeps most of the width. */
@@ -52,13 +52,13 @@ public interface PaneScreen : Screen {
  * ([PaneWindow.maxPanes]) that are at least [minHeightDp] tall. With the default [PaneWindow], that
  * is Material's expanded width, which most tablets reach in landscape.
  *
- * The left pane takes the record just below the topmost run of records that have a [PaneStyle]. For
- * the stack `Detail, List, Home` where only `Detail` has a style, `List` takes the left pane and
- * `Home` stays hidden. The run's bottom record picks the style for the whole run.
+ * The start pane takes the record just below the topmost run of records that have a [PaneStyle].
+ * For the stack `Detail, List, Home` where only `Detail` has a style, `List` takes the start pane
+ * and `Home` stays hidden. The run's bottom record picks the style for the whole run.
  *
- * A top record with no screens open beside it stays in the left pane when it is the root, or when
- * it has [PaneStyle.LIST]. It can then reserve the right pane with [PaneHost.placeholder] before
- * the first pick, and its pane resizes with an animation on that pick. Any other top record with no
+ * A top record with no screens open beside it stays in the start pane when it is the root, or when
+ * it has [PaneStyle.LIST]. It can then reserve the end pane with [PaneHost.placeholder] before the
+ * first pick, and its pane resizes with an animation on that pick. Any other top record with no
  * pane style fills the window. Set [rootIsList] to false when the root is not always a list, and
  * give each list [PaneStyle.LIST].
  *
@@ -74,14 +74,14 @@ public interface PaneScreen : Screen {
  * @param paneStyle Returns the style of a screen, or null when it has none.
  * @param minHeightDp The shortest window that splits. The default is the medium height class, which
  *   keeps phones in landscape on one pane.
- * @param listPaneWidth Width of the left pane for [PaneStyle.LIST_DETAIL].
- * @param listPaneSizesItself Lets the left pane of [PaneStyle.LIST_DETAIL] take the width its
+ * @param listPaneWidth Width of the start pane for [PaneStyle.LIST_DETAIL].
+ * @param listPaneSizesItself Lets the start pane of [PaneStyle.LIST_DETAIL] take the width its
  *   content asks for, in place of [listPaneWidth]. See [PaneSplit.PrimaryWraps].
- * @param supportingPaneWidth Width of the right pane for [PaneStyle.SUPPORTING].
+ * @param supportingPaneWidth Width of the end pane for [PaneStyle.SUPPORTING].
  * @param extraPaneWidth Width of the third pane for [PaneStyle.EXTRA].
  * @param minHingePaneWidth The narrowest pane to show on either side of a hinge.
  * @param rootIsList Treats a root with no pane style as a [PaneStyle.LIST] screen.
- * @param placeholder Draws the right pane while no record is open there, or null to give the left
+ * @param placeholder Draws the end pane while no record is open there, or null to give the start
  *   pane the full width.
  */
 @ExperimentalCircuitAdaptiveApi
@@ -124,7 +124,7 @@ public class ListDetailPaneStrategy(
     val width = window.size.width
     val style =
       if (runLength == 0) {
-        // The panes stay in place so the root can reserve the right pane without a layout switch.
+        // The panes stay in place so the root can reserve the end pane without a layout switch.
         PaneStyle.LIST_DETAIL
       } else {
         checkNotNull(paneStyle(visible[runLength - 1].screen))
@@ -137,7 +137,7 @@ public class ListDetailPaneStrategy(
       when {
         hinge != null -> PaneSplit.AtHinge
         style == PaneStyle.SUPPORTING -> {
-          PaneSplit.RightFixed(supportingPaneWidth.takeOrElse { window.preferredPaneWidth })
+          PaneSplit.EndFixed(supportingPaneWidth.takeOrElse { window.preferredPaneWidth })
         }
         listPaneSizesItself -> PaneSplit.PrimaryWraps()
         else -> PaneSplit.Fixed(listPaneWidth.takeOrElse { window.preferredPaneWidth })
@@ -161,7 +161,7 @@ public class ListDetailPaneStrategy(
       split = split,
       placeholder = placeholder,
       secondaryKey = secondaryIndex?.let { visible[it].key },
-      rightPaneWidth =
+      endPaneWidth =
         if (secondaryIndex != null) {
           extraPaneWidth.takeOrElse { window.preferredPaneWidth }
         } else {

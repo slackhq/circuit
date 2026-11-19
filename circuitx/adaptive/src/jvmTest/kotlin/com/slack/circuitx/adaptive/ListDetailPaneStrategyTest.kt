@@ -59,7 +59,7 @@ class ListDetailPaneStrategyTest {
 
   private val strategy = ListDetailPaneStrategy()
 
-  /** The left pane width of a scene with a computed split. */
+  /** The start pane width of a scene with a computed split. */
   private val PaneScene.fixedWidth: Dp
     get() = (split as PaneSplit.Fixed).primaryWidth
 
@@ -104,17 +104,17 @@ class ListDetailPaneStrategyTest {
     }
     assertThat(split(Detail(1), Home)).isEqualTo(PaneSplit.PrimaryWraps())
     assertThat(split(Home)).isEqualTo(PaneSplit.PrimaryWraps())
-    // The right pane is the narrow one for a supporting screen, so it keeps its set width
-    assertThat(split(Supporting(1), Home)).isEqualTo(PaneSplit.RightFixed(360.dp))
+    // The end pane is the narrow one for a supporting screen, so it keeps its set width
+    assertThat(split(Supporting(1), Home)).isEqualTo(PaneSplit.EndFixed(360.dp))
   }
 
   @Test
   fun supportingPaneLeavesMostOfTheWidthToThePrimary() {
-    // The right pane takes the preferred pane width.
-    assertThat(scene(desktop, Supporting(1), Home)!!.split).isEqualTo(PaneSplit.RightFixed(360.dp))
+    // The end pane takes the preferred pane width.
+    assertThat(scene(desktop, Supporting(1), Home)!!.split).isEqualTo(PaneSplit.EndFixed(360.dp))
     val custom = ListDetailPaneStrategy(supportingPaneWidth = 320.dp)
     assertThat(custom.scene(PaneWindow(desktop), stack(Supporting(1), Home))!!.split)
-      .isEqualTo(PaneSplit.RightFixed(320.dp))
+      .isEqualTo(PaneSplit.EndFixed(320.dp))
   }
 
   @Test
@@ -150,13 +150,13 @@ class ListDetailPaneStrategyTest {
   }
 
   @Test
-  fun screensAboveADetailStayInTheRightPane() {
+  fun screensAboveADetailStayInTheEndPane() {
     val scene = scene(desktop, Detail(2), Detail(1), Home)
     assertThat(scene!!.primaryKey).isEqualTo(Arg(Home).key)
   }
 
   @Test
-  fun recordBelowTheTopmostRunTakesTheLeftPane() {
+  fun recordBelowTheTopmostRunTakesTheStartPane() {
     val scene = scene(desktop, Detail(1), ListScreen, Home)
     assertThat(scene!!.primaryKey).isEqualTo(Arg(ListScreen).key)
   }
@@ -164,11 +164,11 @@ class ListDetailPaneStrategyTest {
   @Test
   fun bottomOfTheRunPicksTheStyle() {
     val scene = scene(desktop, Detail(1), Supporting(1), Home)
-    assertThat(scene!!.split).isEqualTo(PaneSplit.RightFixed(360.dp))
+    assertThat(scene!!.split).isEqualTo(PaneSplit.EndFixed(360.dp))
   }
 
   @Test
-  fun rootWithAStyleStillTakesTheLeftPane() {
+  fun rootWithAStyleStillTakesTheStartPane() {
     val scene = scene(desktop, Detail(2), Detail(1))
     assertThat(scene!!.primaryKey).isEqualTo(Arg(Detail(1)).key)
   }
@@ -235,7 +235,7 @@ class ListDetailPaneStrategyTest {
     val scene = scene(large, Extra(1), Detail(1), Home)!!
     assertThat(scene.primaryKey).isEqualTo(Arg(Home).key)
     assertThat(scene.secondaryKey).isEqualTo(Arg(Detail(1)).key)
-    assertThat(scene.rightPaneWidth).isEqualTo(412.dp)
+    assertThat(scene.endPaneWidth).isEqualTo(412.dp)
   }
 
   @Test

@@ -37,11 +37,15 @@ val panes =
       remember(circuit) {
         AnimatedNavDecoration(
           animatedScreenTransforms = circuit.animatedScreenTransforms,
-          decoratorFactory = GestureNavigationDecorationFactory(),
+          decoratorFactory =
+            PaneAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory()),
         )
       },
   )
 ```
+
+`PaneAnimatedNavDecoratorFactory` adds the [replace transition](#replace-transition). The default
+`delegate` already has it.
 
 An app with its own intercepting navigator can create the parts itself.
 
@@ -468,6 +472,26 @@ PaneReplaceInterceptor(host) { open, incoming -> open is InboxDetail && incoming
 
 The pops and the push are one `InterceptedResult.RewriteAll`, so the stack never renders between
 them.
+
+### Replace transition
+
+A decorator usually slides a new screen in from the end edge. That suits a first detail, which
+enters from the edge of the window. A replacement would slide over the open detail beside the list.
+
+`PaneAnimatedNavDecoratorFactory` wraps an `AnimatedNavDecorator.Factory` and changes this one
+transition. The new detail fades in while it moves up a short distance. The first detail, a pop,
+and a screen pushed over a detail keep the transitions of the wrapped factory.
+
+To use another transition, pass a `replaceTransform`.
+
+```kotlin
+PaneAnimatedNavDecoratorFactory(
+  delegate = GestureNavigationDecorationFactory(),
+  replaceTransform = { fadeIn() togetherWith fadeOut() },
+)
+```
+
+An `AnimatedScreenTransform` of a screen takes priority over it.
 
 ## Column counts
 

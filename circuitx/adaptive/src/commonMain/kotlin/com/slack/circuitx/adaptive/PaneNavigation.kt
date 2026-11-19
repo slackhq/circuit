@@ -9,6 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.DpSize
 import com.slack.circuit.foundation.LocalCircuit
 import com.slack.circuit.foundation.NavDecoration
+import com.slack.circuit.foundation.animation.AnimatedNavDecoration
+import com.slack.circuit.runtime.ExperimentalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuitx.navigation.intercepting.NavigationInterceptor
 import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
@@ -47,7 +49,8 @@ internal constructor(
  * @param navigator The navigator of the back stack that the panes render.
  * @param strategy Decides when to split and which records take the start and middle panes.
  * @param delegate Renders the single layout, and the end pane of a split layout. The default is the
- *   default decoration of the `Circuit` in the composition.
+ *   default decoration of the `Circuit` in the composition. If that is an [AnimatedNavDecoration],
+ *   the default adds a [PaneAnimatedNavDecoratorFactory] to it.
  * @param host The state that the decoration and the interceptors share.
  * @param interceptors The interceptors of the returned navigator. To add your own, pass a list that
  *   also has a [PaneReplaceInterceptor] for [host].
@@ -63,8 +66,7 @@ internal constructor(
 public fun rememberPaneNavigation(
   navigator: Navigator,
   strategy: PaneStrategy = remember { ListDetailPaneStrategy() },
-  delegate: NavDecoration =
-    checkNotNull(LocalCircuit.current) { "No Circuit in the composition" }.defaultNavDecoration,
+  delegate: NavDecoration = rememberDefaultPaneDelegate(),
   host: PaneHost = remember { PaneHost() },
   interceptors: List<NavigationInterceptor> =
     remember(host) { listOf(PaneReplaceInterceptor(host)) },
@@ -97,5 +99,25 @@ public fun rememberPaneNavigation(
     )
   return remember(host, paneNavigator, decoration) {
     PaneNavigation(host = host, navigator = paneNavigator, decoration = decoration)
+  }
+}
+
+/**
+ * The default decoration of the `Circuit` in the composition, with the pane replace transition when
+ * that decoration is the one the `Circuit` builds from its transforms and decorator factory.
+ */
+@OptIn(ExperimentalCircuitAdaptiveApi::class, ExperimentalCircuitApi::class)
+@Composable
+private fun rememberDefaultPaneDelegate(): NavDecoration {
+  val circuit = checkNotNull(LocalCircuit.current) { "No Circuit in the composition" }
+  return remember(circuit) {
+    if (circuit.defaultNavDecoration is AnimatedNavDecoration) {
+      AnimatedNavDecoration(
+        animatedScreenTransforms = circuit.animatedScreenTransforms,
+        decoratorFactory = PaneAnimatedNavDecoratorFactory(circuit.animatedNavDecoratorFactory),
+      )
+    } else {
+      circuit.defaultNavDecoration
+    }
   }
 }

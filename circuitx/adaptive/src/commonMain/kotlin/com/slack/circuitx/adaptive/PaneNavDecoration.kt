@@ -12,12 +12,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.Composable
@@ -118,6 +117,9 @@ public class PaneNavDecoration(
     },
 ) : NavDecoration {
 
+  /** The window insets that the outer panes cover. Tests replace it, as they have no insets. */
+  internal var safeDrawingInsets: @Composable () -> WindowInsets = { WindowInsets.safeDrawing }
+
   @Composable
   override fun <T : NavArgument> DecoratedContent(
     args: NavStackList<T>,
@@ -208,17 +210,10 @@ public class PaneNavDecoration(
 
       // ---- 5. Inputs for the layout below ----
 
-      val safeDrawing = WindowInsets.safeDrawing
-      val startInset =
-        safeDrawing
-          .only(WindowInsetsSides.Start)
-          .asPaddingValues()
-          .calculateStartPadding(layoutDirection)
-      val endInset =
-        safeDrawing
-          .only(WindowInsetsSides.End)
-          .asPaddingValues()
-          .calculateEndPadding(layoutDirection)
+      val safeDrawing = safeDrawingInsets()
+      // Insets that a parent already handled, like the start inset under a navigation rail.
+      // The measure block reads this, so the first measure already has the value.
+      var consumedInsets by remember { mutableStateOf(WindowInsets(0, 0, 0, 0)) }
 
       // The hinge for PaneSplit.AtHinge. A window without one splits in the middle.
       val hinge = paneWindow.separatingHinges.firstOrNull()
@@ -237,9 +232,11 @@ public class PaneNavDecoration(
       CompositionLocalProvider(LocalPaneHost provides host, LocalPaneState provides paneState) {
         Layout(
           modifier =
-            Modifier.fillMaxSize().onGloballyPositioned { coordinates ->
-              leftInWindow = coordinates.positionInWindow().x.roundToInt()
-            },
+            Modifier.fillMaxSize()
+              .onConsumedWindowInsetsChanged { consumedInsets = it }
+              .onGloballyPositioned { coordinates ->
+                leftInWindow = coordinates.positionInWindow().x.roundToInt()
+              },
           content = {
             // Up to five children, each found by its layoutId in the measure block:
             // the start pane, a divider, the middle pane, a second divider, and the delegate.
@@ -368,6 +365,21 @@ public class PaneNavDecoration(
               0
             }
 
+          // The insets that the outer panes cover. A pane adds only what no parent consumed,
+          // so a rail that pads itself for a cutout does not widen the list beside it.
+          val openInsets = safeDrawing.exclude(consumedInsets)
+          val insetLeft = openInsets.getLeft(this, layoutDirection)
+          val insetRight = openInsets.getRight(this, layoutDirection)
+          val startInset: Int
+          val endInset: Int
+          if (layoutDirection == LayoutDirection.Rtl) {
+            startInset = insetRight
+            endInset = insetLeft
+          } else {
+            startInset = insetLeft
+            endInset = insetRight
+          }
+
           val hingeMoved = lastHinge[0] != hinge
           lastHinge[0] = hinge
 
@@ -387,13 +399,13 @@ public class PaneNavDecoration(
             // A width from the strategy, plus the start inset that the start pane covers.
             scenePaneSplit is PaneSplit.Fixed -> {
               targetPrimaryWidth =
-                (startInset + scenePaneSplit.primaryWidth).roundToPx().coerceIn(0, width)
+                (startInset + scenePaneSplit.primaryWidth.roundToPx()).coerceIn(0, width)
               targetBesideStart = targetPrimaryWidth + dividerWidth
             }
             // A width for the end pane, plus the end inset that it covers. The divider takes
             // its width from the start pane.
             scenePaneSplit is PaneSplit.EndFixed -> {
-              val endWidth = (endInset + scenePaneSplit.endWidth).roundToPx().coerceIn(0, width)
+              val endWidth = (endInset + scenePaneSplit.endWidth.roundToPx()).coerceIn(0, width)
               targetBesideStart = width - endWidth
               targetPrimaryWidth = (targetBesideStart - dividerWidth).coerceAtLeast(0)
             }

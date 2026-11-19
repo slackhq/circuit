@@ -5,6 +5,7 @@ package com.slack.circuitx.adaptive
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -91,7 +92,7 @@ class ListDetailPaneStrategyTest {
     assertThat(scene(foldOpen, Detail(1), Home)!!.fixedWidth).isEqualTo(360.dp)
     // Material gives wider panes from the large width class
     assertThat(scene(large, Detail(1), Home)!!.fixedWidth).isEqualTo(412.dp)
-    val custom = ListDetailPaneStrategy(listPaneWidth = 300.dp)
+    val custom = ListDetailPaneStrategy(listPaneWidth = { 300.dp })
     assertThat(custom.scene(PaneWindow(desktop), stack(Detail(1), Home))!!.fixedWidth)
       .isEqualTo(300.dp)
   }
@@ -112,7 +113,7 @@ class ListDetailPaneStrategyTest {
   fun supportingPaneLeavesMostOfTheWidthToThePrimary() {
     // The end pane takes the preferred pane width.
     assertThat(scene(desktop, Supporting(1), Home)!!.split).isEqualTo(PaneSplit.EndFixed(360.dp))
-    val custom = ListDetailPaneStrategy(supportingPaneWidth = 320.dp)
+    val custom = ListDetailPaneStrategy(supportingPaneWidth = { 320.dp })
     assertThat(custom.scene(PaneWindow(desktop), stack(Supporting(1), Home))!!.split)
       .isEqualTo(PaneSplit.EndFixed(320.dp))
   }
@@ -220,6 +221,72 @@ class ListDetailPaneStrategyTest {
         preferredPaneWidth = base.preferredPaneWidth,
       )
     assertThat(strategy.scene(twoPanes, stack(Detail(1), Home))).isNotNull()
+  }
+
+  @Test
+  fun paneWidthsCanFollowTheWidthThatThePanesShare() {
+    val fractions =
+      ListDetailPaneStrategy(
+        listPaneWidth = { (it.size.width * 0.4f).coerceIn(280.dp, 400.dp) },
+        supportingPaneWidth = { (it.size.width * 0.33f).coerceIn(320.dp, 400.dp) },
+      )
+    // An open fold with a 96dp rail outside the decoration
+    val besideRail = PaneWindow(DpSize(755.dp, 882.dp), windowSize = foldOpen)
+    assertThat(fractions.scene(besideRail, stack(Detail(1), Home))!!.fixedWidth).isEqualTo(302.dp)
+    // The bounds apply at both ends
+    assertThat(fractions.scene(PaneWindow(large), stack(Detail(1), Home))!!.fixedWidth)
+      .isEqualTo(400.dp)
+    assertThat(fractions.scene(besideRail, stack(Supporting(1), Home))!!.split)
+      .isEqualTo(PaneSplit.EndFixed(320.dp))
+  }
+
+  @Test
+  fun windowSizeDecidesTheSplitForADecorationBesideNavigation() {
+    // A 900dp window with a 96dp rail outside the decoration
+    val decoration = DpSize(804.dp, 700.dp)
+    assertThat(strategy.scene(PaneWindow(decoration), stack(Detail(1), Home))).isNull()
+    val window = PaneWindow(decoration, windowSize = DpSize(900.dp, 700.dp))
+    assertThat(window.size).isEqualTo(decoration)
+    assertThat(strategy.scene(window, stack(Detail(1), Home))).isNotNull()
+    // A bottom bar outside the decoration does not fail the height check
+    val aboveBar = PaneWindow(DpSize(900.dp, 420.dp), windowSize = DpSize(900.dp, 500.dp))
+    assertThat(strategy.scene(aboveBar, stack(Detail(1), Home))).isNotNull()
+  }
+
+  /** A window that fits two panes from [minWidth], below Material's expanded width. */
+  private fun splitFrom(minWidth: Dp, size: DpSize): PaneWindow {
+    val base = PaneWindow(size)
+    val panes =
+      if (size.width >= minWidth) {
+        maxOf(base.maxPanes, 2)
+      } else {
+        base.maxPanes
+      }
+    return PaneWindow(
+      size = base.size,
+      sizeClass = base.sizeClass,
+      separatingHinges = base.separatingHinges,
+      maxPanes = panes,
+      preferredPaneWidth = base.preferredPaneWidth,
+    )
+  }
+
+  @Test
+  fun appCanSplitFromANarrowerWidth() {
+    fun splits(width: Int, height: Int): Boolean {
+      val window = splitFrom(700.dp, DpSize(width.dp, height.dp))
+      return strategy.scene(window, stack(Detail(1), Home)) != null
+    }
+    // An iPad mini and an iPad Air in portrait
+    assertThat(splits(744, 1133)).isEqualTo(true)
+    assertThat(splits(820, 1180)).isEqualTo(true)
+    assertThat(splits(700, 900)).isEqualTo(true)
+    assertThat(splits(699, 900)).isEqualTo(false)
+    // A fold held open in portrait, and a phone
+    assertThat(splits(669, 951)).isEqualTo(false)
+    assertThat(splits(411, 900)).isEqualTo(false)
+    // Wide enough, but below the medium height
+    assertThat(splits(800, 479)).isEqualTo(false)
   }
 
   @Test

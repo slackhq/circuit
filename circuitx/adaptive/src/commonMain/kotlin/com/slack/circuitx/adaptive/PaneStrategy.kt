@@ -11,6 +11,7 @@ import androidx.compose.material3.adaptive.separatingVerticalHingeBounds
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpRect
@@ -48,7 +49,10 @@ public interface PaneStrategy {
 public class PaneWindow(
   /** The size of the decoration. */
   public val size: DpSize,
-  /** The window size class of [size]. */
+  /**
+   * The size class that a strategy checks. It is the class of [size], or of the whole window when
+   * the app passes a window size to [rememberPaneWindow].
+   */
   public val sizeClass: WindowSizeClass,
   /**
    * Vertical hinges that separate the display. Empty on iOS and desktop.
@@ -247,12 +251,17 @@ public class PaneScene(
 }
 
 /**
- * Creates a [PaneWindow] of [size] with Material's pane guidance for that size and the hinges that
- * Material adaptive reports for the current window.
+ * Creates a [PaneWindow] of [size] with Material's pane guidance for [windowSize] and the hinges
+ * that Material adaptive reports for the current window.
+ *
+ * @param size The size of the decoration.
+ * @param windowSize The size that decides the size class and the pane count. Pass the size of the
+ *   whole window when navigation outside the decoration, like a rail or a bottom bar, makes the
+ *   decoration smaller than the window.
  */
 @ExperimentalCircuitAdaptiveApi
 @Composable
-public fun rememberPaneWindow(size: DpSize): PaneWindow {
+public fun rememberPaneWindow(size: DpSize, windowSize: DpSize = size): PaneWindow {
   val density = LocalDensity.current
   val hinges =
     currentWindowAdaptiveInfoV2().windowPosture.separatingVerticalHingeBounds.map { bounds ->
@@ -260,23 +269,32 @@ public fun rememberPaneWindow(size: DpSize): PaneWindow {
         DpRect(bounds.left.toDp(), bounds.top.toDp(), bounds.right.toDp(), bounds.bottom.toDp())
       }
     }
-  return PaneWindow(size, hinges)
+  return remember(size, windowSize, hinges) { PaneWindow(size, hinges, windowSize) }
 }
 
 /**
- * Creates a [PaneWindow] of [size] with Material's pane guidance for that size.
+ * Creates a [PaneWindow] of [size] with Material's pane guidance for [windowSize].
  *
  * [PaneWindow.maxPanes] and [PaneWindow.preferredPaneWidth] come from Material adaptive's pane
  * scaffold directive: one pane below the expanded width class, two from it, and three from the
  * large width class.
+ *
+ * @param size The size of the decoration.
+ * @param separatingHinges See [PaneWindow.separatingHinges].
+ * @param windowSize The size that decides [PaneWindow.sizeClass] and the pane guidance. Pass the
+ *   size of the whole window when navigation outside the decoration makes the decoration smaller.
  */
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @ExperimentalCircuitAdaptiveApi
-public fun PaneWindow(size: DpSize, separatingHinges: List<DpRect> = emptyList()): PaneWindow {
+public fun PaneWindow(
+  size: DpSize,
+  separatingHinges: List<DpRect> = emptyList(),
+  windowSize: DpSize = size,
+): PaneWindow {
   val sizeClass =
     WindowSizeClass.BREAKPOINTS_V2.computeWindowSizeClass(
-      widthDp = size.width.value,
-      heightDp = size.height.value,
+      widthDp = windowSize.width.value,
+      heightDp = windowSize.height.value,
     )
   // The directive reads only the size class here. The hinges stay in dp on the window.
   val directive = calculatePaneScaffoldDirective(WindowAdaptiveInfo(sizeClass, Posture()))

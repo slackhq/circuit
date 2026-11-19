@@ -22,19 +22,19 @@ public enum class PaneRole {
   SINGLE,
 
   /**
-   * The screen in the left pane. It has the full width while nothing is open beside it and no
+   * The screen in the start pane. It has the full width while nothing is open beside it and no
    * placeholder is set. Read [PaneState.isSplit] to tell the two apart.
    */
   PRIMARY,
 
   /**
-   * The screen opened from the primary screen. It is the bottom screen of the right pane with two
+   * The screen opened from the primary screen. It is the bottom screen of the end pane with two
    * panes, and it takes the middle pane with three.
    */
   DETAIL_ROOT,
 
   /**
-   * A screen pushed over the detail. It is in the right pane with two panes, and in the middle pane
+   * A screen pushed over the detail. It is in the end pane with two panes, and in the middle pane
    * or hidden below it with three.
    */
   DETAIL_STACKED,
@@ -56,7 +56,7 @@ public enum class PanePosition {
   SINGLE,
 
   /** The pane of the primary record. It has the full width while nothing shows beside it. */
-  LEFT,
+  START,
 
   /** The pane between the other two, with three panes. */
   MIDDLE,
@@ -65,7 +65,7 @@ public enum class PanePosition {
    * The pane of the records opened from the primary record. It stays composed off screen while
    * nothing shows in it, so read [PaneState.paneCount] before drawing chrome for it.
    */
-  RIGHT,
+  END,
 }
 
 /**
@@ -80,21 +80,21 @@ public enum class PanePosition {
 public class PaneState(
   /** The scene of this composition, or null while one record fills the window. */
   public val scene: PaneScene?,
-  /** The screen at the bottom of the right pane. Lists use it to highlight the open item. */
+  /** The screen at the bottom of the end pane. Lists use it to highlight the open item. */
   public val detailRoot: Screen?,
   /**
-   * The decoration measures the left pane with a minimum width of zero and uses the width its
-   * content asks for. It is true for a [PaneSplit.PrimaryWraps] scene while the right pane shows.
-   * The screen in the left pane must then choose its own width.
+   * The decoration measures the start pane with a minimum width of zero and uses the width its
+   * content asks for. It is true for a [PaneSplit.PrimaryWraps] scene while the end pane shows. The
+   * screen in the start pane must then choose its own width.
    */
   public val primarySizesItself: Boolean = false,
   /**
-   * The width for a pane that does not take the remaining width, from [PaneWindow]. A left pane
+   * The width for a pane that does not take the remaining width, from [PaneWindow]. A start pane
    * that sizes itself can give it to its list. It is [Dp.Unspecified] outside a decoration.
    */
   public val preferredPaneWidth: Dp = Dp.Unspecified,
   /**
-   * How many panes the window shows now. It is 1 for a [scene] whose left pane has the full width,
+   * How many panes the window shows now. It is 1 for a [scene] whose start pane has the full width,
    * because nothing is open beside it and no placeholder is set.
    */
   public val paneCount: Int = 1,
@@ -149,7 +149,7 @@ public val LocalPaneState: ProvidableCompositionLocal<PaneState> = compositionLo
  *
  * The decoration writes the layout it chose after each composition, so [scene] and [detailRoot] are
  * one composition behind for a screen that reads them while it composes. Screens read
- * [LocalPaneState] for those. The primary screen sets [placeholder] here to reserve the right pane.
+ * [LocalPaneState] for those. The primary screen sets [placeholder] here to reserve the end pane.
  */
 @ExperimentalCircuitAdaptiveApi
 @Stable
@@ -158,14 +158,14 @@ public class PaneHost {
   public var scene: PaneScene? by mutableStateOf(null)
     internal set
 
-  /** The screen at the bottom of the right pane. Lists use it to highlight the open item. */
+  /** The screen at the bottom of the end pane. Lists use it to highlight the open item. */
   public var detailRoot: Screen? by mutableStateOf(null)
     internal set
 
   /**
-   * Reserves the right pane and draws it while no record is open there. It takes priority over
-   * [PaneScene.placeholder]. Null uses the placeholder of the scene. [NoPlaceholder] gives the left
-   * pane the full width, also when the scene has a placeholder.
+   * Reserves the end pane and draws it while no record is open there. It takes priority over
+   * [PaneScene.placeholder]. Null uses the placeholder of the scene. [NoPlaceholder] gives the
+   * start pane the full width, also when the scene has a placeholder.
    *
    * A screen that switches content, like a tab host, should set this in the same event that
    * switches the content. The next frame then lays out at the final widths.
@@ -173,8 +173,8 @@ public class PaneHost {
   public var placeholder: (@Composable () -> Unit)? by mutableStateOf(null)
 
   /**
-   * How many panes the window showed in the last composition. It is 1 for a [scene] whose left pane
-   * has the full width.
+   * How many panes the window showed in the last composition. It is 1 for a [scene] whose start
+   * pane has the full width.
    */
   public var paneCount: Int by mutableIntStateOf(1)
     internal set
@@ -191,7 +191,7 @@ public class PaneHost {
 
   public companion object {
     /**
-     * A [placeholder] value that reserves nothing. Set it to give the left pane the full width
+     * A [placeholder] value that reserves nothing. Set it to give the start pane the full width
      * while no record is open beside it, in place of the placeholder of the scene.
      */
     public val NoPlaceholder: @Composable () -> Unit = {}

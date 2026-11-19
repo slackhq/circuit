@@ -89,7 +89,7 @@ public class PaneWindow(
 }
 
 /**
- * How a [PaneNavDecoration] finds the edge between the left pane of a [PaneScene] and the pane
+ * How a [PaneNavDecoration] finds the edge between the start pane of a [PaneScene] and the pane
  * beside it.
  *
  * A strategy picks a split in composition. The decoration resolves it to a width when it measures,
@@ -99,8 +99,8 @@ public class PaneWindow(
 @Immutable
 public sealed interface PaneSplit {
   /**
-   * The left pane is [primaryWidth] wide and the pane beside it takes the rest. The decoration adds
-   * the start window inset to [primaryWidth].
+   * The start pane is [primaryWidth] wide and the pane beside it takes the rest. The decoration
+   * adds the start window inset to [primaryWidth].
    */
   public class Fixed(public val primaryWidth: Dp) : PaneSplit {
     override fun equals(other: Any?): Boolean {
@@ -117,27 +117,27 @@ public sealed interface PaneSplit {
   }
 
   /**
-   * The pane beside the left pane is [rightWidth] wide and the left pane takes the rest. The
-   * decoration adds the end window inset to [rightWidth]. Use it for a panel beside a main screen.
+   * The pane beside the start pane is [endWidth] wide and the start pane takes the rest. The
+   * decoration adds the end window inset to [endWidth]. Use it for a panel beside a main screen.
    *
    * The decoration ignores [PaneScene.secondaryKey] with this split.
    */
-  public class RightFixed(public val rightWidth: Dp) : PaneSplit {
+  public class EndFixed(public val endWidth: Dp) : PaneSplit {
     override fun equals(other: Any?): Boolean {
-      return other is RightFixed && rightWidth == other.rightWidth
+      return other is EndFixed && endWidth == other.endWidth
     }
 
     override fun hashCode(): Int {
-      return rightWidth.hashCode()
+      return endWidth.hashCode()
     }
 
     override fun toString(): String {
-      return "PaneSplit.RightFixed(rightWidth=$rightWidth)"
+      return "PaneSplit.EndFixed(endWidth=$endWidth)"
     }
   }
 
   /**
-   * The left pane takes [primaryFraction] of the width, from 0 to 1, and the pane beside it takes
+   * The start pane takes [primaryFraction] of the width, from 0 to 1, and the pane beside it takes
    * the rest.
    */
   public class Fraction(public val primaryFraction: Float) : PaneSplit {
@@ -167,15 +167,15 @@ public sealed interface PaneSplit {
   public data object AtHinge : PaneSplit
 
   /**
-   * The left pane takes the width that its content asks for, up to [maxWidth], and the pane beside
-   * it takes the rest. Use it when the left pane holds more than one sized part.
+   * The start pane takes the width that its content asks for, up to [maxWidth], and the pane beside
+   * it takes the rest. Use it when the start pane holds more than one sized part.
    *
-   * The decoration measures the left pane with a minimum width of zero. Its screen must then choose
-   * a width, because content that fills the maximum width leaves no room beside it. The screen
-   * reads [PaneState.primarySizesItself] to know when this applies, and can use
+   * The decoration measures the start pane with a minimum width of zero. Its screen must then
+   * choose a width, because content that fills the maximum width leaves no room beside it. The
+   * screen reads [PaneState.primarySizesItself] to know when this applies, and can use
    * [PaneState.preferredPaneWidth] for a list. The screen also handles the start window inset.
    *
-   * @param maxWidth The widest the left pane can be, or [Dp.Unspecified] for the window width.
+   * @param maxWidth The widest the start pane can be, or [Dp.Unspecified] for the window width.
    */
   public class PrimaryWraps(public val maxWidth: Dp = Dp.Unspecified) : PaneSplit {
     override fun equals(other: Any?): Boolean {
@@ -195,21 +195,21 @@ public sealed interface PaneSplit {
 /**
  * Two or three panes over one stack.
  *
- * With two panes, the record with [primaryKey] takes the left pane and every record above it goes
- * to the right pane. Records below it stay hidden.
+ * With two panes, the record with [primaryKey] takes the start pane and every record above it goes
+ * to the end pane. Records below it stay hidden.
  *
  * With a [secondaryKey], its record takes a middle pane and only the records above that one go to
- * the right pane. Records between the two keys stay hidden.
+ * the end pane. Records between the two keys stay hidden.
  */
 @ExperimentalCircuitAdaptiveApi
 @Immutable
 public class PaneScene(
-  /** Key of the record in the left pane. It renders with no transitions. */
+  /** Key of the record in the start pane. It renders with no transitions. */
   public val primaryKey: String,
-  /** How the decoration finds the edge between the left pane and the pane beside it. */
+  /** How the decoration finds the edge between the start pane and the pane beside it. */
   public val split: PaneSplit,
   /**
-   * Draws the right pane while no record is open there, or null to give the left pane the full
+   * Draws the end pane while no record is open there, or null to give the start pane the full
    * width. [PaneHost.placeholder] takes priority over this.
    */
   public val placeholder: (@Composable () -> Unit)? = null,
@@ -219,8 +219,8 @@ public class PaneScene(
    * width that the other panes leave.
    */
   public val secondaryKey: String? = null,
-  /** Width of the right pane while [secondaryKey] is set. */
-  public val rightPaneWidth: Dp = Dp.Unspecified,
+  /** Width of the end pane while [secondaryKey] is set. */
+  public val endPaneWidth: Dp = Dp.Unspecified,
 ) {
   override fun equals(other: Any?): Boolean {
     return other is PaneScene &&
@@ -228,7 +228,7 @@ public class PaneScene(
       split == other.split &&
       placeholder == other.placeholder &&
       secondaryKey == other.secondaryKey &&
-      rightPaneWidth == other.rightPaneWidth
+      endPaneWidth == other.endPaneWidth
   }
 
   override fun hashCode(): Int {
@@ -236,13 +236,13 @@ public class PaneScene(
     result = 31 * result + split.hashCode()
     result = 31 * result + placeholder.hashCode()
     result = 31 * result + secondaryKey.hashCode()
-    result = 31 * result + rightPaneWidth.hashCode()
+    result = 31 * result + endPaneWidth.hashCode()
     return result
   }
 
   override fun toString(): String {
     return "PaneScene(primaryKey=$primaryKey, split=$split, secondaryKey=$secondaryKey, " +
-      "rightPaneWidth=$rightPaneWidth)"
+      "endPaneWidth=$endPaneWidth)"
   }
 }
 

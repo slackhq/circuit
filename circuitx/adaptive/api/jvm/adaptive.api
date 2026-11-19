@@ -38,10 +38,10 @@ public final class com/slack/circuitx/adaptive/PaneHostKt {
 }
 
 public final class com/slack/circuitx/adaptive/PanePosition : java/lang/Enum {
-	public static final field LEFT Lcom/slack/circuitx/adaptive/PanePosition;
+	public static final field END Lcom/slack/circuitx/adaptive/PanePosition;
 	public static final field MIDDLE Lcom/slack/circuitx/adaptive/PanePosition;
-	public static final field RIGHT Lcom/slack/circuitx/adaptive/PanePosition;
 	public static final field SINGLE Lcom/slack/circuitx/adaptive/PanePosition;
+	public static final field START Lcom/slack/circuitx/adaptive/PanePosition;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuitx/adaptive/PanePosition;
 	public static fun values ()[Lcom/slack/circuitx/adaptive/PanePosition;
@@ -64,9 +64,9 @@ public final class com/slack/circuitx/adaptive/PaneScene {
 	public synthetic fun <init> (Ljava/lang/String;Lcom/slack/circuitx/adaptive/PaneSplit;Lkotlin/jvm/functions/Function2;Ljava/lang/String;FILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Ljava/lang/String;Lcom/slack/circuitx/adaptive/PaneSplit;Lkotlin/jvm/functions/Function2;Ljava/lang/String;FLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEndPaneWidth-D9Ej5fM ()F
 	public final fun getPlaceholder ()Lkotlin/jvm/functions/Function2;
 	public final fun getPrimaryKey ()Ljava/lang/String;
-	public final fun getRightPaneWidth-D9Ej5fM ()F
 	public final fun getSecondaryKey ()Ljava/lang/String;
 	public final fun getSplit ()Lcom/slack/circuitx/adaptive/PaneSplit;
 	public fun hashCode ()I
@@ -84,6 +84,15 @@ public final class com/slack/circuitx/adaptive/PaneSplit$AtHinge : com/slack/cir
 	public static final field $stable I
 	public static final field INSTANCE Lcom/slack/circuitx/adaptive/PaneSplit$AtHinge;
 	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/slack/circuitx/adaptive/PaneSplit$EndFixed : com/slack/circuitx/adaptive/PaneSplit {
+	public static final field $stable I
+	public synthetic fun <init> (FLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEndWidth-D9Ej5fM ()F
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -113,15 +122,6 @@ public final class com/slack/circuitx/adaptive/PaneSplit$PrimaryWraps : com/slac
 	public synthetic fun <init> (FLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getMaxWidth-D9Ej5fM ()F
-	public fun hashCode ()I
-	public fun toString ()Ljava/lang/String;
-}
-
-public final class com/slack/circuitx/adaptive/PaneSplit$RightFixed : com/slack/circuitx/adaptive/PaneSplit {
-	public static final field $stable I
-	public synthetic fun <init> (FLkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public fun equals (Ljava/lang/Object;)Z
-	public final fun getRightWidth-D9Ej5fM ()F
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }

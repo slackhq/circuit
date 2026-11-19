@@ -26,7 +26,7 @@ class PaneReplaceInterceptorTest {
   private val host = PaneHost()
 
   /**
-   * A navigator over [screens], root first, with [primaryDepth] records in or below the left pane.
+   * A navigator over [screens], root first, with [primaryDepth] records in or below the start pane.
    */
   private fun navigator(
     vararg screens: Screen,
@@ -109,7 +109,7 @@ class PaneReplaceInterceptorTest {
 
   @Test
   fun recordsBelowThePrimaryAreNeverReplaced() {
-    // Detail(1) is hidden below the list in the left pane.
+    // Detail(1) is hidden below the list in the start pane.
     val navigator = navigator(Home, Detail(1), ListScreen, primaryDepth = 3)
     assertThat(navigator.goTo(Detail(2))).isTrue()
     assertThat(navigator.peekBackStack()).containsExactly(Detail(2), ListScreen, Detail(1), Home)

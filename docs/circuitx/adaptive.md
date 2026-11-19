@@ -65,8 +65,8 @@ data class PetDetailScreen(val id: Long) : PaneScreen {
 }
 ```
 
-On a wide window, the left pane shows the list. The right pane passes the detail, and every screen
-above it, to the wrapped decoration. Transitions and back gestures apply to the right pane only.
+On a wide window, the start pane shows the list. The end pane passes the detail, and every screen
+above it, to the wrapped decoration. Transitions and back gestures apply to the end pane only.
 
 ```
 Narrow window             Wide window
@@ -84,7 +84,7 @@ Put app-wide navigation, like a navigation rail, outside `NavigableCircuitConten
 `NavigationSuiteScaffold` does this. The panes then share the width beside the rail, and the pane
 widths need no changes.
 
-If a screen inside the stack draws the rail, that screen is the left pane and holds two sized parts.
+If a screen inside the stack draws the rail, that screen is the start pane and holds two sized parts.
 Let it size itself, as [Pane widths](#pane-widths) describes.
 
 ### Tabs and saved back stacks
@@ -106,14 +106,14 @@ same pet beside the list. No other state holds the selection.
 
 `PaneReplaceInterceptor` changes `goTo` only. A `resetRoot` passes through it.
 
-The root of each tab takes the left pane. A tab whose root is not a list has two options.
+The root of each tab takes the start pane. A tab whose root is not a list has two options.
 
 - To keep it at full width, set `panes.host.placeholder = PaneHost.NoPlaceholder` in the click, or use no
   placeholder in the strategy.
 - To keep it out of the panes, pass `rootIsList = false` and mark each list. See
   [Lists above the root](#lists-above-the-root).
 
-Set a tab's placeholder in the same click as the `resetRoot`, as [Empty right pane](#empty-right-pane)
+Set a tab's placeholder in the same click as the `resetRoot`, as [Empty end pane](#empty-end-pane)
 describes.
 
 ## Floating toolbars
@@ -125,7 +125,7 @@ tab bar on iOS. It can hold the app's navigation or the actions of one screen.
 
 Pass a `paneContainer` for a toolbar that stays while the screens in a pane change. The decoration
 calls it for each pane, in the bounds of that pane. This toolbar holds the tabs. It floats over the
-left pane, where the root of each tab renders.
+start pane, where the root of each tab renders.
 
 ```kotlin
 rememberPaneNavigation(
@@ -135,7 +135,7 @@ rememberPaneNavigation(
     val selected = backStack.rootRecord?.screen
     val atTabRoot = backStack.topRecord == backStack.rootRecord
     val showTabs =
-      position == PanePosition.LEFT || (position == PanePosition.SINGLE && atTabRoot)
+      position == PanePosition.START || (position == PanePosition.SINGLE && atTabRoot)
     Box {
       content()
       if (showTabs) {
@@ -159,24 +159,24 @@ rememberPaneNavigation(
 ```
 
 In the single layout, the tabs show at the root of a tab and hide when a screen opens over it. In
-a split layout, they stay over the left pane while details open beside it. A tab switch works as
+a split layout, they stay over the start pane while details open beside it. A tab switch works as
 [Tabs and saved back stacks](#tabs-and-saved-back-stacks) describes.
 
 To center the tabs in the window at every size, draw the toolbar in a `Box` over
 `NavigableCircuitContent` and pass no `paneContainer`.
 
-| Position | Pane                                              |
-|----------|---------------------------------------------------|
-| `SINGLE` | The whole decoration, while one screen shows      |
-| `LEFT`   | The left pane, also while it has the full width   |
-| `MIDDLE` | The middle pane of three                          |
-| `RIGHT`  | The right pane                                    |
+| Position | Pane                                             |
+|----------|--------------------------------------------------|
+| `SINGLE` | The whole decoration, while one screen shows     |
+| `START`  | The start pane, also while it has the full width |
+| `MIDDLE` | The middle pane of three                         |
+| `END`    | The end pane                                     |
 
-- Call `content()` one time, from the same place for every position. The right pane and the
+- Call `content()` one time, from the same place for every position. The end pane and the
   single layout share one container, so its state stays when the window resizes.
 - A container gets the nested scroll of its own pane only. A toolbar with a scroll behavior over
   the list does not hide when the detail scrolls.
-- The `RIGHT` container stays composed off screen while nothing shows there. Read
+- The `END` container stays composed off screen while nothing shows there. Read
   `LocalPaneState.current.paneCount` before you draw chrome for it.
 - Content under the toolbar needs bottom padding. Provide it from the container, like with a
   `CompositionLocal` that the lists read.
@@ -201,21 +201,21 @@ fun PetDetail(state: PetDetailScreen.State, modifier: Modifier = Modifier) {
 }
 ```
 
-An app can use both. The tabs then float over the left pane, and the actions of the detail float
-over the right pane.
+An app can use both. The tabs then float over the start pane, and the actions of the detail float
+over the end pane.
 
 ## Pane strategy
 
 A `PaneStrategy` maps the window and the stack to a `PaneScene`, or to null for the single layout.
-The scene names the records of the left and middle panes and how the panes split. The decoration
+The scene names the records of the start and middle panes and how the panes split. The decoration
 owns the layout, insets, record lifecycle, and animation scopes.
 
 `ListDetailPaneStrategy` is the built-in strategy.
 
 - It splits a window that has room for two panes and is at least 480dp tall. Change the height with
   `minHeightDp`.
-- The left pane takes the record just below the topmost run of screens that have a `PaneStyle`.
-- `LIST_DETAIL` gives the left pane a set width. `SUPPORTING` gives the right pane a set width.
+- The start pane takes the record just below the topmost run of screens that have a `PaneStyle`.
+- `LIST_DETAIL` gives the start pane a set width. `SUPPORTING` gives the end pane a set width.
 - `LIST` marks a list that is not the root. See [Lists above the root](#lists-above-the-root).
 - `EXTRA` opens a third pane when the window has room for three. See [Three panes](#three-panes).
 - The panes split at a vertical hinge. A window with a hinge shows two panes at most.
@@ -272,33 +272,33 @@ ListDetailPaneStrategy(listPaneWidth = 320.dp)
 
 ### Pane widths
 
-A scene carries a `PaneSplit`, which tells the decoration where the left pane ends.
+A scene carries a `PaneSplit`, which tells the decoration where the start pane ends.
 
-| Split          | Left pane width                                 |
-|----------------|-------------------------------------------------|
-| `Fixed`        | A width that the strategy chose                 |
-| `RightFixed`   | The rest, beside a right pane of a set width    |
-| `Fraction`     | A fraction of the window                        |
-| `AtHinge`      | Up to the first hinge, or half the window       |
-| `PrimaryWraps` | The width that the left pane's content asks for |
+| Split          | Start pane width                                 |
+|----------------|--------------------------------------------------|
+| `Fixed`        | A width that the strategy chose                  |
+| `EndFixed`     | The rest, beside an end pane of a set width      |
+| `Fraction`     | A fraction of the window                         |
+| `AtHinge`      | Up to the first hinge, or half the window        |
+| `PrimaryWraps` | The width that the start pane's content asks for |
 
 ```
 Fixed                          AtHinge                        PrimaryWraps
 +-------+---------------+      +-----------+-+-----------+    +--+------+------------+
 |       |               |      |           |h|           |    |  |      |            |
-| Left  |     Right     |      |   Left    |i|   Right   |    |R | List |   Right    |
+| Start |      End      |      |   Start   |i|    End    |    |R | List |    End     |
 |       |               |      |           |n|           |    |a |      |            |
 |       |               |      |           |g|           |    |i |      |            |
 |       |               |      |           |e|           |    |l |      |            |
 +-------+---------------+      +-----------+-+-----------+    +--+------+------------+
- width from the strategy        panes end at the hinge         left pane is as wide
+ width from the strategy        panes end at the hinge         start pane is as wide
                                                                as its content
 ```
 
-Use `PrimaryWraps` when the left pane holds more than one sized part.
+Use `PrimaryWraps` when the start pane holds more than one sized part.
 `ListDetailPaneStrategy(listPaneSizesItself = true)` returns it for `LIST_DETAIL`.
 
-The decoration then measures the left pane with a minimum width of zero. The screen in that pane
+The decoration then measures the start pane with a minimum width of zero. The screen in that pane
 must choose a width while `LocalPaneState.current.primarySizesItself` is true. Content that fills
 the maximum width leaves no room beside it. `PaneState.preferredPaneWidth` is the width for a list.
 
@@ -318,27 +318,27 @@ Row(if (sizesItself) Modifier.fillMaxHeight() else Modifier.fillMaxSize()) {
 A screen with `PaneStyle.EXTRA` holds more content for an open detail, like a profile opened from a
 conversation. When the window has room for three panes, it opens in a third pane:
 
-- The list stays in the left pane.
+- The list stays in the start pane.
 - The detail moves to a middle pane and keeps its state.
-- The extra screen, and every screen above it, goes to the right pane.
+- The extra screen, and every screen above it, goes to the end pane.
 
-In a smaller window, the extra screen stacks over the detail in the right pane.
+In a smaller window, the extra screen stacks over the detail in the end pane.
 
-A custom strategy asks for three panes with `PaneScene.secondaryKey` and `rightPaneWidth`. The
-`AtHinge` and `RightFixed` splits show two panes only.
+A custom strategy asks for three panes with `PaneScene.secondaryKey` and `endPaneWidth`. The
+`AtHinge` and `EndFixed` splits show two panes only.
 
 ## Roles
 
 Each screen reads `LocalPaneRole` to learn where it renders.
 
-| Role             | Where                                                     |
-|------------------|-----------------------------------------------------------|
-| `SINGLE`         | The only visible screen, as on phones                     |
-| `PRIMARY`        | The left pane, also while it has the full width           |
-| `DETAIL_ROOT`    | The screen opened from the left pane                      |
-| `DETAIL_STACKED` | A screen above the detail                                 |
-| `EXTRA_ROOT`     | The bottom screen of the third pane                       |
-| `EXTRA_STACKED`  | A screen above another screen in the third pane           |
+| Role             | Where                                            |
+|------------------|--------------------------------------------------|
+| `SINGLE`         | The only visible screen, as on phones            |
+| `PRIMARY`        | The start pane, also while it has the full width |
+| `DETAIL_ROOT`    | The screen opened from the start pane            |
+| `DETAIL_STACKED` | A screen above the detail                        |
+| `EXTRA_ROOT`     | The bottom screen of the third pane              |
+| `EXTRA_STACKED`  | A screen above another screen in the third pane  |
 
 A screen with the `DETAIL_ROOT` role sits beside the screen that opened it. For a list's detail,
 hide its back arrow there, because the list is already on screen. A supporting panel can show a
@@ -350,10 +350,10 @@ val showsBackArrow = LocalPaneRole.current != PaneRole.DETAIL_ROOT
 val shareElements = LocalPaneRole.current == PaneRole.SINGLE
 ```
 
-## Empty right pane
+## Empty end pane
 
-With only the left pane's record on the stack, that record fills the window. This suits a grid
-that opens a panel on a pick. To keep the right pane visible, like for a list beside its detail,
+With only the start pane's record on the stack, that record fills the window. This suits a grid
+that opens a panel on a pick. To keep the end pane visible, like for a list beside its detail,
 set a placeholder.
 
 ```
@@ -379,13 +379,13 @@ To give one screen the full width when the strategy has a placeholder, set
 panes.host.placeholder = PaneHost.NoPlaceholder
 ```
 
-When a screen opens beside the left pane, the left pane resizes over a few frames and the new
-pane slides in from the end edge. The left pane measures again on each of those frames. To resize
+When a screen opens beside the start pane, the start pane resizes over a few frames and the new
+pane slides in from the end edge. The start pane measures again on each of those frames. To resize
 it in one frame, pass `animationSpec = snap()` to `PaneNavDecoration`.
 
 ### Lists above the root
 
-A root with no screens above it always takes the left pane, so it can show a placeholder. A list
+A root with no screens above it always takes the start pane, so it can show a placeholder. A list
 that opens over other screens needs `PaneStyle.LIST` for the same behavior.
 
 ```kotlin
@@ -408,8 +408,8 @@ next frame then lays out at the final widths.
 A screen reads `LocalPaneState` to learn the layout of the window.
 
 - `isSplit` is true while the window shows more than one pane. `paneCount` is the number of
-  panes. Both report one pane while the left pane has the full width.
-- `detailRoot` is the screen opened from the left pane. A list can use it to highlight the open
+  panes. Both report one pane while the start pane has the full width.
+- `detailRoot` is the screen opened from the start pane. A list can use it to highlight the open
   item.
 - `preferredPaneWidth` is the pane width of the window.
 
@@ -454,7 +454,7 @@ The presenter only calls `navigator.goTo(PetDetailScreen(id))`. It keeps no sele
 `PaneReplaceInterceptor` is a [`NavigationInterceptor`](navigation.md). While the decoration has
 a scene, it applies these rules to `goTo`:
 
-- A screen of a type that is already open beside the left pane replaces that screen and every
+- A screen of a type that is already open beside the start pane replaces that screen and every
   screen above it.
 - A screen that is already open there pops back to it.
 - Any other screen is pushed.

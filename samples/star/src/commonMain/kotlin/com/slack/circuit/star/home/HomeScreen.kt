@@ -136,8 +136,10 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
         }
       }
 
-    // Create a single backstack that starts with the initial tab
-    val backStack = rememberSaveableBackStack(root = state.navItems[state.selectedIndex].screen)
+    // One back stack for every tab, which starts at the first tab. The root passed here is a key
+    // of the remembered stack, so it must not follow the selected tab. A root that changed on a tab
+    // switch would create a new stack and drop the stacks that resetRoot saved for the other tabs.
+    val backStack = rememberSaveableBackStack(root = state.navItems.first().screen)
     val navigator =
       rememberCircuitNavigator(
         backStack = backStack,

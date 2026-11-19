@@ -44,7 +44,7 @@ val panes =
   )
 ```
 
-`PaneAnimatedNavDecoratorFactory` adds the [replace transition](#replace-transition). The default
+`PaneAnimatedNavDecoratorFactory` adds the [pane transitions](#pane-transitions). The default
 `delegate` already has it.
 
 An app with its own intercepting navigator can create the parts itself.
@@ -521,16 +521,21 @@ PaneReplaceInterceptor(host) { open, incoming -> open is InboxDetail && incoming
 The pops and the push are one `InterceptedResult.RewriteAll`, so the stack never renders between
 them.
 
-### Replace transition
+### Pane transitions
 
-A decorator usually slides a new screen in from the end edge. That suits a first detail, which
-enters from the edge of the window. A replacement would slide over the open detail beside the list.
+A decorator usually slides a new screen in from the end edge. `PaneAnimatedNavDecoratorFactory`
+wraps an `AnimatedNavDecorator.Factory` and changes two transitions of the end pane.
 
-`PaneAnimatedNavDecoratorFactory` wraps an `AnimatedNavDecorator.Factory` and changes this one
-transition. The new detail fades in while it moves up a short distance. The first detail, a pop,
-and a screen pushed over a detail keep the transitions of the wrapped factory.
+| Change                                         | Transition                              |
+|------------------------------------------------|-----------------------------------------|
+| The first screen opens a pane that was hidden  | None. The screen moves with its pane    |
+| A screen replaces the bottom screen of a pane  | A crossfade with a small scale          |
+| The first screen opens over a drawn placeholder | The same crossfade                      |
 
-To use another transition, pass a `replaceTransform`.
+The decoration already slides a new pane in from the end edge, so a push inside it would add a
+second motion. A pop and a screen pushed over a detail keep the transitions of the wrapped factory.
+
+To use other transitions, pass an `openTransform` or a `replaceTransform`.
 
 ```kotlin
 PaneAnimatedNavDecoratorFactory(
@@ -539,7 +544,7 @@ PaneAnimatedNavDecoratorFactory(
 )
 ```
 
-An `AnimatedScreenTransform` of a screen takes priority over it.
+An `AnimatedScreenTransform` of a screen takes priority over both.
 
 ## Column counts
 

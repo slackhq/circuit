@@ -12,9 +12,9 @@ import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companio
 
 /**
  * Replaces the open detail when a screen that [replaces] it opens while [host] has a scene. Picking
- * a second list item then swaps the detail, and back returns to the empty right pane in one step.
+ * a second list item then swaps the detail, and back returns to the empty end pane in one step.
  *
- * The rule looks only at the records above the left pane's record:
+ * The rule looks only at the records above the start pane's record:
  * - A screen that replaces none of them is pushed as usual.
  * - A screen that replaces one of them takes the place of the lowest such record and every record
  *   above it.
@@ -33,7 +33,7 @@ import com.slack.circuitx.navigation.intercepting.NavigationInterceptor.Companio
  *
  * @param host The [PaneHost] of the [PaneNavDecoration] that renders the intercepted navigator.
  * @param replaces Whether `incoming`, the screen that opens, takes the place of `open`, a screen
- *   that is open beside the left pane.
+ *   that is open beside the start pane.
  */
 @ExperimentalCircuitAdaptiveApi
 public class PaneReplaceInterceptor(
@@ -44,18 +44,18 @@ public class PaneReplaceInterceptor(
 ) : NavigationInterceptor {
 
   override fun goTo(screen: Screen, navigationContext: NavigationContext): InterceptedResult {
-    // A scene whose left pane has the full width still counts: the next screen opens beside it.
+    // A scene whose start pane has the full width still counts: the next screen opens beside it.
     if (host.scene == null) {
       return Skipped
     }
     // Top first, root last.
     val stack = navigationContext.peekBackStack() ?: return Skipped
-    val rightPane = stack.dropLast(host.primaryDepth)
-    val match = rightPane.indexOfLast { open -> replaces(open, screen) }
+    val endPane = stack.dropLast(host.primaryDepth)
+    val match = endPane.indexOfLast { open -> replaces(open, screen) }
     return when {
       // Also the path for the push that this interceptor rewrote, which no longer has a match.
       match == -1 -> Skipped
-      rightPane[match] == screen -> {
+      endPane[match] == screen -> {
         if (match == 0) {
           SuccessConsumed
         } else {

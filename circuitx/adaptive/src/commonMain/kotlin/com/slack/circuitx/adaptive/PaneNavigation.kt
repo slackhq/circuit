@@ -45,9 +45,9 @@ internal constructor(
  * [PaneReplaceInterceptor] itself.
  *
  * @param navigator The navigator of the back stack that the panes render.
- * @param strategy Decides when to split and which records take the left and middle panes.
- * @param delegate Renders the single layout, and the right pane of a split layout. The default is
- *   the default decoration of the `Circuit` in the composition.
+ * @param strategy Decides when to split and which records take the start and middle panes.
+ * @param delegate Renders the single layout, and the end pane of a split layout. The default is the
+ *   default decoration of the `Circuit` in the composition.
  * @param host The state that the decoration and the interceptors share.
  * @param interceptors The interceptors of the returned navigator. To add your own, pass a list that
  *   also has a [PaneReplaceInterceptor] for [host].

@@ -77,10 +77,10 @@ import kotlin.test.Test
 class PaneNavDecorationTest {
   private data object Root : Screen
 
-  /** A root that reserves the right pane, like a list with a "pick one" message. */
+  /** A root that reserves the end pane, like a list with a "pick one" message. */
   private data object ReservingRoot : Screen
 
-  /** A root that draws a rail beside its list and picks its own width in the left pane. */
+  /** A root that draws a rail beside its list and picks its own width in the start pane. */
   private data object SelfSizedRoot : Screen
 
   private data class Detail(val id: Int) : PaneScreen {
@@ -93,7 +93,7 @@ class PaneNavDecorationTest {
       get() = PaneStyle.SUPPORTING
   }
 
-  /** A screen opened from a detail, so it stacks in the right pane. */
+  /** A screen opened from a detail, so it stacks in the end pane. */
   private data class Stacked(val id: Int) : PaneScreen {
     override val paneStyle: PaneStyle
       get() = PaneStyle.LIST_DETAIL
@@ -424,12 +424,12 @@ class PaneNavDecorationTest {
     windowSize = phone
     setNavContent(Root)
     onNodeWithTag("chrome-SINGLE").assertWidthIsEqualTo(phone.width)
-    onAllNodesWithTag("chrome-LEFT").assertCountEquals(0)
+    onAllNodesWithTag("chrome-START").assertCountEquals(0)
 
     windowSize = tablet
     runOnIdle { navigator.goTo(Detail(1)) }
-    onNodeWithTag("chrome-LEFT").assertWidthIsEqualTo(tabletListPaneWidth)
-    onNodeWithTag("chrome-RIGHT").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth)
+    onNodeWithTag("chrome-START").assertWidthIsEqualTo(tabletListPaneWidth)
+    onNodeWithTag("chrome-END").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth)
     onAllNodesWithTag("chrome-SINGLE").assertCountEquals(0)
   }
 
@@ -439,7 +439,7 @@ class PaneNavDecorationTest {
     val starts = mutableMapOf<PanePosition, Int>()
     var delegateContainers = 0
     paneContainer = { position, content ->
-      if (position != PanePosition.LEFT) {
+      if (position != PanePosition.START) {
         remember { delegateContainers++ }
       }
       remember(position) { starts[position] = (starts[position] ?: 0) + 1 }
@@ -455,9 +455,9 @@ class PaneNavDecorationTest {
     windowSize = phone
     assertLabel("detail1", PaneRole.SINGLE, taps = 1)
     runOnIdle {
-      // One container follows the delegate from the single layout to the right pane and back
+      // One container follows the delegate from the single layout to the end pane and back
       check(delegateContainers == 1) { "delegate containers: $delegateContainers" }
-      check(starts[PanePosition.LEFT] == 1) { "starts: $starts" }
+      check(starts[PanePosition.START] == 1) { "starts: $starts" }
     }
   }
 
@@ -486,8 +486,8 @@ class PaneNavDecorationTest {
 
     onNodeWithTag("detail1-scroll").performTouchInput { swipeUp() }
     runOnIdle {
-      check((scrolled[PanePosition.RIGHT] ?: 0f) < 0f) { "scrolled: $scrolled" }
-      check((scrolled[PanePosition.LEFT] ?: 0f) == 0f) { "scrolled: $scrolled" }
+      check((scrolled[PanePosition.END] ?: 0f) < 0f) { "scrolled: $scrolled" }
+      check((scrolled[PanePosition.START] ?: 0f) == 0f) { "scrolled: $scrolled" }
     }
   }
 
@@ -524,7 +524,7 @@ class PaneNavDecorationTest {
     setNavContent(Root)
     runOnIdle { navigator.goTo(Detail(1)) }
 
-    // The left pane starts at the right edge and ends at the hinge
+    // The start pane starts at the right edge and ends at the hinge
     onNodeWithTag("root-container").assertWidthIsEqualTo(920.dp - 500.dp)
     onNodeWithTag("detail1-container").assertWidthIsEqualTo(480.dp)
   }
@@ -575,19 +575,19 @@ class PaneNavDecorationTest {
   }
 
   @Test
-  fun leftPaneCanSizeItself() = runComposeUiTest {
+  fun startPaneCanSizeItself() = runComposeUiTest {
     windowSize = tablet
     strategy = ListDetailPaneStrategy(listPaneSizesItself = true)
     setNavContent(SelfSizedRoot)
-    // Alone, the left pane gets the full width
+    // Alone, the start pane gets the full width
     onNodeWithTag("root-container").assertWidthIsEqualTo(tablet.width)
 
     runOnIdle { navigator.goTo(Detail(1)) }
     // The rail, plus the preferred pane width for the list
-    val leftPaneWidth = RailWidth + tabletListPaneWidth
+    val startPaneWidth = RailWidth + tabletListPaneWidth
     onNodeWithTag("rail").assertWidthIsEqualTo(RailWidth)
-    onNodeWithTag("root-container").assertWidthIsEqualTo(leftPaneWidth)
-    onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - leftPaneWidth)
+    onNodeWithTag("root-container").assertWidthIsEqualTo(startPaneWidth)
+    onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - startPaneWidth)
     assertLabel("root", PaneRole.PRIMARY, taps = 0)
 
     runOnIdle { navigator.pop() }

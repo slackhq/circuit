@@ -85,8 +85,26 @@ Narrow window             Wide window
 ## Navigation rails and bars
 
 Put app-wide navigation, like a navigation rail, outside `NavigableCircuitContent`. Material's
-`NavigationSuiteScaffold` does this. The panes then share the width beside the rail, and the pane
-widths need no changes.
+`NavigationSuiteScaffold` does this. The panes then share the width beside the rail.
+
+The decoration is then smaller than the window, and the default `window` function reads the size of
+the decoration. A rail can take a window below the width that splits. Pass the size of the whole
+window to keep the split:
+
+```kotlin
+rememberPaneNavigation(
+  navigator = navigator,
+  window = { size ->
+    val windowSize =
+      with(LocalDensity.current) { LocalWindowInfo.current.containerSize.toSize().toDpSize() }
+    rememberPaneWindow(size, windowSize = windowSize)
+  },
+)
+```
+
+If the rail pads itself for a window inset, like a display cutout, consume that inset for the
+content beside it with `Modifier.consumeWindowInsets`. The panes add only the insets that no
+parent consumed.
 
 If a screen inside the stack draws the rail, that screen is the start pane and holds two sized parts.
 Let it size itself, as [Pane widths](#pane-widths) describes.
@@ -268,10 +286,40 @@ A `PaneWindow` tells the strategy how many panes fit (`maxPanes`) and how wide a
 | 1200dp and wider | 3     | 412dp      |
 
 To use other values, pass a `window` function to `PaneNavDecoration`, or pass widths to
-`ListDetailPaneStrategy`.
+`ListDetailPaneStrategy`. Each width is a function of the `PaneWindow`, so it can be a set width
+or a share of the width.
 
 ```kotlin
-ListDetailPaneStrategy(listPaneWidth = 320.dp)
+ListDetailPaneStrategy(
+  listPaneWidth = { 320.dp },
+  supportingPaneWidth = { (it.size.width * 0.33f).coerceIn(320.dp, 400.dp) },
+)
+```
+
+This `window` function splits from 700dp, where Material's guidance still gives one pane. It reads
+the size of the whole window, as [Navigation rails and bars](#navigation-rails-and-bars) describes:
+
+```kotlin
+window = { size ->
+  val windowSize =
+    with(LocalDensity.current) { LocalWindowInfo.current.containerSize.toSize().toDpSize() }
+  val base = rememberPaneWindow(size, windowSize = windowSize)
+  remember(base, windowSize) {
+    val minPanes =
+      if (windowSize.width >= 700.dp) {
+        2
+      } else {
+        1
+      }
+    PaneWindow(
+      size = base.size,
+      sizeClass = base.sizeClass,
+      separatingHinges = base.separatingHinges,
+      maxPanes = maxOf(base.maxPanes, minPanes),
+      preferredPaneWidth = base.preferredPaneWidth,
+    )
+  }
+}
 ```
 
 ### Pane widths

@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -127,6 +129,10 @@ class PaneNavDecorationTest {
   /** Width of app chrome before the decoration, like a navigation rail. */
   private var leadingWidth by mutableStateOf(0.dp)
   private var layoutDirection = LayoutDirection.Ltr
+  /** Stands in for the safe drawing insets, because the test window has none. */
+  private var windowInsets: WindowInsets? = null
+  /** Insets that the app chrome before the decoration handles. */
+  private var consumedByChrome by mutableStateOf(WindowInsets(0, 0, 0, 0))
   /** Overrides how many panes fit, because the test window is too narrow for three by default. */
   private var maxPanes: Int? = null
   private val host = PaneHost()
@@ -157,7 +163,11 @@ class PaneNavDecorationTest {
       CircuitCompositionLocals(circuit) {
         // Apps wrap navigation in this, which adds a lookahead pass to every layout
         SharedElementTransitionLayout {
-          Box(Modifier.size(windowSize).padding(start = leadingWidth)) {
+          Box(
+            Modifier.size(windowSize)
+              .padding(start = leadingWidth)
+              .consumeWindowInsets(consumedByChrome)
+          ) {
             val backStack = rememberSaveableBackStack(root)
             val circuitNavigator = rememberCircuitNavigator(backStack) {}
             navigator =
@@ -166,14 +176,15 @@ class PaneNavDecorationTest {
               }
             val decoration = remember {
               PaneNavDecoration(
-                strategy = strategy,
-                delegate =
-                  AnimatedNavDecoration(emptyMap(), NavigatorDefaults.DefaultDecoratorFactory),
-                host = host,
-                // Material adaptive reads the real test window, which never has a hinge
-                window = { size -> testWindow(size) },
-                paneContainer = paneContainer,
-              )
+                  strategy = strategy,
+                  delegate =
+                    AnimatedNavDecoration(emptyMap(), NavigatorDefaults.DefaultDecoratorFactory),
+                  host = host,
+                  // Material adaptive reads the real test window, which never has a hinge
+                  window = { size -> testWindow(size) },
+                  paneContainer = paneContainer,
+                )
+                .apply { windowInsets?.let { insets -> safeDrawingInsets = { insets } } }
             }
             NavigableCircuitContent(navigator, backStack, decoration = decoration)
           }
@@ -275,6 +286,42 @@ class PaneNavDecorationTest {
     setNavContent(ReservingRoot)
     mainClock.advanceTimeByFrame()
     onNodeWithTag("root-container").assertWidthIsEqualTo(tabletListPaneWidth)
+  }
+
+  @Test
+  fun listPaneCoversTheStartInset() = runComposeUiTest {
+    windowSize = tablet
+    windowInsets = WindowInsets(left = 40.dp)
+    setNavContent(ReservingRoot)
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tabletListPaneWidth + 40.dp)
+  }
+
+  @Test
+  fun listPaneSkipsAStartInsetThatARailConsumed() = runComposeUiTest {
+    windowSize = tablet
+    windowInsets = WindowInsets(left = 40.dp)
+    // A rail that pads itself for the inset
+    leadingWidth = RailWidth + 40.dp
+    consumedByChrome = WindowInsets(left = 40.dp)
+    mainClock.autoAdvance = false
+    setNavContent(ReservingRoot)
+    // The first frame already has the width
+    mainClock.advanceTimeByFrame()
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tabletListPaneWidth)
+    mainClock.autoAdvance = true
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tabletListPaneWidth)
+  }
+
+  @Test
+  fun supportingPaneSkipsAnEndInsetThatAParentConsumed() = runComposeUiTest {
+    windowSize = tablet
+    windowInsets = WindowInsets(right = 40.dp)
+    setNavContent(Root)
+    runOnIdle { navigator.goTo(Supporting(1)) }
+    onNodeWithTag("supporting1-container").assertWidthIsEqualTo(tabletListPaneWidth + 40.dp)
+
+    consumedByChrome = WindowInsets(right = 40.dp)
+    onNodeWithTag("supporting1-container").assertWidthIsEqualTo(tabletListPaneWidth)
   }
 
   @Test

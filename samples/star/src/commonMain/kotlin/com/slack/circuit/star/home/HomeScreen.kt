@@ -74,12 +74,9 @@ import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.adaptive.ExperimentalCircuitAdaptiveApi
 import com.slack.circuitx.adaptive.ListDetailPaneStrategy
-import com.slack.circuitx.adaptive.PaneHost
-import com.slack.circuitx.adaptive.PaneNavDecoration
-import com.slack.circuitx.adaptive.PaneReplaceInterceptor
 import com.slack.circuitx.adaptive.PaneStyle
+import com.slack.circuitx.adaptive.rememberPaneNavigation
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
-import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 import dev.zacsweers.metro.AppScope
 import kotlin.math.roundToInt
 
@@ -156,12 +153,14 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
     // On wide windows the pet grid keeps the full width until a pet is picked. The pet's details
     // then open in a panel beside the grid. The back stack is the same in both layouts, so resizing
     // the window keeps the open pet.
-    val paneHost = remember { PaneHost() }
     val circuit = checkNotNull(LocalCircuit.current)
-    val decoration =
-      remember(circuit, paneHost) {
-        PaneNavDecoration(
-          strategy =
+    // Picking another pet beside the grid replaces the open one. NavigableCircuitContent already
+    // handles back, so the pane navigator leaves it alone.
+    val panes =
+      rememberPaneNavigation(
+        navigator = navigator,
+        strategy =
+          remember {
             ListDetailPaneStrategy(
               paneStyle = { screen ->
                 if (screen is PetDetailScreen) {
@@ -170,23 +169,17 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
                   null
                 }
               }
-            ),
-          delegate =
+            )
+          },
+        delegate =
+          remember(circuit) {
             AnimatedNavDecoration(
               animatedScreenTransforms = circuit.animatedScreenTransforms,
               decoratorFactory = GestureNavigationDecorationFactory(),
-            ),
-          host = paneHost,
-          divider = { VerticalDivider() },
-        )
-      }
-    // Picking another pet beside the grid replaces the open one. NavigableCircuitContent already
-    // handles back, so this navigator leaves it alone.
-    val paneNavigator =
-      rememberInterceptingNavigator(
-        navigator = navigator,
-        interceptors = remember(paneHost) { listOf(PaneReplaceInterceptor(paneHost)) },
+            )
+          },
         enableBackHandler = false,
+        divider = { VerticalDivider() },
       )
 
     HomeNavigationLayout(
@@ -202,10 +195,10 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
       modifier = modifier,
     ) { paddingValues ->
       NavigableCircuitContent(
-        navigator = paneNavigator,
+        navigator = panes.navigator,
         backStack = backStack,
         modifier = Modifier.padding(paddingValues),
-        decoration = decoration,
+        decoration = panes.decoration,
       )
       contentComposed = true
     }

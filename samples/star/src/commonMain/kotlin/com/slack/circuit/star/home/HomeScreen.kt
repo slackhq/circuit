@@ -43,8 +43,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.toSize
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.foundation.LocalCircuit
@@ -77,6 +80,7 @@ import com.slack.circuitx.adaptive.ListDetailPaneStrategy
 import com.slack.circuitx.adaptive.PaneAnimatedNavDecoratorFactory
 import com.slack.circuitx.adaptive.PaneStyle
 import com.slack.circuitx.adaptive.rememberPaneNavigation
+import com.slack.circuitx.adaptive.rememberPaneWindow
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
 import dev.zacsweers.metro.AppScope
 import kotlin.math.roundToInt
@@ -181,6 +185,13 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
             )
           },
         enableBackHandler = false,
+        // The navigation rail is outside the panes, so the panes are narrower than the window.
+        // The whole window decides the split, as it decides when the rail shows.
+        window = { size ->
+          val windowSize =
+            with(LocalDensity.current) { LocalWindowInfo.current.containerSize.toSize().toDpSize() }
+          rememberPaneWindow(size, windowSize = windowSize)
+        },
         divider = { VerticalDivider() },
       )
 

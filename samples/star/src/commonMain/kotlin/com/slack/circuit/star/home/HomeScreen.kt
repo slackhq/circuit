@@ -74,6 +74,7 @@ import com.slack.circuit.star.petdetail.PetDetailScreen
 import com.slack.circuit.star.ui.StarTheme
 import com.slack.circuitx.adaptive.ExperimentalCircuitAdaptiveApi
 import com.slack.circuitx.adaptive.ListDetailPaneStrategy
+import com.slack.circuitx.adaptive.PaneAnimatedNavDecoratorFactory
 import com.slack.circuitx.adaptive.PaneStyle
 import com.slack.circuitx.adaptive.rememberPaneNavigation
 import com.slack.circuitx.gesturenavigation.GestureNavigationDecorationFactory
@@ -175,7 +176,8 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
           remember(circuit) {
             AnimatedNavDecoration(
               animatedScreenTransforms = circuit.animatedScreenTransforms,
-              decoratorFactory = GestureNavigationDecorationFactory(),
+              decoratorFactory =
+                PaneAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory()),
             )
           },
         enableBackHandler = false,

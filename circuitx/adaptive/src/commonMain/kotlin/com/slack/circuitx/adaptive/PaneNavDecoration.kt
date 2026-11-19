@@ -200,9 +200,9 @@ public class PaneNavDecoration(
 
       // Split: only the end pane's records, over a placeholder. Single: every record.
       val paneArgs =
-        remember(args, panes) {
+        remember(args, panes, placeholder != null) {
           if (panes != null) {
-            endPaneStack(args, panes)
+            endPaneStack(args, panes, placeholderShown = placeholder != null)
           } else {
             args.transform<T, PaneArg<T>> { PaneArg.Record(it, PaneRole.SINGLE) }
           }
@@ -318,7 +318,7 @@ public class PaneNavDecoration(
                         }
                       }
                     }
-                    PaneArg.Placeholder -> placeholder?.invoke()
+                    is PaneArg.Placeholder -> placeholder?.invoke()
                   }
                 }
               }
@@ -766,9 +766,18 @@ internal sealed interface PaneArg<out T : NavArgument> : NavArgument {
       get() = record.screen
   }
 
-  data object Placeholder : PaneArg<Nothing> {
-    override val key: String = "circuitx-adaptive-pane-placeholder"
-    override val screen: Screen = PanePlaceholderScreen
+  /**
+   * The entry below the records of the end pane.
+   *
+   * @param shown The app draws a placeholder, so the end pane is visible while this entry is on
+   *   top. Without one, the pane opens and closes with the first record.
+   */
+  data class Placeholder(val shown: Boolean) : PaneArg<Nothing> {
+    override val key: String
+      get() = "circuitx-adaptive-pane-placeholder"
+
+    override val screen: Screen
+      get() = PanePlaceholderScreen
   }
 }
 
@@ -789,9 +798,10 @@ internal data object PanePlaceholderScreen : Screen
 private fun <T : NavArgument> endPaneStack(
   args: NavStackList<T>,
   panes: Panes<T>,
+  placeholderShown: Boolean,
 ): NavStackList<PaneArg<T>> {
   val endPane = panes.endPane
-  val placeholder: PaneArg<T> = PaneArg.Placeholder
+  val placeholder: PaneArg<T> = PaneArg.Placeholder(placeholderShown)
   val toArg: (T) -> PaneArg<T> = { record -> PaneArg.Record(record, panes.roleOf(record)) }
   // Forward records are above the top of the stack, so they stack over the end pane's records.
   val forwardRole =

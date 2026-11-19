@@ -5,11 +5,16 @@ package com.slack.circuitx.adaptive
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.Transition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import com.slack.circuit.foundation.animation.AnimatedNavDecoration
@@ -21,15 +26,19 @@ import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 
 /**
- * Wraps the decorators of [delegate] so that a pane plays [replaceTransform] when its bottom screen
- * is replaced, like when the user picks another list item while a detail is open.
+ * Wraps the decorators of [delegate] so that the end pane of a [PaneNavDecoration] gets transitions
+ * that suit a pane.
  *
- * A horizontal push suits one pane that covers the window. Beside a list, the new detail would
- * slide in over the old one from the pane edge. The default [replaceTransform] moves the new detail
- * up a short distance while it fades in.
+ * A horizontal push suits one pane that covers the window. In a pane it looks wrong in two cases:
+ * - A pane that opens already slides in from the end edge, as the decoration moves the pane. A push
+ *   inside it would add a second motion. [openTransform] replaces it, and by default it does
+ *   nothing, so the screen rides in with its pane.
+ * - A screen that replaces the bottom screen of a pane, like another list item, would slide over
+ *   the old one. [replaceTransform] replaces it, and by default it is a crossfade with a small
+ *   scale. This also applies when the first screen opens over a placeholder that the app draws.
  *
- * Every other transition comes from [delegate]. This includes the first detail that opens, a pop,
- * and screens pushed over a detail. An `AnimatedScreenTransform` of a screen still takes priority.
+ * Every other transition comes from [delegate]. This includes a pop and screens pushed over a
+ * detail. An `AnimatedScreenTransform` of a screen still takes priority.
  *
  * Use it in the [AnimatedNavDecoration] that a [PaneNavDecoration] wraps:
  * ```kotlin
@@ -43,11 +52,15 @@ import com.slack.circuit.runtime.navigation.NavStackList
  * factory changes nothing.
  *
  * @param delegate Creates the decorators that draw the screens and supply the other transitions.
- * @param replaceTransform The transition from the replaced screen to the new one.
+ * @param openTransform The transition of the first screen in a pane that was not visible.
+ * @param replaceTransform The transition from the content of a visible pane to a new bottom screen.
  */
 @ExperimentalCircuitAdaptiveApi
 public class PaneAnimatedNavDecoratorFactory(
   private val delegate: AnimatedNavDecorator.Factory,
+  private val openTransform:
+    AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform =
+    DefaultPaneOpenTransform,
   private val replaceTransform:
     AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform =
     DefaultPaneReplaceTransform,
@@ -55,23 +68,29 @@ public class PaneAnimatedNavDecoratorFactory(
   override fun <T : NavArgument> create(): AnimatedNavDecorator<T, *> {
     @Suppress("UNCHECKED_CAST")
     val decorator = delegate.create<T>() as AnimatedNavDecorator<T, AnimatedNavState>
-    return PaneAnimatedNavDecorator(decorator, replaceTransform)
+    return PaneAnimatedNavDecorator(decorator, openTransform, replaceTransform)
   }
 
   override fun equals(other: Any?): Boolean {
     return other is PaneAnimatedNavDecoratorFactory &&
       delegate == other.delegate &&
+      openTransform == other.openTransform &&
       replaceTransform == other.replaceTransform
   }
 
   override fun hashCode(): Int {
-    return 31 * delegate.hashCode() + replaceTransform.hashCode()
+    var result = delegate.hashCode()
+    result = 31 * result + openTransform.hashCode()
+    result = 31 * result + replaceTransform.hashCode()
+    return result
   }
 }
 
-/** Passes every call to [delegate], and swaps the transition of a pane replace. */
+/** Passes every call to [delegate], and swaps the transitions of a pane open and a pane replace. */
 private class PaneAnimatedNavDecorator<T : NavArgument, S : AnimatedNavState>(
   private val delegate: AnimatedNavDecorator<T, S>,
+  private val openTransform:
+    AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform,
   private val replaceTransform:
     AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform,
 ) : AnimatedNavDecorator<T, S> {
@@ -91,13 +110,16 @@ private class PaneAnimatedNavDecorator<T : NavArgument, S : AnimatedNavState>(
   override fun AnimatedContentTransitionScope<AnimatedNavState>.transitionSpec(
     animatedNavEvent: AnimatedNavEvent
   ): ContentTransform {
-    return if (
-      animatedNavEvent == AnimatedNavEvent.GoTo &&
-        isPaneReplace(initialState.navStack, targetState.navStack)
-    ) {
-      replaceTransform()
-    } else {
-      with(delegate) { transitionSpec(animatedNavEvent) }
+    val change =
+      if (animatedNavEvent == AnimatedNavEvent.GoTo) {
+        paneChange(initialState.navStack, targetState.navStack)
+      } else {
+        null
+      }
+    return when (change) {
+      PaneChange.OPEN -> openTransform()
+      PaneChange.REPLACE -> replaceTransform()
+      null -> with(delegate) { transitionSpec(animatedNavEvent) }
     }
   }
 
@@ -110,27 +132,71 @@ private class PaneAnimatedNavDecorator<T : NavArgument, S : AnimatedNavState>(
   }
 }
 
-/**
- * Whether the change from [initial] to [target] puts a new bottom screen in a pane that already
- * showed a screen. Both stacks must come from a split [PaneNavDecoration]. A screen from the single
- * layout does not count, so a layout switch keeps the transition of the delegate.
- */
-internal fun isPaneReplace(
-  initial: NavStackList<out NavArgument>,
-  target: NavStackList<out NavArgument>,
-): Boolean {
-  val from = initial.active as? PaneArg.Record<*> ?: return false
-  val to = target.active as? PaneArg.Record<*> ?: return false
-  val toIsPaneRoot = to.role == PaneRole.DETAIL_ROOT || to.role == PaneRole.EXTRA_ROOT
-  return toIsPaneRoot && from.role != PaneRole.SINGLE && from.key != to.key
+/** A change to the bottom screen of a pane that gets its own transition. */
+internal enum class PaneChange {
+  /** The first screen of a pane that was not visible. The decoration slides the pane in. */
+  OPEN,
+
+  /** A new bottom screen in a pane that already showed a screen or a placeholder. */
+  REPLACE,
 }
 
-/** The new screen fades in while it moves up a tenth of its height. The old screen fades out. */
+/**
+ * Returns how the change from [initial] to [target] changes the bottom screen of a pane, or null
+ * for any other change. Both stacks must come from a split [PaneNavDecoration]. A screen from the
+ * single layout does not count, so a layout switch keeps the transition of the delegate.
+ */
+internal fun paneChange(
+  initial: NavStackList<out NavArgument>,
+  target: NavStackList<out NavArgument>,
+): PaneChange? {
+  val to = target.active as? PaneArg.Record<*> ?: return null
+  if (to.role != PaneRole.DETAIL_ROOT && to.role != PaneRole.EXTRA_ROOT) {
+    return null
+  }
+  return when (val from = initial.active) {
+    is PaneArg.Placeholder -> {
+      if (from.shown) {
+        PaneChange.REPLACE
+      } else {
+        PaneChange.OPEN
+      }
+    }
+    is PaneArg.Record<*> -> {
+      if (from.role != PaneRole.SINGLE && from.key != to.key) {
+        PaneChange.REPLACE
+      } else {
+        null
+      }
+    }
+    else -> null
+  }
+}
+
+/** No transition. The new screen is in place from the first frame, and moves with its pane. */
+internal val DefaultPaneOpenTransform:
+  AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform =
+  {
+    EnterTransition.None togetherWith ExitTransition.None
+  }
+
+/**
+ * A crossfade. The old screen shrinks a little as it fades out, and the new screen grows to its
+ * size with a small bounce as it fades in.
+ */
 internal val DefaultPaneReplaceTransform:
   AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform =
   {
     val enter =
-      fadeIn(tween(durationMillis = 210, delayMillis = 90)) +
-        slideInVertically(tween(durationMillis = 300)) { height -> height / 10 }
-    enter togetherWith fadeOut(tween(durationMillis = 90))
+      fadeIn(tween(durationMillis = 150, delayMillis = 50)) +
+        scaleIn(
+          animationSpec =
+            spring(
+              dampingRatio = Spring.DampingRatioLowBouncy,
+              stiffness = Spring.StiffnessMediumLow,
+            ),
+          initialScale = 0.94f,
+        )
+    val exit = fadeOut(tween(durationMillis = 100)) + scaleOut(tween(100), targetScale = 0.97f)
+    enter togetherWith exit
   }

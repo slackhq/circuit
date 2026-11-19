@@ -5,7 +5,6 @@ package com.slack.circuitx.adaptive
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.takeOrElse
 import androidx.window.core.layout.WindowSizeClass.Companion.HEIGHT_DP_MEDIUM_LOWER_BOUND
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
@@ -69,16 +68,20 @@ public interface PaneScreen : Screen {
  * with a hinge shows two panes at most.
  *
  * Pane widths default to [PaneWindow.preferredPaneWidth], which is Material's pane width for the
- * default [PaneWindow].
+ * default [PaneWindow]. Each width is a function of the window, so it can follow the width that the
+ * panes share:
+ * ```kotlin
+ * ListDetailPaneStrategy(listPaneWidth = { (it.size.width * 0.4f).coerceIn(280.dp, 400.dp) })
+ * ```
  *
  * @param paneStyle Returns the style of a screen, or null when it has none.
  * @param minHeightDp The shortest window that splits. The default is the medium height class, which
  *   keeps phones in landscape on one pane.
- * @param listPaneWidth Width of the start pane for [PaneStyle.LIST_DETAIL].
+ * @param listPaneWidth Returns the width of the start pane for [PaneStyle.LIST_DETAIL].
  * @param listPaneSizesItself Lets the start pane of [PaneStyle.LIST_DETAIL] take the width its
  *   content asks for, in place of [listPaneWidth]. See [PaneSplit.PrimaryWraps].
- * @param supportingPaneWidth Width of the end pane for [PaneStyle.SUPPORTING].
- * @param extraPaneWidth Width of the third pane for [PaneStyle.EXTRA].
+ * @param supportingPaneWidth Returns the width of the end pane for [PaneStyle.SUPPORTING].
+ * @param extraPaneWidth Returns the width of the third pane for [PaneStyle.EXTRA].
  * @param minHingePaneWidth The narrowest pane to show on either side of a hinge.
  * @param rootIsList Treats a root with no pane style as a [PaneStyle.LIST] screen.
  * @param placeholder Draws the end pane while no record is open there, or null to give the start
@@ -88,10 +91,10 @@ public interface PaneScreen : Screen {
 public class ListDetailPaneStrategy(
   private val paneStyle: (Screen) -> PaneStyle? = { (it as? PaneScreen)?.paneStyle },
   private val minHeightDp: Int = HEIGHT_DP_MEDIUM_LOWER_BOUND,
-  private val listPaneWidth: Dp = Dp.Unspecified,
+  private val listPaneWidth: (PaneWindow) -> Dp = { it.preferredPaneWidth },
   private val listPaneSizesItself: Boolean = false,
-  private val supportingPaneWidth: Dp = Dp.Unspecified,
-  private val extraPaneWidth: Dp = Dp.Unspecified,
+  private val supportingPaneWidth: (PaneWindow) -> Dp = { it.preferredPaneWidth },
+  private val extraPaneWidth: (PaneWindow) -> Dp = { it.preferredPaneWidth },
   private val minHingePaneWidth: Dp = 0.dp,
   private val rootIsList: Boolean = true,
   private val placeholder: (@Composable () -> Unit)? = null,
@@ -137,10 +140,10 @@ public class ListDetailPaneStrategy(
       when {
         hinge != null -> PaneSplit.AtHinge
         style == PaneStyle.SUPPORTING -> {
-          PaneSplit.EndFixed(supportingPaneWidth.takeOrElse { window.preferredPaneWidth })
+          PaneSplit.EndFixed(supportingPaneWidth(window))
         }
         listPaneSizesItself -> PaneSplit.PrimaryWraps()
-        else -> PaneSplit.Fixed(listPaneWidth.takeOrElse { window.preferredPaneWidth })
+        else -> PaneSplit.Fixed(listPaneWidth(window))
       }
     // The record below the lowest EXTRA record of the run, when the window fits a third pane. A
     // supporting pane already takes its width from the main pane, so it gets no third pane. A
@@ -163,7 +166,7 @@ public class ListDetailPaneStrategy(
       secondaryKey = secondaryIndex?.let { visible[it].key },
       endPaneWidth =
         if (secondaryIndex != null) {
-          extraPaneWidth.takeOrElse { window.preferredPaneWidth }
+          extraPaneWidth(window)
         } else {
           Dp.Unspecified
         },

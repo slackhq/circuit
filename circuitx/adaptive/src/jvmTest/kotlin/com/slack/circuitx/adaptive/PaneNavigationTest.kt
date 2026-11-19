@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.v2.runComposeUiTest
@@ -68,5 +69,58 @@ class PaneNavigationTest {
     onNodeWithText("${Detail(2)}").assertExists()
     onAllNodesWithText("${Detail(1)}").assertCountEquals(0)
     runOnIdle { check(navigator.peekBackStack() == listOf(Detail(2), Root)) }
+  }
+
+  @Test
+  fun replacedDetailEntersVertically() = runComposeUiTest {
+    lateinit var panes: PaneNavigation
+    setContent {
+      CircuitCompositionLocals(circuit) {
+        Box(Modifier.size(1000.dp, 700.dp)) {
+          val backStack = rememberSaveableBackStack(Root)
+          val navigator = rememberCircuitNavigator(backStack) {}
+          panes = rememberPaneNavigation(navigator)
+          NavigableCircuitContent(panes.navigator, backStack, decoration = panes.decoration)
+        }
+      }
+    }
+    runOnIdle { panes.navigator.goTo(Detail(1)) }
+    val settled = onNodeWithText("${Detail(1)}").getUnclippedBoundsInRoot()
+
+    // Stop part of the way through the replace
+    mainClock.autoAdvance = false
+    runOnUiThread { panes.navigator.goTo(Detail(2)) }
+    mainClock.advanceTimeBy(150)
+    val entering = onNodeWithText("${Detail(2)}").getUnclippedBoundsInRoot()
+    check(entering.left == settled.left) { "entering: $entering, settled: $settled" }
+    check(entering.top > settled.top) { "entering: $entering, settled: $settled" }
+
+    mainClock.autoAdvance = true
+    waitForIdle()
+    val replaced = onNodeWithText("${Detail(2)}").getUnclippedBoundsInRoot()
+    check(replaced == settled) { "replaced: $replaced, settled: $settled" }
+  }
+
+  @Test
+  fun firstDetailKeepsTheTransitionOfTheDelegate() = runComposeUiTest {
+    lateinit var panes: PaneNavigation
+    setContent {
+      CircuitCompositionLocals(circuit) {
+        Box(Modifier.size(1000.dp, 700.dp)) {
+          val backStack = rememberSaveableBackStack(Root)
+          val navigator = rememberCircuitNavigator(backStack) {}
+          panes = rememberPaneNavigation(navigator)
+          NavigableCircuitContent(panes.navigator, backStack, decoration = panes.decoration)
+        }
+      }
+    }
+    waitForIdle()
+
+    mainClock.autoAdvance = false
+    runOnUiThread { panes.navigator.goTo(Detail(1)) }
+    mainClock.advanceTimeBy(150)
+    val entering = onNodeWithText("${Detail(1)}").getUnclippedBoundsInRoot()
+    // No vertical offset
+    check(entering.top == 0.dp) { "entering: $entering" }
   }
 }

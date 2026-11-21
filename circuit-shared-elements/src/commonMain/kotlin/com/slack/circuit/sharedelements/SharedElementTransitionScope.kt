@@ -2,8 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sharedelements
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
@@ -13,6 +16,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Overlay
@@ -108,6 +112,39 @@ public fun ProvideAnimatedTransitionScope(
     CompositionLocalProvider(LocalSharedElementTransitionScope provides scope) { content(scope) }
   } else {
     content(null)
+  }
+}
+
+/**
+ * Provides [animatedScope] to [content] from an [AnimatedVisibilityScope] that is always visible
+ * and never animates.
+ *
+ * Use this for content that renders outside the transition that normally provides [animatedScope],
+ * such as a pane that a `NavDecoration` draws beside its animated content. Shared elements in
+ * [content] can then call [SharedElementTransitionScope.requireAnimatedScope] without a check.
+ *
+ * @param animatedScope The [AnimatedScope] to provide.
+ * @param modifier Modifier for the layout that holds [content].
+ * @param content The content that reads [animatedScope].
+ */
+@ExperimentalSharedTransitionApi
+@Composable
+public fun ProvideStaticAnimatedTransitionScope(
+  animatedScope: AnimatedScope,
+  modifier: Modifier = Modifier,
+  content: @Composable () -> Unit,
+) {
+  AnimatedVisibility(
+    visible = true,
+    modifier = modifier,
+    enter = EnterTransition.None,
+    exit = ExitTransition.None,
+  ) {
+    ProvideAnimatedTransitionScope(
+      animatedScope = animatedScope,
+      animatedVisibilityScope = this,
+      content = { content() },
+    )
   }
 }
 

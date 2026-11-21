@@ -7,6 +7,8 @@ Unreleased
 ### New
 
 - **circuit-foundation:** Add experimental `RecordLifecycle.isVisible` and a `ProvideRecordLifecycle(isActive, isVisible)` overload, so a decoration can report whether a record is shown separately from whether it's active.
+- **circuitx-navigation:** Add `InterceptedResult.RewriteAll`, which rewrites a navigation into several `NavEvent`s that `InterceptingNavigator` applies in one snapshot.
+- **circuit-sharedelements:** Add `ProvideStaticAnimatedTransitionScope`, which provides an `AnimatedScope` to content that renders outside the transition that normally provides it.
 
 ### Fixed
 

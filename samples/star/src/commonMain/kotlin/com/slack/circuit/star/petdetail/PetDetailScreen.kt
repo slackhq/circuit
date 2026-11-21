@@ -40,11 +40,11 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.m3.Markdown
@@ -479,7 +479,7 @@ private fun PetDetailDescriptions(
         ) {
           Text(
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            text = tag.capitalize(LocaleList.current),
+            text = tag.capitalize(LocalLocale.current),
             color = MaterialTheme.colorScheme.onTertiary,
             style = MaterialTheme.typography.labelMedium,
           )

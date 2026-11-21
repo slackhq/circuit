@@ -86,10 +86,10 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -656,7 +656,7 @@ private fun <T : Enum<T>> FilterOptions(
           FilterChip(
             selected,
             onClick = { options[key] = !selected },
-            label = { Text(key.name.lowercase().capitalize(Locale.current)) },
+            label = { Text(key.name.lowercase().capitalize(LocalLocale.current)) },
             leadingIcon = if (selected) leadingIcon else null,
           )
         }

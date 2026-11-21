@@ -14,3 +14,4 @@ org.jetbrains.kotlinx:kotlinx-coroutines-bom
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm
 org.jetbrains.kotlinx:kotlinx-coroutines-core
 org.jetbrains:annotations
+org.jspecify:jspecify

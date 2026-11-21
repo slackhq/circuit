@@ -15,6 +15,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -128,50 +129,54 @@ internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier
   // Use the primary photo's aspect ratio for consistent container sizing
   val containerAspectRatio = screen.photoAspectRatio ?: DEFAULT_ASPECT_RATIO
 
-  val isLandscape = isLandscape()
-  Column(
-    modifier
-      .let { if (isLandscape) it.fillMaxSize() else it }
-      .testTag(CAROUSEL_TAG)
-      .focusRequester(requester)
-      .focusable()
-      .onKeyEvent { event ->
-        if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
-        val index =
-          when (event.key) {
-            Key.DirectionRight -> {
-              pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
+  // The carousel fills its space when the parent gives it a set height, like beside the pet's
+  // details. In a scrolling column the height has no limit, and the photo takes its height from
+  // its aspect ratio. This follows the layout around it, which can differ from the window's shape.
+  BoxWithConstraints(modifier) {
+    val isLandscape = constraints.hasBoundedHeight
+    Column(
+      Modifier.let { if (isLandscape) it.fillMaxSize() else it }
+        .testTag(CAROUSEL_TAG)
+        .focusRequester(requester)
+        .focusable()
+        .onKeyEvent { event ->
+          if (event.type != KeyEventType.KeyUp) return@onKeyEvent false
+          val index =
+            when (event.key) {
+              Key.DirectionRight -> {
+                pagerState.currentPage.inc().takeUnless { it >= totalPhotos } ?: -1
+              }
+              Key.DirectionLeft -> {
+                pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
+              }
+              else -> -1
             }
-            Key.DirectionLeft -> {
-              pagerState.currentPage.dec().takeUnless { it < 0 } ?: -1
-            }
-            else -> -1
+          if (index == -1) {
+            false
+          } else {
+            scope.launch { pagerState.animateScrollToPage(index) }
+            true
           }
-        if (index == -1) {
-          false
-        } else {
-          scope.launch { pagerState.animateScrollToPage(index) }
-          true
-        }
-      },
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    PhotoPager(
-      id = screen.id,
-      pagerState = pagerState,
-      photoUrls = screen.photoUrls,
-      name = screen.name,
-      photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
-      containerAspectRatio = containerAspectRatio,
-      modifier = if (isLandscape) Modifier.weight(1f, fill = false) else Modifier,
-    )
+        },
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      PhotoPager(
+        id = screen.id,
+        pagerState = pagerState,
+        photoUrls = screen.photoUrls,
+        name = screen.name,
+        photoUrlMemoryCacheKey = screen.photoUrlMemoryCacheKey,
+        containerAspectRatio = containerAspectRatio,
+        modifier = if (isLandscape) Modifier.weight(1f, fill = false) else Modifier,
+      )
 
-    HorizontalPagerIndicator(
-      pagerState = pagerState,
-      pageCount = totalPhotos,
-      modifier = Modifier.padding(16.dp).testTag(PAGER_INDICATOR_TAG),
-      activeColor = MaterialTheme.colorScheme.onBackground,
-    )
+      HorizontalPagerIndicator(
+        pagerState = pagerState,
+        pageCount = totalPhotos,
+        modifier = Modifier.padding(16.dp).testTag(PAGER_INDICATOR_TAG),
+        activeColor = MaterialTheme.colorScheme.onBackground,
+      )
+    }
   }
 
   // Always request focus for keyboard navigation in wide layouts

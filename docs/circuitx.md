@@ -14,6 +14,7 @@ These packages differ from Circuit's core artifacts in a few ways:
 
 | Artifact                                        | Documentation                                        |
 |-------------------------------------------------|------------------------------------------------------|
+| `com.slack.circuit:circuitx-adaptive`           | [Adaptive](circuitx/adaptive.md)                     |
 | `com.slack.circuit:circuitx-android`            | [Android](circuitx/android.md)                       |
 | `com.slack.circuit:circuitx-effects`            | [Effects](circuitx/effects.md)                       |
 | `com.slack.circuit:circuitx-gesture-navigation` | [Gesture Navigation](circuitx/gesture-navigation.md) |

@@ -705,9 +705,13 @@ private fun <T : NavArgument> mountTouchedRecords(
   background: T?,
   warm: List<WarmAdjacent<T>>,
 ) {
-  mounted.getOrPut(top.key) { top }
-  if (!settled && background != null) mounted.getOrPut(background.key) { background }
-  warm.forEach { adj -> mounted.getOrPut(adj.record.key) { adj.record } }
+  if (top.key !in mounted) mounted[top.key] = top
+  if (!settled && background != null && background.key !in mounted) {
+    mounted[background.key] = background
+  }
+  warm.forEach { adj ->
+    if (adj.record.key !in mounted) mounted[adj.record.key] = adj.record
+  }
 }
 
 /**

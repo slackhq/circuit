@@ -147,9 +147,11 @@ public class PaneNavDecoration(
 
       // Top first, root last. Forward items stay hidden, as Circuit shows the active record.
       val visible = remember(args) { listOf(args.active) + args.backwardItems }
-      // Null means the single layout: the delegate gets the whole stack.
+      // Null means the single layout: the delegate gets the whole stack. The strategy is a key
+      // because a new decoration with another strategy composes at this same call site, and
+      // would otherwise keep the scene of the old strategy.
       val panes =
-        remember(args, visible, paneWindow) {
+        remember(strategy, args, visible, paneWindow) {
           strategy.scene(paneWindow, args)?.let { scene -> resolvePanes(scene, visible) }
         }
       val isSplit = panes != null

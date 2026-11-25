@@ -5,6 +5,9 @@ package com.slack.circuitx.adaptive
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertCountEquals
@@ -21,6 +24,7 @@ import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.runtime.CircuitUiState
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.navigation.navStackListOf
 import com.slack.circuit.runtime.presenter.presenterOf
 import com.slack.circuit.runtime.screen.Screen
@@ -71,6 +75,34 @@ class PaneNavigationTest {
     onNodeWithText("${Detail(2)}").assertExists()
     onAllNodesWithText("${Detail(1)}").assertCountEquals(0)
     runOnIdle { check(navigator.peekBackStack() == listOf(Detail(2), Root)) }
+  }
+
+  @Test
+  fun newStrategyAppliesWithoutAStackChange() = runComposeUiTest {
+    val neverSplit =
+      object : PaneStrategy {
+        override fun scene(window: PaneWindow, stack: NavStackList<out NavArgument>): PaneScene? {
+          return null
+        }
+      }
+    var strategy by mutableStateOf<PaneStrategy>(neverSplit)
+    lateinit var panes: PaneNavigation
+    setContent {
+      CircuitCompositionLocals(circuit) {
+        Box(Modifier.size(1000.dp, 700.dp)) {
+          val backStack = rememberSaveableBackStack(Root)
+          val navigator = rememberCircuitNavigator(backStack) {}
+          panes = rememberPaneNavigation(navigator, strategy = strategy)
+          NavigableCircuitContent(panes.navigator, backStack, decoration = panes.decoration)
+        }
+      }
+    }
+    runOnIdle { panes.navigator.goTo(Detail(1)) }
+    onAllNodesWithText("$Root").assertCountEquals(0)
+
+    strategy = ListDetailPaneStrategy()
+    onNodeWithText("$Root").assertExists()
+    onNodeWithText("${Detail(1)}").assertExists()
   }
 
   @Test

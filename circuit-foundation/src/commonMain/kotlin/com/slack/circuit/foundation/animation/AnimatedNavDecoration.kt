@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.runtime.ExperimentalCircuitApi
+import com.slack.circuit.runtime.InternalCircuitApi
 import com.slack.circuit.runtime.Navigator
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
@@ -123,52 +124,15 @@ public class AnimatedNavDecoration(
 }
 
 /** Constructs the transition specification used in [AnimatedNavDecoration]. */
-@OptIn(ExperimentalCircuitApi::class)
+@OptIn(ExperimentalCircuitApi::class, InternalCircuitApi::class)
 @Composable
 private fun <T : NavArgument> AnimatedNavDecorator<T, AnimatedNavState>.transitionSpec(
   animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>
 ): AnimatedContentTransitionScope<AnimatedNavState>.() -> ContentTransform = spec@{
-  val initialStack = initialState.navStack
-  val targetStack = targetState.navStack
-
-  val previous = initialStack.active
-  val current = targetStack.active
-
-  val initialBackStack = initialStack.backwardItems
-  val initialForwardStack = initialStack.forwardItems
-
-  val targetBackStack = targetStack.backwardItems
-  val targetForwardStack = targetStack.forwardItems
-
   val animatedNavEvent =
-    when {
-      // Root reset happened.
-      initialStack.root != targetStack.root -> {
-        AnimatedNavEvent.RootReset
-      }
+    determineAnimatedNavEvent(initialState.navStack, targetState.navStack)
       // Target screen has not changed, don't show an animation.
-      previous == current -> {
-        return@spec EnterTransition.None togetherWith ExitTransition.None
-      }
-      // Navigated backward with the screen moving to the forward stack.
-      current in initialBackStack &&
-        previous !in initialForwardStack &&
-        previous in targetForwardStack -> {
-        AnimatedNavEvent.Backward
-      }
-      // Popped the screen off the nav stack.
-      current in initialBackStack && previous !in targetForwardStack -> {
-        AnimatedNavEvent.Pop
-      }
-      // Navigated forward with the screen moving out of the forward stack.
-      current in initialForwardStack && current !in targetForwardStack -> {
-        AnimatedNavEvent.Forward
-      }
-      // Fallback to a normal GoTo.
-      else -> {
-        AnimatedNavEvent.GoTo
-      }
-    }
+      ?: return@spec EnterTransition.None togetherWith ExitTransition.None
 
   val baseTransform = transitionSpec(animatedNavEvent)
   val screenOverride = screenSpecificOverride(animatedNavEvent, animatedScreenTransforms)

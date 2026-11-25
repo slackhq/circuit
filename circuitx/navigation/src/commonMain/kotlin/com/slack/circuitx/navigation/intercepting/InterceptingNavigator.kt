@@ -308,7 +308,8 @@ public class InterceptingNavigator(
  *
  * The events apply together or not at all. When one fails, the events after it do not run, and the
  * snapshot is dropped, which undoes the earlier events for a back stack that keeps its records in
- * snapshot state. Listeners that already saw an earlier event are not told about the undo.
+ * snapshot state. Circuit's saveable stacks keep their records and the state that a `resetRoot`
+ * saves there. Listeners that already saw an earlier event are not told about the undo.
  *
  * @param emptyResult The result when [navEvents] is empty.
  * @param failedResult The result when an event fails.

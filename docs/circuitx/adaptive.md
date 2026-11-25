@@ -383,10 +383,10 @@ A custom strategy asks for three panes with `PaneScene.secondaryKey` and `endPan
 
 Each screen reads `LocalPaneRole` to learn where it renders.
 
-| Role             | Where                                            |
-|------------------|--------------------------------------------------|
-| `Single`         | The only visible screen, as on phones            |
-| `Primary`        | The start pane, also while it has the full width |
+| Role            | Where                                            |
+|-----------------|--------------------------------------------------|
+| `Single`        | The only visible screen, as on phones            |
+| `Primary`       | The start pane, also while it has the full width |
 | `DetailRoot`    | The screen opened from the start pane            |
 | `DetailStacked` | A screen above the detail                        |
 | `ExtraRoot`     | The bottom screen of the third pane              |
@@ -538,11 +538,11 @@ them.
 A decorator usually slides a new screen in from the end edge. `PaneAnimatedNavDecoratorFactory`
 wraps an `AnimatedNavDecorator.Factory` and changes two transitions of the end pane.
 
-| Change                                         | Transition                              |
-|------------------------------------------------|-----------------------------------------|
-| The first screen opens a pane that was hidden  | None. The screen moves with its pane    |
-| A screen replaces the bottom screen of a pane  | A crossfade with a small scale          |
-| The first screen opens over a drawn placeholder | The same crossfade                      |
+| Change                                          | Transition                           |
+|-------------------------------------------------|--------------------------------------|
+| The first screen opens a pane that was hidden   | None. The screen moves with its pane |
+| A screen replaces the bottom screen of a pane   | A crossfade with a small scale       |
+| The first screen opens over a drawn placeholder | The same crossfade                   |
 
 The decoration already slides a new pane in from the end edge, so a push inside it would add a
 second motion. A pop and a screen pushed over a detail keep the transitions of the wrapped factory.

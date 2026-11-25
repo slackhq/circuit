@@ -20,6 +20,7 @@ import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.computeWindowSizeClass
 import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
+import com.slack.circuit.runtime.screen.Screen
 
 /**
  * Decides when a [PaneNavDecoration] shows more than one pane, and which records take the panes.
@@ -214,9 +215,10 @@ public class PaneScene(
   public val split: PaneSplit,
   /**
    * Draws the end pane while no record is open there, or null to give the start pane the full
-   * width. [PaneHost.placeholder] takes priority over this.
+   * width. It gets the screen of the record with [primaryKey]. [PaneHost.placeholder] takes
+   * priority over this.
    */
-  public val placeholder: (@Composable () -> Unit)? = null,
+  public val placeholder: (@Composable (primary: Screen) -> Unit)? = null,
   /**
    * Key of the record in a middle pane, or null for two panes. The record must be above the one
    * with [primaryKey] and below the top of the stack. It renders with no transitions and takes the

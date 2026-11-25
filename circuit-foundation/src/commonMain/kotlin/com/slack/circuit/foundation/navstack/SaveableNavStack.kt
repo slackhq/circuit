@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.mapSaver
@@ -98,9 +99,17 @@ public class SaveableNavStack
 internal constructor(
   // Both visible for testing
   internal val entryList: SnapshotStateList<Record> = mutableStateListOf(),
-  internal val stateStore: MutableMap<Screen, SaveableNavStackList> = mutableMapOf(),
+  stateStore: Map<Screen, SaveableNavStackList> = emptyMap(),
   initialIndex: Int = -1,
 ) : NavStack<Record>, Iterable<Record> {
+
+  /**
+   * The stacks saved by [saveState], by root screen. The map is immutable and lives in snapshot
+   * state, so a save or restore made in a snapshot that is dropped is undone with the snapshot. It
+   * keeps insertion order.
+   */
+  internal var stateStore: Map<Screen, SaveableNavStackList> by mutableStateOf(stateStore)
+    private set
 
   // Track the current position in the stack (index into entryList)
   // Index 0 is the top (newest), size-1 is the root (oldest)
@@ -188,7 +197,7 @@ internal constructor(
 
   override fun saveState() {
     val snapshot = saveableSnapshot() ?: return
-    stateStore[snapshot.root.screen] = snapshot
+    stateStore = stateStore + (snapshot.root.screen to snapshot)
   }
 
   private fun saveableSnapshot(): SaveableNavStackList? {
@@ -206,7 +215,7 @@ internal constructor(
       // Restore the current index
       currentIndex = stored.currentIndex
       // Clear the stored state
-      stateStore.remove(screen)
+      stateStore = stateStore - screen
       true
     } else false
   }
@@ -216,7 +225,9 @@ internal constructor(
   }
 
   override fun removeState(screen: Screen): Boolean {
-    return stateStore.remove(screen) != null
+    val saved = screen in stateStore
+    stateStore = stateStore - screen
+    return saved
   }
 
   override fun containsRecord(record: Record, includeSaved: Boolean): Boolean {
@@ -391,7 +402,7 @@ internal constructor(
                   .filter { it.entries.isNotEmpty() }
                   .forEach { snapshot ->
                     // The key is always the root screen (i.e. last item)
-                    navStack.stateStore[snapshot.root.screen] = snapshot
+                    navStack.stateStore = navStack.stateStore + (snapshot.root.screen to snapshot)
                   }
               }
             }

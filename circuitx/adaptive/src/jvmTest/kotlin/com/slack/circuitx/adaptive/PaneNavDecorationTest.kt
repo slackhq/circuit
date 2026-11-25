@@ -38,6 +38,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.assertWidthIsEqualTo
@@ -54,6 +56,7 @@ import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.width
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -144,6 +147,8 @@ class PaneNavDecorationTest {
     { _, content ->
       content()
     }
+  /** The drag handle between two panes, or null for none. */
+  private var dragHandle: (@Composable () -> Unit)? = null
   /** The [PaneState] of each composition of the root screen, oldest first. */
   private val rootPaneStates = mutableListOf<PaneState>()
   private lateinit var navigator: Navigator
@@ -185,6 +190,7 @@ class PaneNavDecorationTest {
                   // Material adaptive reads the real test window, which never has a hinge
                   window = { size -> testWindow(size) },
                   paneContainer = paneContainer,
+                  dragHandle = dragHandle,
                 )
                 .apply { windowInsets?.let { insets -> safeDrawingInsets = { insets } } }
             }
@@ -348,6 +354,127 @@ class PaneNavDecorationTest {
 
     runOnIdle { navigator.goTo(Detail(1)) }
     runOnIdle { check(consumedEnd[PanePosition.Start] == 40) { "consumed: $consumedEnd" } }
+  }
+
+  private val testHandle: @Composable () -> Unit = {
+    Box(Modifier.size(24.dp, 48.dp).testTag("handle"))
+  }
+
+  @Test
+  fun dragHandleMovesTheEdgeUnderThePointer() = runComposeUiTest {
+    windowSize = tablet
+    dragHandle = testHandle
+    setNavContent(ReservingRoot)
+    runOnIdle { navigator.goTo(Detail(1)) }
+    onNodeWithTag("detail1-tap").performClick()
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tabletListPaneWidth)
+
+    // The first move passes the touch slop, so its distance is not exact
+    onNodeWithTag("handle").performTouchInput {
+      down(center)
+      moveBy(Offset(60f, 0f))
+    }
+    val afterSlop = onNodeWithTag("root-container").getUnclippedBoundsInRoot().width
+    check(afterSlop > tabletListPaneWidth) { "width: $afterSlop" }
+
+    // The next move lands in one frame, with no animation
+    mainClock.autoAdvance = false
+    onNodeWithTag("handle").performTouchInput { moveBy(Offset(40f, 0f)) }
+    mainClock.advanceTimeByFrame()
+    onNodeWithTag("root-container").assertWidthIsEqualTo(afterSlop + 40.dp)
+    onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - afterSlop - 40.dp)
+    mainClock.autoAdvance = true
+    onNodeWithTag("handle").performTouchInput { up() }
+
+    runOnIdle { check(host.draggedSplit == PaneSplit.Fixed(afterSlop + 40.dp)) }
+    // The detail kept its state while it resized
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 1)
+
+    // The split of the scene returns when the app clears the dragged one
+    runOnIdle { host.draggedSplit = null }
+    onNodeWithTag("root-container").assertWidthIsEqualTo(tabletListPaneWidth)
+  }
+
+  @Test
+  fun dragHandleStopsAtTheMinimumPaneWidth() = runComposeUiTest {
+    windowSize = tablet
+    dragHandle = testHandle
+    setNavContent(ReservingRoot)
+    runOnIdle { navigator.goTo(Detail(1)) }
+
+    onNodeWithTag("handle").performTouchInput {
+      down(center)
+      moveBy(Offset(2000f, 0f))
+    }
+    onNodeWithTag("detail1-container").assertWidthIsEqualTo(200.dp)
+    onNodeWithTag("handle").performTouchInput {
+      moveBy(Offset(-4000f, 0f))
+      up()
+    }
+    onNodeWithTag("root-container").assertWidthIsEqualTo(200.dp)
+  }
+
+  @Test
+  fun dragHandleResizesASupportingPane() = runComposeUiTest {
+    windowSize = tablet
+    dragHandle = testHandle
+    setNavContent(Root)
+    runOnIdle { navigator.goTo(Supporting(1)) }
+    onNodeWithTag("supporting1-container").assertWidthIsEqualTo(tabletListPaneWidth)
+
+    onNodeWithTag("handle").performTouchInput {
+      down(center)
+      moveBy(Offset(-100f, 0f))
+      up()
+    }
+    // The edge moved toward the start, so the supporting pane grew
+    val supportingWidth = onNodeWithTag("supporting1-container").getUnclippedBoundsInRoot().width
+    check(supportingWidth > tabletListPaneWidth) { "width: $supportingWidth" }
+    runOnIdle { check(host.draggedSplit == PaneSplit.EndFixed(supportingWidth)) }
+  }
+
+  @Test
+  fun dragHandleFollowsTheLayoutDirection() = runComposeUiTest {
+    windowSize = tablet
+    layoutDirection = LayoutDirection.Rtl
+    dragHandle = testHandle
+    setNavContent(ReservingRoot)
+    runOnIdle { navigator.goTo(Detail(1)) }
+
+    // The start pane is on the right, so a move to the left makes it wider
+    onNodeWithTag("handle").performTouchInput {
+      down(center)
+      moveBy(Offset(-100f, 0f))
+      up()
+    }
+    val rootWidth = onNodeWithTag("root-container").getUnclippedBoundsInRoot().width
+    check(rootWidth > tabletListPaneWidth) { "width: $rootWidth" }
+  }
+
+  @Test
+  fun dragHandleHidesWhereTheEdgeCannotMove() = runComposeUiTest {
+    windowSize = tablet
+    dragHandle = testHandle
+    hinge = DpRect(480.dp, 0.dp, 500.dp, 700.dp)
+    setNavContent(Root)
+    // One pane
+    onNodeWithTag("handle").assertIsNotDisplayed()
+    // A hinge fixes the edge
+    runOnIdle { navigator.goTo(Detail(1)) }
+    onNodeWithTag("root-container").assertWidthIsEqualTo(480.dp)
+    onNodeWithTag("handle").assertIsNotDisplayed()
+  }
+
+  @Test
+  fun dragHandleHidesWithThreePanes() = runComposeUiTest {
+    windowSize = tablet
+    maxPanes = 3
+    dragHandle = testHandle
+    setNavContent(Root)
+    runOnIdle { navigator.goTo(Detail(1)) }
+    onNodeWithTag("handle").assertIsDisplayed()
+    runOnIdle { navigator.goTo(Extra(1)) }
+    onNodeWithTag("handle").assertIsNotDisplayed()
   }
 
   @Test

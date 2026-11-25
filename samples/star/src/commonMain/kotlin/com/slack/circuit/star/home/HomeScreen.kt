@@ -28,6 +28,7 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.VerticalDragHandle
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -194,6 +195,8 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
           rememberPaneWindow(size, windowSize = windowSize)
         },
         divider = { VerticalDivider() },
+        // Lets the user resize the pet details beside the grid.
+        dragHandle = { VerticalDragHandle() },
       )
 
     HomeNavigationLayout(

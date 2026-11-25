@@ -8,6 +8,9 @@ import androidx.compose.animation.core.SnapSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
@@ -29,6 +32,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
@@ -40,6 +44,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpRect
 import androidx.compose.ui.unit.DpSize
@@ -99,6 +104,11 @@ import kotlinx.coroutines.launch
  *   list, a background, or a nested scroll connection. It must call its content one time, from the
  *   same place for every [PanePosition], so a layout switch does not remount the pane. It can read
  *   [LocalPaneState]. It must not fill the width of a start pane that sizes itself.
+ * @param dragHandle Draws a handle on the edge between two panes, or null for panes that the user
+ *   cannot resize. A horizontal drag on it moves the edge, and the decoration stores the result in
+ *   [PaneHost.draggedSplit]. The handle takes its own size and sits in the middle of the edge, over
+ *   the panes, so keep it small. It shows for [PaneSplit.Fixed], [PaneSplit.EndFixed], and
+ *   [PaneSplit.Fraction] with two panes, in a window with no hinge.
  */
 @ExperimentalCircuitAdaptiveApi
 @Stable
@@ -115,6 +125,7 @@ public class PaneNavDecoration(
     { _, content ->
       content()
     },
+  private val dragHandle: (@Composable () -> Unit)? = null,
 ) : NavDecoration {
 
   /** The window insets that the outer panes cover. Tests replace it, as they have no insets. */
@@ -176,6 +187,22 @@ public class PaneNavDecoration(
       // A split scene still shows one pane while nothing is open beside the primary record and
       // nothing reserves that space.
       val showsDetail = panes != null && (panes.abovePrimary.isNotEmpty() || placeholder != null)
+      // The user can drag the edge between two panes when no hinge fixes it.
+      val canDrag =
+        dragHandle != null &&
+          showsDetail &&
+          panes.secondary == null &&
+          paneWindow.separatingHinges.isEmpty() &&
+          panes.scene.split.isDraggable
+      // The split that the layout uses: the dragged one while it has the type of the scene's
+      // split, so the scene still decides which pane has the set width.
+      val draggedSplit = host.draggedSplit
+      val split =
+        if (canDrag && draggedSplit != null && draggedSplit::class == panes.scene.split::class) {
+          draggedSplit
+        } else {
+          panes?.scene?.split
+        }
       // Alone in the window, the start pane always gets the full width.
       val primarySizesItself = showsDetail && panes.scene.split is PaneSplit.PrimaryWraps
       val paneCount =
@@ -240,6 +267,28 @@ public class PaneNavDecoration(
       // The edge that the end pane starts at, or null for the single layout.
       var detailEdge by remember { mutableStateOf<PaneEdge?>(null) }
       val animationScope = rememberCoroutineScope()
+
+      // The pane sizes of the last measure, for the drag handle. A drag starts from them and
+      // stays inside their limits.
+      val dragMetrics = remember { DragMetrics() }
+      // The split of the last measure. A change that came from a drag moves the edge with no
+      // animation, so the edge stays under the pointer.
+      val lastSplit = remember { arrayOfNulls<PaneSplit>(1) }
+      val density = LocalDensity.current
+      val currentSplit by rememberUpdatedState(split)
+      val dragState = rememberDraggableState { delta ->
+        // Edges are measured from the start edge, which is on the right in RTL.
+        val towardEnd =
+          if (layoutDirection == LayoutDirection.Rtl) {
+            -delta
+          } else {
+            delta
+          }
+        val dragged = dragMetrics.dragBy(towardEnd, currentSplit, density)
+        if (dragged != null) {
+          host.draggedSplit = dragged
+        }
+      }
 
       CompositionLocalProvider(LocalPaneHost provides host, LocalPaneState provides paneState) {
         Layout(
@@ -339,6 +388,22 @@ public class PaneNavDecoration(
                 }
               }
             }
+            // The drag handle. It is the last child, so it draws over the panes and gets the
+            // pointer first. It stays composed while the layout is split and moves off screen
+            // when the edge cannot move.
+            if (dragHandle != null && panes != null) {
+              Box(
+                Modifier.layoutId(DragHandleId)
+                  .draggable(
+                    state = dragState,
+                    orientation = Orientation.Horizontal,
+                    enabled = canDrag,
+                    onDragStarted = { dragMetrics.startDrag() },
+                  )
+              ) {
+                dragHandle()
+              }
+            }
           },
         ) { measurables, constraints ->
           // The names used below, for two panes and for three:
@@ -369,6 +434,9 @@ public class PaneNavDecoration(
             val only = detail.measure(Constraints.fixed(width, height))
             return@Layout layout(width, height) { only.placeRelative(0, 0) }
           }
+          val handle = measurables.firstOrNull { it.layoutId == DragHandleId }
+          // The handle takes the size it asks for, and it is measured in every branch.
+          val handlePlaceable = handle?.measure(Constraints(maxWidth = width, maxHeight = height))
           val secondary = measurables.firstOrNull { it.layoutId == SecondaryPaneId }
           val secondDividerMeasurable = measurables.firstOrNull { it.layoutId == SecondDividerId }
           // Every child is measured and placed in every branch, off screen when hidden. Shared
@@ -399,36 +467,39 @@ public class PaneNavDecoration(
           val hingeMoved = lastHinge[0] != hinge
           lastHinge[0] = hinge
 
-          // ---- Where the start pane ends, from the scene's split ----
-          val scenePaneSplit = panes.scene.split
+          // ---- Where the start pane ends, from the split in use ----
+          val scenePaneSplit = split ?: panes.scene.split
+          val splitDragged = canDrag && lastSplit[0] != null && lastSplit[0] != scenePaneSplit
+          lastSplit[0] = scenePaneSplit
           // The start pane when it picks its own width. It is measured once, at its final size.
           var wrappedPrimary: Placeable? = null
-          // The final width of the start pane, and where the area beside it starts.
-          val targetPrimaryWidth: Int
-          val targetBesideStart: Int
+          // The final width of the start pane, and where the area beside it starts, before the
+          // limits of a drag apply.
+          val splitPrimaryWidth: Int
+          val splitBesideStart: Int
           when {
             // Nothing beside the start pane, so it takes the full width.
             !showsDetail -> {
-              targetPrimaryWidth = width
-              targetBesideStart = width
+              splitPrimaryWidth = width
+              splitBesideStart = width
             }
             // A width from the strategy, plus the start inset that the start pane covers.
             scenePaneSplit is PaneSplit.Fixed -> {
-              targetPrimaryWidth =
+              splitPrimaryWidth =
                 (startInset + scenePaneSplit.primaryWidth.roundToPx()).coerceIn(0, width)
-              targetBesideStart = targetPrimaryWidth + dividerWidth
+              splitBesideStart = splitPrimaryWidth + dividerWidth
             }
             // A width for the end pane, plus the end inset that it covers. The divider takes
             // its width from the start pane.
             scenePaneSplit is PaneSplit.EndFixed -> {
               val endWidth = (endInset + scenePaneSplit.endWidth.roundToPx()).coerceIn(0, width)
-              targetBesideStart = width - endWidth
-              targetPrimaryWidth = (targetBesideStart - dividerWidth).coerceAtLeast(0)
+              splitBesideStart = width - endWidth
+              splitPrimaryWidth = (splitBesideStart - dividerWidth).coerceAtLeast(0)
             }
             scenePaneSplit is PaneSplit.Fraction -> {
-              targetPrimaryWidth =
+              splitPrimaryWidth =
                 ((width - dividerWidth) * scenePaneSplit.primaryFraction).roundToInt()
-              targetBesideStart = targetPrimaryWidth + dividerWidth
+              splitBesideStart = splitPrimaryWidth + dividerWidth
             }
             scenePaneSplit is PaneSplit.PrimaryWraps -> {
               // The start pane picks its width here. The same constraints go in on the lookahead
@@ -450,21 +521,44 @@ public class PaneNavDecoration(
                   )
                 )
               wrappedPrimary = placeable
-              targetPrimaryWidth = placeable.width
-              targetBesideStart = targetPrimaryWidth + dividerWidth
+              splitPrimaryWidth = placeable.width
+              splitBesideStart = splitPrimaryWidth + dividerWidth
             }
             // PaneSplit.AtHinge with a hinge: the start pane ends where the hinge starts, and the
             // next pane starts where the hinge ends.
             hinge != null -> {
-              targetPrimaryWidth = hinge.left.roundToPx().coerceIn(0, width)
-              targetBesideStart = maxOf(hinge.right.roundToPx(), targetPrimaryWidth + dividerWidth)
+              splitPrimaryWidth = hinge.left.roundToPx().coerceIn(0, width)
+              splitBesideStart = maxOf(hinge.right.roundToPx(), splitPrimaryWidth + dividerWidth)
             }
             // PaneSplit.AtHinge with no hinge: two equal panes.
             else -> {
-              targetPrimaryWidth = (width - dividerWidth) / 2
-              targetBesideStart = targetPrimaryWidth + dividerWidth
+              splitPrimaryWidth = (width - dividerWidth) / 2
+              splitBesideStart = splitPrimaryWidth + dividerWidth
             }
           }
+
+          // ---- Limits of a drag ----
+          // A dragged edge leaves each pane a minimum width, also after the window shrinks.
+          val minPaneWidth = MinDraggedPaneWidth.roundToPx()
+          val maxPrimaryWidth = width - dividerWidth - minPaneWidth
+          val limitDrag =
+            canDrag && scenePaneSplit === draggedSplit && maxPrimaryWidth >= minPaneWidth
+          val targetPrimaryWidth =
+            if (limitDrag) {
+              splitPrimaryWidth.coerceIn(minPaneWidth, maxPrimaryWidth)
+            } else {
+              splitPrimaryWidth
+            }
+          val targetBesideStart = targetPrimaryWidth + (splitBesideStart - splitPrimaryWidth)
+          dragMetrics.update(
+            primaryWidth = targetPrimaryWidth,
+            minPrimaryWidth = minPaneWidth,
+            maxPrimaryWidth = maxPrimaryWidth,
+            width = width,
+            dividerWidth = dividerWidth,
+            startInset = startInset,
+            endInset = endInset,
+          )
 
           // ---- Animate that edge and measure the start pane ----
           // The edge moves to its target over a few frames, so the start pane resizes while the
@@ -475,7 +569,7 @@ public class PaneNavDecoration(
               width = width,
               coroutineScope = animationScope,
               animationSpec = animationSpec,
-              snap = hingeMoved,
+              snap = hingeMoved || splitDragged,
             )
           // The gap between the start pane and the next one (a divider or a hinge) keeps its
           // size while the edge moves.
@@ -503,6 +597,18 @@ public class PaneNavDecoration(
               dividerPlaceable.placeRelative(primaryWidth, 0)
               // At its target. The draw offset from detailEdge makes it slide.
               detailPlaceable.placeRelative(targetBesideStart, 0)
+              if (handlePlaceable != null) {
+                if (canDrag) {
+                  // Centered on the gap between the panes, and in the height.
+                  val gapCenter = primaryWidth + gapWidth / 2
+                  handlePlaceable.placeRelative(
+                    x = gapCenter - handlePlaceable.width / 2,
+                    y = (height - handlePlaceable.height) / 2,
+                  )
+                } else {
+                  handlePlaceable.placeRelative(width, 0)
+                }
+              }
             }
           }
 
@@ -539,6 +645,8 @@ public class PaneNavDecoration(
             secondaryPlaceable.placeRelative(besideStart, 0)
             secondDividerPlaceable.placeRelative(besideStart + secondaryWidth, 0)
             detailPlaceable.placeRelative(targetEndStart, 0)
+            // Three panes have no drag handle. It stays placed, off screen.
+            handlePlaceable?.placeRelative(width, 0)
           }
         }
       }
@@ -621,6 +729,77 @@ private class PaneEdge {
   }
 }
 
+/** The narrowest pane that a drag leaves on either side of the edge. */
+private val MinDraggedPaneWidth = 200.dp
+
+/** Whether the user can move the edge of this split. A hinge or the content fixes the others. */
+private val PaneSplit.isDraggable: Boolean
+  get() = this is PaneSplit.Fixed || this is PaneSplit.EndFixed || this is PaneSplit.Fraction
+
+/**
+ * The pane sizes of the last measure, in pixels, and the position of the drag in progress. The
+ * measure block writes the sizes and the drag callbacks read them, so they are plain fields.
+ */
+private class DragMetrics {
+  private var primaryWidth = 0
+  private var minPrimaryWidth = 0
+  private var maxPrimaryWidth = 0
+  private var width = 0
+  private var dividerWidth = 0
+  private var startInset = 0
+  private var endInset = 0
+
+  /** Where the pointer has moved the end of the start pane to, before the limits apply. */
+  private var dragPosition = 0f
+
+  fun update(
+    primaryWidth: Int,
+    minPrimaryWidth: Int,
+    maxPrimaryWidth: Int,
+    width: Int,
+    dividerWidth: Int,
+    startInset: Int,
+    endInset: Int,
+  ) {
+    this.primaryWidth = primaryWidth
+    this.minPrimaryWidth = minPrimaryWidth
+    this.maxPrimaryWidth = maxPrimaryWidth
+    this.width = width
+    this.dividerWidth = dividerWidth
+    this.startInset = startInset
+    this.endInset = endInset
+  }
+
+  /** Starts a drag from where the start pane ends now. */
+  fun startDrag() {
+    dragPosition = primaryWidth.toFloat()
+  }
+
+  /**
+   * Moves the drag by [delta] pixels toward the end edge. Returns a split of the type of [current]
+   * that puts the edge there, inside the limits, or null when the edge cannot move.
+   */
+  fun dragBy(delta: Float, current: PaneSplit?, density: Density): PaneSplit? {
+    if (maxPrimaryWidth < minPrimaryWidth) {
+      return null
+    }
+    dragPosition += delta
+    val primary = dragPosition.coerceIn(minPrimaryWidth.toFloat(), maxPrimaryWidth.toFloat())
+    return with(density) {
+      when (current) {
+        is PaneSplit.Fixed -> PaneSplit.Fixed((primary - startInset).toDp())
+        is PaneSplit.EndFixed -> {
+          PaneSplit.EndFixed((width - dividerWidth - primary - endInset).toDp())
+        }
+        is PaneSplit.Fraction -> {
+          PaneSplit.Fraction((primary / (width - dividerWidth)).coerceIn(0f, 1f))
+        }
+        else -> null
+      }
+    }
+  }
+}
+
 /** The default pane edge animation. Its threshold is one pixel, the unit of an edge position. */
 internal val DefaultPaneAnimationSpec: FiniteAnimationSpec<Float> =
   spring(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = 1f)
@@ -695,6 +874,7 @@ private const val DividerId = "divider"
 private const val SecondaryPaneId = "secondary"
 private const val SecondDividerId = "second-divider"
 private const val DetailPaneId = "detail"
+private const val DragHandleId = "drag-handle"
 
 /**
  * A resolved [scene].

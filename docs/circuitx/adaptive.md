@@ -368,6 +368,28 @@ Row(if (sizesItself) Modifier.fillMaxHeight() else Modifier.fillMaxSize()) {
 }
 ```
 
+### Resizing panes
+
+To let the user resize two panes, pass a `dragHandle`. The decoration places it in the middle of
+the edge between the panes and handles the drag. Your composable only draws the handle.
+
+```kotlin
+rememberPaneNavigation(
+  navigator = navigator,
+  divider = { VerticalDivider() },
+  dragHandle = { VerticalDragHandle() },
+)
+```
+
+- The handle sits over the panes, so keep it small.
+- A drag leaves each pane at least 200dp.
+- The handle shows for the `Fixed`, `EndFixed`, and `Fraction` splits with two panes. A window
+  with a hinge has no handle, because the panes split at the hinge.
+
+The decoration stores the result in `PaneHost.draggedSplit`. Set it to null to return to the split
+of the strategy. It is not saved across process death. To keep it, save it in your app and set it
+again.
+
 ### Three panes
 
 A screen with `PaneStyle.Extra` holds more content for an open detail, like a profile opened from a

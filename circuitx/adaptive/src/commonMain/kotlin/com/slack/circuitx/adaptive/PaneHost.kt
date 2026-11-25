@@ -184,6 +184,16 @@ public class PaneHost {
     get() = paneCount > 1
 
   /**
+   * The split that the user chose with the drag handle of the decoration, or null to use the split
+   * of the scene. The decoration writes it during a drag. It applies while the scene has a split of
+   * the same type, so a dragged list width does not carry over to a supporting pane.
+   *
+   * Set it to null to return to the split of the scene. To keep it across process death, save and
+   * restore it in the app.
+   */
+  public var draggedSplit: PaneSplit? by mutableStateOf(null)
+
+  /**
    * The strategy and the window of the last composition. [PaneReplaceInterceptor] asks this
    * strategy for the scene of the stack it is called with, so it never works from the scene of an
    * older stack. Both are null before the first composition.

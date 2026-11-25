@@ -62,6 +62,7 @@ internal constructor(
  * @param divider See [PaneNavDecoration].
  * @param animationSpec See [PaneNavDecoration].
  * @param paneContainer See [PaneNavDecoration].
+ * @param dragHandle See [PaneNavDecoration].
  */
 @ExperimentalCircuitAdaptiveApi
 @Composable
@@ -80,9 +81,10 @@ public fun rememberPaneNavigation(
     { _, content ->
       content()
     },
+  dragHandle: (@Composable () -> Unit)? = null,
 ): PaneNavigation {
   val decoration =
-    remember(strategy, delegate, host, window, divider, animationSpec, paneContainer) {
+    remember(strategy, delegate, host, window, divider, animationSpec, paneContainer, dragHandle) {
       PaneNavDecoration(
         strategy = strategy,
         delegate = delegate,
@@ -91,6 +93,7 @@ public fun rememberPaneNavigation(
         divider = divider,
         animationSpec = animationSpec,
         paneContainer = paneContainer,
+        dragHandle = dragHandle,
       )
     }
   val paneNavigator =

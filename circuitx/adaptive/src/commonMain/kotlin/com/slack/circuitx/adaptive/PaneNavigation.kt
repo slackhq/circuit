@@ -55,7 +55,9 @@ internal constructor(
  * @param interceptors The interceptors of the returned navigator. To add your own, pass a list that
  *   also has a [PaneReplaceInterceptor] for [host].
  * @param enableBackHandler Sends system back to the returned navigator as a pop, so [interceptors]
- *   see it. Pass false if no interceptor handles a pop.
+ *   see it. It is off by default, because [PaneReplaceInterceptor] handles no pop and the handler
+ *   stays on at the root, where it takes the back gesture from the system. Pass true if one of your
+ *   [interceptors] handles a pop.
  * @param window See [PaneNavDecoration].
  * @param divider See [PaneNavDecoration].
  * @param animationSpec See [PaneNavDecoration].
@@ -70,7 +72,7 @@ public fun rememberPaneNavigation(
   host: PaneHost = remember { PaneHost() },
   interceptors: List<NavigationInterceptor> =
     remember(host) { listOf(PaneReplaceInterceptor(host)) },
-  enableBackHandler: Boolean = true,
+  enableBackHandler: Boolean = false,
   window: @Composable (DpSize) -> PaneWindow = { rememberPaneWindow(it) },
   divider: @Composable () -> Unit = {},
   animationSpec: FiniteAnimationSpec<Float> = DefaultPaneAnimationSpec,

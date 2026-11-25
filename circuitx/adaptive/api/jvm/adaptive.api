@@ -158,6 +158,7 @@ public final class com/slack/circuitx/adaptive/PaneStrategyKt {
 
 public final class com/slack/circuitx/adaptive/PaneStyle : java/lang/Enum {
 	public static final field Extra Lcom/slack/circuitx/adaptive/PaneStyle;
+	public static final field FullWindow Lcom/slack/circuitx/adaptive/PaneStyle;
 	public static final field List Lcom/slack/circuitx/adaptive/PaneStyle;
 	public static final field ListDetail Lcom/slack/circuitx/adaptive/PaneStyle;
 	public static final field Supporting Lcom/slack/circuitx/adaptive/PaneStyle;

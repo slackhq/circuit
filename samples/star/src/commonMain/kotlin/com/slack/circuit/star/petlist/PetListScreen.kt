@@ -482,7 +482,7 @@ private fun PetListGridItem(
 ) = SharedElementTransitionScope {
   val animatedScope = requireAnimatedScope(Navigation)
   // Beside its detail the list stays on screen, so an item has nothing to hand over to the detail.
-  val shareElements = LocalPaneRole.current == PaneRole.SINGLE
+  val shareElements = LocalPaneRole.current == PaneRole.Single
   val boundsState = rememberSharedContentState(key = PetCardBoundsKey(animal.id))
   val fraction by
     remember(boundsState, animatedScope) {

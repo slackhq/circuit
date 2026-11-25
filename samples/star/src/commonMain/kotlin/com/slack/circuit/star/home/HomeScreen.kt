@@ -171,7 +171,7 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
             ListDetailPaneStrategy(
               paneStyle = { screen ->
                 if (screen is PetDetailScreen) {
-                  PaneStyle.SUPPORTING
+                  PaneStyle.Supporting
                 } else {
                   null
                 }
@@ -186,7 +186,6 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
                 PaneAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory()),
             )
           },
-        enableBackHandler = false,
         // The navigation rail is outside the panes, so the panes are narrower than the window.
         // The whole window decides the split, as it decides when the rail shows.
         window = { size ->

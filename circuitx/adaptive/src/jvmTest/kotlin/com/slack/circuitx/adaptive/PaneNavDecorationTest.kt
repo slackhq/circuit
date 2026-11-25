@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,6 +32,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ComposeUiTest
@@ -322,6 +324,30 @@ class PaneNavDecorationTest {
 
     consumedByChrome = WindowInsets(right = 40.dp)
     onNodeWithTag("supporting1-container").assertWidthIsEqualTo(tabletListPaneWidth)
+  }
+
+  @Test
+  fun startPaneKeepsTheEndInsetWhileItHasTheFullWidth() = runComposeUiTest {
+    windowSize = tablet
+    windowInsets = WindowInsets(right = 40.dp)
+    // The end inset that each pane container sees as consumed, in px
+    val consumedEnd = mutableMapOf<PanePosition, Int>()
+    paneContainer = { position, content ->
+      val density = LocalDensity.current
+      Box(
+        Modifier.onConsumedWindowInsetsChanged { consumed ->
+          consumedEnd[position] = consumed.getRight(density, LayoutDirection.Ltr)
+        }
+      ) {
+        content()
+      }
+    }
+    setNavContent(Root)
+    // Nothing is open beside the root, so it reaches the end edge
+    runOnIdle { check(consumedEnd[PanePosition.Start] == 0) { "consumed: $consumedEnd" } }
+
+    runOnIdle { navigator.goTo(Detail(1)) }
+    runOnIdle { check(consumedEnd[PanePosition.Start] == 40) { "consumed: $consumedEnd" } }
   }
 
   @Test

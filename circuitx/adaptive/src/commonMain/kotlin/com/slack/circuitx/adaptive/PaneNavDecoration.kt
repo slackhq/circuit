@@ -254,13 +254,17 @@ public class PaneNavDecoration(
             // Up to five children, each found by its layoutId in the measure block:
             // the start pane, a divider, the middle pane, a second divider, and the delegate.
 
-            // Start pane and its divider. The pane does not reach the end edge of the window, so
-            // it takes no end inset.
+            // Start pane and its divider. Beside another pane, it does not reach the end edge of
+            // the window, so it takes no end inset. Alone, it has the full width and keeps the
+            // inset.
             if (panes != null) {
-              Box(
-                Modifier.layoutId(PrimaryPaneId)
-                  .consumeWindowInsets(safeDrawing.only(WindowInsetsSides.End))
-              ) {
+              val primaryInsets =
+                if (showsDetail) {
+                  Modifier.consumeWindowInsets(safeDrawing.only(WindowInsetsSides.End))
+                } else {
+                  Modifier
+                }
+              Box(Modifier.layoutId(PrimaryPaneId).then(primaryInsets)) {
                 paneContainer(PanePosition.Start) {
                   // A pane that sizes itself keeps the width of its content, so nothing here may
                   // fill it.

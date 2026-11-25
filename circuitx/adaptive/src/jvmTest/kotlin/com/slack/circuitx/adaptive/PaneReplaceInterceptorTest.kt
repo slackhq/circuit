@@ -2,11 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuitx.adaptive
 
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isTrue
 import com.slack.circuit.runtime.Navigator
+import com.slack.circuit.runtime.navigation.NavArgument
+import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuitx.navigation.intercepting.InterceptingNavigator
@@ -34,10 +37,20 @@ class PaneReplaceInterceptorTest {
     split: Boolean = true,
     interceptor: PaneReplaceInterceptor = PaneReplaceInterceptor(host),
   ): Navigator {
-    if (split) {
-      host.scene = PaneScene(primaryKey = "primary", split = PaneSplit.Fixed(300.dp))
-      host.primaryDepth = primaryDepth
-    }
+    // What a decoration leaves on the host after it composes
+    host.window = PaneWindow(DpSize(1000.dp, 700.dp))
+    host.strategy =
+      object : PaneStrategy {
+        override fun scene(window: PaneWindow, stack: NavStackList<out NavArgument>): PaneScene? {
+          if (!split) {
+            return null
+          }
+          // Top first, root last
+          val visible = listOf(stack.active) + stack.backwardItems
+          val primary = visible[visible.size - primaryDepth]
+          return PaneScene(primaryKey = primary.key, split = PaneSplit.Fixed(300.dp))
+        }
+      }
     val delegate = FakeNavigator(screens.first(), *screens.drop(1).toTypedArray())
     return InterceptingNavigator(delegate, listOf(interceptor))
   }

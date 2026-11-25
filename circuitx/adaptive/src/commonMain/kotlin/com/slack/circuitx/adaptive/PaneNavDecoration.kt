@@ -204,9 +204,8 @@ public class PaneNavDecoration(
         host.scene = paneState.scene
         host.detailRoot = paneState.detailRoot
         host.paneCount = paneState.paneCount
-        if (panes != null) {
-          host.primaryDepth = visible.size - panes.abovePrimary.size
-        }
+        host.strategy = strategy
+        host.window = paneWindow
       }
 
       // ---- 4. Build the stack that the delegate renders ----

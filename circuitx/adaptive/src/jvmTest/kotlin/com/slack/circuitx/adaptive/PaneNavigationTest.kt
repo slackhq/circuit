@@ -41,6 +41,12 @@ class PaneNavigationTest {
       get() = PaneStyle.ListDetail
   }
 
+  /** A list that opens over other screens and takes the start pane. */
+  private data object Inbox : PaneScreen {
+    override val paneStyle: PaneStyle
+      get() = PaneStyle.List
+  }
+
   private data class TestState(val screen: Screen) : CircuitUiState
 
   private val circuit =
@@ -103,6 +109,31 @@ class PaneNavigationTest {
     strategy = ListDetailPaneStrategy()
     onNodeWithText("$Root").assertExists()
     onNodeWithText("${Detail(1)}").assertExists()
+  }
+
+  @Test
+  fun navigationInOneFrameUsesTheLayoutOfEachStack() = runComposeUiTest {
+    lateinit var panes: PaneNavigation
+    lateinit var navigator: Navigator
+    setContent {
+      CircuitCompositionLocals(circuit) {
+        Box(Modifier.size(1000.dp, 700.dp)) {
+          val backStack = rememberSaveableBackStack(Root)
+          navigator = rememberCircuitNavigator(backStack) {}
+          panes = rememberPaneNavigation(navigator)
+          NavigableCircuitContent(panes.navigator, backStack, decoration = panes.decoration)
+        }
+      }
+    }
+    runOnIdle { panes.navigator.goTo(Detail(1)) }
+
+    // No composition runs between these two calls. The inbox takes the start pane, so the second
+    // detail opens beside it. The first detail is below the inbox and must stay.
+    runOnIdle {
+      panes.navigator.goTo(Inbox)
+      panes.navigator.goTo(Detail(2))
+    }
+    runOnIdle { check(navigator.peekBackStack() == listOf(Detail(2), Inbox, Detail(1), Root)) }
   }
 
   @Test

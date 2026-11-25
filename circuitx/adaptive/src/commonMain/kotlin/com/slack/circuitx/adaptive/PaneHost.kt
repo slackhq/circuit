@@ -184,10 +184,12 @@ public class PaneHost {
     get() = paneCount > 1
 
   /**
-   * How many records the primary record and the records below it make up. The count does not change
-   * when records above the primary record change, so it stays correct between compositions.
+   * The strategy and the window of the last composition. [PaneReplaceInterceptor] asks this
+   * strategy for the scene of the stack it is called with, so it never works from the scene of an
+   * older stack. Both are null before the first composition.
    */
-  internal var primaryDepth: Int by mutableIntStateOf(0)
+  internal var strategy: PaneStrategy? by mutableStateOf(null)
+  internal var window: PaneWindow? by mutableStateOf(null)
 
   public companion object {
     /**

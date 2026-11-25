@@ -4,6 +4,7 @@
 package com.slack.circuit.backstack
 
 import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.snapshots.Snapshot
 import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEmpty
@@ -18,6 +19,33 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SaveableBackStackTest {
+
+  @Test
+  fun saved_state_changes_are_dropped_with_their_snapshot() {
+    val backStack = SaveableBackStack(TestScreen.RootAlpha)
+    backStack.push(TestScreen.ScreenA)
+    backStack.saveState()
+
+    // A reset to another root that saves and restores, in a snapshot that is never applied
+    val snapshot = Snapshot.takeMutableSnapshot()
+    try {
+      snapshot.enter {
+        backStack.restoreState(TestScreen.RootAlpha)
+        backStack.push(TestScreen.ScreenB)
+        backStack.saveState()
+        backStack.popUntil { false }
+        backStack.push(TestScreen.RootBeta)
+        backStack.saveState()
+        assertThat(backStack.stateStore).hasSize(2)
+      }
+    } finally {
+      snapshot.dispose()
+    }
+
+    assertThat(backStack.stateStore).hasSize(1)
+    val saved = backStack.stateStore.getValue(TestScreen.RootAlpha)
+    assertThat(saved.map { it.screen }).isEqualTo(listOf(TestScreen.ScreenA, TestScreen.RootAlpha))
+  }
 
   @Test
   fun test_save_and_restore_backstack_state() {

@@ -28,22 +28,22 @@ class ListDetailPaneStrategyTest {
   /** A list that opens over other screens. */
   private data object Inbox : PaneScreen {
     override val paneStyle: PaneStyle
-      get() = PaneStyle.LIST
+      get() = PaneStyle.List
   }
 
   private data class Detail(val id: Int) : PaneScreen {
     override val paneStyle: PaneStyle
-      get() = PaneStyle.LIST_DETAIL
+      get() = PaneStyle.ListDetail
   }
 
   private data class Supporting(val id: Int) : PaneScreen {
     override val paneStyle: PaneStyle
-      get() = PaneStyle.SUPPORTING
+      get() = PaneStyle.Supporting
   }
 
   private data class Extra(val id: Int) : PaneScreen {
     override val paneStyle: PaneStyle
-      get() = PaneStyle.EXTRA
+      get() = PaneStyle.Extra
   }
 
   private data class Arg(override val screen: Screen) : NavArgument {
@@ -177,7 +177,7 @@ class ListDetailPaneStrategyTest {
   @Test
   fun lookupReplacesTheMarker() {
     val lookup =
-      ListDetailPaneStrategy(paneStyle = { if (it == Plain) PaneStyle.SUPPORTING else null })
+      ListDetailPaneStrategy(paneStyle = { if (it == Plain) PaneStyle.Supporting else null })
     val window = PaneWindow(desktop)
     assertThat(lookup.scene(window, stack(Plain, Home))!!.primaryKey).isEqualTo(Arg(Home).key)
     assertThat(lookup.scene(window, stack(Detail(1), Home))).isNull()

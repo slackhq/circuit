@@ -154,9 +154,20 @@ public class PaneNavDecoration(
         }
       val isSplit = panes != null
       val hostPlaceholder = host.placeholder
+      // The placeholder of the scene draws for the screen of the start pane.
+      val scenePlaceholder = panes?.scene?.placeholder
+      val primaryScreen = panes?.primary?.screen
+      val boundScenePlaceholder: (@Composable () -> Unit)? =
+        remember(scenePlaceholder, primaryScreen) {
+          if (scenePlaceholder != null && primaryScreen != null) {
+            { scenePlaceholder(primaryScreen) }
+          } else {
+            null
+          }
+        }
       val placeholder =
         when {
-          hostPlaceholder == null -> panes?.scene?.placeholder
+          hostPlaceholder == null -> boundScenePlaceholder
           hostPlaceholder === PaneHost.NoPlaceholder -> null
           else -> hostPlaceholder
         }
@@ -204,7 +215,7 @@ public class PaneNavDecoration(
           if (panes != null) {
             endPaneStack(args, panes, placeholderShown = placeholder != null)
           } else {
-            args.transform<T, PaneArg<T>> { PaneArg.Record(it, PaneRole.SINGLE) }
+            args.transform<T, PaneArg<T>> { PaneArg.Record(it, PaneRole.Single) }
           }
         }
 
@@ -248,10 +259,10 @@ public class PaneNavDecoration(
                 Modifier.layoutId(PrimaryPaneId)
                   .consumeWindowInsets(safeDrawing.only(WindowInsetsSides.End))
               ) {
-                paneContainer(PanePosition.START) {
+                paneContainer(PanePosition.Start) {
                   // A pane that sizes itself keeps the width of its content, so nothing here may
                   // fill it.
-                  StaticPane(PaneRole.PRIMARY, fillWidth = !primarySizesItself) {
+                  StaticPane(PaneRole.Primary, fillWidth = !primarySizesItself) {
                     content(panes.primary)
                   }
                 }
@@ -264,7 +275,7 @@ public class PaneNavDecoration(
                 Modifier.layoutId(SecondaryPaneId)
                   .consumeWindowInsets(safeDrawing.only(WindowInsetsSides.Horizontal))
               ) {
-                paneContainer(PanePosition.MIDDLE) {
+                paneContainer(PanePosition.Middle) {
                   StaticPane(panes.roleOf(panes.secondary), fillWidth = true) {
                     content(panes.secondary)
                   }
@@ -300,9 +311,9 @@ public class PaneNavDecoration(
               // The container is this one call in both layouts, for the same reason.
               val position =
                 if (isSplit) {
-                  PanePosition.END
+                  PanePosition.End
                 } else {
-                  PanePosition.SINGLE
+                  PanePosition.Single
                 }
               paneContainer(position) {
                 delegate.DecoratedContent(paneArgs, navigator, Modifier.fillMaxSize()) { arg ->
@@ -706,19 +717,19 @@ private data class Panes<T : NavArgument>(
    * middle pane, so its chrome stays the same.
    *
    * For the stack `Profile, Thread, Conversation, Inbox` (top first) with `Inbox` as [primary]:
-   * - Two panes: `Conversation` is `DETAIL_ROOT`, the two above it are `DETAIL_STACKED`.
-   * - Three panes with `Thread` as [secondary]: `Profile` is `EXTRA_ROOT`, `Thread` is
-   *   `DETAIL_STACKED`, and the hidden `Conversation` is still `DETAIL_ROOT`.
+   * - Two panes: `Conversation` is `DetailRoot`, the two above it are `DetailStacked`.
+   * - Three panes with `Thread` as [secondary]: `Profile` is `ExtraRoot`, `Thread` is
+   *   `DetailStacked`, and the hidden `Conversation` is still `DetailRoot`.
    */
   fun roleOf(record: T): PaneRole {
     // The end pane holds extra screens only while a middle pane exists.
     val inExtraPane = secondary != null && endPane.any { it.key == record.key }
     return when {
       // Lists are top first, so the last entry is the bottom of its pane.
-      inExtraPane && record.key == endPane.last().key -> PaneRole.EXTRA_ROOT
-      inExtraPane -> PaneRole.EXTRA_STACKED
-      record.key == abovePrimary.lastOrNull()?.key -> PaneRole.DETAIL_ROOT
-      else -> PaneRole.DETAIL_STACKED
+      inExtraPane && record.key == endPane.last().key -> PaneRole.ExtraRoot
+      inExtraPane -> PaneRole.ExtraStacked
+      record.key == abovePrimary.lastOrNull()?.key -> PaneRole.DetailRoot
+      else -> PaneRole.DetailStacked
     }
   }
 }
@@ -806,9 +817,9 @@ private fun <T : NavArgument> endPaneStack(
   // Forward records are above the top of the stack, so they stack over the end pane's records.
   val forwardRole =
     if (panes.secondary != null) {
-      PaneRole.EXTRA_STACKED
+      PaneRole.ExtraStacked
     } else {
-      PaneRole.DETAIL_STACKED
+      PaneRole.DetailStacked
     }
   val forward = args.forwardItems.map { record -> PaneArg.Record(record, forwardRole) }
   if (endPane.isEmpty()) {

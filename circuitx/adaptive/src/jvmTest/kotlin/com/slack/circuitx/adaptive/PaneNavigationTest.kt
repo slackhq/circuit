@@ -34,7 +34,7 @@ class PaneNavigationTest {
 
   private data class Detail(val id: Int) : PaneScreen {
     override val paneStyle: PaneStyle
-      get() = PaneStyle.LIST_DETAIL
+      get() = PaneStyle.ListDetail
   }
 
   private data class TestState(val screen: Screen) : CircuitUiState
@@ -115,30 +115,28 @@ class PaneNavigationTest {
   @Test
   fun firstScreenOfAHiddenPaneOpensThePane() {
     val hidden = PaneArg.Placeholder(shown = false)
-    check(change(hidden, arg(1, PaneRole.DETAIL_ROOT)) == PaneChange.OPEN)
+    check(change(hidden, arg(1, PaneRole.DetailRoot)) == PaneChange.Open)
   }
 
   @Test
   fun newBottomScreenOfAVisiblePaneReplaces() {
     val shown = PaneArg.Placeholder(shown = true)
-    check(change(shown, arg(1, PaneRole.DETAIL_ROOT)) == PaneChange.REPLACE)
-    check(change(arg(1, PaneRole.DETAIL_ROOT), arg(2, PaneRole.DETAIL_ROOT)) == PaneChange.REPLACE)
+    check(change(shown, arg(1, PaneRole.DetailRoot)) == PaneChange.Replace)
+    check(change(arg(1, PaneRole.DetailRoot), arg(2, PaneRole.DetailRoot)) == PaneChange.Replace)
     // A screen stacked over the old detail goes with it
-    check(
-      change(arg(1, PaneRole.DETAIL_STACKED), arg(2, PaneRole.DETAIL_ROOT)) == PaneChange.REPLACE
-    )
-    check(change(arg(1, PaneRole.EXTRA_ROOT), arg(2, PaneRole.EXTRA_ROOT)) == PaneChange.REPLACE)
+    check(change(arg(1, PaneRole.DetailStacked), arg(2, PaneRole.DetailRoot)) == PaneChange.Replace)
+    check(change(arg(1, PaneRole.ExtraRoot), arg(2, PaneRole.ExtraRoot)) == PaneChange.Replace)
   }
 
   @Test
   fun otherChangesKeepTheTransitionOfTheDelegate() {
     // A push over a detail
-    check(change(arg(1, PaneRole.DETAIL_ROOT), arg(2, PaneRole.DETAIL_STACKED)) == null)
+    check(change(arg(1, PaneRole.DetailRoot), arg(2, PaneRole.DetailStacked)) == null)
     // A switch from the single layout
-    check(change(arg(1, PaneRole.SINGLE), arg(2, PaneRole.DETAIL_ROOT)) == null)
-    check(change(arg(1, PaneRole.SINGLE), arg(2, PaneRole.SINGLE)) == null)
+    check(change(arg(1, PaneRole.Single), arg(2, PaneRole.DetailRoot)) == null)
+    check(change(arg(1, PaneRole.Single), arg(2, PaneRole.Single)) == null)
     // The same screen
-    check(change(arg(1, PaneRole.DETAIL_ROOT), arg(1, PaneRole.DETAIL_ROOT)) == null)
+    check(change(arg(1, PaneRole.DetailRoot), arg(1, PaneRole.DetailRoot)) == null)
   }
 
   private data class Arg(override val screen: Screen) : NavArgument {

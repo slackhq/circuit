@@ -87,24 +87,24 @@ class PaneNavDecorationTest {
 
   private data class Detail(val id: Int) : PaneScreen {
     override val paneStyle: PaneStyle
-      get() = PaneStyle.LIST_DETAIL
+      get() = PaneStyle.ListDetail
   }
 
   private data class Supporting(val id: Int) : PaneScreen {
     override val paneStyle: PaneStyle
-      get() = PaneStyle.SUPPORTING
+      get() = PaneStyle.Supporting
   }
 
   /** A screen opened from a detail, so it stacks in the end pane. */
   private data class Stacked(val id: Int) : PaneScreen {
     override val paneStyle: PaneStyle
-      get() = PaneStyle.LIST_DETAIL
+      get() = PaneStyle.ListDetail
   }
 
   /** A screen opened from a detail that takes a third pane when the window has room. */
   private data class Extra(val id: Int) : PaneScreen {
     override val paneStyle: PaneStyle
-      get() = PaneStyle.EXTRA
+      get() = PaneStyle.Extra
   }
 
   private data class TestState(val screen: Screen) : CircuitUiState
@@ -215,7 +215,7 @@ class PaneNavDecorationTest {
     setNavContent(Root)
     runOnIdle { navigator.goTo(Detail(1)) }
 
-    assertLabel("detail1", PaneRole.SINGLE, taps = 0)
+    assertLabel("detail1", PaneRole.Single, taps = 0)
     onAllNodesWithTag("root").assertCountEquals(0)
   }
 
@@ -225,11 +225,11 @@ class PaneNavDecorationTest {
     setNavContent(Root)
     runOnIdle { navigator.goTo(Detail(1)) }
 
-    assertLabel("root", PaneRole.PRIMARY, taps = 0)
-    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 0)
+    assertLabel("root", PaneRole.Primary, taps = 0)
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 0)
 
     runOnIdle { navigator.goTo(Stacked(1)) }
-    assertLabel("stacked1", PaneRole.DETAIL_STACKED, taps = 0)
+    assertLabel("stacked1", PaneRole.DetailStacked, taps = 0)
     onAllNodesWithTag("root").assertCountEquals(1)
   }
 
@@ -237,16 +237,16 @@ class PaneNavDecorationTest {
   fun mediumWindowKeepsThePhoneLayoutUntilRotated() = runComposeUiTest {
     windowSize = portraitTablet
     setNavContent(ReservingRoot)
-    assertLabel("root", PaneRole.SINGLE, taps = 0)
+    assertLabel("root", PaneRole.Single, taps = 0)
     onAllNodesWithText("Pick one").assertCountEquals(0)
 
     runOnIdle { navigator.goTo(Supporting(1)) }
-    assertLabel("supporting1", PaneRole.SINGLE, taps = 0)
+    assertLabel("supporting1", PaneRole.Single, taps = 0)
     onAllNodesWithTag("root").assertCountEquals(0)
 
     windowSize = tablet
-    assertLabel("root", PaneRole.PRIMARY, taps = 0)
-    assertLabel("supporting1", PaneRole.DETAIL_ROOT, taps = 0)
+    assertLabel("root", PaneRole.Primary, taps = 0)
+    assertLabel("supporting1", PaneRole.DetailRoot, taps = 0)
   }
 
   @Test
@@ -256,7 +256,7 @@ class PaneNavDecorationTest {
     onNodeWithText("Pick one").assertExists()
 
     runOnIdle { navigator.goTo(Detail(1)) }
-    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 0)
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 0)
     onAllNodesWithText("Pick one").assertCountEquals(0)
 
     runOnIdle { navigator.pop() }
@@ -267,7 +267,7 @@ class PaneNavDecorationTest {
   fun rootWithoutReservationFillsWideWindow() = runComposeUiTest {
     windowSize = tablet
     setNavContent(Root)
-    assertLabel("root", PaneRole.PRIMARY, taps = 0)
+    assertLabel("root", PaneRole.Primary, taps = 0)
     onNodeWithTag("root-container").assertWidthIsEqualTo(tablet.width)
   }
 
@@ -340,15 +340,15 @@ class PaneNavDecorationTest {
     windowSize = tablet
     setNavContent(ReservingRoot)
     runOnIdle { navigator.goTo(Detail(1)) }
-    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 0)
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 0)
 
     mainClock.autoAdvance = false
     runOnIdle { navigator.goTo(Detail(2)) }
     mainClock.advanceTimeByFrame()
     mainClock.advanceTimeByFrame()
     // Both are composed mid-transition, and the leaving one hasn't become a stacked screen
-    onNodeWithTag("detail1").assertTextContains("role=DETAIL_ROOT", substring = true)
-    onNodeWithTag("detail2").assertTextContains("role=DETAIL_ROOT", substring = true)
+    onNodeWithTag("detail1").assertTextContains("role=DetailRoot", substring = true)
+    onNodeWithTag("detail2").assertTextContains("role=DetailRoot", substring = true)
   }
 
   @Test
@@ -399,25 +399,25 @@ class PaneNavDecorationTest {
     setNavContent(ReservingRoot)
     onNodeWithTag("root-tap").performClick()
     onNodeWithTag("root-tap").performClick()
-    assertLabel("root", PaneRole.PRIMARY, taps = 2)
+    assertLabel("root", PaneRole.Primary, taps = 2)
 
     windowSize = phone
-    assertLabel("root", PaneRole.SINGLE, taps = 2)
+    assertLabel("root", PaneRole.Single, taps = 2)
 
     windowSize = tablet
-    assertLabel("root", PaneRole.PRIMARY, taps = 2)
+    assertLabel("root", PaneRole.Primary, taps = 2)
 
     runOnIdle { navigator.goTo(Detail(1)) }
     onNodeWithTag("detail1-tap").performClick()
-    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 1)
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 1)
 
     windowSize = phone
-    assertLabel("detail1", PaneRole.SINGLE, taps = 1)
+    assertLabel("detail1", PaneRole.Single, taps = 1)
     onAllNodesWithTag("root").assertCountEquals(0)
 
     windowSize = tablet
-    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 1)
-    assertLabel("root", PaneRole.PRIMARY, taps = 2)
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 1)
+    assertLabel("root", PaneRole.Primary, taps = 2)
   }
 
   @Test
@@ -425,9 +425,9 @@ class PaneNavDecorationTest {
     windowSize = tablet
     setNavContent(ReservingRoot)
     runOnIdle { navigator.goTo(Detail(1)) }
-    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 0)
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 0)
     runOnIdle { navigator.goTo(Detail(2)) }
-    assertLabel("detail2", PaneRole.DETAIL_ROOT, taps = 0)
+    assertLabel("detail2", PaneRole.DetailRoot, taps = 0)
     onAllNodesWithTag("detail1").assertCountEquals(0)
 
     runOnIdle { navigator.pop() }
@@ -470,14 +470,14 @@ class PaneNavDecorationTest {
     }
     windowSize = phone
     setNavContent(Root)
-    onNodeWithTag("chrome-SINGLE").assertWidthIsEqualTo(phone.width)
-    onAllNodesWithTag("chrome-START").assertCountEquals(0)
+    onNodeWithTag("chrome-Single").assertWidthIsEqualTo(phone.width)
+    onAllNodesWithTag("chrome-Start").assertCountEquals(0)
 
     windowSize = tablet
     runOnIdle { navigator.goTo(Detail(1)) }
-    onNodeWithTag("chrome-START").assertWidthIsEqualTo(tabletListPaneWidth)
-    onNodeWithTag("chrome-END").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth)
-    onAllNodesWithTag("chrome-SINGLE").assertCountEquals(0)
+    onNodeWithTag("chrome-Start").assertWidthIsEqualTo(tabletListPaneWidth)
+    onNodeWithTag("chrome-End").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth)
+    onAllNodesWithTag("chrome-Single").assertCountEquals(0)
   }
 
   @Test
@@ -486,7 +486,7 @@ class PaneNavDecorationTest {
     val starts = mutableMapOf<PanePosition, Int>()
     var delegateContainers = 0
     paneContainer = { position, content ->
-      if (position != PanePosition.START) {
+      if (position != PanePosition.Start) {
         remember { delegateContainers++ }
       }
       remember(position) { starts[position] = (starts[position] ?: 0) + 1 }
@@ -498,13 +498,13 @@ class PaneNavDecorationTest {
     onNodeWithTag("detail1-tap").performClick()
 
     windowSize = tablet
-    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 1)
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 1)
     windowSize = phone
-    assertLabel("detail1", PaneRole.SINGLE, taps = 1)
+    assertLabel("detail1", PaneRole.Single, taps = 1)
     runOnIdle {
       // One container follows the delegate from the single layout to the end pane and back
       check(delegateContainers == 1) { "delegate containers: $delegateContainers" }
-      check(starts[PanePosition.START] == 1) { "starts: $starts" }
+      check(starts[PanePosition.Start] == 1) { "starts: $starts" }
     }
   }
 
@@ -533,8 +533,8 @@ class PaneNavDecorationTest {
 
     onNodeWithTag("detail1-scroll").performTouchInput { swipeUp() }
     runOnIdle {
-      check((scrolled[PanePosition.END] ?: 0f) < 0f) { "scrolled: $scrolled" }
-      check((scrolled[PanePosition.START] ?: 0f) == 0f) { "scrolled: $scrolled" }
+      check((scrolled[PanePosition.End] ?: 0f) < 0f) { "scrolled: $scrolled" }
+      check((scrolled[PanePosition.Start] ?: 0f) == 0f) { "scrolled: $scrolled" }
     }
   }
 
@@ -577,6 +577,14 @@ class PaneNavDecorationTest {
   }
 
   @Test
+  fun strategyPlaceholderGetsTheScreenOfTheStartPane() = runComposeUiTest {
+    windowSize = tablet
+    strategy = ListDetailPaneStrategy(placeholder = { primary -> BasicText("Pick for $primary") })
+    setNavContent(Root)
+    onNodeWithText("Pick for $Root").assertExists()
+  }
+
+  @Test
   fun hingeCorrectionAfterTheFirstFrameDoesNotAnimate() = runComposeUiTest {
     windowSize = tablet
     leadingWidth = 80.dp
@@ -596,27 +604,27 @@ class PaneNavDecorationTest {
     setNavContent(Root)
     runOnIdle { navigator.goTo(Detail(1)) }
     // Two panes until an extra screen opens
-    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 0)
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 0)
     onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth)
     onNodeWithTag("detail1-tap").performClick()
 
     runOnIdle { navigator.goTo(Extra(1)) }
-    assertLabel("root", PaneRole.PRIMARY, taps = 0)
+    assertLabel("root", PaneRole.Primary, taps = 0)
     // The detail keeps its role and its state when it moves to the middle pane
-    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 1)
-    assertLabel("extra1", PaneRole.EXTRA_ROOT, taps = 0)
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 1)
+    assertLabel("extra1", PaneRole.ExtraRoot, taps = 0)
     onNodeWithTag("root-container").assertWidthIsEqualTo(tabletListPaneWidth)
     onNodeWithTag("extra1-container").assertWidthIsEqualTo(tabletListPaneWidth)
     onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth * 2)
 
     // Another screen of the same type replaces the one in the third pane
     runOnIdle { navigator.goTo(Extra(2)) }
-    assertLabel("extra2", PaneRole.EXTRA_ROOT, taps = 0)
-    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 1)
+    assertLabel("extra2", PaneRole.ExtraRoot, taps = 0)
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 1)
     onAllNodesWithTag("extra1").assertCountEquals(0)
 
     runOnIdle { navigator.pop() }
-    assertLabel("detail1", PaneRole.DETAIL_ROOT, taps = 1)
+    assertLabel("detail1", PaneRole.DetailRoot, taps = 1)
     onAllNodesWithTag("extra2").assertCountEquals(0)
     onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - tabletListPaneWidth)
   }
@@ -635,7 +643,7 @@ class PaneNavDecorationTest {
     onNodeWithTag("rail").assertWidthIsEqualTo(RailWidth)
     onNodeWithTag("root-container").assertWidthIsEqualTo(startPaneWidth)
     onNodeWithTag("detail1-container").assertWidthIsEqualTo(tablet.width - startPaneWidth)
-    assertLabel("root", PaneRole.PRIMARY, taps = 0)
+    assertLabel("root", PaneRole.Primary, taps = 0)
 
     runOnIdle { navigator.pop() }
     onNodeWithTag("root-container").assertWidthIsEqualTo(tablet.width)

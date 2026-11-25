@@ -65,7 +65,7 @@ Then mark the screens that open beside the screen below them.
 ```kotlin
 data class PetDetailScreen(val id: Long) : PaneScreen {
   override val paneStyle
-    get() = PaneStyle.LIST_DETAIL
+    get() = PaneStyle.ListDetail
 }
 ```
 
@@ -157,7 +157,7 @@ rememberPaneNavigation(
     val selected = backStack.rootRecord?.screen
     val atTabRoot = backStack.topRecord == backStack.rootRecord
     val showTabs =
-      position == PanePosition.START || (position == PanePosition.SINGLE && atTabRoot)
+      position == PanePosition.Start || (position == PanePosition.Single && atTabRoot)
     Box {
       content()
       if (showTabs) {
@@ -189,16 +189,16 @@ To center the tabs in the window at every size, draw the toolbar in a `Box` over
 
 | Position | Pane                                             |
 |----------|--------------------------------------------------|
-| `SINGLE` | The whole decoration, while one screen shows     |
-| `START`  | The start pane, also while it has the full width |
-| `MIDDLE` | The middle pane of three                         |
-| `END`    | The end pane                                     |
+| `Single` | The whole decoration, while one screen shows     |
+| `Start`  | The start pane, also while it has the full width |
+| `Middle` | The middle pane of three                         |
+| `End`    | The end pane                                     |
 
 - Call `content()` one time, from the same place for every position. The end pane and the
   single layout share one container, so its state stays when the window resizes.
 - A container gets the nested scroll of its own pane only. A toolbar with a scroll behavior over
   the list does not hide when the detail scrolls.
-- The `END` container stays composed off screen while nothing shows there. Read
+- The `End` container stays composed off screen while nothing shows there. Read
   `LocalPaneState.current.paneCount` before you draw chrome for it.
 - Content under the toolbar needs bottom padding. Provide it from the container, like with a
   `CompositionLocal` that the lists read.
@@ -237,16 +237,16 @@ owns the layout, insets, record lifecycle, and animation scopes.
 - It splits a window that has room for two panes and is at least 480dp tall. Change the height with
   `minHeightDp`.
 - The start pane takes the record just below the topmost run of screens that have a `PaneStyle`.
-- `LIST_DETAIL` gives the start pane a set width. `SUPPORTING` gives the end pane a set width.
-- `LIST` marks a list that is not the root. See [Lists above the root](#lists-above-the-root).
-- `EXTRA` opens a third pane when the window has room for three. See [Three panes](#three-panes).
+- `ListDetail` gives the start pane a set width. `Supporting` gives the end pane a set width.
+- `List` marks a list that is not the root. See [Lists above the root](#lists-above-the-root).
+- `Extra` opens a third pane when the window has room for three. See [Three panes](#three-panes).
 - The panes split at a vertical hinge. A window with a hinge shows two panes at most.
 - A screen with no style, above the root, fills the window.
 
 The style of a screen decides which pane gets the set width.
 
 ```
-LIST_DETAIL: the list is narrow        SUPPORTING: the panel is narrow
+ListDetail: the list is narrow         Supporting: the panel is narrow
 +---------+---------------------+      +---------------------+---------+
 |         |                     |      |                     |         |
 |  List   |       Detail        |      |        Main         |  Panel  |
@@ -254,7 +254,7 @@ LIST_DETAIL: the list is narrow        SUPPORTING: the panel is narrow
 +---------+---------------------+      +---------------------+---------+
  360dp     the rest                     the rest              360dp
 
-EXTRA, on a window with room for three panes
+Extra, on a window with room for three panes
 +---------+---------------------+---------+
 |         |                     |         |
 |  List   |       Detail        |  Extra  |
@@ -267,7 +267,7 @@ To keep feature modules free of this artifact, pass a lookup in place of the `Pa
 
 ```kotlin
 ListDetailPaneStrategy(
-  paneStyle = { screen -> if (screen is PetDetailScreen) PaneStyle.LIST_DETAIL else null }
+  paneStyle = { screen -> if (screen is PetDetailScreen) PaneStyle.ListDetail else null }
 )
 ```
 
@@ -348,7 +348,7 @@ Fixed                          AtHinge                        PrimaryWraps
 ```
 
 Use `PrimaryWraps` when the start pane holds more than one sized part.
-`ListDetailPaneStrategy(listPaneSizesItself = true)` returns it for `LIST_DETAIL`.
+`ListDetailPaneStrategy(listPaneSizesItself = true)` returns it for `ListDetail`.
 
 The decoration then measures the start pane with a minimum width of zero. The screen in that pane
 must choose a width while `LocalPaneState.current.primarySizesItself` is true. Content that fills
@@ -367,7 +367,7 @@ Row(if (sizesItself) Modifier.fillMaxHeight() else Modifier.fillMaxSize()) {
 
 ### Three panes
 
-A screen with `PaneStyle.EXTRA` holds more content for an open detail, like a profile opened from a
+A screen with `PaneStyle.Extra` holds more content for an open detail, like a profile opened from a
 conversation. When the window has room for three panes, it opens in a third pane:
 
 - The list stays in the start pane.
@@ -385,21 +385,21 @@ Each screen reads `LocalPaneRole` to learn where it renders.
 
 | Role             | Where                                            |
 |------------------|--------------------------------------------------|
-| `SINGLE`         | The only visible screen, as on phones            |
-| `PRIMARY`        | The start pane, also while it has the full width |
-| `DETAIL_ROOT`    | The screen opened from the start pane            |
-| `DETAIL_STACKED` | A screen above the detail                        |
-| `EXTRA_ROOT`     | The bottom screen of the third pane              |
-| `EXTRA_STACKED`  | A screen above another screen in the third pane  |
+| `Single`         | The only visible screen, as on phones            |
+| `Primary`        | The start pane, also while it has the full width |
+| `DetailRoot`    | The screen opened from the start pane            |
+| `DetailStacked` | A screen above the detail                        |
+| `ExtraRoot`     | The bottom screen of the third pane              |
+| `ExtraStacked`  | A screen above another screen in the third pane  |
 
-A screen with the `DETAIL_ROOT` role sits beside the screen that opened it. For a list's detail,
+A screen with the `DetailRoot` role sits beside the screen that opened it. For a list's detail,
 hide its back arrow there, because the list is already on screen. A supporting panel can show a
 close button instead. Also turn off shared elements between panes. A list beside its detail stays
 visible, so its items have nothing to share.
 
 ```kotlin
-val showsBackArrow = LocalPaneRole.current != PaneRole.DETAIL_ROOT
-val shareElements = LocalPaneRole.current == PaneRole.SINGLE
+val showsBackArrow = LocalPaneRole.current != PaneRole.DetailRoot
+val shareElements = LocalPaneRole.current == PaneRole.Single
 ```
 
 ## Empty end pane
@@ -417,8 +417,20 @@ No placeholder                         With a placeholder
 +-------------------------------+      +---------+---------------------+
 ```
 
-`ListDetailPaneStrategy` takes a placeholder for all screens. A screen can also set one through
-`LocalPaneHost`.
+`ListDetailPaneStrategy` takes a placeholder for all screens. It gets the screen of the start pane.
+
+```kotlin
+ListDetailPaneStrategy(
+  placeholder = { primary ->
+    when (primary) {
+      is PetListScreen -> Text("Select a pet")
+      else -> Text("Select an item")
+    }
+  }
+)
+```
+
+A screen can also set one through `LocalPaneHost`.
 
 ```kotlin
 panes.host.placeholder = { Text("Select a pet") }
@@ -438,12 +450,12 @@ it in one frame, pass `animationSpec = snap()` to `PaneNavDecoration`.
 ### Lists above the root
 
 A root with no screens above it always takes the start pane, so it can show a placeholder. A list
-that opens over other screens needs `PaneStyle.LIST` for the same behavior.
+that opens over other screens needs `PaneStyle.List` for the same behavior.
 
 ```kotlin
 data object InboxScreen : PaneScreen {
   override val paneStyle
-    get() = PaneStyle.LIST
+    get() = PaneStyle.List
 }
 ```
 

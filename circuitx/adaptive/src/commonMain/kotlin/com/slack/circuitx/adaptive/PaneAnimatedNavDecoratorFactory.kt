@@ -117,8 +117,8 @@ private class PaneAnimatedNavDecorator<T : NavArgument, S : AnimatedNavState>(
         null
       }
     return when (change) {
-      PaneChange.OPEN -> openTransform()
-      PaneChange.REPLACE -> replaceTransform()
+      PaneChange.Open -> openTransform()
+      PaneChange.Replace -> replaceTransform()
       null -> with(delegate) { transitionSpec(animatedNavEvent) }
     }
   }
@@ -135,10 +135,10 @@ private class PaneAnimatedNavDecorator<T : NavArgument, S : AnimatedNavState>(
 /** A change to the bottom screen of a pane that gets its own transition. */
 internal enum class PaneChange {
   /** The first screen of a pane that was not visible. The decoration slides the pane in. */
-  OPEN,
+  Open,
 
   /** A new bottom screen in a pane that already showed a screen or a placeholder. */
-  REPLACE,
+  Replace,
 }
 
 /**
@@ -151,20 +151,20 @@ internal fun paneChange(
   target: NavStackList<out NavArgument>,
 ): PaneChange? {
   val to = target.active as? PaneArg.Record<*> ?: return null
-  if (to.role != PaneRole.DETAIL_ROOT && to.role != PaneRole.EXTRA_ROOT) {
+  if (to.role != PaneRole.DetailRoot && to.role != PaneRole.ExtraRoot) {
     return null
   }
   return when (val from = initial.active) {
     is PaneArg.Placeholder -> {
       if (from.shown) {
-        PaneChange.REPLACE
+        PaneChange.Replace
       } else {
-        PaneChange.OPEN
+        PaneChange.Open
       }
     }
     is PaneArg.Record<*> -> {
-      if (from.role != PaneRole.SINGLE && from.key != to.key) {
-        PaneChange.REPLACE
+      if (from.role != PaneRole.Single && from.key != to.key) {
+        PaneChange.Replace
       } else {
         null
       }

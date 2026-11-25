@@ -19,31 +19,31 @@ import com.slack.circuit.runtime.screen.Screen
 @ExperimentalCircuitAdaptiveApi
 public enum class PaneRole {
   /** The only visible screen, as on phones. */
-  SINGLE,
+  Single,
 
   /**
    * The screen in the start pane. It has the full width while nothing is open beside it and no
    * placeholder is set. Read [PaneState.isSplit] to tell the two apart.
    */
-  PRIMARY,
+  Primary,
 
   /**
    * The screen opened from the primary screen. It is the bottom screen of the end pane with two
    * panes, and it takes the middle pane with three.
    */
-  DETAIL_ROOT,
+  DetailRoot,
 
   /**
    * A screen pushed over the detail. It is in the end pane with two panes, and in the middle pane
    * or hidden below it with three.
    */
-  DETAIL_STACKED,
+  DetailStacked,
 
   /** The bottom screen of the third pane, opened from a detail. */
-  EXTRA_ROOT,
+  ExtraRoot,
 
   /** A screen pushed over another screen in the third pane. */
-  EXTRA_STACKED,
+  ExtraStacked,
 }
 
 /**
@@ -53,19 +53,19 @@ public enum class PaneRole {
 @ExperimentalCircuitAdaptiveApi
 public enum class PanePosition {
   /** The whole decoration, while one record fills the window. */
-  SINGLE,
+  Single,
 
   /** The pane of the primary record. It has the full width while nothing shows beside it. */
-  START,
+  Start,
 
   /** The pane between the other two, with three panes. */
-  MIDDLE,
+  Middle,
 
   /**
    * The pane of the records opened from the primary record. It stays composed off screen while
    * nothing shows in it, so read [PaneState.paneCount] before drawing chrome for it.
    */
-  END,
+  End,
 }
 
 /**
@@ -202,8 +202,8 @@ public class PaneHost {
 @ExperimentalCircuitAdaptiveApi
 public val LocalPaneHost: ProvidableCompositionLocal<PaneHost?> = staticCompositionLocalOf { null }
 
-/** The [PaneRole] of the current record. It is [PaneRole.SINGLE] outside a [PaneNavDecoration]. */
+/** The [PaneRole] of the current record. It is [PaneRole.Single] outside a [PaneNavDecoration]. */
 @ExperimentalCircuitAdaptiveApi
 public val LocalPaneRole: ProvidableCompositionLocal<PaneRole> = compositionLocalOf {
-  PaneRole.SINGLE
+  PaneRole.Single
 }

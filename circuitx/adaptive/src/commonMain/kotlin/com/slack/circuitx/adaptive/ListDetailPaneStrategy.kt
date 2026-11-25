@@ -18,20 +18,20 @@ public enum class PaneStyle {
    * the top screen, so it can show a placeholder before the first pick. The root needs no style for
    * this. Use it for a list that opens over other screens.
    */
-  LIST,
+  List,
 
   /** A list's detail. The list keeps a narrow pane at the start and the detail fills the rest. */
-  LIST_DETAIL,
+  ListDetail,
 
   /** Extra information about the screen below, which keeps most of the width. */
-  SUPPORTING,
+  Supporting,
 
   /**
    * More content for an open detail, like a profile opened from a conversation. A window with room
    * for three panes shows it in a third pane, beside the list and the detail. Other windows stack
    * it over the detail.
    */
-  EXTRA,
+  Extra,
 }
 
 /**
@@ -56,12 +56,12 @@ public interface PaneScreen : Screen {
  * and `Home` stays hidden. The run's bottom record picks the style for the whole run.
  *
  * A top record with no screens open beside it stays in the start pane when it is the root, or when
- * it has [PaneStyle.LIST]. It can then reserve the end pane with [PaneHost.placeholder] before the
+ * it has [PaneStyle.List]. It can then reserve the end pane with [PaneHost.placeholder] before the
  * first pick, and its pane resizes with an animation on that pick. Any other top record with no
  * pane style fills the window. Set [rootIsList] to false when the root is not always a list, and
- * give each list [PaneStyle.LIST].
+ * give each list [PaneStyle.List].
  *
- * On a window with room for three panes, a [PaneStyle.EXTRA] record above a list's detail opens a
+ * On a window with room for three panes, a [PaneStyle.Extra] record above a list's detail opens a
  * third pane. The record just below the lowest such record takes the middle pane.
  *
  * The panes split at the first hinge when [minHingePaneWidth] fits on both sides of it. A window
@@ -77,13 +77,13 @@ public interface PaneScreen : Screen {
  * @param paneStyle Returns the style of a screen, or null when it has none.
  * @param minHeightDp The shortest window that splits. The default is the medium height class, which
  *   keeps phones in landscape on one pane.
- * @param listPaneWidth Returns the width of the start pane for [PaneStyle.LIST_DETAIL].
- * @param listPaneSizesItself Lets the start pane of [PaneStyle.LIST_DETAIL] take the width its
+ * @param listPaneWidth Returns the width of the start pane for [PaneStyle.ListDetail].
+ * @param listPaneSizesItself Lets the start pane of [PaneStyle.ListDetail] take the width its
  *   content asks for, in place of [listPaneWidth]. See [PaneSplit.PrimaryWraps].
- * @param supportingPaneWidth Returns the width of the end pane for [PaneStyle.SUPPORTING].
- * @param extraPaneWidth Returns the width of the third pane for [PaneStyle.EXTRA].
+ * @param supportingPaneWidth Returns the width of the end pane for [PaneStyle.Supporting].
+ * @param extraPaneWidth Returns the width of the third pane for [PaneStyle.Extra].
  * @param minHingePaneWidth The narrowest pane to show on either side of a hinge.
- * @param rootIsList Treats a root with no pane style as a [PaneStyle.LIST] screen.
+ * @param rootIsList Treats a root with no pane style as a [PaneStyle.List] screen.
  * @param placeholder Draws the end pane while no record is open there, or null to give the start
  *   pane the full width. It gets the screen of the start pane, so one strategy can draw a different
  *   placeholder for each list.
@@ -114,13 +114,13 @@ public class ListDetailPaneStrategy(
         .dropLast(1)
         .takeWhile { record ->
           val recordStyle = paneStyle(record.screen)
-          recordStyle != null && recordStyle != PaneStyle.LIST
+          recordStyle != null && recordStyle != PaneStyle.List
         }
         .size
     if (runLength == 0) {
       // Nothing is open beside the top record. Only a list keeps the panes.
       val topStyle = paneStyle(visible[0].screen)
-      val topIsList = topStyle == PaneStyle.LIST || (visible.size == 1 && rootIsList)
+      val topIsList = topStyle == PaneStyle.List || (visible.size == 1 && rootIsList)
       if (!topIsList) {
         return null
       }
@@ -129,7 +129,7 @@ public class ListDetailPaneStrategy(
     val style =
       if (runLength == 0) {
         // The panes stay in place so the root can reserve the end pane without a layout switch.
-        PaneStyle.LIST_DETAIL
+        PaneStyle.ListDetail
       } else {
         checkNotNull(paneStyle(visible[runLength - 1].screen))
       }
@@ -140,22 +140,22 @@ public class ListDetailPaneStrategy(
     val split =
       when {
         hinge != null -> PaneSplit.AtHinge
-        style == PaneStyle.SUPPORTING -> {
+        style == PaneStyle.Supporting -> {
           PaneSplit.EndFixed(supportingPaneWidth(window))
         }
         listPaneSizesItself -> PaneSplit.PrimaryWraps()
         else -> PaneSplit.Fixed(listPaneWidth(window))
       }
-    // The record below the lowest EXTRA record of the run, when the window fits a third pane. A
+    // The record below the lowest Extra record of the run, when the window fits a third pane. A
     // supporting pane already takes its width from the main pane, so it gets no third pane. A
     // window with any hinge gets none either, also when the hinge is too close to an edge to split
     // at, because a middle pane would cross it.
     val secondaryIndex =
       if (
-        window.maxPanes >= 3 && window.separatingHinges.isEmpty() && style != PaneStyle.SUPPORTING
+        window.maxPanes >= 3 && window.separatingHinges.isEmpty() && style != PaneStyle.Supporting
       ) {
         (runLength - 2 downTo 0)
-          .firstOrNull { paneStyle(visible[it].screen) == PaneStyle.EXTRA }
+          .firstOrNull { paneStyle(visible[it].screen) == PaneStyle.Extra }
           ?.let { it + 1 }
       } else {
         null

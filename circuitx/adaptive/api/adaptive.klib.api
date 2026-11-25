@@ -11,10 +11,10 @@ open annotation class com.slack.circuitx.adaptive/ExperimentalCircuitAdaptiveApi
 }
 
 final enum class com.slack.circuitx.adaptive/PanePosition : kotlin/Enum<com.slack.circuitx.adaptive/PanePosition> { // com.slack.circuitx.adaptive/PanePosition|null[0]
-    enum entry END // com.slack.circuitx.adaptive/PanePosition.END|null[0]
-    enum entry MIDDLE // com.slack.circuitx.adaptive/PanePosition.MIDDLE|null[0]
-    enum entry SINGLE // com.slack.circuitx.adaptive/PanePosition.SINGLE|null[0]
-    enum entry START // com.slack.circuitx.adaptive/PanePosition.START|null[0]
+    enum entry End // com.slack.circuitx.adaptive/PanePosition.End|null[0]
+    enum entry Middle // com.slack.circuitx.adaptive/PanePosition.Middle|null[0]
+    enum entry Single // com.slack.circuitx.adaptive/PanePosition.Single|null[0]
+    enum entry Start // com.slack.circuitx.adaptive/PanePosition.Start|null[0]
 
     final val entries // com.slack.circuitx.adaptive/PanePosition.entries|#static{}entries[0]
         final fun <get-entries>(): kotlin.enums/EnumEntries<com.slack.circuitx.adaptive/PanePosition> // com.slack.circuitx.adaptive/PanePosition.entries.<get-entries>|<get-entries>#static(){}[0]
@@ -24,12 +24,12 @@ final enum class com.slack.circuitx.adaptive/PanePosition : kotlin/Enum<com.slac
 }
 
 final enum class com.slack.circuitx.adaptive/PaneRole : kotlin/Enum<com.slack.circuitx.adaptive/PaneRole> { // com.slack.circuitx.adaptive/PaneRole|null[0]
-    enum entry DETAIL_ROOT // com.slack.circuitx.adaptive/PaneRole.DETAIL_ROOT|null[0]
-    enum entry DETAIL_STACKED // com.slack.circuitx.adaptive/PaneRole.DETAIL_STACKED|null[0]
-    enum entry EXTRA_ROOT // com.slack.circuitx.adaptive/PaneRole.EXTRA_ROOT|null[0]
-    enum entry EXTRA_STACKED // com.slack.circuitx.adaptive/PaneRole.EXTRA_STACKED|null[0]
-    enum entry PRIMARY // com.slack.circuitx.adaptive/PaneRole.PRIMARY|null[0]
-    enum entry SINGLE // com.slack.circuitx.adaptive/PaneRole.SINGLE|null[0]
+    enum entry DetailRoot // com.slack.circuitx.adaptive/PaneRole.DetailRoot|null[0]
+    enum entry DetailStacked // com.slack.circuitx.adaptive/PaneRole.DetailStacked|null[0]
+    enum entry ExtraRoot // com.slack.circuitx.adaptive/PaneRole.ExtraRoot|null[0]
+    enum entry ExtraStacked // com.slack.circuitx.adaptive/PaneRole.ExtraStacked|null[0]
+    enum entry Primary // com.slack.circuitx.adaptive/PaneRole.Primary|null[0]
+    enum entry Single // com.slack.circuitx.adaptive/PaneRole.Single|null[0]
 
     final val entries // com.slack.circuitx.adaptive/PaneRole.entries|#static{}entries[0]
         final fun <get-entries>(): kotlin.enums/EnumEntries<com.slack.circuitx.adaptive/PaneRole> // com.slack.circuitx.adaptive/PaneRole.entries.<get-entries>|<get-entries>#static(){}[0]
@@ -39,10 +39,10 @@ final enum class com.slack.circuitx.adaptive/PaneRole : kotlin/Enum<com.slack.ci
 }
 
 final enum class com.slack.circuitx.adaptive/PaneStyle : kotlin/Enum<com.slack.circuitx.adaptive/PaneStyle> { // com.slack.circuitx.adaptive/PaneStyle|null[0]
-    enum entry EXTRA // com.slack.circuitx.adaptive/PaneStyle.EXTRA|null[0]
-    enum entry LIST // com.slack.circuitx.adaptive/PaneStyle.LIST|null[0]
-    enum entry LIST_DETAIL // com.slack.circuitx.adaptive/PaneStyle.LIST_DETAIL|null[0]
-    enum entry SUPPORTING // com.slack.circuitx.adaptive/PaneStyle.SUPPORTING|null[0]
+    enum entry Extra // com.slack.circuitx.adaptive/PaneStyle.Extra|null[0]
+    enum entry List // com.slack.circuitx.adaptive/PaneStyle.List|null[0]
+    enum entry ListDetail // com.slack.circuitx.adaptive/PaneStyle.ListDetail|null[0]
+    enum entry Supporting // com.slack.circuitx.adaptive/PaneStyle.Supporting|null[0]
 
     final val entries // com.slack.circuitx.adaptive/PaneStyle.entries|#static{}entries[0]
         final fun <get-entries>(): kotlin.enums/EnumEntries<com.slack.circuitx.adaptive/PaneStyle> // com.slack.circuitx.adaptive/PaneStyle.entries.<get-entries>|<get-entries>#static(){}[0]

@@ -38,22 +38,22 @@ public final class com/slack/circuitx/adaptive/PaneHostKt {
 }
 
 public final class com/slack/circuitx/adaptive/PanePosition : java/lang/Enum {
-	public static final field END Lcom/slack/circuitx/adaptive/PanePosition;
-	public static final field MIDDLE Lcom/slack/circuitx/adaptive/PanePosition;
-	public static final field SINGLE Lcom/slack/circuitx/adaptive/PanePosition;
-	public static final field START Lcom/slack/circuitx/adaptive/PanePosition;
+	public static final field End Lcom/slack/circuitx/adaptive/PanePosition;
+	public static final field Middle Lcom/slack/circuitx/adaptive/PanePosition;
+	public static final field Single Lcom/slack/circuitx/adaptive/PanePosition;
+	public static final field Start Lcom/slack/circuitx/adaptive/PanePosition;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuitx/adaptive/PanePosition;
 	public static fun values ()[Lcom/slack/circuitx/adaptive/PanePosition;
 }
 
 public final class com/slack/circuitx/adaptive/PaneRole : java/lang/Enum {
-	public static final field DETAIL_ROOT Lcom/slack/circuitx/adaptive/PaneRole;
-	public static final field DETAIL_STACKED Lcom/slack/circuitx/adaptive/PaneRole;
-	public static final field EXTRA_ROOT Lcom/slack/circuitx/adaptive/PaneRole;
-	public static final field EXTRA_STACKED Lcom/slack/circuitx/adaptive/PaneRole;
-	public static final field PRIMARY Lcom/slack/circuitx/adaptive/PaneRole;
-	public static final field SINGLE Lcom/slack/circuitx/adaptive/PaneRole;
+	public static final field DetailRoot Lcom/slack/circuitx/adaptive/PaneRole;
+	public static final field DetailStacked Lcom/slack/circuitx/adaptive/PaneRole;
+	public static final field ExtraRoot Lcom/slack/circuitx/adaptive/PaneRole;
+	public static final field ExtraStacked Lcom/slack/circuitx/adaptive/PaneRole;
+	public static final field Primary Lcom/slack/circuitx/adaptive/PaneRole;
+	public static final field Single Lcom/slack/circuitx/adaptive/PaneRole;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuitx/adaptive/PaneRole;
 	public static fun values ()[Lcom/slack/circuitx/adaptive/PaneRole;
@@ -157,10 +157,10 @@ public final class com/slack/circuitx/adaptive/PaneStrategyKt {
 }
 
 public final class com/slack/circuitx/adaptive/PaneStyle : java/lang/Enum {
-	public static final field EXTRA Lcom/slack/circuitx/adaptive/PaneStyle;
-	public static final field LIST Lcom/slack/circuitx/adaptive/PaneStyle;
-	public static final field LIST_DETAIL Lcom/slack/circuitx/adaptive/PaneStyle;
-	public static final field SUPPORTING Lcom/slack/circuitx/adaptive/PaneStyle;
+	public static final field Extra Lcom/slack/circuitx/adaptive/PaneStyle;
+	public static final field List Lcom/slack/circuitx/adaptive/PaneStyle;
+	public static final field ListDetail Lcom/slack/circuitx/adaptive/PaneStyle;
+	public static final field Supporting Lcom/slack/circuitx/adaptive/PaneStyle;
 	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/slack/circuitx/adaptive/PaneStyle;
 	public static fun values ()[Lcom/slack/circuitx/adaptive/PaneStyle;

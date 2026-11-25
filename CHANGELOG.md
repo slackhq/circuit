@@ -11,7 +11,7 @@ Unreleased
 
 ### Changed
 
-- Update to Kotlin `2.5.0-RC`.
+- Update to Kotlin `2.5.0-RC2`.
 
 ### Fixed
 

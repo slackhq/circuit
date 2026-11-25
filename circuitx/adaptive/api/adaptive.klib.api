@@ -40,6 +40,7 @@ final enum class com.slack.circuitx.adaptive/PaneRole : kotlin/Enum<com.slack.ci
 
 final enum class com.slack.circuitx.adaptive/PaneStyle : kotlin/Enum<com.slack.circuitx.adaptive/PaneStyle> { // com.slack.circuitx.adaptive/PaneStyle|null[0]
     enum entry Extra // com.slack.circuitx.adaptive/PaneStyle.Extra|null[0]
+    enum entry FullWindow // com.slack.circuitx.adaptive/PaneStyle.FullWindow|null[0]
     enum entry List // com.slack.circuitx.adaptive/PaneStyle.List|null[0]
     enum entry ListDetail // com.slack.circuitx.adaptive/PaneStyle.ListDetail|null[0]
     enum entry Supporting // com.slack.circuitx.adaptive/PaneStyle.Supporting|null[0]

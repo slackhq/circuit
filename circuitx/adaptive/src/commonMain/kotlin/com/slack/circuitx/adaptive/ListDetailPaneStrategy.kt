@@ -32,11 +32,17 @@ public enum class PaneStyle {
    * it over the detail.
    */
   Extra,
+
+  /**
+   * A screen that takes the whole window, also when it opens from a detail. Use it for content that
+   * needs the full width, like a map or a photo viewer.
+   */
+  FullWindow,
 }
 
 /**
  * A screen that opens beside the screen below it on wide windows, in the way its [paneStyle]
- * describes. Screens pushed over it open in the same pane.
+ * describes. Screens pushed over it open in the same pane, also when they have no pane style.
  *
  * This marker is the default lookup of [ListDetailPaneStrategy]. Pass another lookup to keep screen
  * classes free of this type.
@@ -51,15 +57,20 @@ public interface PaneScreen : Screen {
  * ([PaneWindow.maxPanes]) that are at least [minHeightDp] tall. With the default [PaneWindow], that
  * is Material's expanded width, which most tablets reach in landscape.
  *
- * The start pane takes the record just below the topmost run of records that have a [PaneStyle].
- * For the stack `Detail, List, Home` where only `Detail` has a style, `List` takes the start pane
- * and `Home` stays hidden. The run's bottom record picks the style for the whole run.
+ * The records that open beside the start pane are a run at the top of the stack. The run goes down
+ * to the lowest record with a [PaneStyle], and stops above a [PaneStyle.List] or
+ * [PaneStyle.FullWindow] record. The start pane takes the record just below the run. For the stack
+ * `Detail, List, Home` where only `Detail` has a style, `List` takes the start pane and `Home`
+ * stays hidden. The run's bottom record picks the style for the whole run.
+ *
+ * A record with no pane style above a detail is part of the run. A screen that a detail opens, like
+ * a profile opened from a message, then stays in the pane of the detail.
  *
  * A top record with no screens open beside it stays in the start pane when it is the root, or when
  * it has [PaneStyle.List]. It can then reserve the end pane with [PaneHost.placeholder] before the
  * first pick, and its pane resizes with an animation on that pick. Any other top record with no
- * pane style fills the window. Set [rootIsList] to false when the root is not always a list, and
- * give each list [PaneStyle.List].
+ * detail below it fills the window, and so does a [PaneStyle.FullWindow] record. Set [rootIsList]
+ * to false when the root is not always a list, and give each list [PaneStyle.List].
  *
  * On a window with room for three panes, a [PaneStyle.Extra] record above a list's detail opens a
  * third pane. The record just below the lowest such record takes the middle pane.
@@ -107,19 +118,21 @@ public class ListDetailPaneStrategy(
     }
     // Top first, root last. Forward items stay hidden, as Circuit shows the active record.
     val visible = listOf(stack.active) + stack.backwardItems
+    val styles = visible.map { record -> paneStyle(record.screen) }
     // The root always has a record to sit beside, so it never counts as part of the run. A list
-    // ends the run, because the screens above it open beside it.
-    val runLength =
-      visible
-        .dropLast(1)
-        .takeWhile { record ->
-          val recordStyle = paneStyle(record.screen)
-          recordStyle != null && recordStyle != PaneStyle.List
-        }
-        .size
+    // ends the run, because the screens above it open beside it. A full window screen ends it
+    // too, because nothing shows beside that screen.
+    val aboveBoundary =
+      styles.dropLast(1).takeWhile { recordStyle ->
+        recordStyle != PaneStyle.List && recordStyle != PaneStyle.FullWindow
+      }
+    // The run ends at the lowest record with a style. Records with no style above it were
+    // opened from the run, so they stay in its pane. Records with no style below it are not in
+    // the run, and the first of them takes the start pane.
+    val runLength = aboveBoundary.indexOfLast { recordStyle -> recordStyle != null } + 1
     if (runLength == 0) {
       // Nothing is open beside the top record. Only a list keeps the panes.
-      val topStyle = paneStyle(visible[0].screen)
+      val topStyle = styles[0]
       val topIsList = topStyle == PaneStyle.List || (visible.size == 1 && rootIsList)
       if (!topIsList) {
         return null
@@ -131,7 +144,7 @@ public class ListDetailPaneStrategy(
         // The panes stay in place so the root can reserve the end pane without a layout switch.
         PaneStyle.ListDetail
       } else {
-        checkNotNull(paneStyle(visible[runLength - 1].screen))
+        checkNotNull(styles[runLength - 1])
       }
     val hinge =
       window.separatingHinges.firstOrNull()?.takeIf {

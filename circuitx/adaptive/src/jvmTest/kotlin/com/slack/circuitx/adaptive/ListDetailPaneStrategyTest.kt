@@ -25,6 +25,12 @@ class ListDetailPaneStrategyTest {
 
   private data object Plain : Screen
 
+  /** A screen that needs the whole window. */
+  private data object Map : PaneScreen {
+    override val paneStyle: PaneStyle
+      get() = PaneStyle.FullWindow
+  }
+
   /** A list that opens over other screens. */
   private data object Inbox : PaneScreen {
     override val paneStyle: PaneStyle
@@ -145,9 +151,18 @@ class ListDetailPaneStrategyTest {
   }
 
   @Test
-  fun screenWithoutAStyleAboveTheRootShowsOneRecord() {
+  fun screenWithoutAStyleStaysWithTheScreenItOpenedFrom() {
     assertThat(scene(desktop, Plain, Home)).isNull()
-    assertThat(scene(desktop, Plain, Detail(1), Home)).isNull()
+    // Above a detail, it was opened from the detail and stays in that pane
+    val overDetail = scene(desktop, Plain, Detail(1), Home)
+    assertThat(overDetail!!.primaryKey).isEqualTo(Arg(Home).key)
+    assertThat(overDetail.fixedWidth).isEqualTo(360.dp)
+    // Also between two details
+    assertThat(scene(desktop, Detail(2), Plain, Detail(1), Home)!!.primaryKey)
+      .isEqualTo(Arg(Home).key)
+    // Below the lowest detail, it is the screen that the detail opened from
+    assertThat(scene(desktop, Plain, Detail(1), ListScreen, Home)!!.primaryKey)
+      .isEqualTo(Arg(ListScreen).key)
   }
 
   @Test
@@ -287,6 +302,16 @@ class ListDetailPaneStrategyTest {
     assertThat(splits(411, 900)).isEqualTo(false)
     // Wide enough, but below the medium height
     assertThat(splits(800, 479)).isEqualTo(false)
+  }
+
+  @Test
+  fun fullWindowScreenShowsAlone() {
+    assertThat(scene(desktop, Map, Home)).isNull()
+    assertThat(scene(desktop, Map, Detail(1), Home)).isNull()
+    // A screen that it opens also has the window, as nothing can show beside it
+    assertThat(scene(desktop, Plain, Map, Detail(1), Home)).isNull()
+    // A detail above it opens beside it
+    assertThat(scene(desktop, Detail(2), Map, Detail(1), Home)!!.primaryKey).isEqualTo(Arg(Map).key)
   }
 
   @Test

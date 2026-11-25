@@ -236,12 +236,15 @@ owns the layout, insets, record lifecycle, and animation scopes.
 
 - It splits a window that has room for two panes and is at least 480dp tall. Change the height with
   `minHeightDp`.
-- The start pane takes the record just below the topmost run of screens that have a `PaneStyle`.
+- The start pane takes the screen just below the lowest screen with a `PaneStyle` at the top of the
+  stack.
+- A screen with no style that opens from a detail stays in the pane of that detail.
 - `ListDetail` gives the start pane a set width. `Supporting` gives the end pane a set width.
 - `List` marks a list that is not the root. See [Lists above the root](#lists-above-the-root).
 - `Extra` opens a third pane when the window has room for three. See [Three panes](#three-panes).
 - The panes split at a vertical hinge. A window with a hinge shows two panes at most.
-- A screen with no style, above the root, fills the window.
+- A screen with no style that opens from the start pane's screen fills the window.
+- `FullWindow` marks a screen that always fills the window, like a map or a photo viewer.
 
 The style of a screen decides which pane gets the set width.
 

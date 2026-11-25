@@ -45,13 +45,10 @@ class PaneSharedElementTest {
   }
 
   /**
-   * A screen pushed over the detail, with a large avatar in another place. It has a pane style so
-   * it stacks in the end pane. A screen with no style would take the whole window.
+   * A screen pushed over the detail, with a large avatar in another place. It has no pane style, so
+   * it stays in the pane of the detail that opened it.
    */
-  private data object Profile : PaneScreen {
-    override val paneStyle: PaneStyle
-      get() = PaneStyle.ListDetail
-  }
+  private data object Profile : Screen
 
   private data class TestState(val screen: Screen) : CircuitUiState
 

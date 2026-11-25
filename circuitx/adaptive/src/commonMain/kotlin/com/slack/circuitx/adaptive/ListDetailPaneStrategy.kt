@@ -85,7 +85,8 @@ public interface PaneScreen : Screen {
  * @param minHingePaneWidth The narrowest pane to show on either side of a hinge.
  * @param rootIsList Treats a root with no pane style as a [PaneStyle.LIST] screen.
  * @param placeholder Draws the end pane while no record is open there, or null to give the start
- *   pane the full width.
+ *   pane the full width. It gets the screen of the start pane, so one strategy can draw a different
+ *   placeholder for each list.
  */
 @ExperimentalCircuitAdaptiveApi
 public class ListDetailPaneStrategy(
@@ -97,7 +98,7 @@ public class ListDetailPaneStrategy(
   private val extraPaneWidth: (PaneWindow) -> Dp = { it.preferredPaneWidth },
   private val minHingePaneWidth: Dp = 0.dp,
   private val rootIsList: Boolean = true,
-  private val placeholder: (@Composable () -> Unit)? = null,
+  private val placeholder: (@Composable (primary: Screen) -> Unit)? = null,
 ) : PaneStrategy {
 
   override fun scene(window: PaneWindow, stack: NavStackList<out NavArgument>): PaneScene? {

@@ -10,8 +10,8 @@ public abstract interface annotation class com/slack/circuitx/adaptive/Experimen
 public final class com/slack/circuitx/adaptive/ListDetailPaneStrategy : com/slack/circuitx/adaptive/PaneStrategy {
 	public static final field $stable I
 	public fun <init> ()V
-	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;ILkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;FZLkotlin/jvm/functions/Function2;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;ILkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;FZLkotlin/jvm/functions/Function2;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;ILkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;FZLkotlin/jvm/functions/Function3;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;ILkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;FZLkotlin/jvm/functions/Function3;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun scene (Lcom/slack/circuitx/adaptive/PaneWindow;Lcom/slack/circuit/runtime/navigation/NavStackList;)Lcom/slack/circuitx/adaptive/PaneScene;
 }
 
@@ -61,11 +61,11 @@ public final class com/slack/circuitx/adaptive/PaneRole : java/lang/Enum {
 
 public final class com/slack/circuitx/adaptive/PaneScene {
 	public static final field $stable I
-	public synthetic fun <init> (Ljava/lang/String;Lcom/slack/circuitx/adaptive/PaneSplit;Lkotlin/jvm/functions/Function2;Ljava/lang/String;FILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public synthetic fun <init> (Ljava/lang/String;Lcom/slack/circuitx/adaptive/PaneSplit;Lkotlin/jvm/functions/Function2;Ljava/lang/String;FLkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lcom/slack/circuitx/adaptive/PaneSplit;Lkotlin/jvm/functions/Function3;Ljava/lang/String;FILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (Ljava/lang/String;Lcom/slack/circuitx/adaptive/PaneSplit;Lkotlin/jvm/functions/Function3;Ljava/lang/String;FLkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getEndPaneWidth-D9Ej5fM ()F
-	public final fun getPlaceholder ()Lkotlin/jvm/functions/Function2;
+	public final fun getPlaceholder ()Lkotlin/jvm/functions/Function3;
 	public final fun getPrimaryKey ()Ljava/lang/String;
 	public final fun getSecondaryKey ()Ljava/lang/String;
 	public final fun getSplit ()Lcom/slack/circuitx/adaptive/PaneSplit;

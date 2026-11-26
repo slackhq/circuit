@@ -3,6 +3,7 @@
 package com.slack.circuit.foundation.navstack
 
 import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.snapshots.Snapshot
 import com.slack.circuit.foundation.navstack.SaveableNavStack.Record
 import com.slack.circuit.internal.test.TestScreen
 import com.slack.circuit.runtime.screen.CircuitSaveable
@@ -15,6 +16,37 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SaveableNavStackTest {
+
+  @Test
+  fun saved_state_changes_are_dropped_with_their_snapshot() {
+    val navStack = SaveableNavStack(TestScreen.RootAlpha)
+    navStack.push(TestScreen.ScreenA)
+
+    // A save in a snapshot that is never applied
+    val snapshot = Snapshot.takeMutableSnapshot()
+    try {
+      snapshot.enter {
+        navStack.saveState()
+        assertEquals(1, navStack.stateStore.size)
+      }
+    } finally {
+      snapshot.dispose()
+    }
+    assertTrue(navStack.stateStore.isEmpty())
+
+    // A restore in a snapshot that is never applied keeps the saved state
+    navStack.saveState()
+    val restoring = Snapshot.takeMutableSnapshot()
+    try {
+      restoring.enter {
+        assertTrue(navStack.removeState(TestScreen.RootAlpha))
+        assertTrue(navStack.stateStore.isEmpty())
+      }
+    } finally {
+      restoring.dispose()
+    }
+    assertEquals(listOf<Any>(TestScreen.RootAlpha), navStack.peekState())
+  }
 
   @Test
   fun test_save_and_restore_navstack_state() {

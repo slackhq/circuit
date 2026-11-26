@@ -16,11 +16,14 @@
 package com.slack.circuit.backstack
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.slack.circuit.backstack.SaveableBackStack.Record
@@ -82,8 +85,16 @@ public class SaveableBackStack
 internal constructor(
   // Both visible for testing
   internal val entryList: SnapshotStateList<Record> = mutableStateListOf(),
-  internal val stateStore: MutableMap<Screen, List<Record>> = mutableMapOf(),
+  stateStore: Map<Screen, List<Record>> = emptyMap(),
 ) : BackStack<Record> {
+
+  /**
+   * The stacks saved by [saveState], by root screen. The map is immutable and lives in snapshot
+   * state, so a save or restore made in a snapshot that is dropped is undone with the snapshot. It
+   * keeps insertion order.
+   */
+  internal var stateStore: Map<Screen, List<Record>> by mutableStateOf(stateStore)
+    private set
 
   public constructor(root: Screen) : this(Record(root))
 
@@ -130,7 +141,7 @@ internal constructor(
 
   override fun saveState() {
     val rootScreen = entryList.last().screen
-    stateStore[rootScreen] = entryList.toList()
+    stateStore = stateStore + (rootScreen to entryList.toList())
   }
 
   override fun restoreState(screen: Screen): Boolean {
@@ -140,7 +151,7 @@ internal constructor(
       // Add the store state into the entry list
       entryList.addAll(stored)
       // Clear the stored state
-      stateStore.remove(screen)
+      stateStore = stateStore - screen
       return true
     }
     return false
@@ -151,7 +162,9 @@ internal constructor(
   }
 
   override fun removeState(screen: Screen): Boolean {
-    return stateStore.remove(screen) != null
+    val saved = screen in stateStore
+    stateStore = stateStore - screen
+    return saved
   }
 
   override fun containsRecord(record: Record, includeSaved: Boolean): Boolean {
@@ -257,7 +270,7 @@ internal constructor(
               }
               // The key is always the root screen (i.e. last item)
               val root = records.lastOrNull()?.screen ?: return@forEachIndexed
-              backStack.stateStore[root] = records
+              backStack.stateStore = backStack.stateStore + (root to records)
             }
           }
           // If every record was dropped, return null so rememberSaveable falls back to its

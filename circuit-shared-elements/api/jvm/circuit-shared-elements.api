@@ -39,6 +39,7 @@ public final class com/slack/circuit/sharedelements/SharedElementTransitionScope
 
 public final class com/slack/circuit/sharedelements/SharedElementTransitionScopeKt {
 	public static final fun ProvideAnimatedTransitionScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;Landroidx/compose/animation/AnimatedVisibilityScope;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+	public static final fun ProvideStaticAnimatedTransitionScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope$AnimatedScope;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
 	public static final fun SharedElementTransitionScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;II)V
 	public static final fun requireActiveAnimatedScope (Lcom/slack/circuit/sharedelements/SharedElementTransitionScope;)Landroidx/compose/animation/AnimatedVisibilityScope;
 }

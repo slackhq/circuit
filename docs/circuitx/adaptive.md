@@ -269,10 +269,19 @@ Extra, on a window with room for three panes
 To keep feature modules free of this artifact, pass a lookup in place of the `PaneScreen` marker.
 
 ```kotlin
-ListDetailPaneStrategy(
-  paneStyle = { screen -> if (screen is PetDetailScreen) PaneStyle.ListDetail else null }
-)
+val strategy = rememberListDetailPaneStrategy { screen ->
+  if (screen is PetDetailScreen) {
+    PaneStyle.ListDetail
+  } else {
+    null
+  }
+}
+val panes = rememberPaneNavigation(navigator, strategy)
 ```
+
+`rememberListDetailPaneStrategy` takes the parameters of `ListDetailPaneStrategy` and keeps one
+strategy across recompositions. The strategy is a key of `rememberPaneNavigation`, so remember a
+strategy that you create with the constructor.
 
 A custom strategy must return equal scenes for equal inputs. It must not read state that changes
 during measure.

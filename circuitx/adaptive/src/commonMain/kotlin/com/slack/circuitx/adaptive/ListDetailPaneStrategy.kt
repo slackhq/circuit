@@ -3,6 +3,7 @@
 package com.slack.circuitx.adaptive
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowSizeClass.Companion.HEIGHT_DP_MEDIUM_LOWER_BOUND
@@ -50,6 +51,25 @@ public enum class PaneStyle {
 @ExperimentalCircuitAdaptiveApi
 public interface PaneScreen : Screen {
   public val paneStyle: PaneStyle
+}
+
+/**
+ * The default values of [ListDetailPaneStrategy] and [rememberListDetailPaneStrategy]. Both read
+ * them from here, so the two always agree.
+ */
+@ExperimentalCircuitAdaptiveApi
+public object ListDetailPaneDefaults {
+  /** Reads the style of a [PaneScreen]. Any other screen has no style. */
+  public val PaneStyle: (Screen) -> PaneStyle? = { screen -> (screen as? PaneScreen)?.paneStyle }
+
+  /** The pane width of the window, which is Material's pane width for the default [PaneWindow]. */
+  public val PaneWidth: (PaneWindow) -> Dp = { window -> window.preferredPaneWidth }
+
+  /** The medium height class, which keeps phones in landscape on one pane. */
+  public const val MinHeightDp: Int = HEIGHT_DP_MEDIUM_LOWER_BOUND
+
+  /** No minimum, so the panes split at any hinge. */
+  public val MinHingePaneWidth: Dp = 0.dp
 }
 
 /**
@@ -101,13 +121,13 @@ public interface PaneScreen : Screen {
  */
 @ExperimentalCircuitAdaptiveApi
 public class ListDetailPaneStrategy(
-  private val paneStyle: (Screen) -> PaneStyle? = { (it as? PaneScreen)?.paneStyle },
-  private val minHeightDp: Int = HEIGHT_DP_MEDIUM_LOWER_BOUND,
-  private val listPaneWidth: (PaneWindow) -> Dp = { it.preferredPaneWidth },
+  private val paneStyle: (Screen) -> PaneStyle? = ListDetailPaneDefaults.PaneStyle,
+  private val minHeightDp: Int = ListDetailPaneDefaults.MinHeightDp,
+  private val listPaneWidth: (PaneWindow) -> Dp = ListDetailPaneDefaults.PaneWidth,
   private val listPaneSizesItself: Boolean = false,
-  private val supportingPaneWidth: (PaneWindow) -> Dp = { it.preferredPaneWidth },
-  private val extraPaneWidth: (PaneWindow) -> Dp = { it.preferredPaneWidth },
-  private val minHingePaneWidth: Dp = 0.dp,
+  private val supportingPaneWidth: (PaneWindow) -> Dp = ListDetailPaneDefaults.PaneWidth,
+  private val extraPaneWidth: (PaneWindow) -> Dp = ListDetailPaneDefaults.PaneWidth,
+  private val minHingePaneWidth: Dp = ListDetailPaneDefaults.MinHingePaneWidth,
   private val rootIsList: Boolean = true,
   private val placeholder: (@Composable (primary: Screen) -> Unit)? = null,
 ) : PaneStrategy {
@@ -184,6 +204,63 @@ public class ListDetailPaneStrategy(
         } else {
           Dp.Unspecified
         },
+    )
+  }
+}
+
+/**
+ * Remembers a [ListDetailPaneStrategy], so the same strategy survives recomposition. A strategy is
+ * a key of [rememberPaneNavigation] and of the panes that [PaneNavDecoration] shows, so a new one
+ * on each recomposition rebuilds both.
+ *
+ * Every parameter is a key. The result changes when a value changes, or when a lambda captures a
+ * value that changes. [paneStyle] is last, so it can be a trailing lambda:
+ * ```kotlin
+ * val strategy = rememberListDetailPaneStrategy { screen ->
+ *   if (screen is DetailScreen) {
+ *     PaneStyle.ListDetail
+ *   } else {
+ *     null
+ *   }
+ * }
+ * ```
+ *
+ * See [ListDetailPaneStrategy] for the parameters.
+ */
+@ExperimentalCircuitAdaptiveApi
+@Composable
+public fun rememberListDetailPaneStrategy(
+  minHeightDp: Int = ListDetailPaneDefaults.MinHeightDp,
+  listPaneWidth: (PaneWindow) -> Dp = ListDetailPaneDefaults.PaneWidth,
+  listPaneSizesItself: Boolean = false,
+  supportingPaneWidth: (PaneWindow) -> Dp = ListDetailPaneDefaults.PaneWidth,
+  extraPaneWidth: (PaneWindow) -> Dp = ListDetailPaneDefaults.PaneWidth,
+  minHingePaneWidth: Dp = ListDetailPaneDefaults.MinHingePaneWidth,
+  rootIsList: Boolean = true,
+  placeholder: (@Composable (primary: Screen) -> Unit)? = null,
+  paneStyle: (Screen) -> PaneStyle? = ListDetailPaneDefaults.PaneStyle,
+): ListDetailPaneStrategy {
+  return remember(
+    paneStyle,
+    minHeightDp,
+    listPaneWidth,
+    listPaneSizesItself,
+    supportingPaneWidth,
+    extraPaneWidth,
+    minHingePaneWidth,
+    rootIsList,
+    placeholder,
+  ) {
+    ListDetailPaneStrategy(
+      paneStyle = paneStyle,
+      minHeightDp = minHeightDp,
+      listPaneWidth = listPaneWidth,
+      listPaneSizesItself = listPaneSizesItself,
+      supportingPaneWidth = supportingPaneWidth,
+      extraPaneWidth = extraPaneWidth,
+      minHingePaneWidth = minHingePaneWidth,
+      rootIsList = rootIsList,
+      placeholder = placeholder,
     )
   }
 }

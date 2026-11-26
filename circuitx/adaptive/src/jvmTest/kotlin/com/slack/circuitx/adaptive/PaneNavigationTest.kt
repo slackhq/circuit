@@ -5,6 +5,7 @@ package com.slack.circuitx.adaptive
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -46,6 +47,9 @@ class PaneNavigationTest {
     override val paneStyle: PaneStyle
       get() = PaneStyle.List
   }
+
+  /** A screen with no pane style of its own. */
+  private data class Plain(val id: Int) : Screen
 
   private data class TestState(val screen: Screen) : CircuitUiState
 
@@ -205,5 +209,50 @@ class PaneNavigationTest {
   private data class Arg(override val screen: Screen) : NavArgument {
     override val key: String
       get() = screen.toString()
+  }
+
+  @Test
+  fun rememberedStrategyFollowsWhatItsLambdaCaptures() = runComposeUiTest {
+    var tick by mutableStateOf(0)
+    var plainIsDetail by mutableStateOf(false)
+    val strategies = mutableListOf<ListDetailPaneStrategy>()
+    lateinit var panes: PaneNavigation
+    setContent {
+      CircuitCompositionLocals(circuit) {
+        Box(Modifier.size(1000.dp, 700.dp)) {
+          // Reads the tick, so a new tick recomposes this content
+          BasicText("tick $tick")
+          val backStack = rememberSaveableBackStack(Root)
+          val navigator = rememberCircuitNavigator(backStack) {}
+          val detail = plainIsDetail
+          val strategy = rememberListDetailPaneStrategy { screen ->
+            if (detail && screen is Plain) {
+              PaneStyle.ListDetail
+            } else {
+              null
+            }
+          }
+          SideEffect { strategies += strategy }
+          panes = rememberPaneNavigation(navigator, strategy = strategy)
+          NavigableCircuitContent(panes.navigator, backStack, decoration = panes.decoration)
+        }
+      }
+    }
+    runOnIdle { panes.navigator.goTo(Plain(1)) }
+    onAllNodesWithText("$Root").assertCountEquals(0)
+
+    // A recomposition with the same captured value keeps the strategy
+    tick++
+    onNodeWithText("tick 1").assertExists()
+    runOnIdle {
+      check(strategies.size > 1)
+      check(strategies.all { it === strategies.first() })
+    }
+
+    // A new captured value gives a new strategy, which applies without a stack change
+    plainIsDetail = true
+    onNodeWithText("$Root").assertExists()
+    onNodeWithText("${Plain(1)}").assertExists()
+    runOnIdle { check(strategies.last() !== strategies.first()) }
   }
 }

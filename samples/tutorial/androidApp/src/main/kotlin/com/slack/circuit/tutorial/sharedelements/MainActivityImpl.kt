@@ -3,7 +3,6 @@
 package com.slack.circuit.tutorial.sharedelements
 
 import androidx.activity.compose.setContent
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.MaterialTheme
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
@@ -15,7 +14,6 @@ import com.slack.circuit.tutorial.MainActivity
 import com.slack.circuit.tutorial.buildCircuitSaver
 import com.slack.circuit.tutorial.common.EmailRepository
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun MainActivity.sharedElementsTutorialOnCreate() {
   val emailRepository = EmailRepository()
   val circuitSaver = buildCircuitSaver()

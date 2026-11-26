@@ -5,7 +5,6 @@ package com.slack.circuit.sharedelements
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -60,7 +59,6 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
  * @param modifier Modifier to be applied to the layout.
  * @param content The child composable to be laid out.
  */
-@ExperimentalSharedTransitionApi
 @Composable
 public fun SharedElementTransitionLayout(
   modifier: Modifier = Modifier,
@@ -117,7 +115,6 @@ public val LocalSharedElementTransitionState:
  * @param animatedScope The [AnimatedScope] to provide.
  * @param content The child composable to be laid out.
  */
-@ExperimentalSharedTransitionApi
 @Composable
 public fun PreviewSharedElementTransitionLayout(
   modifier: Modifier = Modifier,

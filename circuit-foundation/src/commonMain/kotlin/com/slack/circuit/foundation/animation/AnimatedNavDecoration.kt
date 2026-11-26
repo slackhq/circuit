@@ -8,7 +8,6 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
@@ -92,7 +91,7 @@ import kotlin.reflect.KClass
  * @see AnimatedNavDecorator
  * @see AnimatedScreenTransform
  */
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalCircuitApi::class)
+@OptIn(ExperimentalCircuitApi::class)
 public class AnimatedNavDecoration(
   private val animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
   private val decoratorFactory: AnimatedNavDecorator.Factory,

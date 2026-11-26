@@ -4,7 +4,6 @@ package com.slack.circuit.sharedelements
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterExitState
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -28,7 +27,6 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedSco
  * transitions. If Circuit overlays are used an [Overlay] scope will be provided for overlay
  * transitions.
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
 public interface SharedElementTransitionScope : SharedTransitionScope {
 
   @ExperimentalCircuitSharedElementsApi public val hasLayoutCoordinates: Boolean
@@ -77,7 +75,6 @@ public interface SharedElementTransitionScope : SharedTransitionScope {
  *
  * @param content The composable to attach the [SharedElementTransitionScope] to.
  */
-@ExperimentalSharedTransitionApi
 @Composable
 public fun SharedElementTransitionScope(
   sharedElementTransitionScope: SharedElementTransitionScope =
@@ -93,7 +90,6 @@ public fun SharedElementTransitionScope(
  * [SharedElementTransitionScope] is [SharedElementTransitionState.Available] then the content is
  * shown normally.
  */
-@ExperimentalSharedTransitionApi
 @Composable
 public fun ProvideAnimatedTransitionScope(
   animatedScope: AnimatedScope,
@@ -144,7 +140,6 @@ public fun SharedElementTransitionScope.requireActiveAnimatedScope(): AnimatedVi
  * [SharedElementTransitionScope] implementation that delegates to a provided
  * [SharedTransitionScope]. This implementation allows for setting an [AnimatedScope].
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
 internal data class SharedElementTransitionScopeImpl(
   private val sharedTransitionScope: SharedTransitionScope
 ) : SharedElementTransitionScope, SharedTransitionScope by sharedTransitionScope {

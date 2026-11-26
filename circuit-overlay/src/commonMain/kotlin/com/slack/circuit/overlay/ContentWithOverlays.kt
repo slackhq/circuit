@@ -10,7 +10,6 @@ import androidx.compose.animation.EnterExitState.PreEnter
 import androidx.compose.animation.EnterExitState.Visible
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.ExperimentalTransitionApi
 import androidx.compose.animation.core.SeekableTransitionState
@@ -43,7 +42,6 @@ import kotlin.math.abs
  * @param overlayHost the [OverlayHost] to use for managing overlays.
  * @param content The regular content to render. Any overlays will be rendered over them.
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 public fun ContentWithOverlays(
   modifier: Modifier = Modifier,

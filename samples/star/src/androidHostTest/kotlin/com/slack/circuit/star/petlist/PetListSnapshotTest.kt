@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -103,7 +102,6 @@ class PetListSnapshotTest(private val useDarkMode: Boolean) {
     PetList(NoAnimals(isRefreshing = false), modifier)
   }
 
-  @OptIn(ExperimentalSharedTransitionApi::class)
   @Test
   fun petList_show_list_for_success_state() = snapshot { modifier ->
     PreviewSharedElementTransitionLayout {

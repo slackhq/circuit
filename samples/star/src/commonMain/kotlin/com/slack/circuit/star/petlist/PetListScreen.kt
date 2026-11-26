@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceholderSize.Companion.AnimatedSize
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.core.AnimationConstants
@@ -86,10 +85,10 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -444,7 +443,6 @@ private fun PetListGrid(
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PetListGridItem(
   animal: PetListAnimal,
@@ -656,7 +654,7 @@ private fun <T : Enum<T>> FilterOptions(
           FilterChip(
             selected,
             onClick = { options[key] = !selected },
-            label = { Text(key.name.lowercase().capitalize(Locale.current)) },
+            label = { Text(key.name.lowercase().capitalize(LocalLocale.current)) },
             leadingIcon = if (selected) leadingIcon else null,
           )
         }

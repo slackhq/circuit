@@ -3,7 +3,6 @@
 package com.slack.circuit.star.petdetail
 
 import androidx.activity.ComponentActivity
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
@@ -164,7 +163,6 @@ class PetDetailTest {
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 private fun ComposeContentTestRule.setTestContent(content: @Composable () -> Unit) {
   setContent { PreviewSharedElementTransitionLayout { content() } }
 }

@@ -41,9 +41,8 @@ In order to use the `sharedElement()` and `sharedBounds()` compose `Modifier`s w
 To do this we will wrap the specific Composable Ui where we want to use `Modifier.sharedElement()`. For our shared elements we need to access the `Modifier`s in a few places in the `EmailItem` Ui. To do so we simply wrap the whole content with a `SharedElementTransitionScope`.
 
 
-```kotlin title="ui.kt" hl_lines="2 5"
+```kotlin title="ui.kt" hl_lines="4"
 /** A simple email item to show in a list. */
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit = {}) =
   SharedElementTransitionScope {
@@ -53,8 +52,7 @@ fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit =
 
 The same can be done with `EmailDetailContent` so the matching elements can be setup.
 
-```kotlin title="ui.kt" hl_lines="1 3"
-@OptIn(ExperimentalSharedTransitionApi::class)
+```kotlin title="ui.kt" hl_lines="2"
 @Composable
 fun EmailDetailContent(email: Email, modifier: Modifier = Modifier) = SharedElementTransitionScope {
   Column(modifier.padding(16.dp)) {

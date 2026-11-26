@@ -339,6 +339,7 @@ fun UnscrupulousResultListenerEffect() {
 }
 
 @Composable
+@Suppress("DEPRECATION")
 fun TestResultContent(state: TestResultScreen.State, modifier: Modifier = Modifier) {
   Column(modifier = modifier) {
     BasicTextField(

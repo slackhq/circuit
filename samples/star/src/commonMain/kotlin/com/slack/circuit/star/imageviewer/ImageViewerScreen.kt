@@ -4,7 +4,6 @@ package com.slack.circuit.star.imageviewer
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterExitState
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
@@ -108,7 +107,6 @@ class ImageViewerPresenter(
 
 @Composable expect fun ImageViewer(state: State, modifier: Modifier = Modifier)
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun BasicImageViewer(state: State, modifier: Modifier = Modifier) = SharedElementTransitionScope {
   var showChrome by remember { mutableStateOf(true) }

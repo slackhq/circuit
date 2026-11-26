@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -336,7 +335,6 @@ class PetDetailUiTest {
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 private fun ComposeContentTestRule.setTestContent(
   circuit: Circuit,
   content: @Composable () -> Unit,

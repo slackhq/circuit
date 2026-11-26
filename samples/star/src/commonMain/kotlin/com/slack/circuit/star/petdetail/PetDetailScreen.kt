@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petdetail
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.EaseOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -40,11 +39,11 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.mikepenz.markdown.m3.Markdown
@@ -251,10 +250,7 @@ internal object PetDetailTestConstants {
   const val PET_NAME_TAG = "pet_name"
 }
 
-@OptIn(
-  ExperimentalMaterial3WindowSizeClassApi::class,
-  ExperimentalSharedTransitionApi::class,
-)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @CircuitInject(PetDetailScreen::class, AppScope::class)
 @Composable
 internal fun PetDetail(state: State, modifier: Modifier = Modifier) = SharedElementTransitionScope {
@@ -280,7 +276,7 @@ internal fun PetDetail(state: State, modifier: Modifier = Modifier) = SharedElem
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalCircuitSharedElementsApi::class)
+@OptIn(ExperimentalCircuitSharedElementsApi::class)
 @Composable
 private fun TopBar(state: State) {
   if (state !is AnimalState) return
@@ -290,7 +286,7 @@ private fun TopBar(state: State) {
   )
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalCircuitSharedElementsApi::class)
+@OptIn(ExperimentalCircuitSharedElementsApi::class)
 @Composable
 private fun PetName(state: AnimalState, style: TextStyle, modifier: Modifier = Modifier) {
   SharedElementTransitionScope {
@@ -454,7 +450,7 @@ private fun ShowAnimalPortrait(
   }
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun PetDetailDescriptions(
   state: AnimalState,
@@ -479,7 +475,7 @@ private fun PetDetailDescriptions(
         ) {
           Text(
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-            text = tag.capitalize(LocaleList.current),
+            text = tag.capitalize(LocalLocale.current),
             color = MaterialTheme.colorScheme.onTertiary,
             style = MaterialTheme.typography.labelMedium,
           )

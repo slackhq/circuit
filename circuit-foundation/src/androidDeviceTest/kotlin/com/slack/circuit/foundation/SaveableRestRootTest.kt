@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.foundation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.safeDrawing
@@ -69,7 +68,6 @@ class SaveableRestRootTest {
     }
   }
 
-  @OptIn(ExperimentalSharedTransitionApi::class)
   private fun ComposeContentTestRule.setTestContent(content: @Composable () -> Unit) {
     val circuit = createTestCircuit(rememberType = TestCountPresenter.RememberType.Saveable)
     setContent {

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -95,7 +94,6 @@ fun rememberStarAppState(
   return state
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun StarCircuitApp(
   modifier: Modifier = Modifier,

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -146,7 +145,6 @@ class PetListUiTest {
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 private fun ComposeContentTestRule.setTestContent(content: @Composable () -> Unit) {
   setContent { PreviewSharedElementTransitionLayout { content() } }
 }

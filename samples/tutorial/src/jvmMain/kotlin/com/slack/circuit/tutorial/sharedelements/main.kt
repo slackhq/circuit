@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tutorial.sharedelements
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -15,7 +14,6 @@ import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuit.tutorial.buildCircuitSaver
 import com.slack.circuit.tutorial.common.EmailRepository
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun main() {
   val emailRepository = EmailRepository()
   val circuitSaver = buildCircuitSaver()

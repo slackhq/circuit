@@ -3,7 +3,6 @@
 package com.slack.circuit.star.petdetail
 
 import androidx.compose.animation.EnterExitState
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceholderSize.Companion.AnimatedSize
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.core.AnimationConstants
@@ -100,7 +99,7 @@ data class PetPhotoCarouselScreen(
  * This differs from some other screens by only displaying the input screen directly as static
  * state, as opposed to reading from a repository or maintaining any sort of produced state.
  */
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @CircuitInject(PetPhotoCarouselScreen::class, AppScope::class)
 @Composable
 internal fun PetPhotoCarousel(screen: PetPhotoCarouselScreen, modifier: Modifier = Modifier) {
@@ -186,7 +185,6 @@ private fun PagerState.calculateCurrentOffsetForPage(page: Int): Float {
   return (currentPage - page) + currentPageOffsetFraction
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Suppress("LongParameterList")
 @Composable
 private fun PhotoPager(

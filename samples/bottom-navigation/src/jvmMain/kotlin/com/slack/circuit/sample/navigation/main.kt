@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.sample.navigation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.remember
@@ -16,7 +15,6 @@ import com.slack.circuit.foundation.rememberCircuitNavigator
 import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 fun main() {
 
   val tabs = TabScreen.all

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.star.petlist
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.PlaceholderSize.Companion.AnimatedSize
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.core.AnimationConstants
@@ -444,7 +443,6 @@ private fun PetListGrid(
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun PetListGridItem(
   animal: PetListAnimal,

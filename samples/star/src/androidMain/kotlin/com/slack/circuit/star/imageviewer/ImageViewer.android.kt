@@ -4,7 +4,6 @@ package com.slack.circuit.star.imageviewer
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterExitState
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.ResizeMode.Companion.RemeasureToBounds
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.animateContentSize
@@ -51,7 +50,7 @@ import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
 import me.saket.telephoto.zoomable.rememberZoomableImageState
 import me.saket.telephoto.zoomable.rememberZoomableState
 
-@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalTelephotoApi::class)
+@OptIn(ExperimentalTelephotoApi::class)
 @CircuitInject(ImageViewerScreen::class, AppScope::class)
 @Composable
 actual fun ImageViewer(state: State, modifier: Modifier) = SharedElementTransitionScope {

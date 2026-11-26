@@ -3,7 +3,6 @@
 package com.slack.circuit.star.petlist
 
 import androidx.activity.ComponentActivity
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
@@ -108,7 +107,6 @@ class PetListTest {
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 private fun ComposeContentTestRule.setTestContent(content: @Composable () -> Unit) {
   setContent { PreviewSharedElementTransitionLayout { content() } }
 }

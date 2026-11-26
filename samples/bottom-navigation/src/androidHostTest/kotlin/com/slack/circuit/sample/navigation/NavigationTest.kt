@@ -3,7 +3,6 @@
 package com.slack.circuit.sample.navigation
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -146,7 +145,6 @@ class NavigationTest {
   }
 
   @SuppressLint("NewApi")
-  @OptIn(ExperimentalSharedTransitionApi::class)
   private fun StateRestorationTester.setTestContent(
     tabs: List<TabScreen>,
     circuitSaver: CircuitSaver,

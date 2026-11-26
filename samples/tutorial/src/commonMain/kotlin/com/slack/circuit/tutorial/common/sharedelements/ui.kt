@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package com.slack.circuit.tutorial.common.sharedelements
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,7 +29,6 @@ import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.tutorial.common.Email
 
 /** A simple email item to show in a list. */
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit = {}) =
   SharedElementTransitionScope {
@@ -126,7 +124,6 @@ fun EmailItem(email: Email, modifier: Modifier = Modifier, onClick: () -> Unit =
     }
   }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun EmailDetailContent(email: Email, modifier: Modifier = Modifier) = SharedElementTransitionScope {
   Column(modifier.padding(16.dp)) {

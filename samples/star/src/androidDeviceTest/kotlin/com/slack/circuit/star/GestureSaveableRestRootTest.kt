@@ -3,7 +3,6 @@
 package com.slack.circuit.star
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.safeDrawing
@@ -87,7 +86,6 @@ class GestureSaveableRestRootTest {
   }
 
   @SuppressLint("NewApi")
-  @OptIn(ExperimentalSharedTransitionApi::class)
   private fun ComposeContentTestRule.setTestContent(content: @Composable () -> Unit) {
     val circuit =
       createTestCircuit(rememberType = TestCountPresenter.RememberType.Saveable)

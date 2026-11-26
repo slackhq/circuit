@@ -37,7 +37,6 @@ setContent {
 A `PreviewSharedElementTransitionLayout` is provided for use when using [`@Preview`](https://developer.android.com/develop/ui/compose/tooling/previews) for any Composable that has a `SharedElementTransitionScope`.
 
 ```kotlin
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 private fun PreviewShowAnimalPortrait() {
@@ -54,7 +53,6 @@ private fun PreviewShowAnimalPortrait() {
 
 _Screen UI_
 ```kotlin
-@OptIn(ExperimentalSharedTransitionApi::class)
 @CircuitInject(screen = HomeScreen::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
@@ -66,7 +64,6 @@ fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =
 
 _Normal UI_
 ```kotlin
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun GridItem(animal: PetListAnimal, modifier: Modifier = Modifier) =
   SharedElementTransitionScope {

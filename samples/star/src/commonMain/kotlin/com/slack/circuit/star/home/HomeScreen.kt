@@ -3,7 +3,6 @@
 package com.slack.circuit.star.home
 
 import androidx.compose.animation.EnterExitState
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -102,7 +101,6 @@ fun HomePresenter(navigator: Navigator): HomeScreen.State {
   }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @CircuitInject(screen = HomeScreen::class, scope = AppScope::class)
 @Composable
 fun HomeContent(state: HomeScreen.State, modifier: Modifier = Modifier) =

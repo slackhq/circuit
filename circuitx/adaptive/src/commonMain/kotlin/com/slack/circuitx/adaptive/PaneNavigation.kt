@@ -19,7 +19,11 @@ import com.slack.circuitx.navigation.intercepting.rememberInterceptingNavigator
  * The parts of pane navigation that share one [PaneHost]. Pass [navigator] and [decoration] to
  * `NavigableCircuitContent`.
  *
- * Create one with [rememberPaneNavigation].
+ * Create one with [rememberPaneNavigation]. It destructures in the order [navigator], [decoration],
+ * [host]:
+ * ```kotlin
+ * val (paneNavigator, decoration) = rememberPaneNavigation(navigator)
+ * ```
  */
 @ExperimentalCircuitAdaptiveApi
 @Stable
@@ -31,7 +35,19 @@ internal constructor(
   public val navigator: Navigator,
   /** The decoration for `NavigableCircuitContent`. */
   public val decoration: NavDecoration,
-)
+) {
+  // Destructuring follows the argument order of NavigableCircuitContent. The host is last, so
+  // callers that do not need it can leave it out.
+
+  /** Returns [navigator]. */
+  public operator fun component1(): Navigator = navigator
+
+  /** Returns [decoration]. */
+  public operator fun component2(): NavDecoration = decoration
+
+  /** Returns [host]. */
+  public operator fun component3(): PaneHost = host
+}
 
 /**
  * Creates a [PaneNavDecoration] and a navigator with a [PaneReplaceInterceptor] that share one
@@ -41,6 +57,8 @@ internal constructor(
  * val panes = rememberPaneNavigation(navigator)
  * NavigableCircuitContent(panes.navigator, backStack, decoration = panes.decoration)
  * ```
+ *
+ * The result also destructures into the navigator, the decoration, and the host, in that order.
  *
  * Each parameter is a key of the result, so pass values that stay equal across recompositions. An
  * app that builds its own intercepting navigator can create the [PaneNavDecoration] and the

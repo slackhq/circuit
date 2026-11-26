@@ -21,12 +21,25 @@ public final class com/slack/circuitx/adaptive/ComposableSingletons$PaneNavigati
 public abstract interface annotation class com/slack/circuitx/adaptive/ExperimentalCircuitAdaptiveApi : java/lang/annotation/Annotation {
 }
 
+public final class com/slack/circuitx/adaptive/ListDetailPaneDefaults {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/slack/circuitx/adaptive/ListDetailPaneDefaults;
+	public static final field MinHeightDp I
+	public final fun getMinHingePaneWidth-D9Ej5fM ()F
+	public final fun getPaneStyle ()Lkotlin/jvm/functions/Function1;
+	public final fun getPaneWidth ()Lkotlin/jvm/functions/Function1;
+}
+
 public final class com/slack/circuitx/adaptive/ListDetailPaneStrategy : com/slack/circuitx/adaptive/PaneStrategy {
 	public static final field $stable I
 	public fun <init> ()V
 	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;ILkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;FZLkotlin/jvm/functions/Function3;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public synthetic fun <init> (Lkotlin/jvm/functions/Function1;ILkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;FZLkotlin/jvm/functions/Function3;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun scene (Lcom/slack/circuitx/adaptive/PaneWindow;Lcom/slack/circuit/runtime/navigation/NavStackList;)Lcom/slack/circuitx/adaptive/PaneScene;
+}
+
+public final class com/slack/circuitx/adaptive/ListDetailPaneStrategyKt {
+	public static final fun rememberListDetailPaneStrategy-GmEhDVc (ILkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;FZLkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function1;Landroidx/compose/runtime/Composer;II)Lcom/slack/circuitx/adaptive/ListDetailPaneStrategy;
 }
 
 public final class com/slack/circuitx/adaptive/PaneAnimatedNavDecoratorFactory : com/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory {
@@ -71,6 +84,9 @@ public final class com/slack/circuitx/adaptive/PaneNavDecoration : com/slack/cir
 
 public final class com/slack/circuitx/adaptive/PaneNavigation {
 	public static final field $stable I
+	public final fun component1 ()Lcom/slack/circuit/runtime/Navigator;
+	public final fun component2 ()Lcom/slack/circuit/foundation/NavDecoration;
+	public final fun component3 ()Lcom/slack/circuitx/adaptive/PaneHost;
 	public final fun getDecoration ()Lcom/slack/circuit/foundation/NavDecoration;
 	public final fun getHost ()Lcom/slack/circuitx/adaptive/PaneHost;
 	public final fun getNavigator ()Lcom/slack/circuit/runtime/Navigator;

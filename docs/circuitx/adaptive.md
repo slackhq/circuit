@@ -26,6 +26,14 @@ NavigableCircuitContent(panes.navigator, backStack, decoration = panes.decoratio
 `rememberPaneNavigation` wraps the default decoration of your `Circuit` in a `PaneNavDecoration`.
 It also adds a `PaneReplaceInterceptor` to the navigator. Both share `panes.host`, a `PaneHost`.
 
+The result also destructures into the navigator, the decoration, and the host, in that order. Leave
+out the host when you do not need it.
+
+```kotlin
+val (paneNavigator, decoration) = rememberPaneNavigation(navigator)
+NavigableCircuitContent(paneNavigator, backStack, decoration = decoration)
+```
+
 To wrap another decoration, pass it as the `delegate`. Remember the values that you pass, because
 each one is a key of the result.
 
@@ -269,10 +277,19 @@ Extra, on a window with room for three panes
 To keep feature modules free of this artifact, pass a lookup in place of the `PaneScreen` marker.
 
 ```kotlin
-ListDetailPaneStrategy(
-  paneStyle = { screen -> if (screen is PetDetailScreen) PaneStyle.ListDetail else null }
-)
+val strategy = rememberListDetailPaneStrategy { screen ->
+  if (screen is PetDetailScreen) {
+    PaneStyle.ListDetail
+  } else {
+    null
+  }
+}
+val panes = rememberPaneNavigation(navigator, strategy)
 ```
+
+`rememberListDetailPaneStrategy` takes the parameters of `ListDetailPaneStrategy` and keeps one
+strategy across recompositions. The strategy is a key of `rememberPaneNavigation`, so remember a
+strategy that you create with the constructor.
 
 A custom strategy must return equal scenes for equal inputs. It must not read state that changes
 during measure.

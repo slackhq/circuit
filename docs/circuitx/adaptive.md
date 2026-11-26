@@ -1,0 +1,583 @@
+CircuitX provides a `NavDecoration` that shows one back stack as one, two, or three panes, based on
+the window size. A list stays on screen and its detail opens beside it on tablets, open foldables,
+and desktop windows.
+
+```kotlin
+dependencies {
+  implementation("com.slack.circuit:circuitx-adaptive:<version>")
+}
+```
+
+The back stack is the only navigation state. A fold, unfold, or rotation changes how the stack
+renders, so screens keep their state.
+
+!!! warning
+    These APIs are experimental and need an opt-in to `ExperimentalCircuitAdaptiveApi`.
+
+## Setup
+
+Create the pane navigation and pass its parts to `NavigableCircuitContent`.
+
+```kotlin
+val panes = rememberPaneNavigation(navigator)
+NavigableCircuitContent(panes.navigator, backStack, decoration = panes.decoration)
+```
+
+`rememberPaneNavigation` wraps the default decoration of your `Circuit` in a `PaneNavDecoration`.
+It also adds a `PaneReplaceInterceptor` to the navigator. Both share `panes.host`, a `PaneHost`.
+
+To wrap another decoration, pass it as the `delegate`. Remember the values that you pass, because
+each one is a key of the result.
+
+```kotlin
+val panes =
+  rememberPaneNavigation(
+    navigator = navigator,
+    delegate =
+      remember(circuit) {
+        AnimatedNavDecoration(
+          animatedScreenTransforms = circuit.animatedScreenTransforms,
+          decoratorFactory =
+            PaneAnimatedNavDecoratorFactory(GestureNavigationDecorationFactory()),
+        )
+      },
+  )
+```
+
+`PaneAnimatedNavDecoratorFactory` adds the [pane transitions](#pane-transitions). The default
+`delegate` already has it.
+
+An app with its own intercepting navigator can create the parts itself.
+
+```kotlin
+val host = remember { PaneHost() }
+val decoration = remember(host) { PaneNavDecoration(strategy, delegate, host) }
+val paneNavigator =
+  rememberInterceptingNavigator(
+    navigator = navigator,
+    interceptors = remember(host) { listOf(PaneReplaceInterceptor(host), myInterceptor) },
+  )
+NavigableCircuitContent(paneNavigator, backStack, decoration = decoration)
+```
+
+Then mark the screens that open beside the screen below them.
+
+```kotlin
+data class PetDetailScreen(val id: Long) : PaneScreen {
+  override val paneStyle
+    get() = PaneStyle.ListDetail
+}
+```
+
+On a wide window, the start pane shows the list. The end pane passes the detail, and every screen
+above it, to the wrapped decoration. Transitions and back gestures apply to the end pane only.
+
+```
+Narrow window             Wide window
++-----------+             +-----------+---------------------+
+|           |             |           |                     |
+|  Detail   |             |   List    |       Detail        |
+|  (top of  |             |           |                     |
+|   stack)  |             |           |                     |
++-----------+             +-----------+---------------------+
+```
+
+## Navigation rails and bars
+
+Put app-wide navigation, like a navigation rail, outside `NavigableCircuitContent`. Material's
+`NavigationSuiteScaffold` does this. The panes then share the width beside the rail.
+
+The decoration is then smaller than the window, and the default `window` function reads the size of
+the decoration. A rail can take a window below the width that splits. Pass the size of the whole
+window to keep the split:
+
+```kotlin
+rememberPaneNavigation(
+  navigator = navigator,
+  window = { size ->
+    val windowSize =
+      with(LocalDensity.current) { LocalWindowInfo.current.containerSize.toSize().toDpSize() }
+    rememberPaneWindow(size, windowSize = windowSize)
+  },
+)
+```
+
+If the rail pads itself for a window inset, like a display cutout, consume that inset for the
+content beside it with `Modifier.consumeWindowInsets`. The panes add only the insets that no
+parent consumed.
+
+If a screen inside the stack draws the rail, that screen is the start pane and holds two sized parts.
+Let it size itself, as [Pane widths](#pane-widths) describes.
+
+### Tabs and saved back stacks
+
+A tab switch is a `resetRoot` on the navigator that the panes render. Use
+`StateOptions.SaveAndRestore`, so each tab keeps its own stack.
+
+```kotlin
+NavigationRailItem(
+  selected = tab == selectedTab,
+  onClick = { paneNavigator.resetRoot(tab.screen, StateOptions.SaveAndRestore) },
+  icon = { /* ... */ },
+)
+```
+
+The open detail is part of the stack, so it is saved with its tab. If the user opens a pet, goes
+to another tab, and comes back, the stack is again `PetDetail, PetList`, and the panes show the
+same pet beside the list. No other state holds the selection.
+
+`PaneReplaceInterceptor` changes `goTo` only. A `resetRoot` passes through it.
+
+The root of each tab takes the start pane. A tab whose root is not a list has two options.
+
+- To keep it at full width, set `panes.host.placeholder = PaneHost.NoPlaceholder` in the click, or use no
+  placeholder in the strategy.
+- To keep it out of the panes, pass `rootIsList = false` and mark each list. See
+  [Lists above the root](#lists-above-the-root).
+
+Set a tab's placeholder in the same click as the `resetRoot`, as [Empty end pane](#empty-end-pane)
+describes.
+
+## Floating toolbars
+
+A floating toolbar draws over content, like Material's `HorizontalFloatingToolbar` or a floating
+tab bar on iOS. It can hold the app's navigation or the actions of one screen.
+
+### Navigation
+
+Pass a `paneContainer` for a toolbar that stays while the screens in a pane change. The decoration
+calls it for each pane, in the bounds of that pane. This toolbar holds the tabs. It floats over the
+start pane, where the root of each tab renders.
+
+```kotlin
+rememberPaneNavigation(
+  navigator = navigator,
+  paneContainer = { position, content ->
+    // The root of the stack is the selected tab
+    val selected = backStack.rootRecord?.screen
+    val atTabRoot = backStack.topRecord == backStack.rootRecord
+    val showTabs =
+      position == PanePosition.Start || (position == PanePosition.Single && atTabRoot)
+    Box {
+      content()
+      if (showTabs) {
+        HorizontalFloatingToolbar(
+          expanded = true,
+          modifier = Modifier.align(Alignment.BottomCenter).offset(y = -ScreenOffset),
+        ) {
+          for (tab in tabs) {
+            IconToggleButton(
+              checked = tab.screen == selected,
+              onCheckedChange = { navigator.resetRoot(tab.screen, StateOptions.SaveAndRestore) },
+            ) {
+              Icon(tab.icon, contentDescription = tab.label)
+            }
+          }
+        }
+      }
+    }
+  },
+)
+```
+
+In the single layout, the tabs show at the root of a tab and hide when a screen opens over it. In
+a split layout, they stay over the start pane while details open beside it. A tab switch works as
+[Tabs and saved back stacks](#tabs-and-saved-back-stacks) describes.
+
+To center the tabs in the window at every size, draw the toolbar in a `Box` over
+`NavigableCircuitContent` and pass no `paneContainer`.
+
+| Position | Pane                                             |
+|----------|--------------------------------------------------|
+| `Single` | The whole decoration, while one screen shows     |
+| `Start`  | The start pane, also while it has the full width |
+| `Middle` | The middle pane of three                         |
+| `End`    | The end pane                                     |
+
+- Call `content()` one time, from the same place for every position. The end pane and the
+  single layout share one container, so its state stays when the window resizes.
+- A container gets the nested scroll of its own pane only. A toolbar with a scroll behavior over
+  the list does not hide when the detail scrolls.
+- The `End` container stays composed off screen while nothing shows there. Read
+  `LocalPaneState.current.paneCount` before you draw chrome for it.
+- Content under the toolbar needs bottom padding. Provide it from the container, like with a
+  `CompositionLocal` that the lists read.
+
+### Screen actions
+
+A screen draws a toolbar for its own actions over its own content. The toolbar is centered in the
+pane of that screen, and it moves with the screen in a transition.
+
+```kotlin
+@Composable
+fun PetDetail(state: PetDetailScreen.State, modifier: Modifier = Modifier) {
+  Box(modifier.fillMaxSize()) {
+    PetDetailContent(state)
+    HorizontalFloatingToolbar(
+      expanded = true,
+      modifier = Modifier.align(Alignment.BottomCenter).offset(y = -ScreenOffset),
+    ) {
+      IconButton(onClick = { state.eventSink(Share) }) { Icon(Icons.Default.Share, "Share") }
+    }
+  }
+}
+```
+
+An app can use both. The tabs then float over the start pane, and the actions of the detail float
+over the end pane.
+
+## Pane strategy
+
+A `PaneStrategy` maps the window and the stack to a `PaneScene`, or to null for the single layout.
+The scene names the records of the start and middle panes and how the panes split. The decoration
+owns the layout, insets, record lifecycle, and animation scopes.
+
+`ListDetailPaneStrategy` is the built-in strategy.
+
+- It splits a window that has room for two panes and is at least 480dp tall. Change the height with
+  `minHeightDp`.
+- The start pane takes the screen just below the lowest screen with a `PaneStyle` at the top of the
+  stack.
+- A screen with no style that opens from a detail stays in the pane of that detail.
+- `ListDetail` gives the start pane a set width. `Supporting` gives the end pane a set width.
+- `List` marks a list that is not the root. See [Lists above the root](#lists-above-the-root).
+- `Extra` opens a third pane when the window has room for three. See [Three panes](#three-panes).
+- The panes split at a vertical hinge. A window with a hinge shows two panes at most.
+- A screen with no style that opens from the start pane's screen fills the window.
+- `FullWindow` marks a screen that always fills the window, like a map or a photo viewer.
+
+The style of a screen decides which pane gets the set width.
+
+```
+ListDetail: the list is narrow         Supporting: the panel is narrow
++---------+---------------------+      +---------------------+---------+
+|         |                     |      |                     |         |
+|  List   |       Detail        |      |        Main         |  Panel  |
+|         |                     |      |                     |         |
++---------+---------------------+      +---------------------+---------+
+ 360dp     the rest                     the rest              360dp
+
+Extra, on a window with room for three panes
++---------+---------------------+---------+
+|         |                     |         |
+|  List   |       Detail        |  Extra  |
+|         |                     |         |
++---------+---------------------+---------+
+ 412dp     the rest              412dp
+```
+
+To keep feature modules free of this artifact, pass a lookup in place of the `PaneScreen` marker.
+
+```kotlin
+ListDetailPaneStrategy(
+  paneStyle = { screen -> if (screen is PetDetailScreen) PaneStyle.ListDetail else null }
+)
+```
+
+A custom strategy must return equal scenes for equal inputs. It must not read state that changes
+during measure.
+
+### Pane count and sizes
+
+A `PaneWindow` tells the strategy how many panes fit (`maxPanes`) and how wide a pane is
+(`preferredPaneWidth`). The default window takes both from Material's pane guidance.
+
+| Window width     | Panes | Pane width |
+|------------------|-------|------------|
+| Below 840dp      | 1     |            |
+| 840dp to 1199dp  | 2     | 360dp      |
+| 1200dp and wider | 3     | 412dp      |
+
+To use other values, pass a `window` function to `PaneNavDecoration`, or pass widths to
+`ListDetailPaneStrategy`. Each width is a function of the `PaneWindow`, so it can be a set width
+or a share of the width.
+
+```kotlin
+ListDetailPaneStrategy(
+  listPaneWidth = { 320.dp },
+  supportingPaneWidth = { (it.size.width * 0.33f).coerceIn(320.dp, 400.dp) },
+)
+```
+
+This `window` function splits from 700dp, where Material's guidance still gives one pane. It reads
+the size of the whole window, as [Navigation rails and bars](#navigation-rails-and-bars) describes:
+
+```kotlin
+window = { size ->
+  val windowSize =
+    with(LocalDensity.current) { LocalWindowInfo.current.containerSize.toSize().toDpSize() }
+  val base = rememberPaneWindow(size, windowSize = windowSize)
+  remember(base, windowSize) {
+    val minPanes =
+      if (windowSize.width >= 700.dp) {
+        2
+      } else {
+        1
+      }
+    PaneWindow(
+      size = base.size,
+      sizeClass = base.sizeClass,
+      separatingHinges = base.separatingHinges,
+      maxPanes = maxOf(base.maxPanes, minPanes),
+      preferredPaneWidth = base.preferredPaneWidth,
+    )
+  }
+}
+```
+
+### Pane widths
+
+A scene carries a `PaneSplit`, which tells the decoration where the start pane ends.
+
+| Split          | Start pane width                                 |
+|----------------|--------------------------------------------------|
+| `Fixed`        | A width that the strategy chose                  |
+| `EndFixed`     | The rest, beside an end pane of a set width      |
+| `Fraction`     | A fraction of the window                         |
+| `AtHinge`      | Up to the first hinge, or half the window        |
+| `PrimaryWraps` | The width that the start pane's content asks for |
+
+```
+Fixed                          AtHinge                        PrimaryWraps
++-------+---------------+      +-----------+-+-----------+    +--+------+------------+
+|       |               |      |           |h|           |    |  |      |            |
+| Start |      End      |      |   Start   |i|    End    |    |R | List |    End     |
+|       |               |      |           |n|           |    |a |      |            |
+|       |               |      |           |g|           |    |i |      |            |
+|       |               |      |           |e|           |    |l |      |            |
++-------+---------------+      +-----------+-+-----------+    +--+------+------------+
+ width from the strategy        panes end at the hinge         start pane is as wide
+                                                               as its content
+```
+
+Use `PrimaryWraps` when the start pane holds more than one sized part.
+`ListDetailPaneStrategy(listPaneSizesItself = true)` returns it for `ListDetail`.
+
+The decoration then measures the start pane with a minimum width of zero. The screen in that pane
+must choose a width while `LocalPaneState.current.primarySizesItself` is true. Content that fills
+the maximum width leaves no room beside it. `PaneState.preferredPaneWidth` is the width for a list.
+
+```kotlin
+val paneState = LocalPaneState.current
+val sizesItself = paneState.primarySizesItself
+Row(if (sizesItself) Modifier.fillMaxHeight() else Modifier.fillMaxSize()) {
+  NavigationRail { /* ... */ }
+  PetList(
+    if (sizesItself) Modifier.width(paneState.preferredPaneWidth) else Modifier.weight(1f)
+  )
+}
+```
+
+### Three panes
+
+A screen with `PaneStyle.Extra` holds more content for an open detail, like a profile opened from a
+conversation. When the window has room for three panes, it opens in a third pane:
+
+- The list stays in the start pane.
+- The detail moves to a middle pane and keeps its state.
+- The extra screen, and every screen above it, goes to the end pane.
+
+In a smaller window, the extra screen stacks over the detail in the end pane.
+
+A custom strategy asks for three panes with `PaneScene.secondaryKey` and `endPaneWidth`. The
+`AtHinge` and `EndFixed` splits show two panes only.
+
+## Roles
+
+Each screen reads `LocalPaneRole` to learn where it renders.
+
+| Role            | Where                                            |
+|-----------------|--------------------------------------------------|
+| `Single`        | The only visible screen, as on phones            |
+| `Primary`       | The start pane, also while it has the full width |
+| `DetailRoot`    | The screen opened from the start pane            |
+| `DetailStacked` | A screen above the detail                        |
+| `ExtraRoot`     | The bottom screen of the third pane              |
+| `ExtraStacked`  | A screen above another screen in the third pane  |
+
+A screen with the `DetailRoot` role sits beside the screen that opened it. For a list's detail,
+hide its back arrow there, because the list is already on screen. A supporting panel can show a
+close button instead. Also turn off shared elements between panes. A list beside its detail stays
+visible, so its items have nothing to share.
+
+```kotlin
+val showsBackArrow = LocalPaneRole.current != PaneRole.DetailRoot
+val shareElements = LocalPaneRole.current == PaneRole.Single
+```
+
+## Empty end pane
+
+With only the start pane's record on the stack, that record fills the window. This suits a grid
+that opens a panel on a pick. To keep the end pane visible, like for a list beside its detail,
+set a placeholder.
+
+```
+No placeholder                         With a placeholder
++-------------------------------+      +---------+---------------------+
+|                               |      |         |                     |
+|             Grid              |      |  List   |   "Select a pet"    |
+|                               |      |         |                     |
++-------------------------------+      +---------+---------------------+
+```
+
+`ListDetailPaneStrategy` takes a placeholder for all screens. It gets the screen of the start pane.
+
+```kotlin
+ListDetailPaneStrategy(
+  placeholder = { primary ->
+    when (primary) {
+      is PetListScreen -> Text("Select a pet")
+      else -> Text("Select an item")
+    }
+  }
+)
+```
+
+A screen can also set one through `LocalPaneHost`.
+
+```kotlin
+panes.host.placeholder = { Text("Select a pet") }
+```
+
+To give one screen the full width when the strategy has a placeholder, set
+`PaneHost.NoPlaceholder`.
+
+```kotlin
+panes.host.placeholder = PaneHost.NoPlaceholder
+```
+
+When a screen opens beside the start pane, the start pane resizes over a few frames and the new
+pane slides in from the end edge. The start pane measures again on each of those frames. To resize
+it in one frame, pass `animationSpec = snap()` to `PaneNavDecoration`.
+
+### Lists above the root
+
+A root with no screens above it always takes the start pane, so it can show a placeholder. A list
+that opens over other screens needs `PaneStyle.List` for the same behavior.
+
+```kotlin
+data object InboxScreen : PaneScreen {
+  override val paneStyle
+    get() = PaneStyle.List
+}
+```
+
+If the root is not always a list, pass `rootIsList = false` to `ListDetailPaneStrategy` and mark
+each list.
+
+A screen that switches content, like a tab host, should set `placeholder` in the same event. The
+next frame then lays out at the final widths.
+
+`placeholder` is state. If you set it on each recomposition, set the same lambda instance.
+
+## Pane state
+
+A screen reads `LocalPaneState` to learn the layout of the window.
+
+- `isSplit` is true while the window shows more than one pane. `paneCount` is the number of
+  panes. Both report one pane while the start pane has the full width.
+- `detailRoot` is the screen opened from the start pane. A list can use it to highlight the open
+  item.
+- `preferredPaneWidth` is the pane width of the window.
+
+```kotlin
+val openItem = LocalPaneState.current.detailRoot as? PetDetailScreen
+```
+
+`PaneHost` has `isSplit`, `paneCount`, and `detailRoot` for code outside composition. It gets them
+after each composition, so a screen that reads them there is one frame late.
+
+## Selected item
+
+A list beside its detail usually highlights the open item. Circuit screens do not share state, so
+the list cannot ask the detail what it shows. The back stack already holds the answer: the open
+detail is the record above the list. The decoration gives that screen to the list as
+`PaneState.detailRoot`.
+
+```kotlin
+@Composable
+fun PetList(state: PetListScreen.State, modifier: Modifier = Modifier) {
+  val openPetId = (LocalPaneState.current.detailRoot as? PetDetailScreen)?.id
+  LazyColumn(modifier) {
+    items(state.pets) { pet ->
+      PetRow(
+        pet = pet,
+        selected = pet.id == openPetId,
+        onClick = { state.eventSink(PetListScreen.Event.ClickPet(pet.id)) },
+      )
+    }
+  }
+}
+```
+
+The presenter only calls `navigator.goTo(PetDetailScreen(id))`. It keeps no selection state, and
+`PaneReplaceInterceptor` swaps the open detail.
+
+- `detailRoot` is null in the single layout, so a phone highlights nothing.
+- The selection follows back, a fold, and process death, because it is the stack.
+
+## Replacing the detail
+
+`PaneReplaceInterceptor` is a [`NavigationInterceptor`](navigation.md). While the decoration has
+a scene, it applies these rules to `goTo`:
+
+- A screen of a type that is already open beside the start pane replaces that screen and every
+  screen above it.
+- A screen that is already open there pops back to it.
+- Any other screen is pushed.
+
+To change which screens replace each other, pass a rule. This one lets any detail of a list replace
+any other, for a list with more than one detail type.
+
+```kotlin
+PaneReplaceInterceptor(host) { open, incoming -> open is InboxDetail && incoming is InboxDetail }
+```
+
+The pops and the push are one `InterceptedResult.RewriteAll`, so the stack never renders between
+them.
+
+### Pane transitions
+
+A decorator usually slides a new screen in from the end edge. `PaneAnimatedNavDecoratorFactory`
+wraps an `AnimatedNavDecorator.Factory` and changes two transitions of the end pane.
+
+| Change                                          | Transition                           |
+|-------------------------------------------------|--------------------------------------|
+| The first screen opens a pane that was hidden   | None. The screen moves with its pane |
+| A screen replaces the bottom screen of a pane   | A crossfade with a small scale       |
+| The first screen opens over a drawn placeholder | The same crossfade                   |
+
+The decoration already slides a new pane in from the end edge, so a push inside it would add a
+second motion. A pop and a screen pushed over a detail keep the transitions of the wrapped factory.
+
+To use other transitions, pass an `openTransform` or a `replaceTransform`.
+
+```kotlin
+PaneAnimatedNavDecoratorFactory(
+  delegate = GestureNavigationDecorationFactory(),
+  replaceTransform = { fadeIn() togetherWith fadeOut() },
+)
+```
+
+An `AnimatedScreenTransform` of a screen takes priority over both.
+
+## Column counts
+
+A list in a pane is narrower than the window. Size its columns from its own width, not from the
+window size class.
+
+```kotlin
+LazyVerticalStaggeredGrid(columns = StaggeredGridCells.Adaptive(minSize = 150.dp)) { /* ... */ }
+```
+
+## Writing your own pane decoration
+
+`PaneNavDecoration` depends on the rules in the `NavDecoration` KDoc. The same rules apply to any
+decoration that shows several records.
+
+- Call `content` for a record from one place only. Two calls share saved state keys.
+- Wrap records other than the current one in `ProvideRecordLifecycle`, or they stay paused.
+- Wrap content outside the animated decoration in `ProvideStaticAnimatedTransitionScope`, so
+  `requireAnimatedScope(Navigation)` does not throw.
+- Choose the records of each pane in composition. Measure and place every child in every pass, with
+  the same constraints in the lookahead pass and the main pass.

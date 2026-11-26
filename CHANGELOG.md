@@ -6,8 +6,26 @@ Unreleased
 
 ### New
 
+#### Adaptive pane layouts with `circuitx-adaptive`
+
+`circuitx-adaptive` is a new experimental artifact that shows one back stack as one, two, or three panes. A phone shows one screen at a time. This helps ease targeting different form factors like tablets, foldables, or desktop layouts.
+
+```kotlin
+data class DetailScreen(val id: String) : PaneScreen {
+  override val paneStyle = PaneStyle.ListDetail
+}
+
+val (paneNavigator, decoration) = rememberPaneNavigation(navigator)
+NavigableCircuitContent(paneNavigator, backStack, decoration = decoration)
+```
+
+On a wide window, `DetailScreen` now opens beside the screen below it. Opening another detail replaces the first one, so back returns to the list.
+
+See the [docs](https://slackhq.github.io/circuit/circuitx/adaptive/).
+
+#### Misc
+
 - **circuit-foundation:** Add experimental `RecordLifecycle.isVisible` and a `ProvideRecordLifecycle(isActive, isVisible)` overload, so a decoration can report whether a record is shown separately from whether it's active.
-- **circuitx-adaptive:** New experimental artifact with `PaneNavDecoration`, which shows one back stack as one or two panes based on the window size. See the [docs](https://slackhq.github.io/circuit/circuitx/adaptive/).
 - **circuitx-gesture-navigation:** Add `SlideOverNavDecoration`, an iOS-style slide-over `NavDecoration` with forward and backward swipes and optional off-screen warming of adjacent screens.
 - **circuitx-navigation:** Add `InterceptedResult.RewriteAll`, which rewrites a navigation into several `NavEvent`s that `InterceptingNavigator` applies in one snapshot.
 - **circuit-sharedelements:** Add `ProvideStaticAnimatedTransitionScope`, which provides an `AnimatedScope` to content that renders outside the transition that normally provides it.

@@ -28,6 +28,8 @@ dependencies {
   testImplementation(libs.kotlinx.serialization.core)
   testImplementation(libs.ksp)
   testImplementation(libs.ksp.api)
+  testImplementation(libs.ksp.aaEmbeddable)
+  testImplementation(libs.ksp.commonDeps)
   testImplementation(libs.metro)
   testImplementation(libs.truth)
   testImplementation(projects.circuitCodegenAnnotations)

@@ -81,7 +81,7 @@ internal class CircuitSerializationProcessor(
     resolver
       .getSymbolsWithAnnotation(CircuitNames.CIRCUIT_SERIALIZABLE.canonicalName, inDepth = true)
       .forEach { symbol ->
-        if (!symbol.validate(enableNewFeatures = false)) {
+        if (!symbol.validate(apiFeatures = apiFeatures)) {
           deferred += symbol
         } else if (symbol is KSClassDeclaration) {
           // Platform KSP returns both the expect and actual declarations. The expect declaration

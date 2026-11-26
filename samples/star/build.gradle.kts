@@ -76,6 +76,7 @@ kotlin {
         implementation(projects.circuitOverlay)
         implementation(projects.circuitRetained)
         implementation(projects.circuitSerialization)
+        implementation(projects.circuitx.adaptive)
         implementation(projects.circuitx.gestureNavigation)
         implementation(projects.circuitx.navigation)
         implementation(projects.circuitx.overlays)

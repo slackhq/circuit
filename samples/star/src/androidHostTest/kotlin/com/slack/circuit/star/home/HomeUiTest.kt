@@ -38,8 +38,9 @@ class HomeUiTest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  @Config(qualifiers = "w480dp-h360dp-land")
-  fun compactHeight_usesNavigationRail() {
+  // The medium width class starts at 600dp, which covers phones in landscape
+  @Config(qualifiers = "w640dp-h360dp-land")
+  fun mediumWidth_usesNavigationRail() {
     var selectedIndex = 0
     composeTestRule.run {
       setContent {
@@ -75,7 +76,7 @@ class HomeUiTest {
 
   @Test
   @Config(qualifiers = "w480dp-h800dp-port")
-  fun nonCompactHeight_usesBottomNavigation() {
+  fun compactWidth_usesBottomNavigation() {
     composeTestRule.run {
       setContent { HomeNavigationLayout(selectedIndex = 0, onSelectedIndex = {}) {} }
 
@@ -86,7 +87,7 @@ class HomeUiTest {
 
   @OptIn(ExperimentalTestApi::class)
   @Test
-  @Config(qualifiers = "w480dp-h360dp-land")
+  @Config(qualifiers = "w640dp-h360dp-land")
   fun displayCutout_doesNotExpandNavigationRail() {
     val cutoutWidth = 48.dp
     var cutoutWidthPx = 0

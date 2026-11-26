@@ -31,7 +31,7 @@ kotlinInject-anvil = "0.1.7"
 kotlinpoet = "2.4.0"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.13.0"
-ksp = "2.3.13"
+ksp = "2.3.14"
 ktor = "3.6.2"
 leakcanary = "2.14"
 mavenPublish = "0.37.0"
@@ -174,7 +174,9 @@ kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlin
 ksoup = "com.fleeksoft.ksoup:ksoup-ktor2:0.2.0"
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
+ksp-aaEmbeddable = { module = "com.google.devtools.ksp:symbol-processing-aa-embeddable", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+ksp-commonDeps = { module = "com.google.devtools.ksp:symbol-processing-common-deps", version.ref = "ksp" }
 ktor-client = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }

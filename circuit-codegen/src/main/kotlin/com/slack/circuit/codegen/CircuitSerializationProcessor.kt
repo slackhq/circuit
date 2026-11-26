@@ -3,6 +3,7 @@
 package com.slack.circuit.codegen
 
 import com.google.auto.service.AutoService
+import com.google.devtools.ksp.ApiFeatures
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.getVisibility
@@ -20,7 +21,6 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.symbol.Visibility
-import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -54,6 +54,9 @@ internal class CircuitSerializationProcessor(
   options: Map<String, String>,
   private val platforms: List<PlatformInfo>,
 ) : SymbolProcessor {
+  override val apiFeatures: ApiFeatures
+    get() = CircuitKspApi.features
+
   private val options = CircuitOptions.load(options, logger)
   private val mode = this.options.mode
 
@@ -81,7 +84,7 @@ internal class CircuitSerializationProcessor(
     resolver
       .getSymbolsWithAnnotation(CircuitNames.CIRCUIT_SERIALIZABLE.canonicalName, inDepth = true)
       .forEach { symbol ->
-        if (!symbol.validate(enableNewFeatures = false)) {
+        if (!CircuitKspApi.validate(symbol)) {
           deferred += symbol
         } else if (symbol is KSClassDeclaration) {
           // Platform KSP returns both the expect and actual declarations. The expect declaration

@@ -165,6 +165,10 @@ final class com.slack.circuitx.adaptive/PaneNavigation { // com.slack.circuitx.a
         final fun <get-host>(): com.slack.circuitx.adaptive/PaneHost // com.slack.circuitx.adaptive/PaneNavigation.host.<get-host>|<get-host>(){}[0]
     final val navigator // com.slack.circuitx.adaptive/PaneNavigation.navigator|{}navigator[0]
         final fun <get-navigator>(): com.slack.circuit.runtime/Navigator // com.slack.circuitx.adaptive/PaneNavigation.navigator.<get-navigator>|<get-navigator>(){}[0]
+
+    final fun component1(): com.slack.circuit.runtime/Navigator // com.slack.circuitx.adaptive/PaneNavigation.component1|component1(){}[0]
+    final fun component2(): com.slack.circuit.foundation/NavDecoration // com.slack.circuitx.adaptive/PaneNavigation.component2|component2(){}[0]
+    final fun component3(): com.slack.circuitx.adaptive/PaneHost // com.slack.circuitx.adaptive/PaneNavigation.component3|component3(){}[0]
 }
 
 final class com.slack.circuitx.adaptive/PaneReplaceInterceptor : com.slack.circuitx.navigation.intercepting/NavigationInterceptor { // com.slack.circuitx.adaptive/PaneReplaceInterceptor|null[0]

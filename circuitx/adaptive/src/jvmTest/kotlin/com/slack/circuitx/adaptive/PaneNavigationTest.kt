@@ -80,6 +80,14 @@ class PaneNavigationTest {
     onNodeWithText("${Detail(1)}").assertExists()
     runOnIdle { check(panes.host.isSplit) }
 
+    // The result destructures as the navigator, the decoration, and the host
+    runOnIdle {
+      val (paneNavigator, decoration, host) = panes
+      check(paneNavigator === panes.navigator)
+      check(decoration === panes.decoration)
+      check(host === panes.host)
+    }
+
     // The navigator has the replace interceptor
     runOnIdle { panes.navigator.goTo(Detail(2)) }
     onNodeWithText("${Detail(2)}").assertExists()

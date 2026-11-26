@@ -84,6 +84,9 @@ public final class com/slack/circuitx/adaptive/PaneNavDecoration : com/slack/cir
 
 public final class com/slack/circuitx/adaptive/PaneNavigation {
 	public static final field $stable I
+	public final fun component1 ()Lcom/slack/circuit/runtime/Navigator;
+	public final fun component2 ()Lcom/slack/circuit/foundation/NavDecoration;
+	public final fun component3 ()Lcom/slack/circuitx/adaptive/PaneHost;
 	public final fun getDecoration ()Lcom/slack/circuit/foundation/NavDecoration;
 	public final fun getHost ()Lcom/slack/circuitx/adaptive/PaneHost;
 	public final fun getNavigator ()Lcom/slack/circuit/runtime/Navigator;

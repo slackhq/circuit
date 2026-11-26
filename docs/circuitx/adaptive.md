@@ -26,6 +26,14 @@ NavigableCircuitContent(panes.navigator, backStack, decoration = panes.decoratio
 `rememberPaneNavigation` wraps the default decoration of your `Circuit` in a `PaneNavDecoration`.
 It also adds a `PaneReplaceInterceptor` to the navigator. Both share `panes.host`, a `PaneHost`.
 
+The result also destructures into the navigator, the decoration, and the host, in that order. Leave
+out the host when you do not need it.
+
+```kotlin
+val (paneNavigator, decoration) = rememberPaneNavigation(navigator)
+NavigableCircuitContent(paneNavigator, backStack, decoration = decoration)
+```
+
 To wrap another decoration, pass it as the `delegate`. Remember the values that you pass, because
 each one is a key of the result.
 

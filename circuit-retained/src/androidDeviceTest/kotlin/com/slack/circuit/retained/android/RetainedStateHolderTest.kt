@@ -328,7 +328,7 @@ class RetainedStateHolderTest {
       CompositionLocalProvider(LocalRetainedStateRegistry provides registry) {
         val holder = rememberRetainedStateHolder(canRetainChecker)
         holder.RetainedStateProvider(showFirstPage.toString()) {
-          rememberRetained { Random.nextInt() }
+          rememberRetained<Int> { Random.nextInt() }
         }
       }
     }

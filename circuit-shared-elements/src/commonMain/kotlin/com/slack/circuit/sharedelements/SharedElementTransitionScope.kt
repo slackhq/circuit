@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -89,6 +90,34 @@ public fun SharedElementTransitionScope(
   content: @Composable SharedElementTransitionScope.() -> Unit,
 ) {
   sharedElementTransitionScope.content()
+}
+
+/**
+ * Like [SharedElementTransitionScope], but provides a null receiver to [content] when no
+ * [SharedElementTransitionScope] is available instead of failing.
+ */
+@Composable
+public fun SafeSharedElementTransitionScope(
+  content: @Composable SharedElementTransitionScope?.() -> Unit
+) {
+  val scope =
+    if (SharedElementTransitionScope.isAvailable) {
+      LocalSharedElementTransitionScope.current
+    } else null
+  content(scope)
+}
+
+/**
+ * Applies the [Modifier] returned by [block] when a [SharedElementTransitionScope] is available,
+ * otherwise returns this [Modifier] unchanged. Useful for shared element modifiers on content that
+ * may be shown outside a [SharedElementTransitionLayout].
+ */
+@Composable
+public fun Modifier.withSharedElementTransitionScope(
+  block: @Composable context(SharedElementTransitionScope) Modifier.() -> Modifier
+): Modifier {
+  if (!SharedElementTransitionScope.isAvailable) return this
+  return this then with(LocalSharedElementTransitionScope.current) { Modifier.block() }
 }
 
 /**

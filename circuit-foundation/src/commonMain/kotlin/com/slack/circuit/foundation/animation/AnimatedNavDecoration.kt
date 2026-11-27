@@ -3,6 +3,7 @@
 package com.slack.circuit.foundation.animation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ContentTransform
@@ -12,7 +13,10 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import com.slack.circuit.foundation.NavDecoration
 import com.slack.circuit.runtime.ExperimentalCircuitApi
@@ -22,6 +26,7 @@ import com.slack.circuit.runtime.navigation.NavArgument
 import com.slack.circuit.runtime.navigation.NavStackList
 import com.slack.circuit.runtime.screen.Screen
 import com.slack.circuit.sharedelements.ProvideAnimatedTransitionScope
+import com.slack.circuit.sharedelements.SharedElementTransitionLayout
 import com.slack.circuit.sharedelements.SharedElementTransitionScope
 import com.slack.circuit.sharedelements.SharedElementTransitionScope.AnimatedScope.Navigation
 import kotlin.reflect.KClass
@@ -118,6 +123,114 @@ public class AnimatedNavDecoration(
         contentKey = { it.navStack.active.key },
       ) { targetState ->
         ProvideAnimatedTransitionScope(Navigation, this) { Decoration(targetState) { content(it) } }
+      }
+    }
+  }
+}
+
+/**
+ * A [NavDecoration] like [AnimatedNavDecoration] that supports shared elements without a
+ * [SharedElementTransitionLayout] above it, but only for the [Navigation] scope during navigation
+ * transitions.
+ *
+ * If a [SharedElementTransitionScope] is already available, this behaves exactly like
+ * [AnimatedNavDecoration]. Otherwise it wraps the [AnimatedContent] in its own
+ * [SharedElementTransitionLayout] only while a navigation transition is running, and provides the
+ * [Navigation] scope for it. While idle, content is shown without a [SharedElementTransitionScope].
+ * [AnimatedNavDecorator.Decoration] is kept in movable content, so it isn't recreated when
+ * switching between the idle and transitioning layouts.
+ *
+ * **Only the [Navigation] scope is supported without a parent layout.** The
+ * [SharedElementTransitionScope] created here:
+ * - Only exists while a navigation transition is running. Screens must access it with
+ *   `SafeSharedElementTransitionScope`, `Modifier.withSharedElementTransitionScope`, or by checking
+ *   [SharedElementTransitionScope.isAvailable], since calling `SharedElementTransitionScope` while
+ *   idle will throw. Shared elements outside a navigation transition, such as state changes within
+ *   a screen, won't animate.
+ * - Only provides the [Navigation] scope. Calling `requireAnimatedScope` with any other scope, such
+ *   as `Overlay`, will throw.
+ * - Only covers content inside this decoration. Elements can't be shared with content outside it,
+ *   such as overlays or a bottom bar.
+ *
+ * Use [AnimatedNavDecoration] with a [SharedElementTransitionLayout] around the root if you need
+ * any of these.
+ *
+ * @param animatedScreenTransforms A Map of [AnimatedScreenTransform] that might be used to override
+ *   the default [ContentTransform] provided by the [AnimatedNavDecorator].
+ * @param decoratorFactory A factory used to create a [AnimatedNavDecorator] instance.
+ * @see AnimatedNavDecoration
+ */
+@OptIn(ExperimentalCircuitApi::class, ExperimentalSharedTransitionApi::class)
+public class OnNavEventSharedElementNavDecoration(
+  private val animatedScreenTransforms: Map<KClass<out Screen>, AnimatedScreenTransform>,
+  private val decoratorFactory: AnimatedNavDecorator.Factory,
+) : NavDecoration {
+
+  @Composable
+  public override fun <T : NavArgument> DecoratedContent(
+    args: NavStackList<T>,
+    navigator: Navigator,
+    modifier: Modifier,
+    content: @Composable (T) -> Unit,
+  ) {
+    val decorator = remember {
+      @Suppress("UNCHECKED_CAST")
+      decoratorFactory.create<T>() as AnimatedNavDecorator<T, AnimatedNavState>
+    }
+      .apply { updateNavigator(navigator) }
+    with(decorator) {
+      val transition = updateTransition(args)
+      if (SharedElementTransitionScope.isAvailable) {
+        transition.AnimatedContent(
+          modifier = modifier,
+          transitionSpec = transitionSpec(animatedScreenTransforms),
+          contentKey = { it.navStack.active.key },
+        ) { targetState ->
+          ProvideAnimatedTransitionScope(
+            Navigation,
+            this,
+          ) {
+            Decoration(targetState) { content(it) }
+          }
+        }
+      } else {
+        val latestContent by rememberUpdatedState(content)
+        val movingAnimatedContent = remember {
+          movableContentOf<
+            AnimatedContentScope,
+            AnimatedNavDecorator<T, AnimatedNavState>,
+            AnimatedNavState,
+          > { animatedScope, decorator, targetState ->
+            with(decorator) {
+              animatedScope.Decoration(targetState) { latestContent(it) }
+            }
+          }
+        }
+        // Move out of the SharedElementTransitionLayout Lookahead pass when idle to work around
+        // https://issuetracker.google.com/issues/590414034
+        if (transition.targetState == transition.currentState) {
+          AnimatedContent(
+            modifier = modifier,
+            targetState = transition.currentState,
+            transitionSpec = {
+              EnterTransition.None togetherWith ExitTransition.None
+            },
+          ) { targetState ->
+            movingAnimatedContent(this, decorator, targetState)
+          }
+        } else {
+          SharedElementTransitionLayout {
+            transition.AnimatedContent(
+              modifier = modifier,
+              transitionSpec = transitionSpec(animatedScreenTransforms),
+              contentKey = { it.navStack.active.key },
+            ) { targetState ->
+              ProvideAnimatedTransitionScope(Navigation, this) {
+                movingAnimatedContent(this, decorator, targetState)
+              }
+            }
+          }
+        }
       }
     }
   }

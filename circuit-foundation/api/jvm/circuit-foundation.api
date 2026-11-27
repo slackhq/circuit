@@ -298,6 +298,12 @@ public abstract interface class com/slack/circuit/foundation/animation/AnimatedN
 	public abstract fun getNavStack ()Lcom/slack/circuit/runtime/navigation/NavStackList;
 }
 
+public final class com/slack/circuit/foundation/animation/OnNavEventSharedElementNavDecoration : com/slack/circuit/foundation/NavDecoration {
+	public static final field $stable I
+	public fun <init> (Ljava/util/Map;Lcom/slack/circuit/foundation/animation/AnimatedNavDecorator$Factory;)V
+	public fun DecoratedContent (Lcom/slack/circuit/runtime/navigation/NavStackList;Lcom/slack/circuit/runtime/Navigator;Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function3;Landroidx/compose/runtime/Composer;I)V
+}
+
 public final class com/slack/circuit/foundation/animation/PartialContentTransform {
 	public static final field $stable I
 	public static final field Companion Lcom/slack/circuit/foundation/animation/PartialContentTransform$Companion;
